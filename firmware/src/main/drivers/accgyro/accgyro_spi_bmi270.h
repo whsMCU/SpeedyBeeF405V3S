@@ -3,7 +3,6 @@
 
 #include "hw.h"
 #include "sensors/sensors.h"
-#include "sensors/acceleration.h"
 #include "sensors/gyro.h"
 
 //typedef struct gyroDev_s gyroDev_t;
@@ -13,7 +12,7 @@ bool bmi270Detect(uint8_t ch);
 bool bmi270SpiAccDetect(accDev_t *acc);
 bool bmi270SpiGyroDetect(gyroDev_t *gyro);
 void bmi270Config(void);
-bool bmi270SpiAccRead(accDev_t *acc);
+bool bmi270SpiAccRead(imu_t *acc);
 bool bmi270SpiGyroRead(imu_t *gyro);
 void bmi270SetCallBack(void (*p_func)(void));
 uint8_t bmi270InterruptStatus(gyroDev_t *gyro);

@@ -335,16 +335,16 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 }
 
-bool bmi270SpiAccRead(accDev_t *acc)
+bool bmi270SpiAccRead(imu_t *acc)
 {
 
-  switch (acc->gyro->gyroModeSPI) {
+  switch (acc->gyroModeSPI) {
   case GYRO_EXTI_INT:
   case GYRO_EXTI_NO_INT:
   {
-      acc->gyro->txBuf[0] = BMI270_REG_ACC_DATA_X_LSB | 0x80;
+      acc->txBuf[0] = BMI270_REG_ACC_DATA_X_LSB | 0x80;
 
-      spiReadWriteBuf(dev, acc->gyro->txBuf, acc->gyro->rxBuf, 8);
+      spiReadWriteBuf(dev, acc->txBuf, acc->rxBuf, 8);
 
       // Fall through
       FALLTHROUGH;
@@ -356,10 +356,10 @@ bool bmi270SpiAccRead(accDev_t *acc)
       // up an old value.
 
       // This data was read from the gyro, which is the same SPI device as the acc
-      uint16_t *accData = (uint16_t *)(acc->gyro->rxBuf+2);
-      acc->ADCRaw[X] = accData[0];
-      acc->ADCRaw[Y] = accData[1];
-      acc->ADCRaw[Z] = accData[2];
+      uint16_t *accData = (uint16_t *)(acc->rxBuf+2);
+      acc->accADCRaw[X] = accData[0];
+      acc->accADCRaw[Y] = accData[1];
+      acc->accADCRaw[Z] = accData[2];
 
       //acc->ADCRaw[X] = (int16_t)((uint16_t)acc->gyro->rxBuf[2]<<8 | (uint16_t)acc->gyro->rxBuf[1]);
       //acc->ADCRaw[Y] = (int16_t)((uint16_t)acc->gyro->rxBuf[4]<<8 | (uint16_t)acc->gyro->rxBuf[3]);

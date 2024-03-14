@@ -28,6 +28,8 @@
 #include "drivers/accgyro/accgyro.h"
 #include "drivers/sensor.h"
 
+#include "sensors/sensors.h"
+
 //#include "flight/pid.h"
 
 
@@ -37,6 +39,16 @@ typedef struct gyroCalibration_s {
     int32_t cyclesRemaining;
 } gyroCalibration_t;
 
+typedef struct rollAndPitchTrims_s {
+    int16_t roll;
+    int16_t pitch;
+} rollAndPitchTrims_t_def;
+
+typedef union rollAndPitchTrims_u {
+    int16_t raw[2];
+    rollAndPitchTrims_t_def values;
+} rollAndPitchTrims_t;
+
 typedef struct gyro_s {
     uint16_t sampleRateHz;
     uint32_t targetLooptime;
@@ -44,9 +56,9 @@ typedef struct gyro_s {
     float scale;
     float gyroADC[XYZ_AXIS_COUNT];     // aligned, calibrated, scaled, but unfiltered data from the sensor(s)
     float gyroADCf[XYZ_AXIS_COUNT];    // filtered gyro data
-    uint8_t sampleCount;               // gyro sensor sample counter
-    float sampleSum[XYZ_AXIS_COUNT];   // summed samples used for downsampling
-
+    float gyro_accumulatedMeasurements[XYZ_AXIS_COUNT];
+    float gyroPrevious[XYZ_AXIS_COUNT];
+    int gyro_accumulatedMeasurementCount;
     gyroCalibration_t calibration;
 
     uint8_t *txBuf, *rxBuf;
@@ -77,8 +89,15 @@ typedef struct gyro_s {
     float acc_1G_rec;
     uint16_t acc_1G;
     int16_t accADCRaw[XYZ_AXIS_COUNT];
+    float accADC[XYZ_AXIS_COUNT];
+    int acc_accumulatedMeasurementCount;
+    float acc_accumulatedMeasurements[XYZ_AXIS_COUNT];
+
+    bool isAccelUpdatedAtLeastOnce;
     uint16_t accSampleRateHz;
     bool acc_high_fsr;
+
+    uint16_t calibratingA;      // the calibration is done is the main loop. Calibrating decreases at each cycle down to 0, then we enter in a normal mode.
 } imu_t;
 
 extern imu_t bmi270;
@@ -88,8 +107,11 @@ void gyroConfig_init(void);
 void gyroDeviceConfig_Init(void);
 void gyroUpdate(void);
 void gyroFiltering(timeUs_t currentTimeUs);
-bool gyroGetAccumulationAverage(float *accumulation);
+bool gyroGetAccumulationAverage(float *accumulationAverage);
 void gyroStartCalibration(bool isFirstArmingCalibration);
 bool isFirstArmingGyroCalibrationRunning(void);
 bool gyroIsCalibrationComplete(void);
 void gyroReadTemperature(void);
+
+void accUpdate(void);
+bool accGetAccumulationAverage(float *accumulation);

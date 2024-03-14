@@ -30,7 +30,7 @@
 //#include "fc/rc_controls.h"
 //#include "fc/core.h"
 //
-//#include "flight/imu.h"
+#include "flight/imu.h"
 //#include "flight/pid_init.h"
 //#include "flight/position.h"
 
@@ -81,7 +81,9 @@ void SystemClock_Config(void);
 void hwInit(void);
 void RC_Parse(void);
 
-uint32_t gyro_tim = 0;
+uint32_t gyro_time = 0;
+uint32_t acc_time = 0;
+uint32_t attitude_time = 0;
 /* USER CODE END 0 */
 
 /**
@@ -135,14 +137,30 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  gyro_tim = micros();
+  gyro_time = micros();
+  acc_time = micros();
+  attitude_time = micros();
   while (1)
   {
-	  if(micros() - gyro_tim >= 125) // 125us = 8kHz
+	  if(micros() - gyro_time >= 125) // 125us = 8kHz
 	  {
-		  gyro_tim = micros();
+		  gyro_time = micros();
 		  gyroUpdate();
 	  }
+
+	  if(micros() - acc_time >= 1000) // 1000us = 1kHz
+	  {
+	  	acc_time = micros();
+	  	accUpdate();
+	  }
+
+	  if(micros() - attitude_time >= 10000) // 10000us = 100Hz
+	  {
+	  	attitude_time = micros();
+	  	imuUpdateAttitude(attitude_time);
+	  }
+
+	  cliMain();
 
 	  //scheduler();
 

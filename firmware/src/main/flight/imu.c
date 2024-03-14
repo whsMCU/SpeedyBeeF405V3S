@@ -30,24 +30,20 @@
 #include "common/axis.h"
 #include "common/time.h"
 
-#include "fc/runtime_config.h"
-#include "fc/core.h"
+//#include "fc/runtime_config.h"
+//#include "fc/core.h"
 
 //#include "flight/gps_rescue.h"
 #include "flight/imu.h"
-#include "flight/mixer.h"
-#include "flight/pid.h"
+//#include "flight/mixer.h"
+//#include "flight/pid.h"
 
-#include "scheduler/scheduler.h"
+//#include "scheduler/scheduler.h"
 
-#include "sensors/acceleration.h"
-#include "sensors/barometer.h"
-#include "sensors/compass.h"
+//#include "sensors/barometer.h"
+//#include "sensors/compass.h"
 #include "sensors/gyro.h"
 #include "sensors.h"
-
-#define IMU_LOCK
-#define IMU_UNLOCK
 
 // the limit (in degrees/second) beyond which we stop integrating
 // omega_I. At larger spin rates the DCM PI controller can get 'dizzy'
@@ -304,7 +300,7 @@ void imuUpdateEulerAngles(void)
 {
     quaternionProducts buffer;
 
-    if (FLIGHT_MODE(HEADFREE_MODE)) {
+    if (false) {//FLIGHT_MODE(HEADFREE_MODE)
        imuQuaternionComputeProducts(&headfree, &buffer);
 
        attitude.values.roll = lrintf(atan2_approx((+2.0f * (buffer.wx + buffer.yz)), (+1.0f - 2.0f * (buffer.xx + buffer.yy))) * (1800.0f / M_PIf));
@@ -329,7 +325,7 @@ static bool imuIsAccelerometerHealthy(float *accAverage)
         accMagnitudeSq += a * a;
     }
 
-    accMagnitudeSq = accMagnitudeSq * sq(acc.dev.acc_1G_rec);
+    accMagnitudeSq = accMagnitudeSq * sq(bmi270.acc_1G_rec);
 
     // Accept accel readings only in range 0.9g - 1.1g
     return (0.81f < accMagnitudeSq) && (accMagnitudeSq < 1.21f);
@@ -523,40 +519,9 @@ static void imuCalculateEstimatedAttitude(timeUs_t currentTimeUs)
 #endif
 }
 
-static int calculateThrottleAngleCorrection(void)
-{
-    /*
-    * Use 0 as the throttle angle correction if we are inverted, vertical or with a
-    * small angle < 0.86 deg
-    * TODO: Define this small angle in config.
-    */
-    if (getCosTiltAngle() <= 0.015f) {
-        return 0;
-    }
-    int angle = lrintf(acos_approx(getCosTiltAngle()) * throttleAngleScale);
-    if (angle > 900)
-        angle = 900;
-    return lrintf(throttleAngleValue * sin_approx(angle / (900.0f * M_PIf / 2.0f)));
-}
-
 void imuUpdateAttitude(timeUs_t currentTimeUs)
 {
-    if (sensors(SENSOR_ACC) && acc.isAccelUpdatedAtLeastOnce) {
-        imuCalculateEstimatedAttitude(currentTimeUs);
-
-        // Update the throttle correction for angle and supply it to the mixer
-        int throttleAngleCorrection = 0;
-        if (throttleAngleValue && (FLIGHT_MODE(ANGLE_MODE) || FLIGHT_MODE(HORIZON_MODE)) && ARMING_FLAG(ARMED)) {
-            throttleAngleCorrection = calculateThrottleAngleCorrection();
-        }
-        mixerSetThrottleAngleCorrection(throttleAngleCorrection);
-
-    } else {
-        acc.accADC[X] = 0;
-        acc.accADC[Y] = 0;
-        acc.accADC[Z] = 0;
-        schedulerIgnoreTaskStateTime();
-    }
+	imuCalculateEstimatedAttitude(currentTimeUs);
 }
 #endif // USE_ACC
 
@@ -585,48 +550,6 @@ void getQuaternion(quaternion *quat)
    quat->y = q.y;
    quat->z = q.z;
 }
-
-#ifdef SIMULATOR_BUILD
-void imuSetAttitudeRPY(float roll, float pitch, float yaw)
-{
-    IMU_LOCK;
-
-    attitude.values.roll = roll * 10;
-    attitude.values.pitch = pitch * 10;
-    attitude.values.yaw = yaw * 10;
-
-    IMU_UNLOCK;
-}
-
-void imuSetAttitudeQuat(float w, float x, float y, float z)
-{
-    IMU_LOCK;
-
-    q.w = w;
-    q.x = x;
-    q.y = y;
-    q.z = z;
-
-    imuComputeRotationMatrix();
-
-    attitudeIsEstablished = true;
-
-    imuUpdateEulerAngles();
-
-    IMU_UNLOCK;
-}
-#endif
-#if defined(SIMULATOR_BUILD) && defined(SIMULATOR_IMU_SYNC)
-void imuSetHasNewData(uint32_t dt)
-{
-    IMU_LOCK;
-
-    imuUpdated = true;
-    imuDeltaT = dt;
-
-    IMU_UNLOCK;
-}
-#endif
 
 bool imuQuaternionHeadfreeOffsetSet(void)
 {
@@ -675,13 +598,4 @@ void imuQuaternionHeadfreeTransformVectorEarthToBody(t_fp_vector_def *v)
     v->X = x;
     v->Y = y;
     v->Z = z;
-}
-
-bool isUpright(void)
-{
-#ifdef USE_ACC
-    return !sensors(SENSOR_ACC) || (attitudeIsEstablished && getCosTiltAngle() > smallAngleCosZ);
-#else
-    return true;
-#endif
 }

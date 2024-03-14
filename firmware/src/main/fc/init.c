@@ -61,7 +61,7 @@
 //#include "scheduler/tasks.h"
 //
 //#include "flight/failsafe.h"
-//#include "flight/imu.h"
+#include "flight/imu.h"
 //#include "flight/mixer_init.h"
 //#include "flight/mixer.h"
 //#include "flight/pid.h"
@@ -86,7 +86,6 @@
 //#include "scheduler/tasks.h"
 
 #include "sensors/sensors.h"
-#include "sensors/acceleration.h"
 //#include "sensors/barometer.h"
 //#include "sensors/battery.h"
 //#include "sensors/adcinternal.h"
@@ -115,7 +114,7 @@ void init(void)
 {
 
 	cliOpen(_DEF_USB, 57600);
-
+	imuConfig_Init();
 	//mixerInit(mixerConfig.mixerMode);
 
 	bmi270_Init();
@@ -281,56 +280,56 @@ void init(void)
 
 void Param_Config_Init(void)
 {
-	systemConfig_Init();
-	pilotConfig_Init();
-	boardConfig_Init();
-
-	boardAlignment_Init(0, 0, 0);
-	failsafeConfig_Init();
-	accelerometerConfig_init();
-	gyroConfig_init();
-	gyroDeviceConfig_Init();
-	statsConfig_Init();
-	motorConfig_Init();
-#ifdef USE_GPS
-	gpsConfig_Init();
-#endif
-	barometerConfig_Init();
-#ifdef USE_MAG
-	compassConfig_Init();
-#endif
-	adcConfig_Init();
-	voltageSensorADCConfig_Init();
-	currentSensorADCConfig_Init();
-#ifdef USE_DYN_NOTCH_FILTER
-	dynNotchConfig_Init();
-#endif
-	imuConfig_Init();
-	pidConfig_Init();
-	pidProfiles_Init();
-	rxConfig_Init();
-	rxChannelRangeConfigs_Init();
-	rxFailsafeChannelConfigs_Init();
-	batteryConfig_Init();
-	controlRateProfiles_Init();
-	mixerConfig_Init();
-	throttleCorrectionConfig_Init();
-	featureConfig_Init();
-	positionConfig_Init();
-	rcControlsConfig_Init();
-	armingConfig_Init();
-	flight3DConfig_Init();
-#ifdef USE_OSD
-	vcdProfile_Init();
-	osdConfig_Init();
-	osdElementConfig_Init();
-	max7456Config_Init();
-#if defined(USE_MSP_DISPLAYPORT)
-	displayPortProfileMsp_Init();
-#endif
-#if defined(USE_MAX7456)
-	displayPortProfileMax7456_Init();
-#endif
-
-#endif
+//	systemConfig_Init();
+//	pilotConfig_Init();
+//	boardConfig_Init();
+//
+//	boardAlignment_Init(0, 0, 0);
+//	failsafeConfig_Init();
+//	accelerometerConfig_init();
+//	gyroConfig_init();
+//	gyroDeviceConfig_Init();
+//	statsConfig_Init();
+//	motorConfig_Init();
+//#ifdef USE_GPS
+//	gpsConfig_Init();
+//#endif
+//	barometerConfig_Init();
+//#ifdef USE_MAG
+//	compassConfig_Init();
+//#endif
+//	adcConfig_Init();
+//	voltageSensorADCConfig_Init();
+//	currentSensorADCConfig_Init();
+//#ifdef USE_DYN_NOTCH_FILTER
+//	dynNotchConfig_Init();
+//#endif
+//	imuConfig_Init();
+//	pidConfig_Init();
+//	pidProfiles_Init();
+//	rxConfig_Init();
+//	rxChannelRangeConfigs_Init();
+//	rxFailsafeChannelConfigs_Init();
+//	batteryConfig_Init();
+//	controlRateProfiles_Init();
+//	mixerConfig_Init();
+//	throttleCorrectionConfig_Init();
+//	featureConfig_Init();
+//	positionConfig_Init();
+//	rcControlsConfig_Init();
+//	armingConfig_Init();
+//	flight3DConfig_Init();
+//#ifdef USE_OSD
+//	vcdProfile_Init();
+//	osdConfig_Init();
+//	osdElementConfig_Init();
+//	max7456Config_Init();
+//#if defined(USE_MSP_DISPLAYPORT)
+//	displayPortProfileMsp_Init();
+//#endif
+//#if defined(USE_MAX7456)
+//	displayPortProfileMax7456_Init();
+//#endif
+//
+//#endif
 }

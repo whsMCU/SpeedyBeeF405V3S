@@ -40,10 +40,8 @@
 
 //#include "scheduler/scheduler.h"
 
-//#include "sensors/boardalignment.h"
 #include "sensors/gyro.h"
 #include "sensors/gyro_init.h"
-#include "sensors/acceleration.h"
 
 #include "drivers/accgyro/accgyro_spi_bmi270.h"
 
@@ -197,38 +195,78 @@ void gyroUpdate(void)
 {
 
 	gyroUpdateSensor();
-//	if (isGyroSensorCalibrationComplete(&gyro.gyroSensor1)) {
-		bmi270.gyroADC[X] = bmi270.gyroADC[X] * bmi270.scale;
-		bmi270.gyroADC[Y] = bmi270.gyroADC[Y] * bmi270.scale;
-		bmi270.gyroADC[Z] = bmi270.gyroADC[Z] * bmi270.scale;
-//	}
-    // using simple averaging for downsampling
-    bmi270.sampleSum[X] += bmi270.gyroADC[X];
-    bmi270.sampleSum[Y] += bmi270.gyroADC[Y];
-    bmi270.sampleSum[Z] += bmi270.gyroADC[Z];
-    bmi270.sampleCount++;
+	bmi270.gyroADC[X] = bmi270.gyroADC[X] * bmi270.scale;
+	bmi270.gyroADC[Y] = bmi270.gyroADC[Y] * bmi270.scale;
+	bmi270.gyroADC[Z] = bmi270.gyroADC[Z] * bmi270.scale;
+
+	for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+			bmi270.gyroADCf[axis] = bmi270.gyroADC[axis];
+	}
+  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+      // integrate using trapezium rule to avoid bias
+  		bmi270.gyro_accumulatedMeasurements[axis] += 0.5f * (bmi270.gyroPrevious[axis] + bmi270.gyroADCf[axis]) * bmi270.targetLooptime;
+  		bmi270.gyroPrevious[axis] = bmi270.gyroADCf[axis];
+  }
+  bmi270.gyro_accumulatedMeasurementCount++;
 }
 
-//int16_t gyroReadSensorTemperature(imu_t gyroSensor)
-//{
-//    if (gyroSensor.temperatureFn) {
-//        gyroSensor.temperatureFn(&gyroSensor.gyroDev, &gyroSensor.gyroDev.temperature);
-//    }
-//    return gyroSensor.gyroDev.temperature;
-//}
-//
-//void gyroReadTemperature(void)
-//{
-//	gyroSensorTemperature = gyroReadSensorTemperature(gyro.gyroSensor1);
-//
-//}
-
-int16_t gyroGetTemperature(void)
+bool gyroGetAccumulationAverage(float *accumulationAverage)
 {
-    return gyroSensorTemperature;
+    if (bmi270.gyro_accumulatedMeasurementCount) {
+        // If we have gyro data accumulated, calculate average rate that will yield the same rotation
+        const timeUs_t accumulatedMeasurementTimeUs = bmi270.gyro_accumulatedMeasurementCount * bmi270.targetLooptime;
+        for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+        	accumulationAverage[axis] = bmi270.gyro_accumulatedMeasurements[axis] / accumulatedMeasurementTimeUs;
+        	bmi270.gyro_accumulatedMeasurements[axis] = 0.0f;
+        }
+        bmi270.gyro_accumulatedMeasurementCount = 0;
+        return true;
+    } else {
+        for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+            accumulationAverage[axis] = 0.0f;
+        }
+        return false;
+    }
 }
 
-uint16_t gyroAbsRateDps(int axis)
+#define acc_lpf_factor 4
+
+void accUpdate()
 {
-    return fabsf(bmi270.gyroADCf[axis]);
+	if (!bmi270SpiAccRead(&bmi270)) {
+			return;
+	}
+
+	bmi270.isAccelUpdatedAtLeastOnce = true;
+
+	for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+			bmi270.accADC[axis] = bmi270.accADCRaw[axis];
+	}
+
+	bmi270.accADC[X] -= 29;
+	bmi270.accADC[Y] -= -35;
+	bmi270.accADC[Z] -= -9;
+
+  ++bmi270.acc_accumulatedMeasurementCount;
+  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+  	bmi270.acc_accumulatedMeasurements[axis] += bmi270.accADC[axis];
+  }
+}
+
+bool accGetAccumulationAverage(float *accumulationAverage)
+{
+    if (bmi270.acc_accumulatedMeasurementCount > 0) {
+        // If we have gyro data accumulated, calculate average rate that will yield the same rotation
+        for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+            accumulationAverage[axis] = bmi270.acc_accumulatedMeasurements[axis] / bmi270.acc_accumulatedMeasurementCount;
+            bmi270.acc_accumulatedMeasurements[axis] = 0.0f;
+        }
+        bmi270.acc_accumulatedMeasurementCount = 0;
+        return true;
+    } else {
+        for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+            accumulationAverage[axis] = 0.0f;
+        }
+        return false;
+    }
 }
