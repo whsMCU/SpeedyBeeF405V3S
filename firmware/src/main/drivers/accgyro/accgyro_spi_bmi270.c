@@ -256,7 +256,7 @@ void bmi270Config()
 }
 bool bmi270_Init(void)
 {
-    bool ret = true;
+    bool ret = false;
 	delay(35);
 	while (millis() < 100);
 
@@ -264,8 +264,8 @@ bool bmi270_Init(void)
 	{
 		if (bmi270Detect(_DEF_SPI1))
 		{
-			ret = false;
-			return ret;
+			ret = true;
+			break;
 		}
 		delay(100);
 	}
