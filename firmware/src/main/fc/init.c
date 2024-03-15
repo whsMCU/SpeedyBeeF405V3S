@@ -223,9 +223,8 @@ void Param_Config_Init(void)
 //	currentSensorADCConfig_Init();
 
 	imuConfig_Init();
-
-//	rxConfig_Init();
-//	rxChannelRangeConfigs_Init();
+	rxConfig_Init();
+	rxChannelRangeConfigs_Init();
 //	rxFailsafeChannelConfigs_Init();
 //	batteryConfig_Init();
 //	controlRateProfiles_Init();

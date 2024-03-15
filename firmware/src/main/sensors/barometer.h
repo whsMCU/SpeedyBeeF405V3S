@@ -55,8 +55,6 @@ typedef struct barometerConfig_s {
 
 typedef struct baro_s {
     baroDev_t dev;
-    uint32_t newDeadline;
-    uint32_t applyDeadline;
     int32_t BaroAlt;
     int32_t baroTemperature;             // Use temperature for telemetry
     int32_t baroPressure;                // Use pressure for telemetry

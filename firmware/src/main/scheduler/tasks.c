@@ -142,6 +142,8 @@ static void debugPrint(uint32_t currentTimeUs)
 //                                                attitude.values.pitch,
 //                                                attitude.values.yaw);
 
+//	    cliPrintf("T: %d, P: %d\n\r",    baro.baroTemperature, baro.baroPressure);
+
 //    cliPrintf("Motor 1: %.f, 2: %.f, 3: %.f, 4: %.f\n\r",    motor[0],
 //															motor[1],
 //															motor[2],
@@ -197,7 +199,7 @@ static void taskHandleSerial(uint32_t currentTimeUs)
 task_t tasks[TASK_COUNT];
 
 // Task ID data in .data (initialised data)
-task_t task_attributes[TASK_COUNT] = {
+task_attribute_t task_attributes[TASK_COUNT] = {
 //    [TASK_SYSTEM] = DEFINE_TASK("SYSTEM", "LOAD", NULL, taskSystemLoad, TASK_PERIOD_HZ(10), TASK_PRIORITY_MEDIUM_HIGH),
 //    [TASK_MAIN] = DEFINE_TASK("SYSTEM", "UPDATE", NULL, taskMain, TASK_PERIOD_HZ(1000), TASK_PRIORITY_MEDIUM_HIGH),
     [TASK_SERIAL] = DEFINE_TASK("SERIAL", taskHandleSerial, TASK_PERIOD_HZ(100)), // 100 Hz should be enough to flush up to 115 bytes @ 115200 baud
@@ -270,7 +272,7 @@ task_t *getTask(unsigned taskId)
 void tasksInitData(void)
 {
     for (int i = 0; i < TASK_COUNT; i++) {
-        tasks[i] = task_attributes[i];
+        tasks[i].attribute = &task_attributes[i];
     }
 }
 

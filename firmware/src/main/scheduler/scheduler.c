@@ -157,14 +157,14 @@ void rescheduleTask(taskId_e taskId, int32_t newPeriodUs)
     } else {
         return;
     }
-    task->desiredPeriodUs = MAX(SCHEDULER_DELAY_LIMIT, newPeriodUs);  // Limit delay to 100us (10 kHz) to prevent scheduler clogging
+    task->attribute->desiredPeriodUs = MAX(SCHEDULER_DELAY_LIMIT, newPeriodUs);  // Limit delay to 100us (10 kHz) to prevent scheduler clogging
 }
 
 void setTaskEnabled(taskId_e taskId, bool enabled)
 {
     if (taskId == TASK_SELF || taskId < TASK_COUNT) {
         task_t *task = taskId == TASK_SELF ? currentTask : getTask(taskId);
-        if (enabled && task->taskFunc) {
+        if (enabled && task->attribute->taskFunc) {
             queueAdd(task);
         } else {
             queueRemove(task);
@@ -182,23 +182,26 @@ void scheduler(void)
     static uint32_t scheduleCount = 0;
 
     uint32_t currentTimeUs;
-    uint32_t taskExecutionTimeUs = 0;
     task_t *selectedTask = NULL;
 
     currentTimeUs = micros();
 
 	// Update task dynamic priorities
 	for (task_t *task = queueFirst(); task != NULL; task = queueNext()) {
+		if(currentTimeUs - task->lastExecutedAtUs >= task->attribute->desiredPeriodUs) {
 		  selectedTask = task;
+			if (selectedTask) {
+				currentTask = selectedTask;
+				selectedTask->lastExecutedAtUs = currentTimeUs;
+				// Execute task
+				selectedTask->taskPeriodTimeUs = currentTimeUs - selectedTask->taskExcutedEndUs;
+				const uint32_t currentTimeBeforeTaskCallUs = micros();
+				selectedTask->attribute->taskFunc(currentTimeBeforeTaskCallUs);
+				selectedTask->taskExecutionTimeUs = micros() - currentTimeBeforeTaskCallUs;
+				selectedTask->taskExcutedEndUs = currentTimeBeforeTaskCallUs;
+			}
+		}
 	}
-
-	if (selectedTask) {
-		  // Execute task
-		  const uint32_t currentTimeBeforeTaskCallUs = micros();
-		  selectedTask->taskFunc(currentTimeBeforeTaskCallUs);
-		  taskExecutionTimeUs = micros() - currentTimeBeforeTaskCallUs;
-	}
-
     scheduleCount++;
 }
 

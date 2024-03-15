@@ -124,9 +124,19 @@ typedef enum {
 } taskId_e;
 
 typedef struct {
+    // Configuration
     const char * taskName;
     void (*taskFunc)(uint32_t currentTimeUs);
     int32_t desiredPeriodUs;        // target period of execution
+} task_attribute_t;
+
+typedef struct {
+  // Task static data
+  task_attribute_t *attribute;
+  uint32_t lastExecutedAtUs;          // last time of invocation
+  uint32_t taskExecutionTimeUs;
+  uint32_t taskPeriodTimeUs;
+  uint32_t taskExcutedEndUs;
 } task_t;
 
 

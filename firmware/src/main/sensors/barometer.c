@@ -34,7 +34,7 @@
 #include "drivers/barometer/barometer.h"
 #include "drivers/barometer/barometer_dps310.h"
 
-//#include "scheduler/scheduler.h"
+#include "scheduler/scheduler.h"
 
 #ifdef USE_BARO_DPS310
 
@@ -178,11 +178,10 @@ bool isBaroReady(void) {
 void taskUpdateBaro(timeUs_t currentTimeUs)
 {
     UNUSED(currentTimeUs);
-
-	baro.newDeadline = baroUpdate(currentTimeUs);
-	if (baro.newDeadline != 0) {
-		baro.applyDeadline = baro.newDeadline;
-	}
+    const uint32_t newDeadline = baroUpdate(currentTimeUs);
+    if (newDeadline != 0) {
+        rescheduleTask(TASK_SELF, newDeadline);
+    }
 }
 
 uint32_t baroUpdate(timeUs_t currentTimeUs)

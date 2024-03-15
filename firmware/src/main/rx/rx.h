@@ -61,24 +61,6 @@ typedef enum {
     RX_FRAME_DROPPED = (1 << 3)
 } rxFrameState_e;
 
-typedef enum {
-    SERIALRX_SPEKTRUM1024 = 0,
-    SERIALRX_SPEKTRUM2048 = 1,
-    SERIALRX_SBUS = 2,
-    SERIALRX_SUMD = 3,
-    SERIALRX_SUMH = 4,
-    SERIALRX_XBUS_MODE_B = 5,
-    SERIALRX_XBUS_MODE_B_RJ01 = 6,
-    SERIALRX_IBUS = 7,
-    SERIALRX_JETIEXBUS = 8,
-    SERIALRX_CRSF = 9,
-    SERIALRX_SRXL = 10,
-    SERIALRX_TARGET_CUSTOM = 11,
-    SERIALRX_FPORT = 12,
-    SERIALRX_SRXL2 = 13,
-    SERIALRX_GHST = 14
-} SerialRXType;
-
 #define RX_MAPPABLE_CHANNEL_COUNT 8
 
 typedef struct rxConfig_s {
@@ -205,7 +187,6 @@ typedef enum {
 
 typedef struct rxRuntimeState_s {
     rxProvider_t        rxProvider;
-    SerialRXType        serialrxProvider;
     uint8_t             channelCount; // number of RC channels as reported by current input driver
     uint16_t            rxRefreshRate;
     rcReadRawDataFnPtr  rcReadRawFn;
@@ -215,12 +196,10 @@ typedef struct rxRuntimeState_s {
     uint16_t            *channelData;
     void                *frameData;
     uint32_t            lastRcFrameTimeUs;
-    uint32_t 			FrameTime;
+    uint32_t 						FrameTime;
     uint32_t            callbackTime;
     uint32_t            uartAvalable;
-    bool            	RxCallback_Flag;
-    bool            	FILTER_Excute_Flag;
-    bool            	PID_Excute_Flag;
+    bool            	  RxCallback_Flag;
 } rxRuntimeState_t;
 
 typedef enum {
@@ -255,7 +234,7 @@ bool rxUpdateCheck(uint32_t currentTimeUs, int32_t currentDeltaTimeUs);
 void rxFrameCheck(uint32_t currentTimeUs, int32_t currentDeltaTimeUs);
 bool rxIsReceivingSignal(void);
 bool rxAreFlightChannelsValid(void);
-bool calculateRxChannelsAndUpdateFailsafe(uint32_t currentTimeUs);
+bool calculateRxChannels(uint32_t currentTimeUs);
 
 struct rxConfig_s;
 

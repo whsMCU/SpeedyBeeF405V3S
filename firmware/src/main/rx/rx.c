@@ -44,8 +44,7 @@
 
 #include "rx/rx.h"
 #include "rx/crsf.h"
-//#include "sbus.h"
-//#include "scheduler/tasks.h"
+#include "scheduler/tasks.h"
 
 const char rcChannelLetters[] = "AERT12345678abcdefgh";
 
@@ -109,44 +108,41 @@ rxConfig_t rxConfig;
 
 void rxConfig_Init(void)
 {
-	rxConfig.halfDuplex = 0;
-	rxConfig.serialrx_provider = SERIALRX_CRSF;
-	rxConfig.serialrx_inverted = 0;
-	rxConfig.spektrum_sat_bind = 0;
-	rxConfig.spektrum_sat_bind_autoreset = 1;
-	rxConfig.midrc = RX_MID_USEC;
-	rxConfig.mincheck = 1050;
-	rxConfig.maxcheck = 1900;
-	rxConfig.rx_min_usec = RX_MIN_USEC;          // any of first 4 channels below this value will trigger rx loss detection
-	rxConfig.rx_max_usec = RX_MAX_USEC;         // any of first 4 channels above this value will trigger rx loss detection
-	rxConfig.rssi_src_frame_errors = false;
-	rxConfig.rssi_channel = 0;
-	rxConfig.rssi_scale = RSSI_SCALE_DEFAULT;
-	rxConfig.rssi_offset = 0;
-	rxConfig.rssi_invert = 0;
-	rxConfig.rssi_src_frame_lpf_period = 30;
-	rxConfig.fpvCamAngleDegrees = 0;
-	rxConfig.airModeActivateThreshold = 25;
-	rxConfig.max_aux_channel = DEFAULT_AUX_CHANNEL_COUNT;
-	rxConfig.rc_smoothing_mode = 1;
-	rxConfig.rc_smoothing_setpoint_cutoff = 0;
-	rxConfig.rc_smoothing_feedforward_cutoff = 0;
-	rxConfig.rc_smoothing_throttle_cutoff = 0;
-	rxConfig.rc_smoothing_debug_axis = ROLL;
-	rxConfig.rc_smoothing_auto_factor_rpy = 30;
-	rxConfig.rc_smoothing_auto_factor_throttle = 30;
-	rxConfig.srxl2_unit_id = 1;
-	rxConfig.srxl2_baud_fast = true;
-	rxConfig.sbus_baud_fast = false;
-	rxConfig.crsf_use_rx_snr = false;
-	rxConfig.msp_override_channels_mask = 0;
-	rxConfig.crsf_use_negotiated_baud = false;
+//	rxConfig.halfDuplex = 0;
+//	rxConfig.serialrx_provider = SERIALRX_CRSF;
+//	rxConfig.serialrx_inverted = 0;
+//	rxConfig.spektrum_sat_bind = 0;
+//	rxConfig.spektrum_sat_bind_autoreset = 1;
+//	rxConfig.midrc = RX_MID_USEC;
+//	rxConfig.mincheck = 1050;
+//	rxConfig.maxcheck = 1900;
+//	rxConfig.rx_min_usec = RX_MIN_USEC;          // any of first 4 channels below this value will trigger rx loss detection
+//	rxConfig.rx_max_usec = RX_MAX_USEC;         // any of first 4 channels above this value will trigger rx loss detection
+//	rxConfig.rssi_src_frame_errors = false;
+//	rxConfig.rssi_channel = 0;
+//	rxConfig.rssi_scale = RSSI_SCALE_DEFAULT;
+//	rxConfig.rssi_offset = 0;
+//	rxConfig.rssi_invert = 0;
+//	rxConfig.rssi_src_frame_lpf_period = 30;
+//	rxConfig.fpvCamAngleDegrees = 0;
+//	rxConfig.airModeActivateThreshold = 25;
+//	rxConfig.max_aux_channel = DEFAULT_AUX_CHANNEL_COUNT;
+//	rxConfig.rc_smoothing_mode = 1;
+//	rxConfig.rc_smoothing_setpoint_cutoff = 0;
+//	rxConfig.rc_smoothing_feedforward_cutoff = 0;
+//	rxConfig.rc_smoothing_throttle_cutoff = 0;
+//	rxConfig.rc_smoothing_debug_axis = ROLL;
+//	rxConfig.rc_smoothing_auto_factor_rpy = 30;
+//	rxConfig.rc_smoothing_auto_factor_throttle = 30;
+//	rxConfig.srxl2_unit_id = 1;
+//	rxConfig.srxl2_baud_fast = true;
+//	rxConfig.sbus_baud_fast = false;
+//	rxConfig.crsf_use_rx_snr = false;
+//	rxConfig.msp_override_channels_mask = 0;
+//	rxConfig.crsf_use_negotiated_baud = false;
 
-#ifdef RX_CHANNELS_TAER
-    parseRcChannels("TAER1234", &rxConfig);
-#else
+
     parseRcChannels("AETR1234", &rxConfig);
-#endif
 }
 
 
@@ -226,8 +222,6 @@ void rxInit(void)
 {
 
     rxRuntimeState.rxProvider = RX_PROVIDER_SERIAL;
-
-    rxRuntimeState.serialrxProvider = rxConfig.serialrx_provider;
     rxRuntimeState.rcReadRawFn = nullReadRawRC;
     rxRuntimeState.rcFrameStatusFn = nullFrameStatus;
     rxRuntimeState.rcProcessFrameFn = nullProcessFrame;
@@ -260,10 +254,7 @@ void taskUpdateRxMain(uint32_t currentTimeUs)
     switch (rxState) {
     default:
     case RX_STATE_CHECK:
-//        if (!processRx(currentTimeUs)) {
-//            rxState = RX_STATE_CHECK;
-//            break;
-//        }
+        calculateRxChannels(currentTimeUs);
         rxState = RX_STATE_MODES;
         break;
 
@@ -299,26 +290,15 @@ static float applyRxChannelRangeConfiguraton(float sample, const rxChannelRangeC
 static void readRxChannelsApplyRanges(void)
 {
     for (int channel = 0; channel < rxChannelCount; channel++) {
-
-        const uint8_t rawChannel = channel < RX_MAPPABLE_CHANNEL_COUNT ? rxConfig.rcmap[channel] : channel;
-
-        // sample the channel
-        float sample;
-#if defined(USE_RX_MSP_OVERRIDE)
-        if (rxConfig()->msp_override_channels_mask) {
-            sample = rxMspOverrideReadRawRc(&rxRuntimeState, rxConfig(), rawChannel);
-        } else
-#endif
-        {
-            sample = rxRuntimeState.rcReadRawFn(&rxRuntimeState, rawChannel);
-        }
-
-        // apply the rx calibration
-        if (channel < NON_AUX_CHANNEL_COUNT) {
-            sample = applyRxChannelRangeConfiguraton(sample, &rxChannelRangeConfigs[channel]);
-        }
-
-        rcRaw[channel] = sample;
+			const uint8_t rawChannel = channel < RX_MAPPABLE_CHANNEL_COUNT ? rxConfig.rcmap[channel] : channel;
+			// sample the channel
+			float sample;
+			sample = rxRuntimeState.rcReadRawFn(&rxRuntimeState, rawChannel);
+			// apply the rx calibration
+			if (channel < NON_AUX_CHANNEL_COUNT) {
+					sample = applyRxChannelRangeConfiguraton(sample, &rxChannelRangeConfigs[channel]);
+			}
+			rcRaw[channel] = sample;
     }
 }
 
@@ -401,27 +381,8 @@ static void readRxChannelsApplyRanges(void)
 //    DEBUG_SET(DEBUG_RX_SIGNAL_LOSS, 3, rcData[THROTTLE]);
 //}
 
-bool calculateRxChannelsAndUpdateFailsafe(uint32_t currentTimeUs)
+bool calculateRxChannels(uint32_t currentTimeUs)
 {
-    if (auxiliaryProcessingRequired) {
-        auxiliaryProcessingRequired = !rxRuntimeState.rcProcessFrameFn(&rxRuntimeState);
-    }
-
-    if (!rxDataProcessingRequired) {
-        return false;
-    }
-
-    rxDataProcessingRequired = false;
-
-    // only proceed when no more samples to skip and suspend period is over
-    if (skipRxSamples || currentTimeUs <= suspendRxSignalUntil) {
-        if (currentTimeUs > suspendRxSignalUntil) {
-            skipRxSamples--;
-        }
-
-        return true;
-    }
-
     readRxChannelsApplyRanges();            // returns rcRaw
     //detectAndApplySignalLossBehaviour();    // returns rcData
 
@@ -661,7 +622,7 @@ if (args->argc == 1 && args->isStr(0, "show") == true)
  	pre_time = millis();
     while(cliKeepLoop())
     {
-        //scheduler();
+        scheduler();
         if (millis()-pre_time >= 1000)
     	{
      		pre_time = millis();

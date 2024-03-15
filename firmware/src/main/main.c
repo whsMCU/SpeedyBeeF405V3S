@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-//#include "scheduler/tasks.h"
+#include "scheduler/tasks.h"
 //
 //#include "config/config.h"
 //
@@ -139,40 +139,8 @@ int main(void)
 
   while (1)
   {
-//	  if(micros() - gyro_time >= 125) // 125us = 8kHz
-//	  {
-//		  gyro_time = micros();
-//		  taskGyroUpdate();
-//	  }
-//
-//	  if(micros() - acc_time >= 1000) // 1000us = 1kHz
-//	  {
-//	  	acc_time = micros();
-//	  	taskAccUpdate();
-//	  }
-//
-//	  if(micros() - attitude_time >= 10000) // 10000us = 100Hz
-//	  {
-//	  	attitude_time = micros();
-//	  	taskCalculateAltitude(attitude_time);
-//	  }
-//
-//	  if(micros() - rx_time >= 30303) // 30303us = 33Hz
-//	  {
-//		  rx_time = micros();
-//		  UpdateRx(rx_time);
-//	  }
-//
-//	  if(micros() - baro_time >= baro.applyDeadline) // 50000us = 20Hz
-//	  {
-//		  baro_time = micros();
-//		  taskUpdateBaro(baro_time);
-//		  baroUpdate(baro_time);
-//	  }
 	  scheduler();
-
 	  RC_Parse();
-
   }
   /* USER CODE END 3 */
 }
