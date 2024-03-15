@@ -105,7 +105,7 @@ extern imu_t bmi270;
 
 void gyroConfig_init(void);
 void gyroDeviceConfig_Init(void);
-void gyroUpdate(void);
+void taskGyroUpdate(timeUs_t currentTimeUs);
 void gyroFiltering(timeUs_t currentTimeUs);
 bool gyroGetAccumulationAverage(float *accumulationAverage);
 void gyroStartCalibration(bool isFirstArmingCalibration);
@@ -113,5 +113,5 @@ bool isFirstArmingGyroCalibrationRunning(void);
 bool gyroIsCalibrationComplete(void);
 void gyroReadTemperature(void);
 
-void accUpdate(void);
+void taskAccUpdate(timeUs_t currentTimeUs);
 bool accGetAccumulationAverage(float *accumulation);

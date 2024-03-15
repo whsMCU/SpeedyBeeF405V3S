@@ -23,6 +23,7 @@
 #include "hw.h"
 #include "common/axis.h"
 #include "common/maths.h"
+#include "common/time.h"
 //#include "pg/pg.h"
 
 // Exported symbols
@@ -72,7 +73,7 @@ void imuConfig_Init(void);
 
 float getCosTiltAngle(void);
 void getQuaternion(quaternion * q);
-void imuUpdateAttitude(uint32_t currentTimeUs);
+void imuUpdateAttitude(timeUs_t currentTimeUs);
 
 void imuInit(void);
 

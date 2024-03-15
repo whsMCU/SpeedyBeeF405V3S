@@ -26,5 +26,6 @@ typedef enum {
 //bool timerInit(pwmOutputPort_t *motors, uint32_t hz, uint16_t period, uint16_t value, uint8_t inversion);
 
 #endif
+bool timerInit(void);
 
 #endif /* SRC_COMMON_HW_INCLUDE_TIMER_H_ */

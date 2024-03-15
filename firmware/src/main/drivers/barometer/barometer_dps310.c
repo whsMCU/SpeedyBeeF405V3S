@@ -211,9 +211,9 @@ static bool deviceConfigure(const baroDev_t *dev)
 
 static bool dps310ReadUP(baroDev_t *baro)
 {
-    // if (busBusy(&baro->dev, NULL)) {
-    //     return false;
-    // }
+     if (busBusy()) {
+         return false;
+     }
 
     // 1. Kick off read
     // No need to poll for data ready as the conversion rate is 32Hz and this is sampling at 20Hz

@@ -120,11 +120,6 @@ void imuComputeRotationMatrix(void){
     rMat[2][0] = 2.0f * (qP.xz + -qP.wy);
     rMat[2][1] = 2.0f * (qP.yz - -qP.wx);
     rMat[2][2] = 1.0f - 2.0f * qP.xx - 2.0f * qP.yy;
-
-#if defined(SIMULATOR_BUILD) && !defined(USE_IMU_CALC) && !defined(SET_IMU_FROM_EULER)
-    rMat[1][0] = -2.0f * (qP.xy - -qP.wz);
-    rMat[2][0] = -2.0f * (qP.xz + -qP.wy);
-#endif
 }
 
 /*

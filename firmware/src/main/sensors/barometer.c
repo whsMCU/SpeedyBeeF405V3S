@@ -26,7 +26,7 @@
 
 #include "common/maths.h"
 
-#include "fc/runtime_config.h"
+//#include "fc/runtime_config.h"
 
 #include "sensors/barometer.h"
 #include "sensors/sensors.h"
@@ -34,7 +34,7 @@
 #include "drivers/barometer/barometer.h"
 #include "drivers/barometer/barometer_dps310.h"
 
-#include "scheduler/scheduler.h"
+//#include "scheduler/scheduler.h"
 
 #ifdef USE_BARO_DPS310
 
@@ -85,12 +85,7 @@ static bool baroReady = false;
 void Baro_Init(void)
 {
 
-	baroSensor_e baroHardware = BARO_DPS310;
-
 	dps310Detect(&baro.dev);
-
-	detectedSensors[SENSOR_INDEX_BARO] = baroHardware;
-	sensorsSet(SENSOR_BARO);
 
   	#ifdef _USE_HW_CLI
 		cliAdd("dps310", cliDps310);
@@ -180,19 +175,25 @@ bool isBaroReady(void) {
     return baroReady;
 }
 
+void taskUpdateBaro(timeUs_t currentTimeUs)
+{
+    UNUSED(currentTimeUs);
+
+	baro.newDeadline = baroUpdate(currentTimeUs);
+	if (baro.newDeadline != 0) {
+		baro.applyDeadline = baro.newDeadline;
+	}
+}
+
 uint32_t baroUpdate(timeUs_t currentTimeUs)
 {
-    static timeUs_t baroStateDurationUs[BARO_STATE_COUNT];
     static barometerState_e state = BARO_STATE_PRESSURE_START;
-    barometerState_e oldState = state;
     timeUs_t executeTimeUs;
     timeUs_t sleepTime = 1000; // Wait 1ms between states
 
-    DEBUG_SET(DEBUG_BARO, 0, state);
 
     if (busBusy()){
         // If the bus is busy, simply return to have another go later
-        schedulerIgnoreTaskStateTime();
         return sleepTime;
     }
 
@@ -209,7 +210,7 @@ uint32_t baroUpdate(timeUs_t currentTimeUs)
                 state = BARO_STATE_TEMPERATURE_SAMPLE;
             } else {
                 // No action was taken as the read has not completed
-                schedulerIgnoreTaskExecTime();
+                //schedulerIgnoreTaskExecTime();
             }
             break;
 
@@ -218,7 +219,7 @@ uint32_t baroUpdate(timeUs_t currentTimeUs)
                 state = BARO_STATE_PRESSURE_START;
             } else {
                 // No action was taken as the read has not completed
-                schedulerIgnoreTaskExecTime();
+                //schedulerIgnoreTaskExecTime();
             }
             break;
 
@@ -233,14 +234,14 @@ uint32_t baroUpdate(timeUs_t currentTimeUs)
                 state = BARO_STATE_PRESSURE_SAMPLE;
             } else {
                 // No action was taken as the read has not completed
-                schedulerIgnoreTaskExecTime();
+                //schedulerIgnoreTaskExecTime();
             }
             break;
 
         case BARO_STATE_PRESSURE_SAMPLE:
             if (!baro.dev.get_up(&baro.dev)) {
                 // No action was taken as the read has not completed
-                schedulerIgnoreTaskExecTime();
+                //schedulerIgnoreTaskExecTime();
                 break;
             }
 
@@ -264,17 +265,10 @@ uint32_t baroUpdate(timeUs_t currentTimeUs)
 
     // Where we are using a state machine call schedulerIgnoreTaskExecRate() for all states bar one
     if (sleepTime != baro.dev.ut_delay) {
-        schedulerIgnoreTaskExecRate();
+        //schedulerIgnoreTaskExecRate();
     }
 
     executeTimeUs = micros() - currentTimeUs;
-
-    if (executeTimeUs > baroStateDurationUs[oldState]) {
-        baroStateDurationUs[oldState] = executeTimeUs;
-    }
-
-    schedulerSetNextStateTime(baroStateDurationUs[state]);
-
     return sleepTime;
 }
 

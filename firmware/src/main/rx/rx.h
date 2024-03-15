@@ -143,6 +143,25 @@ extern float rcData[MAX_SUPPORTED_RC_CHANNEL_COUNT];       // interval [1000;200
 
 #define RSSI_SCALE_DEFAULT 100
 
+typedef enum rc_alias {
+    ROLL = 0,
+    PITCH,
+    YAW,
+    THROTTLE,
+    AUX1,
+    AUX2,
+    AUX3,
+    AUX4,
+    AUX5,
+    AUX6,
+    AUX7,
+    AUX8,
+    AUX9,
+    AUX10,
+    AUX11,
+    AUX12
+} rc_alias_e;
+
 typedef enum {
     RX_FAILSAFE_MODE_AUTO = 0,
     RX_FAILSAFE_MODE_HOLD,
@@ -278,3 +297,5 @@ uint16_t rxGetRefreshRate(void);
 int32_t rxGetFrameDelta(int32_t *frameAgeUs);
 
 uint32_t rxFrameTimeUs(void);
+
+void taskUpdateRxMain(uint32_t currentTimeUs);

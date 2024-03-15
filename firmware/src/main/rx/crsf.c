@@ -624,53 +624,14 @@ bool crsfRxInit(rxRuntimeState_t *rxRuntimeState)
     rxRuntimeState->rcFrameStatusFn = crsfFrameStatus;
     rxRuntimeState->rcFrameTimeUsFn = rxFrameTimeUs;
 
-    // const serialPortConfig_t *portConfig = findSerialPortConfig(FUNCTION_RX_SERIAL);
-    // if (!portConfig) {
-    //     return false;
-    // }
-
     uint32_t crsfBaudrate = CRSF_BAUDRATE;
-    //crsfBaudrate = 115200;
     uartOpen(_DEF_UART2, crsfBaudrate);
-
-#if defined(USE_CRSF_V3)
-    crsfBaudrate = CRSF_BAUDRATE;
-#endif
-
-    // serialPort = openSerialPort(portConfig->identifier,
-    //     FUNCTION_RX_SERIAL,
-    //     crsfDataReceive,
-    //     rxRuntimeState,
-    //     crsfBaudrate,
-    //     CRSF_PORT_MODE,
-    //     CRSF_PORT_OPTIONS | (rxConfig->serialrx_inverted ? SERIAL_INVERTED : 0)
-    //     );
 
     if (rssiSource == RSSI_SOURCE_NONE) {
         rssiSource = RSSI_SOURCE_RX_PROTOCOL_CRSF;
     }
-#ifdef USE_RX_LINK_QUALITY_INFO
-    if (linkQualitySource == LQ_SOURCE_NONE) {
-        linkQualitySource = LQ_SOURCE_RX_PROTOCOL_CRSF;
-    }
-#endif
-
     return true;
 }
-
-#if defined(USE_CRSF_V3)
- void crsfRxUpdateBaudrate(uint32_t baudrate)
- {
-     //serialSetBaudRate(serialPort, baudrate);
-     uartSetBaud(_DEF_UART2, baudrate);
-     rtcBackupRegWrite(PERSISTENT_OBJECT_SERIALRX_BAUD, baudrate);
- }
-
- bool crsfRxUseNegotiatedBaud(void)
- {
-     return rxConfig.crsf_use_negotiated_baud;
- }
-#endif
 
 bool crsfRxIsActive(void)
 {

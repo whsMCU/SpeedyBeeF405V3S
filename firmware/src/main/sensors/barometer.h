@@ -55,6 +55,8 @@ typedef struct barometerConfig_s {
 
 typedef struct baro_s {
     baroDev_t dev;
+    uint32_t newDeadline;
+    uint32_t applyDeadline;
     int32_t BaroAlt;
     int32_t baroTemperature;             // Use temperature for telemetry
     int32_t baroPressure;                // Use pressure for telemetry
@@ -69,6 +71,7 @@ bool baroDetect(baroDev_t *dev);
 bool baroIsCalibrationComplete(void);
 void baroStartCalibration(void);
 void baroSetGroundLevel(void);
+void taskUpdateBaro(timeUs_t currentTimeUs);
 uint32_t baroUpdate(timeUs_t currentTimeUs);
 bool isBaroReady(void);
 int32_t baroCalculateAltitude(void);

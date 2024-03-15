@@ -9,8 +9,8 @@
 #include "uart.h"
 #include "ring_buffer.h"
 #include "usbd_cdc_if.h"
-//#include "rx/rx.h"
-//#include "rx/crsf.h"
+#include "rx/rx.h"
+#include "rx/crsf.h"
 
 //#include "fc/core.h"
 
@@ -583,15 +583,15 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 
   if(huart->Instance == USART2)
   {
-//		rxRuntimeState.callbackTime = micros() - pre_time;
-//		pre_time = micros();
-//		qbufferWrite(&ring_buffer[_DEF_UART2], (uint8_t *)&rx_buf2[0], (uint32_t)Size);
-//		rxRuntimeState.RxCallback_Flag = true;
-//
-//		HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *)&rx_buf2[0], MAX_SIZE);
-//		__HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
-//		rxRuntimeState.uartAvalable = uartAvailable(_DEF_UART2);
-//		rxRuntimeState.RxCallback_Flag = false;
+	rxRuntimeState.callbackTime = micros() - pre_time;
+	pre_time = micros();
+	qbufferWrite(&ring_buffer[_DEF_UART2], (uint8_t *)&rx_buf2[0], (uint32_t)Size);
+	rxRuntimeState.RxCallback_Flag = true;
+
+	HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *)&rx_buf2[0], MAX_SIZE);
+	__HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
+	rxRuntimeState.uartAvalable = uartAvailable(_DEF_UART2);
+	rxRuntimeState.RxCallback_Flag = false;
   }
 
 }

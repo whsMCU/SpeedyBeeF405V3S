@@ -191,9 +191,9 @@ static void gyroUpdateSensor()
     }
 }
 
-void gyroUpdate(void)
+void taskGyroUpdate(timeUs_t currentTimeUs)
 {
-
+	UNUSED(currentTimeUs);
 	gyroUpdateSensor();
 	bmi270.gyroADC[X] = bmi270.gyroADC[X] * bmi270.scale;
 	bmi270.gyroADC[Y] = bmi270.gyroADC[Y] * bmi270.scale;
@@ -231,8 +231,9 @@ bool gyroGetAccumulationAverage(float *accumulationAverage)
 
 #define acc_lpf_factor 4
 
-void accUpdate()
+void taskAccUpdate(timeUs_t currentTimeUs)
 {
+	UNUSED(currentTimeUs);
 	if (!bmi270SpiAccRead(&bmi270)) {
 			return;
 	}

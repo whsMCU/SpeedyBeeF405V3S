@@ -35,16 +35,18 @@
 //#include "flight/position.h"
 
 #include "sensors/sensors.h"
-//#include "sensors/barometer.h"
+#include "sensors/barometer.h"
 //#include "sensors/compass.h"
 #include "sensors/gyro_init.h"
 //#include "sensors/adcinternal.h"
 //#include "sensors/battery.h"
 //
 //#include "drivers/gps/gps.h"
+
+#include "hw/timer.h"
 //
-//#include "rx/rx.h"
-//#include "rx/crsf.h"
+#include "rx/rx.h"
+#include "rx/crsf.h"
 
 
 /* USER CODE END Includes */
@@ -81,9 +83,6 @@ void SystemClock_Config(void);
 void hwInit(void);
 void RC_Parse(void);
 
-uint32_t gyro_time = 0;
-uint32_t acc_time = 0;
-uint32_t attitude_time = 0;
 /* USER CODE END 0 */
 
 /**
@@ -137,34 +136,42 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  gyro_time = micros();
-  acc_time = micros();
-  attitude_time = micros();
+
   while (1)
   {
-	  if(micros() - gyro_time >= 125) // 125us = 8kHz
-	  {
-		  gyro_time = micros();
-		  gyroUpdate();
-	  }
+//	  if(micros() - gyro_time >= 125) // 125us = 8kHz
+//	  {
+//		  gyro_time = micros();
+//		  taskGyroUpdate();
+//	  }
+//
+//	  if(micros() - acc_time >= 1000) // 1000us = 1kHz
+//	  {
+//	  	acc_time = micros();
+//	  	taskAccUpdate();
+//	  }
+//
+//	  if(micros() - attitude_time >= 10000) // 10000us = 100Hz
+//	  {
+//	  	attitude_time = micros();
+//	  	taskCalculateAltitude(attitude_time);
+//	  }
+//
+//	  if(micros() - rx_time >= 30303) // 30303us = 33Hz
+//	  {
+//		  rx_time = micros();
+//		  UpdateRx(rx_time);
+//	  }
+//
+//	  if(micros() - baro_time >= baro.applyDeadline) // 50000us = 20Hz
+//	  {
+//		  baro_time = micros();
+//		  taskUpdateBaro(baro_time);
+//		  baroUpdate(baro_time);
+//	  }
+	  scheduler();
 
-	  if(micros() - acc_time >= 1000) // 1000us = 1kHz
-	  {
-	  	acc_time = micros();
-	  	accUpdate();
-	  }
-
-	  if(micros() - attitude_time >= 10000) // 10000us = 100Hz
-	  {
-	  	attitude_time = micros();
-	  	imuUpdateAttitude(attitude_time);
-	  }
-
-	  cliMain();
-
-	  //scheduler();
-
-	  //RC_Parse();
+	  RC_Parse();
 
   }
   /* USER CODE END 3 */
@@ -193,27 +200,14 @@ void hwInit(void)
   }
 }
 
-//void RC_Parse(void)
-//{
-//  if(uartAvailable(_DEF_UART2) > 0
-//	 && !rxRuntimeState.FILTER_Excute_Flag
-//	 && !rxRuntimeState.PID_Excute_Flag)
-//  {
-//	excute_temp = micros();
-//	crsfDataReceive(uartRead(_DEF_UART2), (void*) &rxRuntimeState);
-//	excute_time = (micros()-excute_temp);
-//	if(excute_time >= excute_max)
-//	{
-//	 excute_max = excute_time;
-//	}
-//	if(excute_count > 10000)
-//	{
-//	 excute_count = 0;
-//	 excute_max = 0;
-//	}
-//	excute_count++;
-//  }
-//}
+void RC_Parse(void)
+{
+  if(uartAvailable(_DEF_UART2) > 0)
+  {
+	crsfDataReceive(uartRead(_DEF_UART2), (void*) &rxRuntimeState);
+  }
+  rxRuntimeState.rcFrameStatusFn(&rxRuntimeState);
+}
 
 /**
   * @brief System Clock Configuration

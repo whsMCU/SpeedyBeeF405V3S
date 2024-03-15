@@ -24,24 +24,24 @@
 
 #include "common/filter.h"
 
-typedef enum rc_alias {
-    ROLL = 0,
-    PITCH,
-    YAW,
-    THROTTLE,
-    AUX1,
-    AUX2,
-    AUX3,
-    AUX4,
-    AUX5,
-    AUX6,
-    AUX7,
-    AUX8,
-    AUX9,
-    AUX10,
-    AUX11,
-    AUX12
-} rc_alias_e;
+//typedef enum rc_alias {
+//    ROLL = 0,
+//    PITCH,
+//    YAW,
+//    THROTTLE,
+//    AUX1,
+//    AUX2,
+//    AUX3,
+//    AUX4,
+//    AUX5,
+//    AUX6,
+//    AUX7,
+//    AUX8,
+//    AUX9,
+//    AUX10,
+//    AUX11,
+//    AUX12
+//} rc_alias_e;
 
 #define PRIMARY_CHANNEL_COUNT (THROTTLE + 1)
 
