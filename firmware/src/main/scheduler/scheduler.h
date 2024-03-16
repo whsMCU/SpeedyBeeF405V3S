@@ -69,7 +69,7 @@ typedef enum {
     /* Actual tasks */
     TASK_GYRO = 0,
 //    TASK_FILTER,
-//    TASK_PID,
+    TASK_PID,
     TASK_ACCEL,
     TASK_ATTITUDE,
     TASK_RX,
@@ -77,9 +77,9 @@ typedef enum {
     TASK_LED,
     TASK_DEBUG,
 //    TASK_DISPATCH,
-//    TASK_BATTERY_VOLTAGE,
-//    TASK_BATTERY_CURRENT,
-//    TASK_BATTERY_ALERTS,
+    TASK_BATTERY_VOLTAGE,
+    TASK_BATTERY_CURRENT,
+    TASK_BATTERY_ALERTS,
 #ifdef USE_BEEPER
     TASK_BEEPER,
 #endif
@@ -113,7 +113,7 @@ typedef enum {
 #endif
 
 #ifdef USE_ADC_INTERNAL
-//    TASK_ADC_INTERNAL,
+    TASK_ADC_INTERNAL,
 #endif
     /* Count of real tasks */
     TASK_COUNT,

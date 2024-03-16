@@ -33,19 +33,21 @@
 
 
 #include "drivers/accgyro/accgyro.h"
-//#include "drivers/compass/compass.h"
+#include "drivers/compass/compass.h"
 #include "drivers/sensor.h"
 //#include "drivers/gps/gps.h"
+
+#include "flight/pid.h"
 
 #include "scheduler/scheduler.h"
 #include "scheduler/tasks.h"
 
 //#include "sensors/acceleration_init.h"
 //#include "sensors/acceleration.h"
-//#include "sensors/adcinternal.h"
+#include "sensors/adcinternal.h"
 #include "sensors/barometer.h"
-//#include "sensors/battery.h"
-//#include "sensors/compass.h"
+#include "sensors/battery.h"
+#include "sensors/compass.h"
 #include "sensors/gyro.h"
 #include "sensors/sensors.h"
 
@@ -179,15 +181,15 @@ static void taskHandleSerial(uint32_t currentTimeUs)
     // mspSerialProcess(evaluateMspData, mspFcProcessCommand, mspFcProcessReply);
 }
 
-//static void taskBatteryAlerts(uint32_t currentTimeUs)
-//{
-//    if (!ARMING_FLAG(ARMED)) {
-//        // the battery *might* fall out in flight, but if that happens the FC will likely be off too unless the user has battery backup.
-//        batteryUpdatePresence();
-//    }
-//    batteryUpdateStates(currentTimeUs);
-//    batteryUpdateAlarms();
-//}
+static void taskBatteryAlerts(uint32_t currentTimeUs)
+{
+    if (true) { //!ARMING_FLAG(ARMED)
+        // the battery *might* fall out in flight, but if that happens the FC will likely be off too unless the user has battery backup.
+        batteryUpdatePresence();
+    }
+    batteryUpdateStates(currentTimeUs);
+    batteryUpdateAlarms();
+}
 
 #define DEFINE_TASK(taskNameParam, taskFuncParam, desiredPeriodParam) {  \
     .taskName = taskNameParam, \
@@ -203,13 +205,13 @@ task_attribute_t task_attributes[TASK_COUNT] = {
 //    [TASK_SYSTEM] = DEFINE_TASK("SYSTEM", "LOAD", NULL, taskSystemLoad, TASK_PERIOD_HZ(10), TASK_PRIORITY_MEDIUM_HIGH),
 //    [TASK_MAIN] = DEFINE_TASK("SYSTEM", "UPDATE", NULL, taskMain, TASK_PERIOD_HZ(1000), TASK_PRIORITY_MEDIUM_HIGH),
     [TASK_SERIAL] = DEFINE_TASK("SERIAL", taskHandleSerial, TASK_PERIOD_HZ(100)), // 100 Hz should be enough to flush up to 115 bytes @ 115200 baud
-//    [TASK_BATTERY_ALERTS] = DEFINE_TASK("BATTERY_ALERTS", NULL, NULL, taskBatteryAlerts, TASK_PERIOD_HZ(5), TASK_PRIORITY_MEDIUM),
-//    [TASK_BATTERY_VOLTAGE] = DEFINE_TASK("BATTERY_VOLTAGE", NULL, NULL, batteryUpdateVoltage, TASK_PERIOD_HZ(SLOW_VOLTAGE_TASK_FREQ_HZ), TASK_PRIORITY_MEDIUM), // Freq may be updated in tasksInit
-//    [TASK_BATTERY_CURRENT] = DEFINE_TASK("BATTERY_CURRENT", NULL, NULL, batteryUpdateCurrentMeter, TASK_PERIOD_HZ(50), TASK_PRIORITY_MEDIUM),
+    [TASK_BATTERY_ALERTS] = DEFINE_TASK("BATTERY_ALERTS", taskBatteryAlerts, TASK_PERIOD_HZ(5)),
+    [TASK_BATTERY_VOLTAGE] = DEFINE_TASK("BATTERY_VOLTAGE", batteryUpdateVoltage, TASK_PERIOD_HZ(SLOW_VOLTAGE_TASK_FREQ_HZ)), // Freq may be updated in tasksInit
+    [TASK_BATTERY_CURRENT] = DEFINE_TASK("BATTERY_CURRENT", batteryUpdateCurrentMeter, TASK_PERIOD_HZ(50)),
 
     [TASK_GYRO] = DEFINE_TASK("GYRO", taskGyroUpdate, TASK_GYROPID_DESIRED_PERIOD),
 //    [TASK_FILTER] = DEFINE_TASK("FILTER", NULL, NULL, taskFiltering, TASK_GYROPID_DESIRED_PERIOD, TASK_PRIORITY_REALTIME),
-//    [TASK_PID] = DEFINE_TASK("PID", NULL, NULL, taskMainPidLoop, TASK_GYROPID_DESIRED_PERIOD, TASK_PRIORITY_REALTIME),
+    [TASK_PID] = DEFINE_TASK("PID", taskMainPidLoop, TASK_PERIOD_HZ(1000)),
 
 #ifdef USE_ACC
     [TASK_ACCEL] = DEFINE_TASK("ACC", taskAccUpdate, TASK_PERIOD_HZ(1000)),
@@ -231,7 +233,7 @@ task_attribute_t task_attributes[TASK_COUNT] = {
 #endif
 
 #ifdef USE_MAG
-    [TASK_COMPASS] = DEFINE_TASK("COMPASS", NULL, NULL, taskUpdateMag, TASK_PERIOD_HZ(10), TASK_PRIORITY_LOW),
+    [TASK_COMPASS] = DEFINE_TASK("COMPASS", taskUpdateMag, TASK_PERIOD_HZ(10)),
 #endif
 
 #ifdef USE_BARO
@@ -255,7 +257,7 @@ task_attribute_t task_attributes[TASK_COUNT] = {
 #endif
 
 #ifdef USE_ADC_INTERNAL
-//    [TASK_ADC_INTERNAL] = DEFINE_TASK("ADCINTERNAL", NULL, NULL, adcInternalProcess, TASK_PERIOD_HZ(1), TASK_PRIORITY_LOWEST),
+    [TASK_ADC_INTERNAL] = DEFINE_TASK("ADCINTERNAL", adcInternalProcess, TASK_PERIOD_HZ(1)),
 #endif
 
 #ifdef USE_RANGEFINDER
@@ -284,29 +286,28 @@ void tasksInit(void)
     setTaskEnabled(TASK_LED, true);
     setTaskEnabled(TASK_DEBUG, true);
     rescheduleTask(TASK_SERIAL, TASK_PERIOD_HZ(100));
-//
-//	const bool useBatteryVoltage = batteryConfig.voltageMeterSource != VOLTAGE_METER_NONE;
-//    setTaskEnabled(TASK_BATTERY_VOLTAGE, useBatteryVoltage);
-//
-//#if defined(USE_BATTERY_VOLTAGE_SAG_COMPENSATION)
-//    // If vbat motor output compensation is used, use fast vbat samplingTime
-//    if (isSagCompensationConfigured()) {
-//        rescheduleTask(TASK_BATTERY_VOLTAGE, TASK_PERIOD_HZ(FAST_VOLTAGE_TASK_FREQ_HZ));
-//    }
-//#endif
-//
-//    const bool useBatteryCurrent = batteryConfig.currentMeterSource != CURRENT_METER_NONE;
-//    setTaskEnabled(TASK_BATTERY_CURRENT, useBatteryCurrent);
-//    const bool useBatteryAlerts = batteryConfig.useVBatAlerts || batteryConfig.useConsumptionAlerts || featureIsEnabled(FEATURE_OSD);
-//    setTaskEnabled(TASK_BATTERY_ALERTS, (useBatteryVoltage || useBatteryCurrent) && useBatteryAlerts);
+
+	const bool useBatteryVoltage = batteryConfig.voltageMeterSource != VOLTAGE_METER_NONE;
+    setTaskEnabled(TASK_BATTERY_VOLTAGE, useBatteryVoltage);
+
+#if defined(USE_BATTERY_VOLTAGE_SAG_COMPENSATION)
+    // If vbat motor output compensation is used, use fast vbat samplingTime
+    if (isSagCompensationConfigured()) {
+        rescheduleTask(TASK_BATTERY_VOLTAGE, TASK_PERIOD_HZ(FAST_VOLTAGE_TASK_FREQ_HZ));
+    }
+#endif
+
+    const bool useBatteryCurrent = batteryConfig.currentMeterSource != CURRENT_METER_NONE;
+    setTaskEnabled(TASK_BATTERY_CURRENT, useBatteryCurrent);
+    const bool useBatteryAlerts = false;//batteryConfig.useVBatAlerts || batteryConfig.useConsumptionAlerts || featureIsEnabled(FEATURE_OSD);
+    setTaskEnabled(TASK_BATTERY_ALERTS, (useBatteryVoltage || useBatteryCurrent) && useBatteryAlerts);
 
 
 	rescheduleTask(TASK_GYRO, bmi270.sampleLooptime);
 	//rescheduleTask(TASK_FILTER, gyro.targetLooptime);
-	//rescheduleTask(TASK_PID, gyro.targetLooptime);
 	setTaskEnabled(TASK_GYRO, true);
 	//setTaskEnabled(TASK_FILTER, true);
-	//setTaskEnabled(TASK_PID, true);
+	setTaskEnabled(TASK_PID, true);
 
 
 	setTaskEnabled(TASK_ACCEL, true);
@@ -332,9 +333,9 @@ void tasksInit(void)
 //    setTaskEnabled(TASK_GPS, true);
 //#endif
 //
-//#ifdef USE_MAG
-//    setTaskEnabled(TASK_COMPASS, sensors(SENSOR_MAG));
-//#endif
+#ifdef USE_MAG
+    setTaskEnabled(TASK_COMPASS, true);
+#endif
 //
 #ifdef USE_BARO
     setTaskEnabled(TASK_BARO, true);

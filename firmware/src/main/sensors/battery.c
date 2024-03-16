@@ -28,13 +28,13 @@
 #include "common/maths.h"
 #include "common/utils.h"
 
-#include "config/config.h"
-#include "config/feature.h"
+//#include "config/config.h"
+//#include "config/feature.h"
 
-#include "fc/runtime_config.h"
-#include "fc/rc_controls.h"
+//#include "fc/runtime_config.h"
+//#include "fc/rc_controls.h"
 
-#include "flight/mixer.h"
+//#include "flight/mixer.h"
 
 //#include "io/beeper.h"
 
@@ -201,8 +201,8 @@ void batteryUpdatePresence(void)
             }
             batteryCellCount = cells;
 
-            if (!ARMING_FLAG(ARMED)) {
-                changePidProfileFromCellCount(batteryCellCount);
+            if (true) {//!ARMING_FLAG(ARMED)
+                //changePidProfileFromCellCount(batteryCellCount);
             }
         }
         batteryWarningVoltage = batteryCellCount * batteryConfig.vbatwarningcellvoltage;

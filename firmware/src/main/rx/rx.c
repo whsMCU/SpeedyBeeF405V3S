@@ -69,16 +69,10 @@ static uint16_t uplinkTxPwrMw = 0;  //Uplink Tx power in mW
 rssiSource_e rssiSource;
 linkQualitySource_e linkQualitySource;
 
-static bool rxDataProcessingRequired = false;
-static bool auxiliaryProcessingRequired = false;
-
 static uint8_t rxChannelCount;
 
-static uint32_t suspendRxSignalUntil = 0;
-static uint8_t  skipRxSamples = 0;
-
 static float rcRaw[MAX_SUPPORTED_RC_CHANNEL_COUNT];     // last received raw value, as it comes
-float rcData[MAX_SUPPORTED_RC_CHANNEL_COUNT];           // scaled, modified, checked and constrained values
+uint16_t rcData[MAX_SUPPORTED_RC_CHANNEL_COUNT];           // scaled, modified, checked and constrained values
 uint32_t validRxSignalTimeout[MAX_SUPPORTED_RC_CHANNEL_COUNT];
 
 #define MAX_INVALID_PULSE_TIME_MS 300                   // hold time in milliseconds after bad channel or Rx link loss
@@ -114,8 +108,8 @@ void rxConfig_Init(void)
 //	rxConfig.spektrum_sat_bind = 0;
 //	rxConfig.spektrum_sat_bind_autoreset = 1;
 //	rxConfig.midrc = RX_MID_USEC;
-//	rxConfig.mincheck = 1050;
-//	rxConfig.maxcheck = 1900;
+	rxConfig.mincheck = 1050;
+	rxConfig.maxcheck = 1900;
 //	rxConfig.rx_min_usec = RX_MIN_USEC;          // any of first 4 channels below this value will trigger rx loss detection
 //	rxConfig.rx_max_usec = RX_MAX_USEC;         // any of first 4 channels above this value will trigger rx loss detection
 //	rxConfig.rssi_src_frame_errors = false;
@@ -142,9 +136,8 @@ void rxConfig_Init(void)
 //	rxConfig.crsf_use_negotiated_baud = false;
 
 
-    parseRcChannels("AETR1234", &rxConfig);
+  parseRcChannels("AETR1234", &rxConfig);
 }
-
 
 rxChannelRangeConfig_t rxChannelRangeConfigs[NON_AUX_CHANNEL_COUNT];
 
@@ -259,7 +252,7 @@ void taskUpdateRxMain(uint32_t currentTimeUs)
         break;
 
     case RX_STATE_MODES:
-        //processRxModes(currentTimeUs);
+        processRxModes(currentTimeUs);
         rxState = RX_STATE_UPDATE;
         break;
 
@@ -299,6 +292,7 @@ static void readRxChannelsApplyRanges(void)
 					sample = applyRxChannelRangeConfiguraton(sample, &rxChannelRangeConfigs[channel]);
 			}
 			rcRaw[channel] = sample;
+			rcData[channel] = (uint16_t)sample;
     }
 }
 
@@ -389,6 +383,28 @@ bool calculateRxChannels(uint32_t currentTimeUs)
     rcSampleIndex++;
 
     return true;
+}
+unsigned short rx_SwArm_Prev = 0;
+void processRxModes(uint32_t currentTimeUs)
+{
+	if(rcData[ARMED] == 2000 && rx_SwArm_Prev != 2000)
+	{
+		if(rcData[THROTTLE] <1030)
+		{
+			rxRuntimeState.arming_flag = 1;
+		}
+		else
+		{
+			UNUSED(currentTimeUs); //Alarm
+		}
+
+	}
+	rx_SwArm_Prev = rcData[ARMED];
+
+	if(rcData[ARMED] != 2000)
+	{
+		rxRuntimeState.arming_flag = 0;
+	}
 }
 
 void parseRcChannels(const char *input, rxConfig_t *rxConfig)

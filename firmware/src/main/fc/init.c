@@ -37,7 +37,7 @@
 
 #include "drivers/accgyro/accgyro.h"
 #include "drivers/accgyro/accgyro_spi_bmi270.h"
-//#include "drivers/compass/compass.h"
+#include "drivers/compass/compass.h"
 #include "drivers/sensor.h"
 #ifdef USE_USB_MSC
 #include "drivers/usb_msc.h"
@@ -57,9 +57,9 @@
 //#include "fc/runtime_config.h"
 //#include "fc/stats.h"
 //#include "fc/controlrate_profile.h"
-//
-//#include "scheduler/tasks.h"
-//
+
+#include "scheduler/tasks.h"
+
 //#include "flight/failsafe.h"
 #include "flight/imu.h"
 //#include "flight/mixer_init.h"
@@ -80,17 +80,16 @@
 //#include "osd/osd.h"
 //
 #include "rx/rx.h"
-//#include "rx/spektrum.h"
 
-//#include "scheduler/scheduler.h"
-//#include "scheduler/tasks.h"
+#include "scheduler/scheduler.h"
+#include "scheduler/tasks.h"
 
 #include "sensors/sensors.h"
 #include "sensors/barometer.h"
-//#include "sensors/battery.h"
-//#include "sensors/adcinternal.h"
-//#include "sensors/boardalignment.h"
-//#include "sensors/compass.h"
+#include "sensors/battery.h"
+#include "sensors/adcinternal.h"
+#include "sensors/boardalignment.h"
+#include "sensors/compass.h"
 //#include "sensors/esc_sensor.h"
 #include "sensors/gyro.h"
 #include "sensors/gyro_init.h"
@@ -105,8 +104,8 @@
 //#include "drivers/max7456.h"
 
 //#include "fc/stats.h"
-//
-//#include "rx/rx.h"
+
+#include "rx/rx.h"
 
 static void Param_Config_Init(void);
 
@@ -120,7 +119,7 @@ void init(void)
 	bmi270_Init();
 
 #ifdef USE_MAG
-	//compassInit();
+	compassInit();
 #endif
 
 #ifdef USE_BARO
@@ -128,7 +127,7 @@ void init(void)
 #endif
 
 #ifdef USE_ADC_INTERNAL
-	//adcInternalInit();
+	adcInternalInit();
 #endif
 
     // Finally initialize the gyro filtering
@@ -175,9 +174,9 @@ void init(void)
 #ifdef USE_BARO
     baroStartCalibration();
 #endif
-//
-//	batteryInit(); // always needs doing, regardless of features.
-//
+
+	batteryInit(); // always needs doing, regardless of features.
+
 //#ifdef USE_PERSISTENT_STATS
 //    statsInit();
 //#endif
@@ -215,18 +214,18 @@ void Param_Config_Init(void)
 //	gpsConfig_Init();
 //#endif
 	barometerConfig_Init();
-//#ifdef USE_MAG
-//	compassConfig_Init();
-//#endif
-//	adcConfig_Init();
-//	voltageSensorADCConfig_Init();
-//	currentSensorADCConfig_Init();
+#ifdef USE_MAG
+	compassConfig_Init();
+#endif
+	adcConfig_Init();
+	voltageSensorADCConfig_Init();
+	currentSensorADCConfig_Init();
 
 	imuConfig_Init();
 	rxConfig_Init();
 	rxChannelRangeConfigs_Init();
 //	rxFailsafeChannelConfigs_Init();
-//	batteryConfig_Init();
+	batteryConfig_Init();
 //	controlRateProfiles_Init();
 //	mixerConfig_Init();
 //	throttleCorrectionConfig_Init();

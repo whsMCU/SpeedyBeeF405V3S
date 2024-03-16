@@ -31,9 +31,9 @@
 #include "common/axis.h"
 #include "common/time.h"
 
-#include "config/config.h"
+//#include "config/config.h"
 
-#include "fc/runtime_config.h"
+//#include "fc/runtime_config.h"
 
 #include "scheduler/scheduler.h"
 
@@ -60,82 +60,32 @@ compassConfig_t compassConfig;
 
 void compassConfig_Init(void)
 {
-    compassConfig.mag_alignment = ALIGN_DEFAULT;
-    memset(&compassConfig.mag_customAlignment, 0x00, sizeof(compassConfig.mag_customAlignment));
-    compassConfig.mag_hardware = MAG_DEFAULT;
-
-// Generate a reasonable default for backward compatibility
-// Strategy is
-// 1. If SPI device is defined, it will take precedence, assuming it's onboard.
-// 2. I2C devices are will be handled by address = 0 (per device default).
-// 3. Slave I2C device on SPI gyro
-
-#if defined(USE_SPI) && (defined(USE_MAG_SPI_HMC5883) || defined(USE_MAG_SPI_AK8963))
-    compassConfig->mag_busType = BUS_TYPE_SPI;
-    compassConfig->mag_spi_device = SPI_DEV_TO_CFG(spiDeviceByInstance(MAG_SPI_INSTANCE));
-    compassConfig->mag_spi_csn = IO_TAG(MAG_CS_PIN);
-    compassConfig->mag_i2c_device = I2C_DEV_TO_CFG(I2CINVALID);
-    compassConfig->mag_i2c_address = 0;
-#elif defined(USE_MAG_HMC5883) || defined(USE_MAG_QMC5883) || defined(USE_MAG_AK8975) || (defined(USE_MAG_AK8963) && !(defined(USE_GYRO_SPI_MPU6500) || defined(USE_GYRO_SPI_MPU9250)))
-//    compassConfig->mag_busType = BUS_TYPE_I2C;
-//    compassConfig->mag_i2c_device = I2C_DEV_TO_CFG(MAG_I2C_INSTANCE);
-//    compassConfig->mag_i2c_address = 0;
-//    compassConfig->mag_spi_device = SPI_DEV_TO_CFG(SPIINVALID);
-//    compassConfig->mag_spi_csn = IO_TAG_NONE;
-#elif defined(USE_MAG_AK8963) && (defined(USE_GYRO_SPI_MPU6500) || defined(USE_GYRO_SPI_MPU9250))
-    compassConfig->mag_busType = BUS_TYPE_MPU_SLAVE;
-    compassConfig->mag_i2c_device = I2C_DEV_TO_CFG(I2CINVALID);
-    compassConfig->mag_i2c_address = 0;
-    compassConfig->mag_spi_device = SPI_DEV_TO_CFG(SPIINVALID);
-    compassConfig->mag_spi_csn = IO_TAG_NONE;
-#else
-    compassConfig->mag_hardware = MAG_NONE;
-    compassConfig->mag_busType = BUS_TYPE_NONE;
-    compassConfig->mag_i2c_device = I2C_DEV_TO_CFG(I2CINVALID);
-    compassConfig->mag_i2c_address = 0;
-    compassConfig->mag_spi_device = SPI_DEV_TO_CFG(SPIINVALID);
-    compassConfig->mag_spi_csn = IO_TAG_NONE;
-#endif
-    //compassConfig->interruptTag = IO_TAG(MAG_INT_EXTI);
-    compassConfig.magZero.values.roll = -352;
-    compassConfig.magZero.values.pitch = -368;
-    compassConfig.magZero.values.yaw = 75;
+  compassConfig.mag_alignment = ALIGN_DEFAULT;
+  memset(&compassConfig.mag_customAlignment, 0x00, sizeof(compassConfig.mag_customAlignment));
+  compassConfig.mag_hardware = MAG_DEFAULT;
+	compassConfig.magZero.values.roll = -352;
+	compassConfig.magZero.values.pitch = -368;
+	compassConfig.magZero.values.yaw = 75;
 }
 
 static int16_t magADCRaw[XYZ_AXIS_COUNT];
 static uint8_t magInit = 0;
 
-void compassPreInit(void)
-{
-#ifdef USE_SPI
-    if (compassConfig()->mag_busType == BUS_TYPE_SPI) {
-        spiPreinitRegister(compassConfig()->mag_spi_csn, IOCFG_IPU, 1);
-    }
-#endif
-}
-
-
 bool compassDetect(magDev_t *magDev, sensor_align_e *alignment)
 {
-    magSensor_e magHardware = MAG_NONE;
-
-#ifdef USE_MAG_DATA_READY_SIGNAL
-    magDev->magIntExtiTag = compassConfig()->interruptTag;
-#endif
+  magSensor_e magHardware = MAG_NONE;
 
     if (qmc5883lDetect(magDev)) {
 
-        *alignment = MAG_QMC5883;//MAG_QMC5883L_ALIGN;
+      *alignment = MAG_QMC5883;//MAG_QMC5883L_ALIGN;
 
-        magHardware = MAG_QMC5883;
+      magHardware = MAG_QMC5883;
     }
 
     if (magHardware == MAG_NONE) {
         return false;
     }
 
-    detectedSensors[SENSOR_INDEX_MAG] = magHardware;
-    sensorsSet(SENSOR_MAG);
     return true;
 }
 
@@ -194,18 +144,18 @@ uint32_t compassUpdate(uint32_t currentTimeUs)
 {
     if (!magDev.read(&magDev, magADCRaw)) {
         // No action was taken as the read has not completed
-        schedulerIgnoreTaskExecRate();
+        //schedulerIgnoreTaskExecRate();
         return 1000; // Wait 1ms between states
     }
 
     for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
         mag.magADC[axis] = magADCRaw[axis];
     }
-     if (magDev.magAlignment == ALIGN_CUSTOM) {
-         alignSensorViaMatrix(mag.magADC, &magDev.rotationMatrix);
-     } else {
-         alignSensorViaRotation(mag.magADC, magDev.magAlignment);
-     }
+    if (magDev.magAlignment == ALIGN_CUSTOM) {
+        alignSensorViaMatrix(mag.magADC, &magDev.rotationMatrix);
+    } else {
+        alignSensorViaRotation(mag.magADC, magDev.magAlignment);
+    }
 
     flightDynamicsTrims_t *magZero = &compassConfig.magZero;
     if (magInit) {              // we apply offset only once mag calibration is done
@@ -229,11 +179,22 @@ uint32_t compassUpdate(uint32_t currentTimeUs)
                 magZero->raw[axis] = (magZeroTempMin.raw[axis] + magZeroTempMax.raw[axis]) / 2; // Calculate offsets
             }
 
-            saveConfigAndNotify();
+            //saveConfigAndNotify();
         }
     }
 
     return TASK_PERIOD_HZ(10);
+}
+
+void taskUpdateMag(uint32_t currentTimeUs)
+{
+    UNUSED(currentTimeUs);
+
+		const uint32_t newDeadline = compassUpdate(currentTimeUs);
+		if (newDeadline != 0) {
+				rescheduleTask(TASK_SELF, newDeadline);
+		}
+
 }
 
 #ifdef _USE_HW_CLI

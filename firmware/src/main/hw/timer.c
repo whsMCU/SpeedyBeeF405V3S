@@ -13,74 +13,77 @@ TIM_HandleTypeDef htim5;
 
 static void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
-//bool timerInit(pwmOutputPort_t *motors, uint32_t hz, uint16_t period, uint16_t value, uint8_t inversion)
 bool timerInit()
 {
 	bool ret = true;
 
-	//time4 init
-
 //  TIM_HandleTypeDef* handle = motors->channel.tim;
 //  if (handle == NULL) return false;
-//
-//	TIM_ClockConfigTypeDef sClockSourceConfig = {0};
-//	TIM_MasterConfigTypeDef sMasterConfig = {0};
-//	TIM_OC_InitTypeDef sConfigOC = {0};
-//
-//	htim4.Instance = TIM4;
-//	htim4.Init.Prescaler = lrintf((((float)SystemCoreClock / 2) / hz)+0.01f) - 1;
-//	htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-//	htim4.Init.Period = (period - 1) & 0xffff; // AKA TIMx_ARR
-//
-//
-////	htim4.Init.Prescaler = 72-1;
-////	htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-////	htim4.Init.Period = 2000-1; //500hz
-//#ifdef MOTOR_ESC
-//	htim4.Init.Period = 2041-1;//490hz
-//#endif
-//#ifdef MOTOR_ESC_OneShot125
-//	htim4.Init.Prescaler = 3; //4khz
-//	htim4.Init.Period = 4500-1;
-//#endif
-//	htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-//	htim4.Init.RepetitionCounter = 0x0000;
-//	//htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-//	if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
-//	{
-//		Error_Handler();
-//	}
-//	sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-//	if (HAL_TIM_ConfigClockSource(&htim4, &sClockSourceConfig) != HAL_OK)
-//	{
-//		Error_Handler();
-//	}
-//
-//	//sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-//	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-//	if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
-//	{
-//		Error_Handler();
-//	}
-//
-//	sConfigOC.OCMode = TIM_OCMODE_PWM1;
-//	sConfigOC.OCIdleState = TIM_OCIDLESTATE_SET;
-//	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-//	sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_SET;
-//	sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
-//	sConfigOC.Pulse = value;
-//	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-//
-//	if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, motors->channel.channel) != HAL_OK)
-//	{
-//		Error_Handler();
-//	}
-//
-//	/* USER CODE BEGIN TIM4_Init 2 */
-//	HAL_TIM_PWM_Start(&htim4, motors->channel.channel);
-//
-//	/* USER CODE END TIM4_Init 2 */
-//	HAL_TIM_MspPostInit(&htim4);
+
+	TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+	TIM_MasterConfigTypeDef sMasterConfig = {0};
+	TIM_OC_InitTypeDef sConfigOC = {0};
+
+	htim4.Instance = TIM4;
+	htim4.Init.Prescaler = 0;
+	htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
+	htim4.Init.Period = 41999;
+	htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+	if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
+	{
+		Error_Handler();
+	}
+	sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+	if (HAL_TIM_ConfigClockSource(&htim4, &sClockSourceConfig) != HAL_OK)
+	{
+		Error_Handler();
+	}
+  if (HAL_TIM_OC_Init(&htim4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+	sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+	if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
+	{
+		Error_Handler();
+	}
+
+	sConfigOC.OCMode = TIM_OCMODE_PWM1;
+	sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
+	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+	sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
+	sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
+	sConfigOC.Pulse = 0;
+	sConfigOC.OCFastMode = TIM_OCFAST_ENABLE;
+
+	if (HAL_TIM_OC_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+	{
+		Error_Handler();
+	}
+	if (HAL_TIM_OC_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+	{
+		Error_Handler();
+	}
+	if (HAL_TIM_OC_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
+	{
+		Error_Handler();
+	}
+	if (HAL_TIM_OC_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
+	{
+		Error_Handler();
+	}
+
+	/* USER CODE BEGIN TIM4_Init 2 */
+	HAL_TIM_OC_Start(&htim4, TIM_CHANNEL_1);
+	HAL_TIM_OC_Start(&htim4, TIM_CHANNEL_2);
+	HAL_TIM_OC_Start(&htim4, TIM_CHANNEL_3);
+	HAL_TIM_OC_Start(&htim4, TIM_CHANNEL_4);
+
+	/* USER CODE END TIM4_Init 2 */
+	HAL_TIM_MspPostInit(&htim4);
 
 	////////////////////////////////////////////////////////////////
 	TIM_ClockConfigTypeDef sClockSourceConfig1 = {0};

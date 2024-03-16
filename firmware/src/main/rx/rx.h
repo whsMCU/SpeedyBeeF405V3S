@@ -118,7 +118,7 @@ extern rxConfig_t rxConfig;
 
 extern const char rcChannelLetters[];
 
-extern float rcData[MAX_SUPPORTED_RC_CHANNEL_COUNT];       // interval [1000;2000]
+extern uint16_t rcData[MAX_SUPPORTED_RC_CHANNEL_COUNT];       // interval [1000;2000]
 
 #define RSSI_SCALE_MIN 1
 #define RSSI_SCALE_MAX 255
@@ -126,18 +126,18 @@ extern float rcData[MAX_SUPPORTED_RC_CHANNEL_COUNT];       // interval [1000;200
 #define RSSI_SCALE_DEFAULT 100
 
 typedef enum rc_alias {
-    ROLL = 0,
-    PITCH,
-    YAW,
-    THROTTLE,
-    AUX1,
-    AUX2,
-    AUX3,
-    AUX4,
-    AUX5,
-    AUX6,
-    AUX7,
-    AUX8,
+    ROLL = 0, //rcData[0], 	ROLL
+    PITCH,		//rcData[1],	PITCH
+    YAW,			//rcData[2],	YAW
+    THROTTLE,	//rcData[3],	THROTTLE
+		ARMED,			//rcData[4],	ARMED
+		SA,			//rcData[5],	SA
+		SB,			//rcData[6],	SB
+		SC,			//rcData[7],	SC
+		SD,			//rcData[8],	SD
+		SF,			//rcData[9],	SF
+		S1,			//rcData[10],	S1
+		S2,			//rcData[11],	S2
     AUX9,
     AUX10,
     AUX11,
@@ -200,6 +200,7 @@ typedef struct rxRuntimeState_s {
     uint32_t            callbackTime;
     uint32_t            uartAvalable;
     bool            	  RxCallback_Flag;
+    bool								arming_flag;
 } rxRuntimeState_t;
 
 typedef enum {
@@ -278,3 +279,4 @@ int32_t rxGetFrameDelta(int32_t *frameAgeUs);
 uint32_t rxFrameTimeUs(void);
 
 void taskUpdateRxMain(uint32_t currentTimeUs);
+void processRxModes(uint32_t currentTimeUs);
