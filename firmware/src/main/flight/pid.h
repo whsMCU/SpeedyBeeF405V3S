@@ -69,6 +69,7 @@ void Single_Yaw_Heading_PID_Calculation(PIDSingle* axis, float set_point, float 
 void Reset_PID_Integrator(PIDSingle* axis);
 void Reset_All_PID_Integrator(void);
 
+void pidInit(void);
 void taskMainPidLoop(timeUs_t currentTimeUs);
 
 

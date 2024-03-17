@@ -26,13 +26,12 @@
 #include "sensors/gyro.h"
 #include "flight/imu.h"
 #include "rx/rx.h"
+#include "drivers/motor.h"
 
 PIDDouble roll;
 PIDDouble pitch;
 PIDSingle yaw_heading;
 PIDSingle yaw_rate;
-
-unsigned short ccr1, ccr2, ccr3, ccr4;
 
 #define DT 0.001f
 #define OUTER_DERIV_FILT_ENABLE 1
@@ -152,11 +151,42 @@ void Reset_All_PID_Integrator(void)
 	Reset_PID_Integrator(&yaw_rate);
 }
 
+void pidInit(void)
+{
+	roll.in.kp = 5;
+	roll.in.ki = 5;
+	roll.in.kd = 1.7;
+
+	roll.out.kp = 45;
+	roll.out.ki = 3;
+	roll.out.kd = 4;
+
+	pitch.in.kp = 6.5;
+	pitch.in.ki = 5;
+	pitch.in.kd = 1.5;
+
+	pitch.out.kp = 45;
+	pitch.out.ki = 3;
+	pitch.out.kd = 4;
+
+	yaw_heading.kp = 50;
+	yaw_heading.ki = 0;
+	yaw_heading.kd = 20;
+
+	yaw_rate.kp = 15;
+	yaw_rate.ki = 0;
+	yaw_rate.kd = 2;
+}
+
 // Function for loop trigger
 void taskMainPidLoop(timeUs_t currentTimeUs)
 {
-  Double_Roll_Pitch_PID_Calculation(&pitch, (rcData[PITCH] - 1500) * 0.1f, attitude.values.pitch, bmi270.gyroADCf[X]);
-  Double_Roll_Pitch_PID_Calculation(&roll, (rcData[ROLL] - 1500) * 0.1f, attitude.values.roll, bmi270.gyroADCf[Y]);
+	float imu_roll, imu_pitch, imu_yaw;
+	imu_roll = attitude.values.roll/10;
+	imu_pitch = attitude.values.pitch/10;
+	imu_yaw = attitude.values.yaw/10;
+  Double_Roll_Pitch_PID_Calculation(&pitch, (rcData[PITCH] - 1500) * 0.1f, imu_pitch, bmi270.gyroADCf[X]);
+  Double_Roll_Pitch_PID_Calculation(&roll, (rcData[ROLL] - 1500) * 0.1f, imu_roll, bmi270.gyroADCf[Y]);
 
   if(rcData[THROTTLE] < 1030 || rxRuntimeState.arming_flag == 0)
   {
@@ -169,4 +199,6 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   ccr2 = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + pitch.in.pid_result + roll.in.pid_result + yaw_rate.pid_result;
   ccr3 = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + pitch.in.pid_result - roll.in.pid_result - yaw_rate.pid_result;
   ccr4 = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - pitch.in.pid_result - roll.in.pid_result + yaw_rate.pid_result;
+
+  motorWriteAll();
 }

@@ -405,6 +405,15 @@ void processRxModes(uint32_t currentTimeUs)
 	{
 		rxRuntimeState.arming_flag = 0;
 	}
+
+	if(rcData[SD] == 2000)
+	{
+		rxRuntimeState.failsafe_flag = 1;
+	}
+	else
+	{
+		rxRuntimeState.failsafe_flag = 0;
+	}
 }
 
 void parseRcChannels(const char *input, rxConfig_t *rxConfig)

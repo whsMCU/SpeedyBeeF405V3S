@@ -97,8 +97,10 @@
 
 //#include "telemetry/telemetry.h"
 
+#include "flight/pid.h"
+
 //#include "drivers/gps/gps.h"
-//#include "drivers/motor.h"
+#include "drivers/motor.h"
 //#include "drivers/pwm_output.h"
 //#include "drivers/osd.h"
 //#include "drivers/max7456.h"
@@ -132,7 +134,7 @@ void init(void)
 
     // Finally initialize the gyro filtering
 	//gyroInitFilters();
-	//pidInit(currentPidProfile);
+	pidInit();
 	//mixerInitProfile();
 
 	/////////////// LED //////////////////
