@@ -60,8 +60,7 @@
 #define USE_MAX7456
 #define USE_MOTOR
 
-
-#define USE_MAG
+//#define USE_MAG
 
 #define USE_ADC_INTERNAL
 #define USE_RC_SMOOTHING_FILTER

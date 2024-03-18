@@ -109,7 +109,7 @@ typedef enum {
 #endif
 
 #ifdef USE_OSD
-//    TASK_OSD,
+    TASK_OSD,
 #endif
 
 #ifdef USE_ADC_INTERNAL

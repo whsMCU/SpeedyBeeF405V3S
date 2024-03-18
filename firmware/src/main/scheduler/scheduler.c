@@ -184,17 +184,16 @@ void scheduler(void)
     uint32_t currentTimeUs;
     task_t *selectedTask = NULL;
 
-    currentTimeUs = micros();
-
 	// Update task dynamic priorities
 	for (task_t *task = queueFirst(); task != NULL; task = queueNext()) {
+		currentTimeUs = micros();
 		if(currentTimeUs - task->lastExecutedAtUs >= task->attribute->desiredPeriodUs) {
 		  selectedTask = task;
 			if (selectedTask) {
 				currentTask = selectedTask;
+				selectedTask->taskPeriodTimeUs = currentTimeUs - selectedTask->lastExecutedAtUs;
 				selectedTask->lastExecutedAtUs = currentTimeUs;
 				// Execute task
-				selectedTask->taskPeriodTimeUs = currentTimeUs - selectedTask->taskExcutedEndUs;
 				const uint32_t currentTimeBeforeTaskCallUs = micros();
 				selectedTask->attribute->taskFunc(currentTimeBeforeTaskCallUs);
 				selectedTask->taskExecutionTimeUs = micros() - currentTimeBeforeTaskCallUs;

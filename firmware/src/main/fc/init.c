@@ -64,7 +64,7 @@
 #include "flight/imu.h"
 //#include "flight/mixer_init.h"
 //#include "flight/mixer.h"
-//#include "flight/pid.h"
+#include "flight/pid.h"
 //#include "flight/pid_init.h"
 //#include "flight/position.h"
 //#include "flight/servos.h"
@@ -77,8 +77,8 @@
 //#include "msp/msp.h"
 //#include "msp/msp_serial.h"
 
-//#include "osd/osd.h"
-//
+#include "osd/osd.h"
+
 #include "rx/rx.h"
 
 #include "scheduler/scheduler.h"
@@ -188,6 +188,8 @@ void init(void)
 //    motorPostInit();
 //    motorEnable();
 //#endif
+
+	osdInit();
     tasksInit();
 //	MSP_SET_MODE_RANGE(0,  0, 0, 1700, 2100);
 //	MSP_SET_MODE_RANGE(1,  1, 1,  900, 2100);
@@ -236,17 +238,9 @@ void Param_Config_Init(void)
 //	rcControlsConfig_Init();
 //	armingConfig_Init();
 //	flight3DConfig_Init();
-//#ifdef USE_OSD
+#ifdef USE_OSD
 //	vcdProfile_Init();
-//	osdConfig_Init();
+	osdConfig_Init();
 //	osdElementConfig_Init();
-//	max7456Config_Init();
-//#if defined(USE_MSP_DISPLAYPORT)
-//	displayPortProfileMsp_Init();
-//#endif
-//#if defined(USE_MAX7456)
-//	displayPortProfileMax7456_Init();
-//#endif
-//
-//#endif
+#endif
 }

@@ -54,7 +54,7 @@
 
 #include "rx/rx.h"
 
-//#include "osd/osd.h"
+#include "osd/osd.h"
 
 #include "scheduler/tasks.h"
 
@@ -146,7 +146,7 @@ static void Encode_Msg_PID_Gain(unsigned char id, float p, float i, float d)
 static void debugPrint(uint32_t currentTimeUs)
 {
 
-	Encode_Msg_AHRS();
+	//Encode_Msg_AHRS();
 //    cliPrintf("BARO : %d cm, Load : %d, count : %d \n\r", baro.BaroAlt, getAverageSystemLoadPercent(), getCycleCounter());
 	  //cliPrintf("excute_time : %4.d us, max : %4.d us, callback : %4.d us, uartAvalavle : %4.d \n\r", excute_time, excute_max, rxRuntimeState.callbackTime, rxRuntimeState.uartAvalable);
 
@@ -272,7 +272,7 @@ task_attribute_t task_attributes[TASK_COUNT] = {
 #endif
 
 #ifdef USE_OSD
-//    [TASK_OSD] = DEFINE_TASK("OSD", osdUpdate, TASK_PERIOD_HZ(OSD_FRAMERATE_DEFAULT_HZ)),
+    [TASK_OSD] = DEFINE_TASK("OSD", osdUpdate, TASK_PERIOD_HZ(OSD_FRAMERATE_DEFAULT_HZ)),
 #endif
 
 #ifdef USE_TELEMETRY
@@ -396,12 +396,12 @@ void tasksInit(void)
 //#ifdef USE_TRANSPONDER
 //    setTaskEnabled(TASK_TRANSPONDER, featureIsEnabled(FEATURE_TRANSPONDER));
 //#endif
-//
-//#ifdef USE_OSD
-//    rescheduleTask(TASK_OSD, TASK_PERIOD_HZ(osdConfig.framerate_hz));
-//    setTaskEnabled(TASK_OSD, featureIsEnabled(FEATURE_OSD) && osdGetDisplayPort(NULL));
-//#endif
-//
+
+#ifdef USE_OSD
+    rescheduleTask(TASK_OSD, TASK_PERIOD_HZ(osdConfig.framerate_hz));
+    setTaskEnabled(TASK_OSD, true);
+#endif
+
 //#ifdef USE_BST
 //    setTaskEnabled(TASK_BST_MASTER_PROCESS, true);
 //#endif
