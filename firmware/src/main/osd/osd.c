@@ -296,7 +296,7 @@ osdState_e osdState = OSD_STATE_INIT;
 void osdUpdate(timeUs_t currentTimeUs)
 {
     osdState_e osdCurrentState = osdState;
-    max7456_display_string("Hello, World!", 10, 10);
+    //max7456_display_string("Hello, World!", 10, 10);
 
 }
 #endif // USE_OSD

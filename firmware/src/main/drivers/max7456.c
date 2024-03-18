@@ -323,6 +323,83 @@ void max7456ReInit(void)
     max7456ClearShadowBuffer();
 }
 
+//-----------------------------------------------------------------------------
+// Implements Max7456::printMax7456Chars
+//-----------------------------------------------------------------------------
+static void printMax7456Chars(uint8_t chars[], uint8_t size, uint8_t x, uint8_t y) {
+	uint8_t         currentCharMax7456;
+	uint8_t         posAddressLO;
+	uint8_t         posAddressHI;
+  unsigned int posAddress;
+
+  posAddress = 30 * y + x;
+
+  posAddressHI = posAddress >> 8;
+  posAddressLO = posAddress;
+
+  uint8_t _regDmm = 0b00000001;
+  spiWriteReg(MAX7456, MAX7456ADD_DMM, _regDmm);
+
+  spiWriteReg(MAX7456, MAX7456ADD_DMAH, posAddressHI);
+
+  spiWriteReg(MAX7456, MAX7456ADD_DMAL, posAddressLO);
+
+  for (int i = 0; i < size; i++) {
+    currentCharMax7456 = chars[i];
+    spiWriteReg(MAX7456, MAX7456ADD_DMDI, currentCharMax7456);
+  }
+
+  //end character (we're done).
+  spiWriteReg(MAX7456, MAX7456ADD_DMDI, 0xFF);
+}
+
+static void printMax7456Char(const uint8_t address, uint8_t x, uint8_t y) {
+	uint8_t ad = address;
+  printMax7456Chars(&ad, 1, x, y);
+}
+#define MAX7456_TABLE_ASCII
+//-----------------------------------------------------------------------------
+// Implements Max7456::giveMax7456CharFromAsciiChar
+//-----------------------------------------------------------------------------
+uint8_t giveMax7456CharFromAsciiChar(char ascii) {
+#ifdef MAX7456_TABLE_ASCII
+  if (ascii >= ' ' && ascii <= 'z')
+    return ascii - ' ';
+  else
+    return ascii;
+#else
+  return ascii;
+#endif
+}
+
+//-----------------------------------------------------------------------------
+// Implements Max7456::print
+//-----------------------------------------------------------------------------
+static void print(const char string[], uint8_t x, uint8_t y) {
+  char  currentChar;
+  uint8_t  size;
+  uint8_t* chars = NULL;
+
+  if (!string)
+    return;
+
+  size = 0;
+  currentChar = string[0];
+
+  while (currentChar != '\0') {
+    currentChar = string[++size];
+  }
+
+  chars = (uint8_t*)malloc(size * sizeof(uint8_t));
+
+  for (uint8_t i = 0; i < size; i++) {
+    chars[i] = giveMax7456CharFromAsciiChar(string[i]);
+  }
+
+  printMax7456Chars(chars, size, x, y);
+  free(chars);
+}
+
 // Here we init only CS and try to init MAX for first time.
 // Also detect device type (MAX v.s. AT)
 
@@ -338,10 +415,12 @@ max7456InitStatus_e max7456Init(void)
 
     gpioPinWrite(4, _DEF_HIGH);
 
+    delay(100);
+
     SPI_Set_Speed_hz(MAX7456, MAX7456_INIT_MAX_SPI_CLK_HZ);
 
     // Write 0xff to conclude any current SPI transaction the MAX7456 is expecting
-    spiWrite(MAX7456, END_STRING);
+    //spiWrite(MAX7456, END_STRING);
 
     uint8_t osdm = spiReadRegMsk(MAX7456, MAX7456ADD_OSDM);
 
@@ -350,36 +429,66 @@ max7456InitStatus_e max7456Init(void)
         return MAX7456_INIT_NOT_FOUND;
     }
 
-    spiWriteReg(MAX7456, MAX7456ADD_CMAL, (1 << 6)); // CA[8] bit
+    uint8_t _regVm0 = 0b01000010;
+    spiWriteReg(MAX7456, MAX7456ADD_VM0, _regVm0);
+    delay(500);
 
-    if (spiReadRegMsk(MAX7456, MAX7456ADD_CMAL) & (1 << 6)) {
-        max7456DeviceType = MAX7456_DEVICE_TYPE_AT;
-    } else {
-        max7456DeviceType = MAX7456_DEVICE_TYPE_MAX;
+
+    for (int x = 0; x < 16; x++) {
+      uint8_t _regRb = 0b00001100;
+      spiWriteReg(MAX7456, x + MAX7456ADD_RB0, _regRb);
     }
 
-    SPI_Set_Speed_hz(MAX7456, MAX7456_MAX_SPI_CLK_HZ);
+    _regVm0 = 0b00000100;
+    spiWriteReg(MAX7456, MAX7456ADD_VM0, _regVm0);
 
-    // force soft reset on Max7456
-    spiWriteReg(MAX7456, MAX7456ADD_VM0, MAX7456_RESET);
+//    spiWriteReg(MAX7456, MAX7456ADD_CMAL, (1 << 6)); // CA[8] bit
+//
+//    if (spiReadRegMsk(MAX7456, MAX7456ADD_CMAL) & (1 << 6)) {
+//        max7456DeviceType = MAX7456_DEVICE_TYPE_AT;
+//    } else {
+//        max7456DeviceType = MAX7456_DEVICE_TYPE_MAX;
+//    }
+//
+//    SPI_Set_Speed_hz(MAX7456, MAX7456_MAX_SPI_CLK_HZ);
+//
+//    // force soft reset on Max7456
+//    spiWriteReg(MAX7456, MAX7456ADD_VM0, MAX7456_RESET);
+//
+//    // Wait for 200us before polling for completion of reset
+//    delayMicroseconds(200);
+//
+//    // Wait for reset to complete
+//    while ((spiReadRegMsk(MAX7456, MAX7456ADD_VM0) & MAX7456_RESET) != 0x00);
 
-    // Wait for 200us before polling for completion of reset
-    delayMicroseconds(200);
+//    // Initialize MAX7456 configuration
+//    uint8_t config_data[] = {
+//        0x00, 0x08, // Set video mode
+//        // Add more configuration as needed
+//    };
+//    SPI_ByteWrite(MAX7456, MAX7456ADD_VM0, config_data, sizeof(config_data));
+//
+//    // Setup values to write to registers
+//    hosRegValue = 32;
+//    vosRegValue = 16;
+    //setDisplayOffsets
+//    uint8_t _regHos = 0b00100000;//32
+    uint8_t _regHos = 0b00111100;//60
+//    uint8_t _regVos = 0b00010000;//16
+    uint8_t _regVos = 0b00010010;//18
+    spiWriteReg(MAX7456, MAX7456ADD_HOS, _regHos);
+    spiWriteReg(MAX7456, MAX7456ADD_VOS, _regVos);
 
-    // Wait for reset to complete
-    while ((spiReadRegMsk(MAX7456, MAX7456ADD_VM0) & MAX7456_RESET) != 0x00);
+    //setBlinkParams
+    uint8_t _regVm1 = 0b000001100;
+    spiWriteReg(MAX7456, MAX7456ADD_VM1, _regVm1);
 
-    // Initialize MAX7456 configuration
-    uint8_t config_data[] = {
-        0x00, 0x08, // Set video mode
-        // Add more configuration as needed
-    };
-    SPI_ByteWrite(MAX7456, MAX7456ADD_VM0, config_data, sizeof(config_data));
+    //activateOSD
+    _regVm0 = 0b01001000;
+    spiWriteReg(MAX7456, MAX7456ADD_VM0, _regVm0);
 
-    // Setup values to write to registers
-    hosRegValue = 32;
-    vosRegValue = 16;
-
+    printMax7456Char(0xD1, 20, 10);
+    print("Hello world :)", 20, 16);
     // Real init will be made later when driver detect idle.
     return MAX7456_INIT_OK;
 }
