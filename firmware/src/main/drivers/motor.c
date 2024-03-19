@@ -34,7 +34,12 @@
 
 motorConfig_t motorConfig;
 
-unsigned short ccr1, ccr2, ccr3, ccr4;
+unsigned short LF, LR, RR, RF;
+
+//TIM4->CCR1 // RR
+//TIM4->CCR2 // RF
+//TIM4->CCR3 // LR
+//TIM4->CCR4 // LF
 
 void motorConfig_Init(void)
 {
@@ -59,10 +64,10 @@ void motorWriteAll(void)
 	  {
 		  if(rcData[THROTTLE] > 1030)
 		  {
-			  TIM4->CCR1 = ccr1 > 21000 ? 21000 : ccr1 < 11000 ? 11000 : ccr1;
-			  TIM4->CCR2 = ccr2 > 21000 ? 21000 : ccr2 < 11000 ? 11000 : ccr2;
-			  TIM4->CCR3 = ccr3 > 21000 ? 21000 : ccr3 < 11000 ? 11000 : ccr3;
-			  TIM4->CCR4 = ccr4 > 21000 ? 21000 : ccr4 < 11000 ? 11000 : ccr4;
+			  TIM4->CCR1 = RR > 21000 ? 21000 : RR < 11000 ? 11000 : RR;
+			  TIM4->CCR2 = RF > 21000 ? 21000 : RF < 11000 ? 11000 : RF;
+			  TIM4->CCR3 = LR > 21000 ? 21000 : LR < 11000 ? 11000 : LR;
+			  TIM4->CCR4 = LF > 21000 ? 21000 : LF < 11000 ? 11000 : LF;
 		  }
 		  else
 		  {

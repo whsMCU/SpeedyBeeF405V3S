@@ -37,7 +37,7 @@ typedef struct motorConfig_s {
 
 extern motorConfig_t motorConfig;
 
-extern unsigned short ccr1, ccr2, ccr3, ccr4;
+extern unsigned short LF, LR, RR, RF;
 
 void motorConfig_Init(void);
 

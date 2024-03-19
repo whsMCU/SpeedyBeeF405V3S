@@ -195,10 +195,15 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 
   Single_Yaw_Rate_PID_Calculation(&yaw_rate, (rcData[YAW] - 1500), bmi270.gyroADCf[Z]);
 
-  ccr1 = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - pitch.in.pid_result + roll.in.pid_result - yaw_rate.pid_result;
-  ccr2 = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + pitch.in.pid_result + roll.in.pid_result + yaw_rate.pid_result;
-  ccr3 = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + pitch.in.pid_result - roll.in.pid_result - yaw_rate.pid_result;
-  ccr4 = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - pitch.in.pid_result - roll.in.pid_result + yaw_rate.pid_result;
+  LF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - pitch.in.pid_result + roll.in.pid_result - yaw_rate.pid_result;
+  LR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + pitch.in.pid_result + roll.in.pid_result + yaw_rate.pid_result;
+  RR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + pitch.in.pid_result - roll.in.pid_result - yaw_rate.pid_result;
+  RF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - pitch.in.pid_result - roll.in.pid_result + yaw_rate.pid_result;
+
+//  ccr1 = 10500 + (rcData[THROTTLE] - 1000) * 10.5;
+//	ccr2 = 10500 + (rcData[THROTTLE] - 1000) * 10.5;
+//	ccr3 = 10500 + (rcData[THROTTLE] - 1000) * 10.5;
+//	ccr4 = 10500 + (rcData[THROTTLE] - 1000) * 10.5;
 
   motorWriteAll();
 }
