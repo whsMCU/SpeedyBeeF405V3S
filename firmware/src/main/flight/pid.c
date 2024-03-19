@@ -182,18 +182,18 @@ void pidInit(void)
 void taskMainPidLoop(timeUs_t currentTimeUs)
 {
 	float imu_roll, imu_pitch, imu_yaw;
-	imu_roll = attitude.values.roll/10;
-	imu_pitch = attitude.values.pitch/10;
-	imu_yaw = attitude.values.yaw/10;
-  Double_Roll_Pitch_PID_Calculation(&pitch, (rcData[PITCH] - 1500) * 0.1f, imu_pitch, bmi270.gyroADCf[X]);
-  Double_Roll_Pitch_PID_Calculation(&roll, (rcData[ROLL] - 1500) * 0.1f, imu_roll, bmi270.gyroADCf[Y]);
+	imu_roll = (float)attitude.values.roll/10;
+	imu_pitch = (float)attitude.values.pitch/10;
+	imu_yaw = (float)attitude.values.yaw/10;
+  Double_Roll_Pitch_PID_Calculation(&pitch, rcCommand[PITCH], imu_pitch, bmi270.gyroADCf[Y]);
+  Double_Roll_Pitch_PID_Calculation(&roll, rcCommand[ROLL], imu_roll, bmi270.gyroADCf[X]);
 
   if(rcData[THROTTLE] < 1030 || rxRuntimeState.arming_flag == 0)
   {
 	  Reset_All_PID_Integrator();
   }
 
-  Single_Yaw_Rate_PID_Calculation(&yaw_rate, (rcData[YAW] - 1500), bmi270.gyroADCf[Z]);
+  Single_Yaw_Rate_PID_Calculation(&yaw_rate, rcCommand[YAW], bmi270.gyroADCf[Z]); //left -, right +
 
   LF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - pitch.in.pid_result + roll.in.pid_result - yaw_rate.pid_result;
   LR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + pitch.in.pid_result + roll.in.pid_result + yaw_rate.pid_result;

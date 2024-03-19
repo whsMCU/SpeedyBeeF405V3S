@@ -73,6 +73,8 @@ static uint8_t rxChannelCount;
 
 static float rcRaw[MAX_SUPPORTED_RC_CHANNEL_COUNT];     // last received raw value, as it comes
 uint16_t rcData[MAX_SUPPORTED_RC_CHANNEL_COUNT];           // scaled, modified, checked and constrained values
+float rcCommand[4];           // interval [1000;2000] for THROTTLE and [-500;+500] for ROLL/PITCH/YAW
+
 uint32_t validRxSignalTimeout[MAX_SUPPORTED_RC_CHANNEL_COUNT];
 
 #define MAX_INVALID_PULSE_TIME_MS 300                   // hold time in milliseconds after bad channel or Rx link loss
@@ -107,9 +109,12 @@ void rxConfig_Init(void)
 //	rxConfig.serialrx_inverted = 0;
 //	rxConfig.spektrum_sat_bind = 0;
 //	rxConfig.spektrum_sat_bind_autoreset = 1;
-//	rxConfig.midrc = RX_MID_USEC;
+	rxConfig.midrc = RX_MID_USEC;
 	rxConfig.mincheck = 1050;
 	rxConfig.maxcheck = 1900;
+	rxConfig.deadband = 10;                       // introduce a deadband around the stick center for pitch and roll axis. Must be greater than zero.
+	rxConfig.yaw_deadband = 10;                   // introduce a deadband around the stick center for yaw axis. Must be greater than zero.
+	rxConfig.yaw_control_reversed = false;
 //	rxConfig.rx_min_usec = RX_MIN_USEC;          // any of first 4 channels below this value will trigger rx loss detection
 //	rxConfig.rx_max_usec = RX_MAX_USEC;         // any of first 4 channels above this value will trigger rx loss detection
 //	rxConfig.rssi_src_frame_errors = false;
@@ -241,6 +246,70 @@ void rxInit(void)
     #endif
 }
 
+#define THROTTLE_LOOKUP_LENGTH 12
+static int16_t lookupThrottleRC[THROTTLE_LOOKUP_LENGTH];    // lookup table for expo & mid THROTTLE
+
+static int16_t rcLookupThrottle(int32_t tmp)
+{
+    const int32_t tmp2 = tmp / 100;
+    // [0;1000] -> expo -> [MINTHROTTLE;MAXTHROTTLE]
+    return lookupThrottleRC[tmp2] + (tmp - tmp2 * 100) * (lookupThrottleRC[tmp2 + 1] - lookupThrottleRC[tmp2]) / 100;
+}
+
+static void updateRcCommands(void)
+{
+    //isRxDataNew = true;
+
+    for (int axis = 0; axis < 3; axis++) {
+        // non coupled PID reduction scaler used in PID controller 1 and PID controller 2.
+
+        float tmp = MIN(ABS(rcData[axis] - rxConfig.midrc), 500);
+        if (axis == ROLL || axis == PITCH) {
+            if (tmp > rxConfig.deadband) {
+                tmp -= rxConfig.deadband;
+            } else {
+                tmp = 0;
+            }
+            rcCommand[axis] = tmp;
+        } else {
+            if (tmp > rxConfig.yaw_deadband) {
+                tmp -= rxConfig.yaw_deadband;
+            } else {
+                tmp = 0;
+            }
+            rcCommand[axis] = tmp * -GET_DIRECTION(rxConfig.yaw_control_reversed);
+        }
+        if (rcData[axis] < rxConfig.midrc) {
+            rcCommand[axis] = -rcCommand[axis];
+        }
+    }
+
+    int32_t tmp;
+
+		tmp = constrain(rcData[THROTTLE], rxConfig.mincheck, PWM_RANGE_MAX);
+		tmp = (uint32_t)(tmp - rxConfig.mincheck) * PWM_RANGE_MIN / (PWM_RANGE_MAX - rxConfig.mincheck);
+
+    rcCommand[THROTTLE] = rcLookupThrottle(tmp);
+
+//     if (FLIGHT_MODE(HEADFREE_MODE)) {
+//         static t_fp_vector_def  rcCommandBuff;
+//
+//         rcCommandBuff.X = rcCommand[ROLL];
+//         rcCommandBuff.Y = rcCommand[PITCH];
+//         if ((!FLIGHT_MODE(ANGLE_MODE) && (!FLIGHT_MODE(HORIZON_MODE)) && (!FLIGHT_MODE(GPS_RESCUE_MODE)))) {
+//             rcCommandBuff.Z = rcCommand[YAW];
+//         } else {
+//             rcCommandBuff.Z = 0;
+//         }
+//         imuQuaternionHeadfreeTransformVectorEarthToBody(&rcCommandBuff);
+//         rcCommand[ROLL] = rcCommandBuff.X;
+//         rcCommand[PITCH] = rcCommandBuff.Y;
+//         if ((!FLIGHT_MODE(ANGLE_MODE)&&(!FLIGHT_MODE(HORIZON_MODE)) && (!FLIGHT_MODE(GPS_RESCUE_MODE)))) {
+//             rcCommand[YAW] = rcCommandBuff.Z;
+//         }
+//     }
+}
+
 void taskUpdateRxMain(uint32_t currentTimeUs)
 {
 
@@ -258,7 +327,7 @@ void taskUpdateRxMain(uint32_t currentTimeUs)
 
     case RX_STATE_UPDATE:
         //updateRcCommands sets rcCommand, which is needed by updateAltHoldState and updateSonarAltHoldState
-        //updateRcCommands();
+        updateRcCommands();
         //updateArmingStatus();
 
         rxState = RX_STATE_CHECK;

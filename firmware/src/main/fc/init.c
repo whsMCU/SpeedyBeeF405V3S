@@ -172,7 +172,7 @@ void init(void)
 //        accStartCalibration();
 //    }
 //#endif
-//    gyroStartCalibration(false);
+    gyroStartCalibration(false);
 #ifdef USE_BARO
     baroStartCalibration();
 #endif

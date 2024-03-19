@@ -99,6 +99,10 @@ typedef struct rxConfig_s {
     uint8_t crsf_use_rx_snr;                   // Use RX SNR (in dB) instead of RSSI dBm for CRSF
     uint32_t msp_override_channels_mask;       // Channels to override when the MSP override mode is enabled
     uint8_t crsf_use_negotiated_baud;          // Use negotiated baud rate for CRSF V3
+
+    uint8_t deadband;                       // introduce a deadband around the stick center for pitch and roll axis. Must be greater than zero.
+    uint8_t yaw_deadband;                   // introduce a deadband around the stick center for yaw axis. Must be greater than zero.
+    bool yaw_control_reversed;            // invert control direction of yaw
 } rxConfig_t;
 
 extern rxConfig_t rxConfig;
@@ -119,6 +123,8 @@ extern rxConfig_t rxConfig;
 extern const char rcChannelLetters[];
 
 extern uint16_t rcData[MAX_SUPPORTED_RC_CHANNEL_COUNT];       // interval [1000;2000]
+
+extern float rcCommand[4];
 
 #define RSSI_SCALE_MIN 1
 #define RSSI_SCALE_MAX 255
