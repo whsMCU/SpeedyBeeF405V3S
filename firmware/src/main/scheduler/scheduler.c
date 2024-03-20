@@ -175,11 +175,14 @@ void setTaskEnabled(taskId_e taskId, bool enabled)
 void schedulerInit(void)
 {
     queueClear();
+
+    queueAdd(getTask(TASK_SYSTEM));
 }
 
 void scheduler(void)
 {
     static uint32_t scheduleCount = 0;
+    uint32_t taskExecutionTimeUs = 0;
 
     uint32_t currentTimeUs;
     task_t *selectedTask = NULL;
@@ -196,8 +199,11 @@ void scheduler(void)
 				// Execute task
 				const uint32_t currentTimeBeforeTaskCallUs = micros();
 				selectedTask->attribute->taskFunc(currentTimeBeforeTaskCallUs);
+				taskExecutionTimeUs = micros() - currentTimeBeforeTaskCallUs;
+				taskTotalExecutionTime += taskExecutionTimeUs;
 				selectedTask->taskExecutionTimeUs = micros() - currentTimeBeforeTaskCallUs;
 				selectedTask->taskExcutedEndUs = currentTimeBeforeTaskCallUs;
+		        selectedTask->totalExecutionTimeUs += taskExecutionTimeUs;   // time consumed by scheduler + task
 			}
 		}
 	}

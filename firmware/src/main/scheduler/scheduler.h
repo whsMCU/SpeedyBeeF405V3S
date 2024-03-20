@@ -67,7 +67,9 @@
 
 typedef enum {
     /* Actual tasks */
-    TASK_GYRO = 0,
+    TASK_SYSTEM = 0,
+//    TASK_MAIN,
+    TASK_GYRO,
 //    TASK_FILTER,
     TASK_PID,
     TASK_ACCEL,
@@ -137,6 +139,7 @@ typedef struct {
   uint32_t taskExecutionTimeUs;
   uint32_t taskPeriodTimeUs;
   uint32_t taskExcutedEndUs;
+  uint32_t totalExecutionTimeUs;      // total time consumed by task since boot
 } task_t;
 
 

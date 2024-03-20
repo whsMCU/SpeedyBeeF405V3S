@@ -157,7 +157,7 @@ static uint8_t crsfFrameCmdCRC(void)
     return crc;
 }
 
-uint32_t erroe_count;
+uint32_t error_count;
 // Receive ISR callback, called back from serial port
 void crsfDataReceive(uint16_t c, void *data)
 {
@@ -172,7 +172,6 @@ void crsfDataReceive(uint16_t c, void *data)
 #ifdef DEBUG_CRSF_PACKETS
     debug[2] = currentTimeUs - crsfFrameStartAtUs;
 #endif
-
     if (cmpTimeUs(currentTimeUs, crsfFrameStartAtUs) > CRSF_TIME_NEEDED_PER_FRAME_US) {
         // We've received a character after max time needed to complete a frame,
         // so this must be the start of a new frame.
@@ -272,7 +271,7 @@ void crsfDataReceive(uint16_t c, void *data)
                     break;
                 }
             } else {
-              	erroe_count++;
+            	error_count++;
 #if defined(USE_CRSF_V3)
                 if (crsfFrameErrorCnt < CRSF_FRAME_ERROR_COUNT_THRESHOLD)
                     crsfFrameErrorCnt++;
