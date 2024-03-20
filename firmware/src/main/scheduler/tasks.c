@@ -29,7 +29,7 @@
 
 
 #include "flight/imu.h"
-//#include "flight/position.h"
+#include "flight/position.h"
 
 
 #include "drivers/accgyro/accgyro.h"
@@ -42,8 +42,6 @@
 #include "scheduler/scheduler.h"
 #include "scheduler/tasks.h"
 
-//#include "sensors/acceleration_init.h"
-//#include "sensors/acceleration.h"
 #include "sensors/adcinternal.h"
 #include "sensors/barometer.h"
 #include "sensors/battery.h"
@@ -268,7 +266,7 @@ task_attribute_t task_attributes[TASK_COUNT] = {
 #endif
 
 #if defined(USE_BARO) || defined(USE_GPS)
-//    [TASK_ALTITUDE] = DEFINE_TASK("ALTITUDE", taskCalculateAltitude, TASK_PERIOD_HZ(40)),
+    [TASK_ALTITUDE] = DEFINE_TASK("ALTITUDE", calculateEstimatedAltitude, TASK_PERIOD_HZ(40)),
 #endif
 
 #ifdef USE_OSD
@@ -367,15 +365,15 @@ void tasksInit(void)
 #ifdef USE_BARO
     setTaskEnabled(TASK_BARO, true);
 #endif
-//
-//#if defined(USE_BARO) || defined(USE_GPS)
-//    setTaskEnabled(TASK_ALTITUDE, sensors(SENSOR_BARO) || featureIsEnabled(FEATURE_GPS));
-//#endif
-//
+
+#if defined(USE_BARO) || defined(USE_GPS)
+    setTaskEnabled(TASK_ALTITUDE, true);
+#endif
+
 //#ifdef USE_DASHBOARD
 //    setTaskEnabled(TASK_DASHBOARD, featureIsEnabled(FEATURE_DASHBOARD));
 //#endif
-//
+
 //#ifdef USE_TELEMETRY
 //    if (featureIsEnabled(FEATURE_TELEMETRY)) {
 //        setTaskEnabled(TASK_TELEMETRY, true);

@@ -28,11 +28,13 @@
 
 #include "common/maths.h"
 
-#include "fc/runtime_config.h"
+//#include "fc/runtime_config.h"
 
 #include "flight/position.h"
 #include "flight/imu.h"
 #include "flight/pid.h"
+
+#include "rx/rx.h"
 
 //#include "io/gps.h"
 
@@ -98,7 +100,7 @@ void calculateEstimatedAltitude(timeUs_t currentTimeUs)
 
     const uint32_t dTime = currentTimeUs - previousTimeUs;
     if (dTime < BARO_UPDATE_FREQUENCY_40HZ) {
-        schedulerIgnoreTaskExecTime();
+        //schedulerIgnoreTaskExecTime();
         return;
     }
     previousTimeUs = currentTimeUs;
@@ -114,14 +116,12 @@ void calculateEstimatedAltitude(timeUs_t currentTimeUs)
     bool haveBaroAlt = false;
     bool haveGpsAlt = false;
 #ifdef USE_BARO
-    if (sensors(SENSOR_BARO)) {
-        if (!baroIsCalibrationComplete()) {
-            performBaroCalibrationCycle();
-        } else {
-            baroAlt = baroCalculateAltitude();
-            haveBaroAlt = true;
-        }
-    }
+			if (!baroIsCalibrationComplete()) {
+					performBaroCalibrationCycle();
+			} else {
+					baroAlt = baroCalculateAltitude();
+					haveBaroAlt = true;
+			}
 #endif
 
 #ifdef USE_GPS
@@ -141,10 +141,10 @@ void calculateEstimatedAltitude(timeUs_t currentTimeUs)
     }
 #endif
 
-    if (ARMING_FLAG(ARMED) && !altitudeOffsetSetBaro) {
+    if (rxRuntimeState.arming_flag && !altitudeOffsetSetBaro) {
         baroAltOffset = baroAlt;
         altitudeOffsetSetBaro = true;
-    } else if (!ARMING_FLAG(ARMED) && altitudeOffsetSetBaro) {
+    } else if (!rxRuntimeState.arming_flag && altitudeOffsetSetBaro) {
         altitudeOffsetSetBaro = false;
     }
 
@@ -158,14 +158,14 @@ void calculateEstimatedAltitude(timeUs_t currentTimeUs)
         badGpsSats = positionConfig.altNumSatsBaroFallback;
     }
 
-    if (ARMING_FLAG(ARMED)) {
+    if (rxRuntimeState.arming_flag) {
         if (!altitudeOffsetSetGPS && gpsNumSat >= goodGpsSats) {
             gpsAltOffset = gpsAlt - baroAlt;
             altitudeOffsetSetGPS = true;
         } else if (gpsNumSat <= badGpsSats) {
             altitudeOffsetSetGPS = false;
         }
-    } else if (!ARMING_FLAG(ARMED) && altitudeOffsetSetGPS) {
+    } else if (!rxRuntimeState.arming_flag && altitudeOffsetSetGPS) {
         altitudeOffsetSetGPS = false;
     }
 
@@ -177,7 +177,7 @@ void calculateEstimatedAltitude(timeUs_t currentTimeUs)
     }
 
     if (haveGpsAlt && haveBaroAlt && positionConfig.altSource == DEFAULT) {
-        if (ARMING_FLAG(ARMED)) {
+        if (rxRuntimeState.arming_flag) {
             estimatedAltitudeCm = gpsAlt * gpsTrust + baroAlt * (1 - gpsTrust);
         } else {
             estimatedAltitudeCm = gpsAlt; //absolute altitude is shown before arming, ignore baro
