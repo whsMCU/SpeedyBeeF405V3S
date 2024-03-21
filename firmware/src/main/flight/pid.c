@@ -28,6 +28,8 @@
 #include "rx/rx.h"
 #include "drivers/motor.h"
 
+#include "fc/runtime_config.h"
+
 PIDDouble roll;
 PIDDouble pitch;
 PIDSingle yaw_heading;
@@ -188,7 +190,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   Double_Roll_Pitch_PID_Calculation(&pitch, rcCommand[PITCH], imu_pitch, bmi270.gyroADCf[Y]);
   Double_Roll_Pitch_PID_Calculation(&roll, rcCommand[ROLL], imu_roll, bmi270.gyroADCf[X]);
 
-  if(rcData[THROTTLE] < 1030 || rxRuntimeState.arming_flag == 0)
+  if(rcData[THROTTLE] < 1030 || !ARMING_FLAG(ARMED))
   {
 	  Reset_All_PID_Integrator();
   }
@@ -199,11 +201,6 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   LR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + pitch.in.pid_result + roll.in.pid_result + yaw_rate.pid_result;
   RR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + pitch.in.pid_result - roll.in.pid_result - yaw_rate.pid_result;
   RF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - pitch.in.pid_result - roll.in.pid_result + yaw_rate.pid_result;
-
-//  ccr1 = 10500 + (rcData[THROTTLE] - 1000) * 10.5;
-//	ccr2 = 10500 + (rcData[THROTTLE] - 1000) * 10.5;
-//	ccr3 = 10500 + (rcData[THROTTLE] - 1000) * 10.5;
-//	ccr4 = 10500 + (rcData[THROTTLE] - 1000) * 10.5;
 
   motorWriteAll();
 }

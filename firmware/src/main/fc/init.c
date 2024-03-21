@@ -48,14 +48,14 @@
 
 //#include "io/displayport_max7456.h"
 
-//#include "fc/board_info.h"
-//#include "fc/dispatch.h"
+#include "fc/board_info.h"
+#include "fc/dispatch.h"
 #include "fc/init.h"
 //#include "fc/core.h"
 //#include "fc/rc_modes.h"
 //#include "fc/rc_controls.h"
-//#include "fc/runtime_config.h"
-//#include "fc/stats.h"
+#include "fc/runtime_config.h"
+#include "fc/stats.h"
 //#include "fc/controlrate_profile.h"
 
 #include "scheduler/tasks.h"
@@ -66,7 +66,7 @@
 //#include "flight/mixer.h"
 #include "flight/pid.h"
 //#include "flight/pid_init.h"
-//#include "flight/position.h"
+#include "flight/position.h"
 //#include "flight/servos.h"
 
 //#include "msc/emfat_file.h"
@@ -102,10 +102,10 @@
 //#include "drivers/gps/gps.h"
 #include "drivers/motor.h"
 //#include "drivers/pwm_output.h"
-//#include "drivers/osd.h"
-//#include "drivers/max7456.h"
+#include "drivers/osd.h"
+#include "drivers/max7456.h"
 
-//#include "fc/stats.h"
+#include "fc/stats.h"
 
 #include "rx/rx.h"
 
@@ -179,9 +179,9 @@ void init(void)
 
 	batteryInit(); // always needs doing, regardless of features.
 
-//#ifdef USE_PERSISTENT_STATS
-//    statsInit();
-//#endif
+#ifdef USE_PERSISTENT_STATS
+    statsInit();
+#endif
 
 
 //#ifdef USE_MOTOR
@@ -191,32 +191,24 @@ void init(void)
 
 	osdInit();
     tasksInit();
-//	MSP_SET_MODE_RANGE(0,  0, 0, 1700, 2100);
-//	MSP_SET_MODE_RANGE(1,  1, 1,  900, 2100);
-//	MSP_SET_MODE_RANGE(2,  6, 2, 1300, 2100);
-//	MSP_SET_MODE_RANGE(3, 27, 4, 1700, 2100);
-//	MSP_SET_MODE_RANGE(4,  7, 5, 1700, 2100);
-//	MSP_SET_MODE_RANGE(5, 13, 5, 1700, 2100);
-//	MSP_SET_MODE_RANGE(6, 39, 4, 1700, 2100);
-
 }
 
 void Param_Config_Init(void)
 {
 //	systemConfig_Init();
 //	pilotConfig_Init();
-//	boardConfig_Init();
-//
-//	boardAlignment_Init(0, 0, 0);
+	boardConfig_Init();
+
+	boardAlignment_Init(0, 0, 0);
 //	failsafeConfig_Init();
 //	accelerometerConfig_init();
 //	gyroConfig_init();
 //	gyroDeviceConfig_Init();
-//	statsConfig_Init();
-//	motorConfig_Init();
-//#ifdef USE_GPS
-//	gpsConfig_Init();
-//#endif
+	statsConfig_Init();
+	motorConfig_Init();
+#ifdef USE_GPS
+	gpsConfig_Init();
+#endif
 	barometerConfig_Init();
 #ifdef USE_MAG
 	compassConfig_Init();

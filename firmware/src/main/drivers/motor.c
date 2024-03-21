@@ -28,6 +28,8 @@
 
 #include "common/maths.h"
 
+#include "fc/runtime_config.h"
+
 #include "drivers/motor.h"
 
 #include "rx/rx.h"
@@ -43,7 +45,7 @@ unsigned short LF, LR, RR, RF;
 
 void motorConfig_Init(void)
 {
-		motorConfig.minthrottle = 1070;
+	motorConfig.minthrottle = 1070;
     motorConfig.maxthrottle = 2000;
     motorConfig.mincommand = 1000;
     motorConfig.digitalIdleOffsetValue = 550;
@@ -58,7 +60,7 @@ void motorShutdown(void)
 
 void motorWriteAll(void)
 {
-  if(rxRuntimeState.arming_flag == 1)
+  if(ARMING_FLAG(ARMED))
   {
  if(rxRuntimeState.failsafe_flag == 0)
 	  {
@@ -96,7 +98,10 @@ void motorWriteAll(void)
 
 void motorDisable(void)
 {
-
+  TIM4->CCR1 = 10500;
+  TIM4->CCR2 = 10500;
+  TIM4->CCR3 = 10500;
+  TIM4->CCR4 = 10500;
 }
 
 void motorEnable(void)

@@ -24,7 +24,7 @@
 
 #include "time.h"
 
-#include "config/config.h"
+//#include "config/config.h"
 #include "dispatch.h"
 #include "runtime_config.h"
 #include "stats.h"
@@ -67,12 +67,12 @@ void writeStats(struct dispatchEntry_s* self)
 
     if (!ARMING_FLAG(ARMED)) {
         // Don't save if the user made config changes that have not yet been saved.
-        if (!isConfigDirty()) {
-            writeEEPROM();
-
-            // Repeat disarming beep indicating the stats save is complete
-            //beeper(BEEPER_DISARMING);
-        }
+//        if (!isConfigDirty()) {
+//            writeEEPROM();
+//
+//            // Repeat disarming beep indicating the stats save is complete
+//            //beeper(BEEPER_DISARMING);
+//        }
 
         saveRequired = false;
     }

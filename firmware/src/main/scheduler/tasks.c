@@ -26,7 +26,7 @@
 
 #include "common/utils.h"
 
-
+#include "fc/dispatch.h"
 
 #include "flight/imu.h"
 #include "flight/position.h"
@@ -244,7 +244,7 @@ task_attribute_t task_attributes[TASK_COUNT] = {
 #endif
 
     [TASK_RX] = DEFINE_TASK("RX", taskUpdateRxMain, TASK_PERIOD_HZ(33)), // If event-based scheduling doesn't work, fallback to periodic scheduling
-//    [TASK_DISPATCH] = DEFINE_TASK("DISPATCH", NULL, NULL, dispatchProcess, TASK_PERIOD_HZ(1000), TASK_PRIORITY_HIGH),
+    [TASK_DISPATCH] = DEFINE_TASK("DISPATCH", dispatchProcess, TASK_PERIOD_HZ(1000)),
 
     [TASK_LED] = DEFINE_TASK("LED", ledUpdate, TASK_PERIOD_HZ(100)),
     [TASK_DEBUG] = DEFINE_TASK("DEBUG", debugPrint, TASK_PERIOD_HZ(50)),
@@ -348,8 +348,8 @@ void tasksInit(void)
 
     setTaskEnabled(TASK_RX, true);
 
-//    setTaskEnabled(TASK_DISPATCH, dispatchIsEnabled());
-//
+    setTaskEnabled(TASK_DISPATCH, dispatchIsEnabled());
+
 //#ifdef USE_BEEPER
 //    setTaskEnabled(TASK_BEEPER, true);
 //#endif

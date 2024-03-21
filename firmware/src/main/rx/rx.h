@@ -136,7 +136,7 @@ typedef enum rc_alias {
     PITCH,		//rcData[1],	PITCH
     YAW,			//rcData[2],	YAW
     THROTTLE,	//rcData[3],	THROTTLE
-		ARMED,			//rcData[4],	ARMED
+		ARM,			//rcData[4],	ARMED
 		SA,			//rcData[5],	SA
 		SB,			//rcData[6],	SB
 		SC,			//rcData[7],	SC
@@ -206,8 +206,7 @@ typedef struct rxRuntimeState_s {
     uint32_t            callbackTime;
     uint32_t            uartAvalable;
     bool            	  RxCallback_Flag;
-    bool								arming_flag;
-    bool								failsafe_flag;
+    bool				failsafe_flag;
 } rxRuntimeState_t;
 
 typedef enum {

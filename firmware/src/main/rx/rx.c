@@ -38,9 +38,10 @@
 
 //#include "fc/rc_controls.h"
 //#include "fc/rc_modes.h"
-//#include "fc/runtime_config.h"
+#include "fc/runtime_config.h"
 
 //#include "flight/failsafe.h"
+#include "flight/imu.h"
 
 #include "rx/rx.h"
 #include "rx/crsf.h"
@@ -291,23 +292,23 @@ static void updateRcCommands(void)
 
     rcCommand[THROTTLE] = rcLookupThrottle(tmp);
 
-//     if (FLIGHT_MODE(HEADFREE_MODE)) {
-//         static t_fp_vector_def  rcCommandBuff;
-//
-//         rcCommandBuff.X = rcCommand[ROLL];
-//         rcCommandBuff.Y = rcCommand[PITCH];
-//         if ((!FLIGHT_MODE(ANGLE_MODE) && (!FLIGHT_MODE(HORIZON_MODE)) && (!FLIGHT_MODE(GPS_RESCUE_MODE)))) {
-//             rcCommandBuff.Z = rcCommand[YAW];
-//         } else {
-//             rcCommandBuff.Z = 0;
-//         }
-//         imuQuaternionHeadfreeTransformVectorEarthToBody(&rcCommandBuff);
-//         rcCommand[ROLL] = rcCommandBuff.X;
-//         rcCommand[PITCH] = rcCommandBuff.Y;
-//         if ((!FLIGHT_MODE(ANGLE_MODE)&&(!FLIGHT_MODE(HORIZON_MODE)) && (!FLIGHT_MODE(GPS_RESCUE_MODE)))) {
-//             rcCommand[YAW] = rcCommandBuff.Z;
-//         }
-//     }
+	if (FLIGHT_MODE(HEADFREE_MODE)) {
+	 static t_fp_vector_def  rcCommandBuff;
+
+	 rcCommandBuff.X = rcCommand[ROLL];
+	 rcCommandBuff.Y = rcCommand[PITCH];
+	 if ((!FLIGHT_MODE(ANGLE_MODE) && (!FLIGHT_MODE(HORIZON_MODE)) && (!FLIGHT_MODE(GPS_RESCUE_MODE)))) {
+		 rcCommandBuff.Z = rcCommand[YAW];
+	 } else {
+		 rcCommandBuff.Z = 0;
+	 }
+	 imuQuaternionHeadfreeTransformVectorEarthToBody(&rcCommandBuff);
+	 rcCommand[ROLL] = rcCommandBuff.X;
+	 rcCommand[PITCH] = rcCommandBuff.Y;
+	 if ((!FLIGHT_MODE(ANGLE_MODE)&&(!FLIGHT_MODE(HORIZON_MODE)) && (!FLIGHT_MODE(GPS_RESCUE_MODE)))) {
+		 rcCommand[YAW] = rcCommandBuff.Z;
+	 }
+	}
 }
 
 void taskUpdateRxMain(uint32_t currentTimeUs)
@@ -456,11 +457,14 @@ bool calculateRxChannels(uint32_t currentTimeUs)
 unsigned short rx_SwArm_Prev = 0;
 void processRxModes(uint32_t currentTimeUs)
 {
-	if(rcData[ARMED] == 2000 && rx_SwArm_Prev != 2000)
+	if(rcData[ARM] == 2000 && rx_SwArm_Prev != 2000)
 	{
 		if(rcData[THROTTLE] <1030)
 		{
-			rxRuntimeState.arming_flag = 1;
+			ENABLE_ARMING_FLAG(ARMED);
+#ifdef USE_PERSISTENT_STATS
+			 statsOnArm();
+#endif
 		}
 		else
 		{
@@ -470,9 +474,10 @@ void processRxModes(uint32_t currentTimeUs)
 	}
 	rx_SwArm_Prev = rcData[ARMED];
 
-	if(rcData[ARMED] != 2000)
+	if(rcData[ARM] != 2000)
 	{
-		rxRuntimeState.arming_flag = 0;
+		DISABLE_ARMING_FLAG(ARMED);
+		statsOnDisarm();
 	}
 
 	if(rcData[SD] == 2000)
@@ -483,6 +488,8 @@ void processRxModes(uint32_t currentTimeUs)
 	{
 		rxRuntimeState.failsafe_flag = 0;
 	}
+	ENABLE_FLIGHT_MODE(ANGLE_MODE);
+	//ENABLE_FLIGHT_MODE(HEADFREE_MODE);
 }
 
 void parseRcChannels(const char *input, rxConfig_t *rxConfig)
