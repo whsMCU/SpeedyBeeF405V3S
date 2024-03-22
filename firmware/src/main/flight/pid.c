@@ -197,7 +197,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 	  Reset_All_PID_Integrator();
   }
 
-  if(rcData[ROLL] < 1485 || rcData[ROLL] > 1515)
+  if(rcData[YAW] < 1485 || rcData[YAW] > 1515)
   {
 	  yaw_heading_reference = imu_yaw;
 	  Single_Yaw_Rate_PID_Calculation(&yaw_rate, rcCommand[YAW], bmi270.gyroADCf[Z]); //left -, right +

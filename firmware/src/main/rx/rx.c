@@ -266,7 +266,7 @@ static void updateRcCommands(void)
     for (int axis = 0; axis < 3; axis++) {
         // non coupled PID reduction scaler used in PID controller 1 and PID controller 2.
 
-        float tmp = MIN(ABS(rcData[axis] - rxConfig.midrc), 500);
+        float tmp = MIN(ABS((rcData[axis] - rxConfig.midrc) * 0.1f), 50);
         if (axis == ROLL || axis == PITCH) {
             if (tmp > rxConfig.deadband) {
                 tmp -= rxConfig.deadband;

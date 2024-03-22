@@ -205,6 +205,7 @@ void scheduler(void)
 			}
 		}
 	}
+  rxRuntimeState.rcFrameStatusFn(&rxRuntimeState);
     scheduleCount++;
 }
 

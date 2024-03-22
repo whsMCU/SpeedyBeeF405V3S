@@ -81,7 +81,6 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 void hwInit(void);
-void RC_Parse(void);
 
 /* USER CODE END 0 */
 
@@ -140,7 +139,6 @@ int main(void)
   while (1)
   {
 	  scheduler();
-	  RC_Parse();
   }
   /* USER CODE END 3 */
 }
@@ -167,16 +165,6 @@ void hwInit(void)
     fatfsInit();
   }
 }
-
-void RC_Parse(void)
-{
-  if(uartAvailable(_DEF_UART2) > 0)
-  {
-	crsfDataReceive(uartRead(_DEF_UART2), (void*) &rxRuntimeState);
-  }
-  rxRuntimeState.rcFrameStatusFn(&rxRuntimeState);
-}
-
 /**
   * @brief System Clock Configuration
   * @retval None
