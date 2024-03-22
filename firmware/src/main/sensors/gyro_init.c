@@ -64,6 +64,7 @@ bool gyroInit(void)
 	bmi270.gyroCalibrationDuration = 125;
 	bmi270.sampleLooptime = 312;
 	bmi270.targetLooptime = 312;
+	bmi270.sampleRateHz = 3200;
 
 	bmi270.scale = GYRO_SCALE_2000DPS;
 
@@ -74,6 +75,11 @@ bool gyroInit(void)
 	bmi270.acc_1G = 512 * 4;
 	bmi270.acc_1G_rec = 1.0f / bmi270.acc_1G;
 	bmi270.acc_high_fsr = false;
+
+	resetFlightDynamicsTrims(&bmi270.accelerationTrims);
+	bmi270.accelerationTrims.values.roll = 29;
+	bmi270.accelerationTrims.values.pitch = -35;
+	bmi270.accelerationTrims.values.yaw = -9;
 
     return true;
 }

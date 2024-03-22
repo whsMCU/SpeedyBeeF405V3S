@@ -56,8 +56,6 @@
 // 2 - Total lateness in last second in 10ths us
 // 3 - Total tasks run in last second
 
-extern task_t tasks[];
-
 static task_t *currentTask = NULL;
 
 uint16_t averageSystemLoadPercent = 0;

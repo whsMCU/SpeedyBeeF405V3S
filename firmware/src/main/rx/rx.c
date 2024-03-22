@@ -38,10 +38,12 @@
 
 //#include "fc/rc_controls.h"
 //#include "fc/rc_modes.h"
+#include "fc/stats.h"
 #include "fc/runtime_config.h"
 
 //#include "flight/failsafe.h"
 #include "flight/imu.h"
+#include "flight/pid.h"
 
 #include "rx/rx.h"
 #include "rx/crsf.h"
@@ -462,6 +464,7 @@ void processRxModes(uint32_t currentTimeUs)
 		if(rcData[THROTTLE] <1030)
 		{
 			ENABLE_ARMING_FLAG(ARMED);
+			yaw_heading_reference = (float)attitude.values.yaw/10;;
 #ifdef USE_PERSISTENT_STATS
 			 statsOnArm();
 #endif

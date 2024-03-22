@@ -47,8 +47,6 @@
 
 imu_t bmi270;
 
-static int16_t gyroSensorTemperature;
-
 uint8_t activePidLoopDenom = 1;
 
 static bool firstArmingCalibrationWasStarted = false;
@@ -229,6 +227,88 @@ bool gyroGetAccumulationAverage(float *accumulationAverage)
     }
 }
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+#define CALIBRATING_ACC_CYCLES              400
+
+static void applyAccelerationTrims(const flightDynamicsTrims_t *accelerationTrims)
+{
+    bmi270.accADC[X] -= accelerationTrims->raw[X];
+    bmi270.accADC[Y] -= accelerationTrims->raw[Y];
+    bmi270.accADC[Z] -= accelerationTrims->raw[Z];
+}
+
+static void setConfigCalibrationCompleted(void)
+{
+	bmi270.accelerationTrims.values.calibrationCompleted = 1;
+}
+
+bool accHasBeenCalibrated(void)
+{
+    return bmi270.accelerationTrims.values.calibrationCompleted;
+}
+
+void resetFlightDynamicsTrims(flightDynamicsTrims_t *accZero)
+{
+    accZero->values.roll = 0;
+    accZero->values.pitch = 0;
+    accZero->values.yaw = 0;
+    accZero->values.calibrationCompleted = 0;
+}
+
+void accStartCalibration(void)
+{
+    bmi270.calibratingA = CALIBRATING_ACC_CYCLES;
+}
+
+bool accIsCalibrationComplete(void)
+{
+    return bmi270.calibratingA == 0;
+}
+
+static bool isOnFinalAccelerationCalibrationCycle(void)
+{
+    return bmi270.calibratingA == 1;
+}
+
+static bool isOnFirstAccelerationCalibrationCycle(void)
+{
+    return bmi270.calibratingA == CALIBRATING_ACC_CYCLES;
+}
+
+void performAcclerationCalibration(rollAndPitchTrims_t *rollAndPitchTrims)
+{
+    static int32_t a[3];
+
+    for (int axis = 0; axis < 3; axis++) {
+
+        // Reset a[axis] at start of calibration
+        if (isOnFirstAccelerationCalibrationCycle()) {
+            a[axis] = 0;
+        }
+
+        // Sum up CALIBRATING_ACC_CYCLES readings
+        a[axis] += bmi270.accADC[axis];
+
+        // Reset global variables to prevent other code from using un-calibrated data
+        bmi270.accADC[axis] = 0;
+        bmi270.accelerationTrims.raw[axis] = 0;
+    }
+
+    if (isOnFinalAccelerationCalibrationCycle()) {
+        // Calculate average, shift Z down by acc_1G and store values in EEPROM at end of calibration
+    	bmi270.accelerationTrims.raw[X] = (a[X] + (CALIBRATING_ACC_CYCLES / 2)) / CALIBRATING_ACC_CYCLES;
+    	bmi270.accelerationTrims.raw[Y] = (a[Y] + (CALIBRATING_ACC_CYCLES / 2)) / CALIBRATING_ACC_CYCLES;
+    	bmi270.accelerationTrims.raw[Z] = (a[Z] + (CALIBRATING_ACC_CYCLES / 2)) / CALIBRATING_ACC_CYCLES - bmi270.acc_1G;
+
+        setConfigCalibrationCompleted();
+
+        //saveConfigAndNotify();
+    }
+
+    bmi270.calibratingA--;
+}
+
 #define acc_lpf_factor 4
 
 void taskAccUpdate(timeUs_t currentTimeUs)
@@ -244,9 +324,11 @@ void taskAccUpdate(timeUs_t currentTimeUs)
 			bmi270.accADC[axis] = bmi270.accADCRaw[axis];
 	}
 
-	bmi270.accADC[X] -= 29;
-	bmi270.accADC[Y] -= -35;
-	bmi270.accADC[Z] -= -9;
+    if (!accIsCalibrationComplete()) {
+        performAcclerationCalibration(&bmi270.rollAndPitchTrims);
+    }
+
+    applyAccelerationTrims(&bmi270.accelerationTrims);
 
   ++bmi270.acc_accumulatedMeasurementCount;
   for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {

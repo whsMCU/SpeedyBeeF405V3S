@@ -62,30 +62,30 @@ void motorWriteAll(void)
 {
   if(ARMING_FLAG(ARMED))
   {
- if(rxRuntimeState.failsafe_flag == 0)
+	if(rxRuntimeState.failsafe_flag == 0)
+	{
+	  if(rcData[THROTTLE] > 1030)
 	  {
-		  if(rcData[THROTTLE] > 1030)
-		  {
-			  TIM4->CCR1 = RR > 21000 ? 21000 : RR < 11000 ? 11000 : RR;
-			  TIM4->CCR2 = RF > 21000 ? 21000 : RF < 11000 ? 11000 : RF;
-			  TIM4->CCR3 = LR > 21000 ? 21000 : LR < 11000 ? 11000 : LR;
-			  TIM4->CCR4 = LF > 21000 ? 21000 : LF < 11000 ? 11000 : LF;
-		  }
-		  else
-		  {
-			  TIM4->CCR1 = 11000;
-			  TIM4->CCR2 = 11000;
-			  TIM4->CCR3 = 11000;
-			  TIM4->CCR4 = 11000;
-		  }
+		  TIM4->CCR1 = RR > 21000 ? 21000 : RR < 11000 ? 11000 : RR;
+		  TIM4->CCR2 = RF > 21000 ? 21000 : RF < 11000 ? 11000 : RF;
+		  TIM4->CCR3 = LR > 21000 ? 21000 : LR < 11000 ? 11000 : LR;
+		  TIM4->CCR4 = LF > 21000 ? 21000 : LF < 11000 ? 11000 : LF;
 	  }
 	  else
 	  {
-		  TIM5->CCR1 = 10500;
-		  TIM5->CCR2 = 10500;
-		  TIM5->CCR3 = 10500;
-		  TIM5->CCR4 = 10500;
+		  TIM4->CCR1 = 11000;
+		  TIM4->CCR2 = 11000;
+		  TIM4->CCR3 = 11000;
+		  TIM4->CCR4 = 11000;
 	  }
+	}
+	else
+	{
+	  TIM5->CCR1 = 10500;
+	  TIM5->CCR2 = 10500;
+	  TIM5->CCR3 = 10500;
+	  TIM5->CCR4 = 10500;
+	}
   }
   else
   {

@@ -180,6 +180,8 @@ void pidInit(void)
 	yaw_rate.kd = 2;
 }
 
+float yaw_heading_reference;
+
 // Function for loop trigger
 void taskMainPidLoop(timeUs_t currentTimeUs)
 {
@@ -195,12 +197,26 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 	  Reset_All_PID_Integrator();
   }
 
-  Single_Yaw_Rate_PID_Calculation(&yaw_rate, rcCommand[YAW], bmi270.gyroADCf[Z]); //left -, right +
+  if(rcData[ROLL] < 1485 || rcData[ROLL] > 1515)
+  {
+	  yaw_heading_reference = imu_yaw;
+	  Single_Yaw_Rate_PID_Calculation(&yaw_rate, rcCommand[YAW], bmi270.gyroADCf[Z]); //left -, right +
 
-  LF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - pitch.in.pid_result + roll.in.pid_result - yaw_rate.pid_result;
-  LR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + pitch.in.pid_result + roll.in.pid_result + yaw_rate.pid_result;
-  RR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + pitch.in.pid_result - roll.in.pid_result - yaw_rate.pid_result;
-  RF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - pitch.in.pid_result - roll.in.pid_result + yaw_rate.pid_result;
+	  LF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - pitch.in.pid_result + roll.in.pid_result - yaw_rate.pid_result;
+	  LR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + pitch.in.pid_result + roll.in.pid_result + yaw_rate.pid_result;
+	  RR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + pitch.in.pid_result - roll.in.pid_result - yaw_rate.pid_result;
+	  RF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - pitch.in.pid_result - roll.in.pid_result + yaw_rate.pid_result;
+  }
+  else
+  {
+	  Single_Yaw_Heading_PID_Calculation(&yaw_heading, yaw_heading_reference, imu_yaw, bmi270.gyroADCf[Z]);
+
+	  LF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - pitch.in.pid_result + roll.in.pid_result - yaw_rate.pid_result;
+	  LR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + pitch.in.pid_result + roll.in.pid_result + yaw_rate.pid_result;
+	  RR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + pitch.in.pid_result - roll.in.pid_result - yaw_rate.pid_result;
+	  RF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - pitch.in.pid_result - roll.in.pid_result + yaw_rate.pid_result;
+  }
+
 
   motorWriteAll();
 }

@@ -90,14 +90,18 @@ typedef struct gyro_s {
     uint16_t acc_1G;
     int16_t accADCRaw[XYZ_AXIS_COUNT];
     float accADC[XYZ_AXIS_COUNT];
+    flightDynamicsTrims_t accelerationTrims;
+    rollAndPitchTrims_t rollAndPitchTrims;
     int acc_accumulatedMeasurementCount;
     float acc_accumulatedMeasurements[XYZ_AXIS_COUNT];
+    uint16_t calibratingA;      // the calibration is done is the main loop. Calibrating decreases at each cycle down to 0, then we enter in a normal mode.
+
 
     bool isAccelUpdatedAtLeastOnce;
     uint16_t accSampleRateHz;
     bool acc_high_fsr;
 
-    uint16_t calibratingA;      // the calibration is done is the main loop. Calibrating decreases at each cycle down to 0, then we enter in a normal mode.
+
 } imu_t;
 
 extern imu_t bmi270;
@@ -113,5 +117,12 @@ bool isFirstArmingGyroCalibrationRunning(void);
 bool gyroIsCalibrationComplete(void);
 void gyroReadTemperature(void);
 
+bool accIsCalibrationComplete(void);
+bool accHasBeenCalibrated(void);
+void accStartCalibration(void);
+void resetRollAndPitchTrims(rollAndPitchTrims_t *rollAndPitchTrims);
 void taskAccUpdate(timeUs_t currentTimeUs);
 bool accGetAccumulationAverage(float *accumulation);
+
+void resetFlightDynamicsTrims(flightDynamicsTrims_t *accZero);
+void setAccelerationTrims(union flightDynamicsTrims_u *accelerationTrimsToUse);
