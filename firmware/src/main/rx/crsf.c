@@ -162,13 +162,11 @@ uint32_t error_count;
 void crsfDataReceive(uint16_t c, void *data)
 {
     rxRuntimeState_t *const rxRuntimeState = (rxRuntimeState_t *const)data;
-
     static uint8_t crsfFramePosition = 0;
 #if defined(USE_CRSF_V3)
     static uint8_t crsfFrameErrorCnt = 0;
 #endif
     const uint32_t currentTimeUs = micros();
-
 #ifdef DEBUG_CRSF_PACKETS
     debug[2] = currentTimeUs - crsfFrameStartAtUs;
 #endif
@@ -183,7 +181,6 @@ void crsfDataReceive(uint16_t c, void *data)
 #endif
         crsfFramePosition = 0;
     }
-
     if (crsfFramePosition == 0) {
         crsfFrameStartAtUs = currentTimeUs;
     }
@@ -191,7 +188,6 @@ void crsfDataReceive(uint16_t c, void *data)
     // full frame length includes the length of the address and framelength fields
     // sometimes we can receive some garbage data. So, we need to check max size for preventing buffer overrun.
     const int fullFrameLength = crsfFramePosition < 3 ? 5 : MIN(crsfFrame.frame.frameLength + CRSF_FRAME_LENGTH_ADDRESS + CRSF_FRAME_LENGTH_FRAMELENGTH, CRSF_FRAME_SIZE_MAX);
-
     if (crsfFramePosition < fullFrameLength) {
         crsfFrame.bytes[crsfFramePosition++] = (uint8_t)c;
         if (crsfFramePosition >= fullFrameLength) {

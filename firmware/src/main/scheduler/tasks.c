@@ -27,6 +27,7 @@
 #include "common/utils.h"
 
 #include "fc/dispatch.h"
+#include "fc/runtime_config.h"
 
 #include "flight/imu.h"
 #include "flight/position.h"
@@ -75,7 +76,14 @@ static void ledUpdate(uint32_t currentTimeUs)
     if(currentTimeUs - pre_time >= 1000000)
     {
         pre_time = currentTimeUs;
-        LED0_TOGGLE;
+        if(ARMING_FLAG(ARMED))
+        {
+        	ledOn(ST1);
+        }
+        else
+        {
+					LED0_TOGGLE;
+        }
     }
 }
 

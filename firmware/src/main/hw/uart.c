@@ -570,12 +570,17 @@ baudRate_e lookupBaudRateIndex(uint32_t baudRate)
     return BAUD_AUTO;
 }
 
-
+uint32_t overren_cnt = 0;
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
   if (huart->Instance == USART2)
   {
-  	//HAL_UART_Receive_IT(&huart2, &uart2_rx_data, 1);
+  	if(huart->ErrorCode == 8)
+  	{
+  		overren_cnt++;
+  		HAL_UART_Abort_IT(&huart2);
+  		HAL_UART_Receive_IT(&huart2, &uart2_rx_data, 1);
+  	}
 
 //		HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *)&rx_buf2[0], MAX_SIZE);
 //		__HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);

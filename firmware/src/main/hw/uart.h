@@ -33,6 +33,7 @@ typedef enum {
 } baudRate_e;
 
 extern const uint32_t baudRates[];
+extern uint32_t executeTime_rx;
 
 bool     uartInit(void);
 bool     uartOpen(uint8_t ch, uint32_t baud);
