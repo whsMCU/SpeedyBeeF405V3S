@@ -32,6 +32,7 @@
 #include "common/maths.h"
 
 #include "rx/rx.h"
+#include "rx/crsf.h"
 
 #include "sensors/gyro_init.h"
 #include "sensors/gyro.h"
@@ -193,6 +194,10 @@ void scheduler(void)
 			if (selectedTask) {
 				currentTask = selectedTask;
 				selectedTask->taskPeriodTimeUs = currentTimeUs - selectedTask->lastExecutedAtUs;
+				if(selectedTask->taskPeriodTimeUs > selectedTask->maxtaskPeriodTimeUs)
+				{
+					selectedTask->maxtaskPeriodTimeUs = selectedTask->taskPeriodTimeUs;
+				}
 				selectedTask->lastExecutedAtUs = currentTimeUs;
 				// Execute task
 				const uint32_t currentTimeBeforeTaskCallUs = micros();
@@ -205,7 +210,12 @@ void scheduler(void)
 			}
 		}
 	}
-  rxRuntimeState.rcFrameStatusFn(&rxRuntimeState);
+	rxRuntimeState.uartAvalable = uartAvailable(_DEF_UART2);
+	while(uartAvailable(_DEF_UART2))
+	{
+		crsfDataReceive(uartRead(_DEF_UART2), (void*) &rxRuntimeState);
+	}
+  	rxRuntimeState.rcFrameStatusFn(&rxRuntimeState);
     scheduleCount++;
 }
 
