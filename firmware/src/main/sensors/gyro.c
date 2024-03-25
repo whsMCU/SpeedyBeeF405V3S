@@ -34,11 +34,11 @@
 //#include "config/feature.h"
 //#include "config/config.h"
 
-//#include "fc/runtime_config.h"
+#include "fc/runtime_config.h"
 
-//#include "flight/pid.h"
+#include "flight/pid.h"
 
-//#include "scheduler/scheduler.h"
+#include "scheduler/scheduler.h"
 
 #include "sensors/gyro.h"
 #include "sensors/gyro_init.h"
@@ -51,16 +51,7 @@ uint8_t activePidLoopDenom = 1;
 
 static bool firstArmingCalibrationWasStarted = false;
 
-#ifdef UNIT_TEST
-STATIC_UNIT_TESTED gyroSensor_t * const gyroSensorPtr = &gyro.gyroSensor1;
-STATIC_UNIT_TESTED gyroDev_t * const gyroDevPtr = &gyro.gyroSensor1.gyroDev;
-#endif
-
-
 #define DEBUG_GYRO_CALIBRATION 3
-
-#define GYRO_OVERFLOW_TRIGGER_THRESHOLD 31980  // 97.5% full scale (1950dps for 2000dps gyro)
-#define GYRO_OVERFLOW_RESET_THRESHOLD 30340    // 92.5% full scale (1850dps for 2000dps gyro)
 
 bool isGyroSensorCalibrationComplete(const imu_t *gyroSensor)
 {
