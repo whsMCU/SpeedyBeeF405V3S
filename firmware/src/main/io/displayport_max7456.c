@@ -31,7 +31,7 @@
 #include "drivers/max7456.h"
 #include "drivers/osd.h"
 
-#include "config/config.h"
+//#include "config/config.h"
 
 #include "fc/runtime_config.h"
 
@@ -197,7 +197,7 @@ static bool checkReady(displayPort_t *displayPort, bool rescan)
             return false;
         } else {
             // Try to initialize the device
-            if (max7456Init(&max7456Config, max7456VcdProfile, systemConfig.cpu_overclock) != MAX7456_INIT_OK) {
+            if (max7456Init(&max7456Config, max7456VcdProfile, 0) != MAX7456_INIT_OK) {
                 return false;
             }
             // At this point the device has been initialized and detected
@@ -242,7 +242,7 @@ bool max7456DisplayPortInit(const vcdProfile_t *vcdProfile, displayPort_t **disp
 {
     max7456VcdProfile = vcdProfile;
 
-    switch (max7456Init(&max7456Config, max7456VcdProfile, systemConfig.cpu_overclock)) {
+    switch (max7456Init(&max7456Config, max7456VcdProfile, 0)) {
     case MAX7456_INIT_NOT_CONFIGURED:
         // MAX7456 IO pins are not defined. We either don't have
         // it on board or either the configuration for it has

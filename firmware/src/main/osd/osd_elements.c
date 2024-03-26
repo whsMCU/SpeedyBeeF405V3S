@@ -112,6 +112,7 @@
 
 
 #include "build/build_config.h"
+#include "build/version.h"
 
 #include "common/axis.h"
 #include "common/maths.h"
@@ -121,8 +122,8 @@
 #include "common/unit.h"
 #include "common/filter.h"
 
-#include "config/config.h"
-#include "config/feature.h"
+//#include "config/config.h"
+//#include "config/feature.h"
 
 #include "drivers/display.h"
 //#include "drivers/dshot.h"
@@ -130,17 +131,17 @@
 //#include "drivers/time.h"
 //#include "drivers/vtx_common.h"
 
-#include "fc/controlrate_profile.h"
-#include "fc/core.h"
-#include "fc/rc_adjustments.h"
-#include "fc/rc_controls.h"
+//#include "fc/controlrate_profile.h"
+//#include "fc/core.h"
+//#include "fc/rc_adjustments.h"
+//#include "fc/rc_controls.h"
 #include "fc/runtime_config.h"
 #include "fc/stats.h"
 
 //#include "flight/gps_rescue.h"
 #include "flight/position.h"
 #include "flight/imu.h"
-#include "flight/mixer.h"
+//#include "flight/mixer.h"
 #include "flight/pid.h"
 
 
@@ -673,7 +674,7 @@ static void osdElementAngleRollPitch(osdElementParms_t *element)
 
 static void osdElementAntiGravity(osdElementParms_t *element)
 {
-    if (pidOsdAntiGravityActive()) {
+    if (false) {//pidOsdAntiGravityActive()
         strcpy(element->buff, "AG");
     }
 }
@@ -803,38 +804,38 @@ static void osdElementCrashFlipArrow(osdElementParms_t *element)
         rollAngle = (rollAngle < 0 ? -180 : 180) - rollAngle;
     }
 
-    if ((isFlipOverAfterCrashActive() || (!ARMING_FLAG(ARMED) && !isUpright())) && !((imuConfig.small_angle < 180 && isUpright()) || (rollAngle == 0 && pitchAngle == 0))) {
-        if (abs(pitchAngle) < 2 * abs(rollAngle) && abs(rollAngle) < 2 * abs(pitchAngle)) {
-            if (pitchAngle > 0) {
-                if (rollAngle > 0) {
-                    element->buff[0] = SYM_ARROW_WEST + 2;
-                } else {
-                    element->buff[0] = SYM_ARROW_EAST - 2;
-                }
-            } else {
-                if (rollAngle > 0) {
-                    element->buff[0] = SYM_ARROW_WEST - 2;
-                } else {
-                    element->buff[0] = SYM_ARROW_EAST + 2;
-                }
-            }
-        } else {
-            if (abs(pitchAngle) > abs(rollAngle)) {
-                if (pitchAngle > 0) {
-                    element->buff[0] = SYM_ARROW_SOUTH;
-                } else {
-                    element->buff[0] = SYM_ARROW_NORTH;
-                }
-            } else {
-                if (rollAngle > 0) {
-                    element->buff[0] = SYM_ARROW_WEST;
-                } else {
-                    element->buff[0] = SYM_ARROW_EAST;
-                }
-            }
-        }
-        element->buff[1] = '\0';
-    }
+//    if ((isFlipOverAfterCrashActive() || (!ARMING_FLAG(ARMED) && !isUpright())) && !((imuConfig.small_angle < 180 && isUpright()) || (rollAngle == 0 && pitchAngle == 0))) {
+//        if (abs(pitchAngle) < 2 * abs(rollAngle) && abs(rollAngle) < 2 * abs(pitchAngle)) {
+//            if (pitchAngle > 0) {
+//                if (rollAngle > 0) {
+//                    element->buff[0] = SYM_ARROW_WEST + 2;
+//                } else {
+//                    element->buff[0] = SYM_ARROW_EAST - 2;
+//                }
+//            } else {
+//                if (rollAngle > 0) {
+//                    element->buff[0] = SYM_ARROW_WEST - 2;
+//                } else {
+//                    element->buff[0] = SYM_ARROW_EAST + 2;
+//                }
+//            }
+//        } else {
+//            if (abs(pitchAngle) > abs(rollAngle)) {
+//                if (pitchAngle > 0) {
+//                    element->buff[0] = SYM_ARROW_SOUTH;
+//                } else {
+//                    element->buff[0] = SYM_ARROW_NORTH;
+//                }
+//            } else {
+//                if (rollAngle > 0) {
+//                    element->buff[0] = SYM_ARROW_WEST;
+//                } else {
+//                    element->buff[0] = SYM_ARROW_EAST;
+//                }
+//            }
+//        }
+//        element->buff[1] = '\0';
+//    }
 }
 #endif // USE_ACC
 
@@ -987,10 +988,10 @@ static void osdElementFlymode(osdElementParms_t *element)
         strcpy(element->buff, "ANGL");
     } else if (FLIGHT_MODE(HORIZON_MODE)) {
         strcpy(element->buff, "HOR ");
-    } else if (IS_RC_MODE_ACTIVE(BOXACROTRAINER)) {
-        strcpy(element->buff, "ATRN");
-    } else if (airmodeIsEnabled()) {
-        strcpy(element->buff, "AIR ");
+//    } else if (IS_RC_MODE_ACTIVE(BOXACROTRAINER)) {
+//        strcpy(element->buff, "ATRN");
+//    } else if (airmodeIsEnabled()) {
+//        strcpy(element->buff, "AIR ");
     } else {
         strcpy(element->buff, "ACRO");
     }
@@ -1238,21 +1239,21 @@ static void osdElementMainBatteryVoltage(osdElementParms_t *element)
 static void osdElementMotorDiagnostics(osdElementParms_t *element)
 {
     int i = 0;
-    const bool motorsRunning = areMotorsRunning();
-    for (; i < getMotorCount(); i++) {
-        if (motorsRunning) {
-            element->buff[i] =  0x88 - scaleRange(motor[i], getMotorOutputLow(), getMotorOutputHigh(), 0, 8);
-#if defined(USE_ESC_SENSOR) || defined(USE_DSHOT_TELEMETRY)
-            if (getEscRpm(i) < MOTOR_STOPPED_THRESHOLD_RPM) {
-                // Motor is not spinning properly. Mark as Stopped
-                element->buff[i] = 'S';
-            }
-#endif
-        } else {
-            element->buff[i] =  0x88;
-        }
-    }
-    element->buff[i] = '\0';
+//    const bool motorsRunning = areMotorsRunning();
+//    for (; i < getMotorCount(); i++) {
+//        if (motorsRunning) {
+//            element->buff[i] =  0x88 - scaleRange(motor[i], getMotorOutputLow(), getMotorOutputHigh(), 0, 8);
+//#if defined(USE_ESC_SENSOR) || defined(USE_DSHOT_TELEMETRY)
+//            if (getEscRpm(i) < MOTOR_STOPPED_THRESHOLD_RPM) {
+//                // Motor is not spinning properly. Mark as Stopped
+//                element->buff[i] = 'S';
+//            }
+//#endif
+//        } else {
+//            element->buff[i] =  0x88;
+//        }
+//    }
+//    element->buff[i] = '\0';
 }
 
 static void osdElementNumericalHeading(osdElementParms_t *element)
@@ -1286,22 +1287,22 @@ static void osdElementNumericalVario(osdElementParms_t *element)
 
 static void osdElementPidRateProfile(osdElementParms_t *element)
 {
-    tfp_sprintf(element->buff, "%d-%d", getCurrentPidProfileIndex() + 1, getCurrentControlRateProfileIndex() + 1);
+    //tfp_sprintf(element->buff, "%d-%d", getCurrentPidProfileIndex() + 1, getCurrentControlRateProfileIndex() + 1);
 }
 
 static void osdElementPidsPitch(osdElementParms_t *element)
 {
-    osdFormatPID(element->buff, "PIT", &currentPidProfile->pid[PID_PITCH]);
+    //osdFormatPID(element->buff, "PIT", &currentPidProfile->pid[PID_PITCH]);
 }
 
 static void osdElementPidsRoll(osdElementParms_t *element)
 {
-    osdFormatPID(element->buff, "ROL", &currentPidProfile->pid[PID_ROLL]);
+    //osdFormatPID(element->buff, "ROL", &currentPidProfile->pid[PID_ROLL]);
 }
 
 static void osdElementPidsYaw(osdElementParms_t *element)
 {
-    osdFormatPID(element->buff, "YAW", &currentPidProfile->pid[PID_YAW]);
+    //osdFormatPID(element->buff, "YAW", &currentPidProfile->pid[PID_YAW]);
 }
 
 static void osdElementPower(osdElementParms_t *element)
@@ -1418,7 +1419,7 @@ static void osdElementStickOverlay(osdElementParms_t *element)
 
 static void osdElementThrottlePosition(osdElementParms_t *element)
 {
-    tfp_sprintf(element->buff, "%c%3d", SYM_THR, calculateThrottlePercent());
+    //tfp_sprintf(element->buff, "%c%3d", SYM_THR, calculateThrottlePercent());
 }
 
 static void osdElementTimer(osdElementParms_t *element)

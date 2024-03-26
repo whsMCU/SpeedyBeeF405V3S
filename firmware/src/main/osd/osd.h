@@ -24,7 +24,7 @@
 #include "common/unit.h"
 #include "common/utils.h"
 
-//#include "drivers/display.h"
+#include "drivers/display.h"
 
 
 //#include "sensors/esc_sensor.h"
@@ -267,7 +267,7 @@ extern vcdProfile_t vcdProfile;
 extern void vcdProfile_Init(void);
 
 // Make sure the number of warnings do not exceed the available 32bit storage
-//STATIC_ASSERT(OSD_WARNING_COUNT <= 32, osdwarnings_overflow);
+STATIC_ASSERT(OSD_WARNING_COUNT <= 32, osdwarnings_overflow);
 
 #define ESC_RPM_ALARM_OFF -1
 #define ESC_TEMP_ALARM_OFF INT8_MIN
@@ -352,6 +352,23 @@ extern float osdGForce;
 extern escSensorData_t *osdEscDataCombined;
 #endif
 
-void osdInit(void);
+void osdInit(displayPort_t *osdDisplayPort, osdDisplayPortDevice_e displayPortDevice);
+bool osdUpdateCheck(timeUs_t currentTimeUs, timeDelta_t currentDeltaTimeUs);
 void osdUpdate(timeUs_t currentTimeUs);
+
+void osdStatSetState(uint8_t statIndex, bool enabled);
+bool osdStatGetState(uint8_t statIndex);
+void osdSuppressStats(bool flag);
+void osdAnalyzeActiveElements(void);
+void changeOsdProfileIndex(uint8_t profileIndex);
+uint8_t getCurrentOsdProfileIndex(void);
+displayPort_t *osdGetDisplayPort(osdDisplayPortDevice_e *displayPortDevice);
+
+void osdWarnSetState(uint8_t warningIndex, bool enabled);
+bool osdWarnGetState(uint8_t warningIndex);
+bool osdElementVisible(uint16_t value);
+bool osdGetVisualBeeperState(void);
+void osdSetVisualBeeperState(bool state);
+statistic_t *osdGetStats(void);
+bool osdNeedsAccelerometer(void);
 int osdPrintFloat(char *buffer, char leadingSymbol, float value, char *formatString, unsigned decimalPlaces, bool round, char trailingSymbol);

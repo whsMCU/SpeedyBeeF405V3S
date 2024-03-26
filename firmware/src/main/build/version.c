@@ -29,3 +29,11 @@ const char * const targetName = __TARGET__;
 const char * const shortGitRevision = __REVISION__;
 const char * const buildDate = __DATE__;
 const char * const buildTime = __TIME__;
+
+pilotConfig_t pilotConfig;
+
+void pilotConfig_Init(void)
+{
+	pilotConfig.name[MAX_NAME_LENGTH + 1] = 0;
+	pilotConfig.displayName[MAX_NAME_LENGTH + 1] = 0;
+}

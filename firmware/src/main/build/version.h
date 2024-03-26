@@ -42,3 +42,14 @@ extern const char* const buildDate;  // "MMM DD YYYY" MMM = Jan/Feb/...
 extern const char* const buildTime;  // "HH:MM:SS"
 
 #define MSP_API_VERSION_STRING STR(API_VERSION_MAJOR) "." STR(API_VERSION_MINOR)
+
+#define MAX_NAME_LENGTH 16u
+
+typedef struct pilotConfig_s {
+    char name[MAX_NAME_LENGTH + 1];
+    char displayName[MAX_NAME_LENGTH + 1];
+} pilotConfig_t;
+
+extern pilotConfig_t pilotConfig;
+
+void pilotConfig_Init(void);

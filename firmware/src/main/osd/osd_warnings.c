@@ -31,8 +31,8 @@
 
 #ifdef USE_OSD
 
-#include "config/config.h"
-#include "config/feature.h"
+//#include "config/config.h"
+//#include "config/feature.h"
 
 #include "common/maths.h"
 #include "common/printf.h"
@@ -41,15 +41,15 @@
 #include "drivers/osd_symbols.h"
 //#include "drivers/display/time.h"
 
-#include "fc/core.h"
-#include "fc/rc.h"
-#include "fc/rc_modes.h"
+//#include "fc/core.h"
+//#include "fc/rc.h"
+//#include "fc/rc_modes.h"
 #include "fc/runtime_config.h"
 
-#include "flight/failsafe.h"
+//#include "flight/failsafe.h"
 //#include "flight/gps_rescue.h"
 #include "flight/imu.h"
-#include "flight/mixer.h"
+//#include "flight/mixer.h"
 #include "flight/pid.h"
 
 //#include "io/beeper.h"
@@ -60,7 +60,7 @@
 
 #include "rx/rx.h"
 
-#include "sensors/acceleration.h"
+//#include "sensors/acceleration.h"
 #include "sensors/adcinternal.h"
 #include "sensors/battery.h"
 #include "sensors.h"
@@ -81,7 +81,7 @@ void renderOsdWarning(char *warningText, bool *blinking, uint8_t *displayAttr)
 
     // Cycle through the arming disabled reasons
     if (osdWarnGetState(OSD_WARNING_ARMING_DISABLE)) {
-        if (IS_RC_MODE_ACTIVE(BOXARM) && isArmingDisabled()) {
+        if (false) {//IS_RC_MODE_ACTIVE(BOXARM) && isArmingDisabled()
             const armingDisableFlags_e armSwitchOnlyFlag = 1 << (ARMING_DISABLE_FLAGS_COUNT - 1);
             armingDisableFlags_e flags = getArmingDisableFlags();
 
@@ -128,25 +128,25 @@ void renderOsdWarning(char *warningText, bool *blinking, uint8_t *displayAttr)
         return;
     }
 #endif // USE_DSHOT
-    if (osdWarnGetState(OSD_WARNING_FAIL_SAFE) && failsafeIsActive()) {
-        tfp_sprintf(warningText, "FAIL SAFE");
-        *displayAttr = DISPLAYPORT_ATTR_CRITICAL;
-        *blinking = true;;
-        return;
-    }
+//    if (osdWarnGetState(OSD_WARNING_FAIL_SAFE) && failsafeIsActive()) {
+//        tfp_sprintf(warningText, "FAIL SAFE");
+//        *displayAttr = DISPLAYPORT_ATTR_CRITICAL;
+//        *blinking = true;;
+//        return;
+//    }
 
     // Warn when in flip over after crash mode
-    if (osdWarnGetState(OSD_WARNING_CRASH_FLIP) && IS_RC_MODE_ACTIVE(BOXFLIPOVERAFTERCRASH)) {
-        if (isFlipOverAfterCrashActive()) { // if was armed in crash flip mode
-            tfp_sprintf(warningText, CRASH_FLIP_WARNING);
-            *displayAttr = DISPLAYPORT_ATTR_INFO;
-            return;
-        } else if (!ARMING_FLAG(ARMED)) { // if disarmed, but crash flip mode is activated
-            tfp_sprintf(warningText, "CRASH FLIP SWITCH");
-            *displayAttr = DISPLAYPORT_ATTR_INFO;
-            return;
-        }
-    }
+//    if (osdWarnGetState(OSD_WARNING_CRASH_FLIP) && IS_RC_MODE_ACTIVE(BOXFLIPOVERAFTERCRASH)) {
+//        if (isFlipOverAfterCrashActive()) { // if was armed in crash flip mode
+//            tfp_sprintf(warningText, CRASH_FLIP_WARNING);
+//            *displayAttr = DISPLAYPORT_ATTR_INFO;
+//            return;
+//        } else if (!ARMING_FLAG(ARMED)) { // if disarmed, but crash flip mode is activated
+//            tfp_sprintf(warningText, "CRASH FLIP SWITCH");
+//            *displayAttr = DISPLAYPORT_ATTR_INFO;
+//            return;
+//        }
+//    }
 
 #ifdef USE_LAUNCH_CONTROL
     // Warn when in launch control mode
