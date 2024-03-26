@@ -83,6 +83,8 @@
 //#include "sensors/esc_sensor.h"
 #include "sensors/sensors.h"
 
+#include "charset.h"
+
 typedef enum {
     OSD_LOGO_ARMING_OFF,
     OSD_LOGO_ARMING_ON,
@@ -253,10 +255,79 @@ void osdElementConfig_Init(void)
     osdElementConfig.item_pos[OSD_PITCH_ANGLE]  = OSD_POS(3, 3)| profileFlags;
     osdElementConfig.item_pos[OSD_ROLL_ANGLE]  = OSD_POS(3, 6)| profileFlags;
 }
+typedef uint8_t charact[54];
+//-----------------------------------------------------------------------------
+// Implements Max7456::getCARACFromProgMem
+//-----------------------------------------------------------------------------
+static void getCARACFromProgMem(const char *table, uint8_t i, charact car)
+{
+	unsigned long index;
+	uint8_t read;
+	index = i*54;
+	for(unsigned long j = 0 ; j < 54 ; j++)
+	{
+		read = table[index+j];
+		car[j] = read;
+		if (car[j] == 0x55)
+			car[j] = 0xff;
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Implements Max7456::sendCharacter
+//-----------------------------------------------------------------------------
+static void sendCharacter(const charact chara, uint8_t x, uint8_t y)
+{
+	uint8_t charAddress;
+	if(y<0)
+		charAddress = x;
+	else
+		charAddress = x + (y<<4);
+	//activateOSD(false);
+	//datasheet p38
+	spiWriteReg(2, 0x09, charAddress);
+
+	for(uint8_t i = 0 ; i < 54 ; i++)
+	{
+		spiWriteReg(2, 0x0A, i);
+		spiWriteReg(2, 0x0B, chara[i]);
+	}
+
+	uint8_t _regCmm = 0xA0; //To write the NVM array
+	spiWriteReg(2, 0x08, _regCmm);
+	//while STAT[5] is not good, we wait.
+	while ((spiReadRegMsk(2, 0x0A) & 0x20) != 0x00);
+}
 
 void osdInit(void)
 {
 	max7456Init();
+
+//	charact currentChar; //represents a character as stored in memory (byte[54])
+//	uartPrintf(0, "Initializing...\r\n");
+//	uartPrintf(0, "Updating MAX7456 charset\r\n");
+//	uartPrintf(0, "Aare you sure? (y/n)\r\n");
+//
+//	char number[] = "000";
+//
+//	  for (int i = 0 ; i <= 0xff; i++)
+//	  {
+//		uartPrintf(0, "Inserting : ");
+//	    //dtostrf(i, 3, 0, number);
+//	    uartPrintf(0, "%d", i);
+//		uartPrintf(0, " of 255\r\n");
+//	    getCARACFromProgMem(tableOfAllCharacters, i, currentChar); //Because the table is too big for ram memory
+//
+//	    sendCharacter(currentChar, i & 0xF0, i & 0xF0); //We send currentChar at address i.
+//
+//	    for (int j = 0 ; j < 19 ; j++) //Rewind Serial.
+//	    {
+//		    //uartPrintf(0, char(0x08));
+//	    }
+//
+//	  }
+//		uartPrintf(0, "---------- DONE! ----------\r\n");
+//		uartPrintf(0, "please unplug your arduino.\r\n");
 }
 
 typedef struct osdStatsRenderingState_s {

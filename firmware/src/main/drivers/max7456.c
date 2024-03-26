@@ -420,7 +420,7 @@ max7456InitStatus_e max7456Init(void)
     SPI_Set_Speed_hz(MAX7456, MAX7456_INIT_MAX_SPI_CLK_HZ);
 
     // Write 0xff to conclude any current SPI transaction the MAX7456 is expecting
-    //spiWrite(MAX7456, END_STRING);
+    spiWrite(MAX7456, END_STRING);
 
     uint8_t osdm = spiReadRegMsk(MAX7456, MAX7456ADD_OSDM);
 
