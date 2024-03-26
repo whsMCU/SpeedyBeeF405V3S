@@ -81,7 +81,7 @@ bool uartOpen(uint8_t ch, uint32_t baud)
     	{
     		ret = true;
         is_open[ch] = true;
-        HAL_UART_Receive_IT(&huart2, &rx_buf2, 1);
+        HAL_UART_Receive_IT(&huart2, (uint8_t *)&rx_buf2, 1);
 
 //    	  HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *)&rx_buf[0], MAX_SIZE);
 //    	  __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);

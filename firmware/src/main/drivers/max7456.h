@@ -22,7 +22,7 @@
 
 #include <stdint.h>
 
-#include "drivers/display.h"
+//#include "drivers/display.h"
 
 /** PAL or NTSC, value is number of chars total */
 #define VIDEO_BUFFER_CHARS_NTSC   390
@@ -41,15 +41,6 @@ typedef enum {
     MAX7456_INIT_NOT_CONFIGURED = -2,
 } max7456InitStatus_e;
 
-typedef struct max7456Config_s {
-    uint8_t clockConfig; // SPI clock modifier
-    //ioTag_t csTag;
-    //uint8_t spiDevice;
-    bool preInitOPU;
-} max7456Config_t;
-
-extern max7456Config_t max7456Config;
-
 void max7456Config_Init(void);
 
 // clockConfig values
@@ -60,9 +51,8 @@ void max7456Config_Init(void);
 extern uint16_t maxScreenSize;
 struct vcdProfile_s;
 void    max7456HardwareReset(void);
-struct max7456Config_s;
-void    max7456PreInit(const struct max7456Config_s *max7456Config);
-max7456InitStatus_e max7456Init(const struct max7456Config_s *max7456Config, const struct vcdProfile_s *vcdProfile, bool cpuOverclock);
+
+max7456InitStatus_e max7456Init(void);
 void    max7456Invert(bool invert);
 void    max7456Brightness(uint8_t black, uint8_t white);
 bool    max7456ReInitIfRequired(bool forceStallCheck);
@@ -75,8 +65,10 @@ void    max7456ClearScreen(void);
 void    max7456RefreshAll(void);
 bool    max7456DmaInProgress(void);
 bool    max7456BuffersSynced(void);
-bool    max7456LayerSupported(displayPortLayer_e layer);
-bool    max7456LayerSelect(displayPortLayer_e layer);
-bool    max7456LayerCopy(displayPortLayer_e destLayer, displayPortLayer_e sourceLayer);
-bool    max7456IsDeviceDetected(void);
-void    max7456SetBackgroundType(displayPortBackground_e backgroundType);
+
+bool max7456_display_string(const char *str, uint8_t x, uint8_t y);
+//bool    max7456LayerSupported(displayPortLayer_e layer);
+//bool    max7456LayerSelect(displayPortLayer_e layer);
+//bool    max7456LayerCopy(displayPortLayer_e destLayer, displayPortLayer_e sourceLayer);
+//bool    max7456IsDeviceDetected(void);
+//void    max7456SetBackgroundType(displayPortBackground_e backgroundType);

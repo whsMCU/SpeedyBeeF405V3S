@@ -1701,29 +1701,23 @@ void osdAddActiveElements(void)
 {
     activeOsdElementCount = 0;
 
-#ifdef USE_ACC
-    if (sensors(SENSOR_ACC)) {
-        osdAddActiveElement(OSD_ARTIFICIAL_HORIZON);
-        osdAddActiveElement(OSD_G_FORCE);
-        osdAddActiveElement(OSD_UP_DOWN_REFERENCE);
-    }
-#endif
+		osdAddActiveElement(OSD_ARTIFICIAL_HORIZON);
+		osdAddActiveElement(OSD_G_FORCE);
+		osdAddActiveElement(OSD_UP_DOWN_REFERENCE);
 
     for (unsigned i = 0; i < sizeof(osdElementDisplayOrder); i++) {
         osdAddActiveElement(osdElementDisplayOrder[i]);
     }
 
 #ifdef USE_GPS
-    if (sensors(SENSOR_GPS)) {
-        osdAddActiveElement(OSD_GPS_SATS);
-        osdAddActiveElement(OSD_GPS_SPEED);
-        osdAddActiveElement(OSD_GPS_LAT);
-        osdAddActiveElement(OSD_GPS_LON);
-        osdAddActiveElement(OSD_HOME_DIST);
-        osdAddActiveElement(OSD_HOME_DIR);
-        osdAddActiveElement(OSD_FLIGHT_DIST);
-        osdAddActiveElement(OSD_EFFICIENCY);
-    }
+		osdAddActiveElement(OSD_GPS_SATS);
+		osdAddActiveElement(OSD_GPS_SPEED);
+		osdAddActiveElement(OSD_GPS_LAT);
+		osdAddActiveElement(OSD_GPS_LON);
+		osdAddActiveElement(OSD_HOME_DIST);
+		osdAddActiveElement(OSD_HOME_DIR);
+		osdAddActiveElement(OSD_FLIGHT_DIST);
+		osdAddActiveElement(OSD_EFFICIENCY);
 #endif // GPS
 #ifdef USE_ESC_SENSOR
     if (featureIsEnabled(FEATURE_ESC_SENSOR)) {

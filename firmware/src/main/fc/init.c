@@ -26,7 +26,6 @@
 #include "hw.h"
 
 #include "build/build_config.h"
-#include "build/version.h"
 
 #include "common/axis.h"
 #include "common/color.h"
@@ -190,74 +189,14 @@ void init(void)
 //    motorEnable();
 //#endif
 
-#if (defined(USE_OSD) || (defined(USE_MSP_DISPLAYPORT) && defined(USE_CMS)))
-    displayPort_t *osdDisplayPort = NULL;
-    osdDisplayPortDevice_e osdDisplayPortDevice = OSD_DISPLAYPORT_DEVICE_NONE;
-#endif
-
-#if defined(USE_OSD)
-    //The OSD need to be initialised after GYRO to avoid GYRO initialisation failure on some targets
-
-        osdDisplayPortDevice_e device = osdConfig.displayPortDevice;
-
-        switch(device) {
-
-        case OSD_DISPLAYPORT_DEVICE_AUTO:
-            FALLTHROUGH;
-
-#if defined(USE_FRSKYOSD)
-        // Test OSD_DISPLAYPORT_DEVICE_FRSKYOSD first, since an FC could
-        // have a builtin MAX7456 but also an FRSKYOSD connected to an
-        // uart.
-        case OSD_DISPLAYPORT_DEVICE_FRSKYOSD:
-            osdDisplayPort = frskyOsdDisplayPortInit(vcdProfile()->video_system);
-            if (osdDisplayPort || device == OSD_DISPLAYPORT_DEVICE_FRSKYOSD) {
-                osdDisplayPortDevice = OSD_DISPLAYPORT_DEVICE_FRSKYOSD;
-                break;
-            }
-            FALLTHROUGH;
-#endif
-
-#if defined(USE_MAX7456)
-        case OSD_DISPLAYPORT_DEVICE_MAX7456:
-            // If there is a max7456 chip for the OSD configured and detected then use it.
-            if (max7456DisplayPortInit(&vcdProfile, &osdDisplayPort) || device == OSD_DISPLAYPORT_DEVICE_MAX7456) {
-                osdDisplayPortDevice = OSD_DISPLAYPORT_DEVICE_MAX7456;
-                break;
-            }
-            FALLTHROUGH;
-#endif
-
-#if defined(USE_CMS) && defined(USE_MSP_DISPLAYPORT) && defined(USE_OSD_OVER_MSP_DISPLAYPORT)
-        case OSD_DISPLAYPORT_DEVICE_MSP:
-            osdDisplayPort = displayPortMspInit();
-            if (osdDisplayPort || device == OSD_DISPLAYPORT_DEVICE_MSP) {
-                osdDisplayPortDevice = OSD_DISPLAYPORT_DEVICE_MSP;
-                break;
-            }
-            FALLTHROUGH;
-#endif
-
-        // Other device cases can be added here
-
-        case OSD_DISPLAYPORT_DEVICE_NONE:
-        default:
-            break;
-        }
-
-        // osdInit will register with CMS by itself.
-        osdInit(osdDisplayPort, osdDisplayPortDevice);
-        if (osdDisplayPortDevice == OSD_DISPLAYPORT_DEVICE_NONE) {
-            //featureDisableImmediate(FEATURE_OSD);
-        }
-#endif // USE_OSD
+	osdInit();
     tasksInit();
 }
 
 void Param_Config_Init(void)
 {
 //	systemConfig_Init();
-	pilotConfig_Init();
+//	pilotConfig_Init();
 	boardConfig_Init();
 
 	boardAlignment_Init(0, 0, 0);
@@ -292,8 +231,8 @@ void Param_Config_Init(void)
 //	armingConfig_Init();
 //	flight3DConfig_Init();
 #ifdef USE_OSD
-	vcdProfile_Init();
+//	vcdProfile_Init();
 	osdConfig_Init();
-	osdElementConfig_Init();
+//	osdElementConfig_Init();
 #endif
 }
