@@ -353,7 +353,7 @@ static void printMax7456Chars(uint8_t chars[], uint8_t size, uint8_t x, uint8_t 
   spiWriteReg(MAX7456, MAX7456ADD_DMDI, 0xFF);
 }
 
-static void printMax7456Char(const uint8_t address, uint8_t x, uint8_t y) {
+void printMax7456Char(const uint8_t address, uint8_t x, uint8_t y) {
 	uint8_t ad = address;
   printMax7456Chars(&ad, 1, x, y);
 }
@@ -405,14 +405,6 @@ static void print(const char string[], uint8_t x, uint8_t y) {
 
 max7456InitStatus_e max7456Init(void)
 {
-
-    // initialize all layers
-    for (unsigned i = 0; i < MAX7456_SUPPORTED_LAYER_COUNT; i++) {
-        max7456ClearLayer(i);
-    }
-
-    max7456HardwareReset();
-
     gpioPinWrite(4, _DEF_HIGH);
 
     delay(100);
@@ -487,7 +479,7 @@ max7456InitStatus_e max7456Init(void)
     _regVm0 = 0b01001000;
     spiWriteReg(MAX7456, MAX7456ADD_VM0, _regVm0);
 
-    printMax7456Char(0xD1, 20, 10);
+    printMax7456Char(SYM_SPEED, 20, 10);
     print("Hello world :)", 20, 16);
     // Real init will be made later when driver detect idle.
     return MAX7456_INIT_OK;

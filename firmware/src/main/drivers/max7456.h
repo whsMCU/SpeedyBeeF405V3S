@@ -67,6 +67,7 @@ bool    max7456DmaInProgress(void);
 bool    max7456BuffersSynced(void);
 
 bool max7456_display_string(const char *str, uint8_t x, uint8_t y);
+void printMax7456Char(const uint8_t address, uint8_t x, uint8_t y);
 //bool    max7456LayerSupported(displayPortLayer_e layer);
 //bool    max7456LayerSelect(displayPortLayer_e layer);
 //bool    max7456LayerCopy(displayPortLayer_e destLayer, displayPortLayer_e sourceLayer);
