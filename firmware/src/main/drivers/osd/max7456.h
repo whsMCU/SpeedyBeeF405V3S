@@ -42,6 +42,8 @@ typedef enum {
 } max7456InitStatus_e;
 
 typedef struct max7456Register_s {
+	bool _isActivatedOsd;
+
 	REG_VM0   _regVm0;
 	REG_VM1   _regVm1;
 	REG_HOS   _regHos;

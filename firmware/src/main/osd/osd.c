@@ -362,7 +362,7 @@ osdState_e osdState = OSD_STATE_INIT;
 void osdUpdate(timeUs_t currentTimeUs)
 {
     //max7456_display_string("Hello, World!", 10, 10);
-    printMax7456Char(SYM_ROLL,13,13);
+    //printMax7456Char(SYM_ROLL,13,13);
 
 }
 #endif // USE_OSD

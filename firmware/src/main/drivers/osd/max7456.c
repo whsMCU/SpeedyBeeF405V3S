@@ -27,6 +27,9 @@
 #ifdef USE_MAX7456
 
 #include "build/debug.h"
+#include "build/version.h"
+
+#include "common/printf.h"
 
 //#include "pg/max7456.h"
 //#include "pg/vcd.h"
@@ -238,6 +241,40 @@ static void printMax7456Chars(uint8_t chars[], uint8_t size, uint8_t x, uint8_t 
   //end character (we're done).
   spiWriteReg(MAX7456, MAX7456ADD_DMDI, 0xFF);
 }
+uint8_t buffer[VIDEO_BUFFER_CHARS_PAL];
+static void printMax7456Charss(const char *chars, uint8_t size, uint8_t x, uint8_t y) {
+	uint8_t         currentCharMax7456;
+	uint8_t         posAddressLO;
+	uint8_t         posAddressHI;
+  unsigned int posAddress;
+
+  posAddress = 30 * y + x;
+
+  posAddressHI = posAddress >> 8;
+  posAddressLO = posAddress;
+
+  max7456Reg._regDmm.whole = 0x01;
+  spiWriteReg(MAX7456, MAX7456ADD_DMM, max7456Reg._regDmm.whole);
+
+  spiWriteReg(MAX7456, MAX7456ADD_DMAH, 0);
+
+  spiWriteReg(MAX7456, MAX7456ADD_DMAL, 0);
+
+//  for (int i = 0; i < size; i++) {
+//    currentCharMax7456 = chars[i];
+//    spiWriteReg(MAX7456, MAX7456ADD_DMDI, currentCharMax7456);
+//  }
+  if (y < VIDEO_LINES_PAL) {
+		for (int i = 0; chars[i] && x + i < CHARS_PER_LINE; i++) {
+				buffer[y * CHARS_PER_LINE + x + i] = chars[i];
+		}
+  }
+  spiWrite(MAX7456, MAX7456ADD_DMDI);
+  SPI_ByteWrite_DMA(MAX7456, buffer, (uint8_t)sizeof(buffer));
+
+  //end character (we're done).
+  spiWriteReg(MAX7456, MAX7456ADD_DMDI, 0xFF);
+}
 
 void printMax7456Char(const uint8_t address, uint8_t x, uint8_t y) {
 	uint8_t ad = address;
@@ -286,8 +323,47 @@ static void print(const char string[], uint8_t x, uint8_t y) {
   free(chars);
 }
 
-// Here we init only CS and try to init MAX for first time.
-// Also detect device type (MAX v.s. AT)
+
+void setDisplayOffsets(uint8_t horizontal, uint8_t vertical)
+{
+	//    // Setup values to write to registers
+	//    hosRegValue = 32;
+	//    vosRegValue = 16;
+
+	max7456Reg._regHos.whole = 0;
+	max7456Reg._regVos.whole = 0;
+
+	max7456Reg._regHos.bits.horizontalPositionOffset = horizontal;
+	max7456Reg._regVos.bits.verticalPositionOffset = vertical;
+
+	spiWriteReg(MAX7456, MAX7456ADD_HOS, max7456Reg._regHos.whole);
+	spiWriteReg(MAX7456, MAX7456ADD_VOS, max7456Reg._regVos.whole);
+}
+
+void setBlinkParams(uint8_t blinkBase, uint8_t blinkDC)
+{
+  max7456Reg._regVm1.bits.blinkingTime = blinkBase;
+  max7456Reg._regVm1.bits.blinkingDutyCycle = blinkDC;
+  spiWriteReg(MAX7456, MAX7456ADD_VM1, max7456Reg._regVm1.whole);
+}
+
+void activateOSD(bool act)
+{
+	if(max7456Reg._isActivatedOsd != act)
+	{
+
+		max7456Reg._regVm0.bits.videoSelect = 1;
+		if(act){
+			max7456Reg._regVm0.bits.enableOSD = 1;
+		}
+		else{
+			max7456Reg._regVm0.bits.enableOSD = 0;
+		}
+
+    spiWriteReg(MAX7456, MAX7456ADD_VM0, max7456Reg._regVm0.whole);
+    max7456Reg._isActivatedOsd = act;
+	}
+}
 
 max7456InitStatus_e max7456Init(void)
 {
@@ -306,6 +382,8 @@ max7456InitStatus_e max7456Init(void)
         //IOConfigGPIO(dev->busType_u.spi.csnPin, IOCFG_IPU);
         return MAX7456_INIT_NOT_FOUND;
     }
+
+    max7456Reg._isActivatedOsd = false;
 
     max7456Reg._regVm1.whole = 0b01000111;
 
@@ -332,32 +410,19 @@ max7456InitStatus_e max7456Init(void)
     SPI_Set_Speed_hz(MAX7456, MAX7456_MAX_SPI_CLK_HZ);
 
 
-//    // Setup values to write to registers
-//    hosRegValue = 32;
-//    vosRegValue = 16;
+    setDisplayOffsets(60,18);
 
-    max7456Reg._regHos.whole = 0;
-    max7456Reg._regVos.whole = 0;
+    setBlinkParams(_8fields, _BT_BT);
 
-    max7456Reg._regHos.bits.horizontalPositionOffset = 60;
-    max7456Reg._regVos.bits.verticalPositionOffset = 18;
+    activateOSD(true);
 
-    spiWriteReg(MAX7456, MAX7456ADD_HOS, max7456Reg._regHos.whole);
-    spiWriteReg(MAX7456, MAX7456ADD_VOS, max7456Reg._regVos.whole);
+//    printMax7456Char(SYM_BATT_FULL, 0, 1);
+//    print("Hello world :)", 1, 3);
+//    print("Current Arduino time :",1,4);
 
-    //setBlinkParams
-    max7456Reg._regVm1.bits.blinkingTime = _8fields;
-    max7456Reg._regVm1.bits.blinkingDutyCycle = _BT_BT;
-    //uint8_t _regVm1 = 0b000001100;
-    spiWriteReg(MAX7456, MAX7456ADD_VM1, max7456Reg._regVm1.whole);
-
-    //activateOSD
-    max7456Reg._regVm0.bits.videoSelect = 1;
-    max7456Reg._regVm0.bits.enableOSD = 1;
-    spiWriteReg(MAX7456, MAX7456ADD_VM0, max7456Reg._regVm0.whole);
-
-    printMax7456Char(SYM_SPEED, 20, 10);
-    print("Hello world :)", 20, 16);
+    char string_buffer[30];
+    tfp_sprintf(string_buffer, "V%s", FC_VERSION_STRING);
+    printMax7456Charss(string_buffer, strlen(string_buffer), 0, 5);
     // Real init will be made later when driver detect idle.
     return MAX7456_INIT_OK;
 }
