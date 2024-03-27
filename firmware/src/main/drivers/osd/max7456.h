@@ -21,7 +21,7 @@
 #pragma once
 
 #include <stdint.h>
-
+#include "drivers/osd/max7456registers.h"
 //#include "drivers/display.h"
 
 /** PAL or NTSC, value is number of chars total */
@@ -41,30 +41,34 @@ typedef enum {
     MAX7456_INIT_NOT_CONFIGURED = -2,
 } max7456InitStatus_e;
 
+typedef struct max7456Register_s {
+	REG_VM0   _regVm0;
+	REG_VM1   _regVm1;
+	REG_HOS   _regHos;
+	REG_VOS   _regVos;
+	REG_DMM   _regDmm;
+	REG_DMAH  _regDmah; // not used yet
+	REG_DMAL  _regDmal; // not used yet
+	REG_DMDI  _regDmdi; // not used yet
+	REG_CMM   _regCmm;
+	REG_CMAH  _regCmah; // not used yet
+	REG_CMAL  _regCmal; // not used yet
+	REG_CMDI  _regCmdi; // not used yet
+	REG_OSDM  _regOsdm; // not used yet
+	REG_RBN   _regRb[16];  // not used yet
+	REG_OSDBL _regOsdbl; // not used yet
+	REG_STAT  _regStat; // not used yet
+	DMDO  _regDmdo; // not used yet
+	REG_CMDO  _regCmdo; // not used yet
+} max7456Register_t;
+
 void max7456Config_Init(void);
 
-// clockConfig values
-#define MAX7456_CLOCK_CONFIG_HALF       0  // Force half clock
-#define MAX7456_CLOCK_CONFIG_NOMINAL    1  // Nominal clock (default)
-#define MAX7456_CLOCK_CONFIG_DOUBLE     2  // Double clock
-
-extern uint16_t maxScreenSize;
-struct vcdProfile_s;
-void    max7456HardwareReset(void);
-
 max7456InitStatus_e max7456Init(void);
-void    max7456Invert(bool invert);
-void    max7456Brightness(uint8_t black, uint8_t white);
-bool    max7456ReInitIfRequired(bool forceStallCheck);
-bool     max7456DrawScreen(void);
-bool    max7456WriteNvm(uint8_t char_address, const uint8_t *font_data);
-uint8_t max7456GetRowsCount(void);
-void    max7456Write(uint8_t x, uint8_t y, const char *buff);
-void    max7456WriteChar(uint8_t x, uint8_t y, uint8_t c);
-void    max7456ClearScreen(void);
-void    max7456RefreshAll(void);
-bool    max7456DmaInProgress(void);
-bool    max7456BuffersSynced(void);
+
+bool max7456WriteNvm(uint8_t char_address, const uint8_t *font_data);
+
+bool max7456DmaInProgress(void);
 
 bool max7456_display_string(const char *str, uint8_t x, uint8_t y);
 void printMax7456Char(const uint8_t address, uint8_t x, uint8_t y);

@@ -102,8 +102,8 @@
 //#include "drivers/gps/gps.h"
 #include "drivers/motor.h"
 //#include "drivers/pwm_output.h"
-#include "drivers/osd.h"
-#include "drivers/max7456.h"
+#include "drivers/osd/osd.h"
+#include "drivers/osd/max7456.h"
 
 #include "fc/stats.h"
 

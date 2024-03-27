@@ -53,8 +53,8 @@
 //#include "drivers/display.h"
 //#include "drivers/dshot.h"
 //#include "drivers/flash.h"
-#include "drivers/osd_symbols.h"
-#include "drivers/max7456.h"
+#include "drivers/osd/osd_symbols.h"
+#include "drivers/osd/max7456.h"
 //#include "drivers/sdcard.h"
 //#include "drivers/time.h"
 
@@ -336,11 +336,6 @@ typedef struct osdStatsRenderingState_s {
     uint8_t rowCount;
 } osdStatsRenderingState_t;
 
-static osdStatsRenderingState_t osdStatsRenderingState;
-
-static bool osdStatsVisible = false;
-static bool osdStatsEnabled = false;
-
 typedef enum {
     OSD_STATE_INIT,
     OSD_STATE_IDLE,
@@ -366,8 +361,7 @@ osdState_e osdState = OSD_STATE_INIT;
 // Called when there is OSD update work to be done
 void osdUpdate(timeUs_t currentTimeUs)
 {
-    osdState_e osdCurrentState = osdState;
-    max7456_display_string("Hello, World!", 10, 10);
+    //max7456_display_string("Hello, World!", 10, 10);
     printMax7456Char(SYM_ROLL,13,13);
 
 }
