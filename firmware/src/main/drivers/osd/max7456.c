@@ -412,7 +412,7 @@ max7456InitStatus_e max7456Init(void)
 
     setDisplayOffsets(60,18);
 
-    setBlinkParams(_8fields, _BT_BT);
+    //setBlinkParams(_8fields, _BT_BT);
 
     activateOSD(true);
 
