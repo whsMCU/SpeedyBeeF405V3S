@@ -362,7 +362,10 @@ osdState_e osdState = OSD_STATE_INIT;
 void osdUpdate(timeUs_t currentTimeUs)
 {
     //max7456_display_string("Hello, World!", 10, 10);
-    //printMax7456Char(SYM_ROLL,13,13);
+    printMax7456Char(SYM_ROLL,13,13);
+    char string_buffer[30];
+    tfp_sprintf(string_buffer, "%s : %d", SYM_ROLL, attitude.values.roll);
+    print(string_buffer, 0, 7);
 
 }
 #endif // USE_OSD

@@ -53,6 +53,7 @@ uint16_t spiCalculateDivider(uint32_t freq);
 uint8_t spiReadReg(uint8_t dev, uint8_t reg);
 uint8_t spiReadRegMsk(uint8_t dev, uint8_t reg);
 void spiWriteReg(uint8_t dev, uint8_t reg, uint8_t data);
+void spiWriteReg_nocs(uint8_t dev, uint8_t reg, uint8_t data);
 void spiWrite(uint8_t dev, uint8_t data);
 void spiWait(uint8_t dev);
 bool spiRx_flag(uint8_t dev);

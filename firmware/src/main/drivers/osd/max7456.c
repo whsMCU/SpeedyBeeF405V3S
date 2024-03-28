@@ -225,55 +225,22 @@ static void printMax7456Chars(uint8_t chars[], uint8_t size, uint8_t x, uint8_t 
 
   posAddressHI = posAddress >> 8;
   posAddressLO = posAddress;
-
+  gpioPinWrite(4, _DEF_LOW);
   max7456Reg._regDmm.whole = 0x01;
-  spiWriteReg(MAX7456, MAX7456ADD_DMM, max7456Reg._regDmm.whole);
+  spiWriteReg_nocs(MAX7456, MAX7456ADD_DMM, max7456Reg._regDmm.whole);
 
-  spiWriteReg(MAX7456, MAX7456ADD_DMAH, posAddressHI);
+  spiWriteReg_nocs(MAX7456, MAX7456ADD_DMAH, posAddressHI);
 
-  spiWriteReg(MAX7456, MAX7456ADD_DMAL, posAddressLO);
+  spiWriteReg_nocs(MAX7456, MAX7456ADD_DMAL, posAddressLO);
 
   for (int i = 0; i < size; i++) {
     currentCharMax7456 = chars[i];
-    spiWriteReg(MAX7456, MAX7456ADD_DMDI, currentCharMax7456);
+    spiWriteReg_nocs(MAX7456, MAX7456ADD_DMDI, currentCharMax7456);
   }
 
   //end character (we're done).
-  spiWriteReg(MAX7456, MAX7456ADD_DMDI, 0xFF);
-}
-uint8_t buffer[VIDEO_BUFFER_CHARS_PAL];
-static void printMax7456Charss(const char *chars, uint8_t size, uint8_t x, uint8_t y) {
-	uint8_t         currentCharMax7456;
-	uint8_t         posAddressLO;
-	uint8_t         posAddressHI;
-  unsigned int posAddress;
-
-  posAddress = 30 * y + x;
-
-  posAddressHI = posAddress >> 8;
-  posAddressLO = posAddress;
-
-  max7456Reg._regDmm.whole = 0x01;
-  spiWriteReg(MAX7456, MAX7456ADD_DMM, max7456Reg._regDmm.whole);
-
-  spiWriteReg(MAX7456, MAX7456ADD_DMAH, 0);
-
-  spiWriteReg(MAX7456, MAX7456ADD_DMAL, 0);
-
-//  for (int i = 0; i < size; i++) {
-//    currentCharMax7456 = chars[i];
-//    spiWriteReg(MAX7456, MAX7456ADD_DMDI, currentCharMax7456);
-//  }
-  if (y < VIDEO_LINES_PAL) {
-		for (int i = 0; chars[i] && x + i < CHARS_PER_LINE; i++) {
-				buffer[y * CHARS_PER_LINE + x + i] = chars[i];
-		}
-  }
-  spiWrite(MAX7456, MAX7456ADD_DMDI);
-  SPI_ByteWrite_DMA(MAX7456, buffer, (uint8_t)sizeof(buffer));
-
-  //end character (we're done).
-  spiWriteReg(MAX7456, MAX7456ADD_DMDI, 0xFF);
+  spiWriteReg_nocs(MAX7456, MAX7456ADD_DMDI, 0xFF);
+  gpioPinWrite(4, _DEF_HIGH);
 }
 
 void printMax7456Char(const uint8_t address, uint8_t x, uint8_t y) {
@@ -298,7 +265,7 @@ uint8_t giveMax7456CharFromAsciiChar(char ascii) {
 //-----------------------------------------------------------------------------
 // Implements Max7456::print
 //-----------------------------------------------------------------------------
-static void print(const char string[], uint8_t x, uint8_t y) {
+void print(const char string[], uint8_t x, uint8_t y) {
   char  currentChar;
   uint8_t  size;
   uint8_t* chars = NULL;
@@ -316,7 +283,7 @@ static void print(const char string[], uint8_t x, uint8_t y) {
   chars = (uint8_t*)malloc(size * sizeof(uint8_t));
 
   for (uint8_t i = 0; i < size; i++) {
-    chars[i] = giveMax7456CharFromAsciiChar(string[i]);
+    chars[i] = (string[i]);
   }
 
   printMax7456Chars(chars, size, x, y);
@@ -416,13 +383,12 @@ max7456InitStatus_e max7456Init(void)
 
     activateOSD(true);
 
-//    printMax7456Char(SYM_BATT_FULL, 0, 1);
-//    print("Hello world :)", 1, 3);
-//    print("Current Arduino time :",1,4);
+    printMax7456Char(SYM_BATT_FULL, 5, 6);
+    print("Hello world :)", 0, 3);
 
     char string_buffer[30];
     tfp_sprintf(string_buffer, "V%s", FC_VERSION_STRING);
-    printMax7456Charss(string_buffer, strlen(string_buffer), 0, 5);
+    print(string_buffer, 0, 5);
     // Real init will be made later when driver detect idle.
     return MAX7456_INIT_OK;
 }

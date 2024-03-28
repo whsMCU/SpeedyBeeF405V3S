@@ -72,6 +72,7 @@ bool max7456WriteNvm(uint8_t char_address, const uint8_t *font_data);
 
 bool max7456DmaInProgress(void);
 
+void print(const char string[], uint8_t x, uint8_t y);
 bool max7456_display_string(const char *str, uint8_t x, uint8_t y);
 void printMax7456Char(const uint8_t address, uint8_t x, uint8_t y);
 //bool    max7456LayerSupported(displayPortLayer_e layer);

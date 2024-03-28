@@ -385,6 +385,12 @@ void spiWriteReg(uint8_t dev, uint8_t reg, uint8_t data)
     HAL_SPI_Transmit(p_spi->h_spi, &data, sizeof(data), 10);
     gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_HIGH);
 }
+void spiWriteReg_nocs(uint8_t dev, uint8_t reg, uint8_t data)
+{
+	spi_t  *p_spi = &spi_dev_tbl[dev].dev;
+    HAL_SPI_Transmit(p_spi->h_spi, &reg, sizeof(reg), 10);
+    HAL_SPI_Transmit(p_spi->h_spi, &data, sizeof(data), 10);
+}
 
 // Wait for bus to become free, then read/write block of data
 void spiReadWriteBuf(uint8_t dev, uint8_t *txData, uint8_t *rxData, int len)
