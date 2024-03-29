@@ -31,7 +31,6 @@ void gyroSetTargetLooptime(uint8_t pidDenom);
 void gyroPreInit(void);
 bool gyroInit(void);
 void gyroInitFilters(void);
-gyroDev_t *gyroActiveDev(void);
 struct mpuDetectionResult_s;
 const struct mpuDetectionResult_s *gyroMpuDetectionResult(void);
 int16_t gyroRateDps(int axis);

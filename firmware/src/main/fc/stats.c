@@ -22,12 +22,15 @@
 
 #ifdef USE_PERSISTENT_STATS
 
-#include "time.h"
+#include "common/time.h"
+
+#include "drivers/gps/gps.h"
+
 
 //#include "config/config.h"
-#include "dispatch.h"
-#include "runtime_config.h"
-#include "stats.h"
+#include "fc/dispatch.h"
+#include "fc/runtime_config.h"
+#include "fc/stats.h"
 
 //#include "io/beeper.h"
 //#include "io/gps.h"

@@ -61,6 +61,8 @@
 #define USE_MOTOR
 
 //#define USE_MAG
+#define USE_GPS
+#define USE_GPS_UBLOX
 
 #define USE_ADC_INTERNAL
 //#define USE_RC_SMOOTHING_FILTER

@@ -99,7 +99,7 @@
 
 #include "flight/pid.h"
 
-//#include "drivers/gps/gps.h"
+#include "drivers/gps/gps.h"
 #include "drivers/motor.h"
 //#include "drivers/pwm_output.h"
 #include "drivers/osd/osd.h"
@@ -160,13 +160,11 @@ void init(void)
 //    failsafeInit();
 //
     rxInit();
-//
-//#ifdef USE_GPS
-//    if (featureIsEnabled(FEATURE_GPS)) {
-//        gpsInit();
-//    }
-//#endif
-//
+
+#ifdef USE_GPS
+        gpsInit();
+#endif
+
 //#ifdef USE_ACC
 //    if (mixerConfig.mixerMode == MIXER_GIMBAL) {
 //        accStartCalibration();

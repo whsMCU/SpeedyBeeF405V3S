@@ -303,7 +303,7 @@ void bmi270Intcallback(void)
 {
 	static uint32_t pre_time = 0;
     bmi270.rx_callback_dt = micros() - pre_time;
-    int32_t gyroDmaDuration = cmpTimeCycles(getCycleCounter(), bmi270.gyroLastEXTI);
+    int32_t gyroDmaDuration = cmpTimeCycles(micros(), bmi270.gyroLastEXTI);
 
     if (gyroDmaDuration > bmi270.gyroDmaMaxDuration) {
     	bmi270.gyroDmaMaxDuration = gyroDmaDuration;
@@ -318,17 +318,15 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     if(GPIO_Pin==GPIO_PIN_4)
     {
     	bmi270.exit_callback_dt = micros() - pre_time;
-        pre_time = micros();
+        pre_time = bmi270.exit_callback_dt;
         // Ideally we'd use a timer to capture such information, but unfortunately the port used for EXTI interrupt does
         // not have an associated timer
-        uint32_t nowCycles = getCycleCounter();
+        uint32_t nowCycles = micros();
         bmi270.gyroSyncEXTI = bmi270.gyroLastEXTI + bmi270.gyroDmaMaxDuration;
         bmi270.gyroLastEXTI = nowCycles;
 
         if (bmi270.gyroModeSPI == GYRO_EXTI_INT_DMA) {// && spiRx_flag(dev)
         	SPI_ByteReadWrite_DMA(dev, bmi270.txBuf, bmi270.rxBuf, 14);
-        	//spiReadWriteBuf(dev, gyro_temp->txBuf, gyro_temp->rxBuf, 14);
-            //spiSequence(&gyro_temp->dev, gyro_temp->segments);
         }
         bmi270.detectedEXTI++;
     }
@@ -515,11 +513,6 @@ static void (*frameCallBack)(void) = NULL;
 void bmi270SetCallBack(void (*p_func)(void))
 {
   frameCallBack = p_func;
-}
-
-uint8_t bmi270InterruptStatus(gyroDev_t *gyro)
-{
-    return bmi270RegisterRead(gyro->gyro_bus_ch, BMI270_REG_INT_STATUS_1);;
 }
 
 #ifdef _USE_HW_CLI

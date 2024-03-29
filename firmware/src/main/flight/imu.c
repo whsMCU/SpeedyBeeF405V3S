@@ -29,8 +29,9 @@
 
 #include "common/axis.h"
 #include "common/time.h"
+#include "drivers/gps/gps.h"
 
-//#include "fc/runtime_config.h"
+#include "fc/runtime_config.h"
 //#include "fc/core.h"
 
 //#include "flight/gps_rescue.h"
@@ -458,16 +459,10 @@ static void imuCalculateEstimatedAttitude(timeUs_t currentTimeUs)
 #endif
 
 #if defined(USE_GPS)
-    if (!useMag && sensors(SENSOR_GPS) && STATE(GPS_FIX) && gpsSol.numSat >= 5 && gpsSol.groundSpeed >= GPS_COG_MIN_GROUNDSPEED) {
+    if (!useMag && STATE(GPS_FIX) && gpsSol.numSat >= 5 && gpsSol.groundSpeed >= GPS_COG_MIN_GROUNDSPEED) {
         // Use GPS course over ground to correct attitude.values.yaw
-        if (isFixedWing()) {
-            courseOverGround = DECIDEGREES_TO_RADIANS(gpsSol.groundCourse);
-            useCOG = true;
-        } else {
-            courseOverGround = DECIDEGREES_TO_RADIANS(gpsSol.groundCourse);
-
-            useCOG = true;
-        }
+		courseOverGround = DECIDEGREES_TO_RADIANS(gpsSol.groundCourse);
+		useCOG = true;
 
         if (useCOG && shouldInitializeGPSHeading()) {
             // Reset our reference and reinitialize quaternion.  This will likely ideally happen more than once per flight, but for now,

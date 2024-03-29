@@ -609,7 +609,7 @@ void gpsInitUblox(void)
 
         case GPS_STATE_CONFIGURE:
             // Either use specific config file for GPS or let dynamically upload config
-            if (true) { //gpsConfig()->autoConfig == GPS_AUTOCONFIG_OFF
+            if (gpsConfig.autoConfig == GPS_AUTOCONFIG_OFF) {
                 gpsSetState(GPS_STATE_RECEIVING_DATA);
                 break;
             }
@@ -619,7 +619,7 @@ void gpsInitUblox(void)
                     case 0:
                         gpsData.ubloxUsePVT = true;
                         gpsData.ubloxUseSAT = true;
-                        ubloxSendNAV5Message(true); //gpsConfig()->gps_ublox_mode == UBLOX_AIRBORNE
+                        ubloxSendNAV5Message(gpsConfig.gps_ublox_mode == UBLOX_AIRBORNE);
                         break;
                     case 1: //Disable NMEA Messages
                         ubloxSetMessageRate(0xF0, 0x05, 0); // VGS: Course over ground and Ground speed
@@ -678,10 +678,10 @@ void gpsInitUblox(void)
                         ubloxSetNavRate(0xC8, 1, 1); // set rate to 5Hz (measurement period: 200ms, navigation rate: 1 cycle)
                         break;
                     case 13:
-                        //ubloxSetSbas();
+                        ubloxSetSbas();
                         break;
                     case 14:
-                        if (true) { //(gpsConfig()->sbasMode == SBAS_NONE) || (gpsConfig()->gps_ublox_use_galileo)
+                        if ((gpsConfig.sbasMode == SBAS_NONE) || (gpsConfig.gps_ublox_use_galileo)) {
                             ubloxSendPollMessage(MSG_CFG_GNSS);
                         } else {
                             gpsSetState(GPS_STATE_RECEIVING_DATA);
@@ -816,7 +816,7 @@ void gpsUpdate(uint32_t currentTimeUs)
                 gpsSetState(GPS_STATE_LOST_COMMUNICATION);
 #ifdef USE_GPS_UBLOX
             } else {
-                if (true) { // Only if autoconfig is enabled (gpsConfig()->autoConfig == GPS_AUTOCONFIG_ON)
+                if (gpsConfig.autoConfig == GPS_AUTOCONFIG_ON) { // Only if autoconfig is enabled
                     switch (gpsData.state_position) {
                         case 0:
                             if (!isConfiguratorConnected()) {
@@ -829,7 +829,7 @@ void gpsUpdate(uint32_t currentTimeUs)
                             }
                             break;
                         case 1:
-                            if (false) { //STATE(GPS_FIX) && (gpsConfig()->gps_ublox_mode == UBLOX_DYNAMIC)
+                            if (STATE(GPS_FIX) && (gpsConfig.gps_ublox_mode == UBLOX_DYNAMIC)) {
                                 ubloxSendNAV5Message(true);
                                 gpsData.state_position = 2;
                             }
@@ -859,14 +859,12 @@ void gpsUpdate(uint32_t currentTimeUs)
     if (executeTimeUs > gpsStateDurationUs[gpsCurrentState]) {
         gpsStateDurationUs[gpsCurrentState] = executeTimeUs;
     }
-    schedulerSetNextStateTime(gpsStateDurationUs[gpsData.state]);
+    //schedulerSetNextStateTime(gpsStateDurationUs[gpsData.state]);
 
-    // if (sensors(SENSOR_GPS)) {
-    //     updateGpsIndicator(currentTimeUs);
-    // }
-    // if (!ARMING_FLAG(ARMED) && !gpsConfig()->gps_set_home_point_once) {
-    //     DISABLE_STATE(GPS_FIX_HOME);
-    // }
+    updateGpsIndicator(currentTimeUs);
+	if (!ARMING_FLAG(ARMED) && !gpsConfig.gps_set_home_point_once) {
+		DISABLE_STATE(GPS_FIX_HOME);
+	}
 
     uint8_t minSats = 5;
 
@@ -877,16 +875,16 @@ void gpsUpdate(uint32_t currentTimeUs)
     }
 #endif
 
-    // static bool hasFix = false;
-    // if (STATE(GPS_FIX)) {
-    //     if (gpsIsHealthy() && gpsSol.numSat >= minSats && !hasFix) {
-    //         // ready beep sequence on fix or requirements for gps rescue met.
-    //         beeper(BEEPER_READY_BEEP);
-    //         hasFix = true;
-    //     }
-    // } else {
-    //     hasFix = false;
-    // }
+     static bool hasFix = false;
+     if (STATE(GPS_FIX)) {
+         if (gpsIsHealthy() && gpsSol.numSat >= minSats && !hasFix) {
+             // ready beep sequence on fix or requirements for gps rescue met.
+             //beeper(BEEPER_READY_BEEP);
+             hasFix = true;
+         }
+     } else {
+         hasFix = false;
+     }
 }
 
 static void gpsNewData(uint16_t c)

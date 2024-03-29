@@ -34,10 +34,10 @@
 
 //#include "config/config.h"
 
-//#include "fc/runtime_config.h"
+#include "fc/runtime_config.h"
 
 #include "drivers/accgyro/accgyro_spi_bmi270.h"
-#include "drivers/accgyro/gyro_sync.h"
+//#include "drivers/accgyro/gyro_sync.h"
 
 
 #include "sensors/gyro.h"

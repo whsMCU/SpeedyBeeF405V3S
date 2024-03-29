@@ -28,6 +28,8 @@
 
 #include "common/maths.h"
 
+#include "drivers/gps/gps.h"
+
 #include "fc/runtime_config.h"
 
 #include "flight/position.h"

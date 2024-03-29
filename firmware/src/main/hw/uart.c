@@ -82,17 +82,6 @@ bool uartOpen(uint8_t ch, uint32_t baud)
     		ret = true;
         is_open[ch] = true;
         HAL_UART_Receive_IT(&huart2, (uint8_t *)&rx_buf2, 1);
-
-//    	  HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *)&rx_buf[0], MAX_SIZE);
-//    	  __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
-
-
-//        if(HAL_UART_Receive_DMA(&huart2, (uint8_t *)&rx_buf2[0], MAX_SIZE) != HAL_OK)
-//        {
-//          ret = false;
-//        }
-        //ring_buffer[ch].in  = (ring_buffer[ch].len - hdma_usart2_rx.Instance->NDTR);
-        //ring_buffer[ch].out = ring_buffer[ch].in;
     	}
       break;
 
@@ -201,13 +190,13 @@ bool uartOpen(uint8_t ch, uint32_t baud)
     	else
     	{
     		ret = true;
-        is_open[ch] = true;
-        if(HAL_UART_Receive_DMA(&huart6, (uint8_t *)&rx_buf[ch-1][0], MAX_SIZE) != HAL_OK)
-        {
-          ret = false;
-        }
-        ring_buffer[ch].in  = ring_buffer[ch].len - hdma_usart6_rx.Instance->NDTR;
-        ring_buffer[ch].out = ring_buffer[ch].in;
+    		is_open[ch] = true;
+    		if(HAL_UART_Receive_DMA(&huart6, (uint8_t *)&rx_buf[ch-1][0], MAX_SIZE) != HAL_OK)
+    		{
+    			ret = false;
+    		}
+    		ring_buffer[ch].in  = ring_buffer[ch].len - hdma_usart6_rx.Instance->NDTR;
+    		ring_buffer[ch].out = ring_buffer[ch].in;
     	}
       break;
   }
@@ -583,12 +572,8 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
   	    }
         /* Disable the UART Error Interrupt: (Frame error, noise error, overrun error) */
         CLEAR_BIT(huart->Instance->CR3, USART_CR3_EIE);
-  		//HAL_UART_Abort_IT(&huart2);
-  		//HAL_UART_Receive_IT(&huart2, &uart2_rx_data, 1);
   	}
 
-//		HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *)&rx_buf2[0], MAX_SIZE);
-//		__HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
   }
 }
 
@@ -604,24 +589,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		qbufferWrite(&ring_buffer[_DEF_UART2], (uint8_t *)&rx_buf2[0], 1);
 		rxRuntimeState.RxCallback_Flag = false;
 	}
-}
-
-void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
-{
-//	static uint32_t pre_time = 0;
-//
-//  if(huart->Instance == USART2)
-//  {
-//	rxRuntimeState.callbackTime = micros() - pre_time;
-//	pre_time = micros();
-//	qbufferWrite(&ring_buffer[_DEF_UART2], (uint8_t *)&rx_buf2[0], (uint32_t)Size);
-//	rxRuntimeState.RxCallback_Flag = true;
-//
-//	HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *)&rx_buf2[0], MAX_SIZE);
-//	__HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
-//	rxRuntimeState.uartAvalable = uartAvailable(_DEF_UART2);
-//	rxRuntimeState.RxCallback_Flag = false;
-//  }
 }
 
 void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
