@@ -346,7 +346,8 @@ void gpsInit(void)
 #endif
 
     // no callback - buffer will be consumed in gpsUpdate()
-    uartOpen(_DEF_UART6, 57600);
+    uint32_t baudRate = baudRates[gpsInitData[gpsData.baudrateIndex].baudrateIndex];
+    uartOpen(_DEF_UART6, baudRate);
     //gpsPort = openSerialPort(gpsPortConfig->identifier, FUNCTION_GPS, NULL, NULL, baudRates[gpsInitData[gpsData.baudrateIndex].baudrateIndex], mode, SERIAL_NOT_INVERTED);
     // if (!gpsPort) {
     //     return;
@@ -434,7 +435,7 @@ static void ubloxSendMessage(const uint8_t *data, uint8_t len)
     //serialWrite(gpsPort, data[1]);
     ubloxSendDataUpdateChecksum(&data[2], len - 2, &checksumA, &checksumB);
     uartWrite(_DEF_UART6, &checksumA, 1);
-    uartWrite(_DEF_UART6, &checksumA, 1);
+    uartWrite(_DEF_UART6, &checksumB, 1);
 
     // Save state for ACK waiting
     gpsData.ackWaitingMsgId = data[3]; //save message id for ACK
@@ -563,7 +564,7 @@ void gpsInitUblox(void)
     // UBX will run at the serial port's baudrate, it shouldn't be "autodetected". So here we force it to that rate
 
     // Wait until GPS transmit buffer is empty
-    if (!uartAvailable(_DEF_UART6))
+    if (!uartTxBufEmpty(_DEF_UART6))
         return;
 
     switch (gpsData.state) {

@@ -122,10 +122,25 @@ uint32_t qbufferAvailable(qbuffer_t *p_node)
 {
   uint32_t ret;
 
+  if(p_node->in >= p_node->out)
+  {
+  	ret = p_node->in - p_node->out;
+  }
+  else
+  {
+  	ret = p_node->len + p_node->in - p_node->out;
+  }
 
-  ret = (p_node->len + p_node->in - p_node->out) % p_node->len;
+  //ret = (p_node->len + p_node->in - p_node->out) % p_node->len;
 
   return ret;
+}
+
+bool qbufferTxEmpty(qbuffer_t *p_node)
+{
+	p_node->in == p_node->out;
+
+  return p_node->in == p_node->out;
 }
 
 void qbufferFlush(qbuffer_t *p_node)
