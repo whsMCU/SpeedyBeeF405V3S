@@ -35,6 +35,8 @@
 //#include "config/config.h"
 //#include "config/feature.h"
 
+#include "drivers/gps/M8N.h"
+
 #include "drivers/accgyro/accgyro.h"
 #include "drivers/accgyro/accgyro_spi_bmi270.h"
 #include "drivers/compass/compass.h"
@@ -162,7 +164,8 @@ void init(void)
     rxInit();
 
 #ifdef USE_GPS
-        gpsInit();
+        //gpsInit();
+        M8N_Initialization();
 #endif
 
 //#ifdef USE_ACC

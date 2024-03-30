@@ -12,6 +12,8 @@
 #include "rx/rx.h"
 #include "rx/crsf.h"
 
+#include "drivers/gps/M8N.h"
+
 //#include "fc/core.h"
 
 
@@ -609,9 +611,12 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
   }
 }
 
+uint8_t uart6_rx_data = 0;
+
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	static uint32_t pre_time = 0;
+	static unsigned char cnt = 0;
 	if(huart->Instance == USART2)
 	{
 		rxRuntimeState.callbackTime = micros() - pre_time;
@@ -625,6 +630,35 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	{
 		HAL_UART_Receive_IT(&huart6, (uint8_t *)&rx_buf6, 1);
 		qbufferWrite(&ring_buffer[_DEF_UART6], (uint8_t *)&rx_buf6, 1);
+		qbufferRead(&ring_buffer[_DEF_UART6], (uint8_t *)&uart6_rx_data, 1);
+		switch(cnt)
+		{
+		case 0:
+			if(uart6_rx_data == 0xb5)
+			{
+				m8n_rx_buf[cnt] = uart6_rx_data;
+				cnt++;
+			}
+			break;
+		case 1:
+			if(uart6_rx_data == 0x62)
+			{
+				m8n_rx_buf[cnt] = uart6_rx_data;
+				cnt++;
+			}
+			else
+				cnt = 0;
+			break;
+		case 35:
+			m8n_rx_buf[cnt] = uart6_rx_data;
+			cnt = 0;
+			m8n_rx_cplt_flag = 1;
+			break;
+		default:
+			m8n_rx_buf[cnt] = uart6_rx_data;
+			cnt++;
+			break;
+		}
 	}
 }
 
