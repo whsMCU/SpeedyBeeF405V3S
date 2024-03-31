@@ -125,7 +125,7 @@ voltageSensorADCConfig_t voltageSensorADCConfigs[MAX_VOLTAGE_SENSOR_ADC];
 void voltageSensorADCConfig_Init(void)
 {
     for (int i = 0; i < MAX_VOLTAGE_SENSOR_ADC; i++) {
-    	voltageSensorADCConfigs[i].vbatscale = VBAT_SCALE_DEFAULT;
+    voltageSensorADCConfigs[i].vbatscale = VBAT_SCALE_DEFAULT;
 		voltageSensorADCConfigs[i].vbatresdivval = VBAT_RESDIVVAL_DEFAULT;
 		voltageSensorADCConfigs[i].vbatresdivmultiplier = VBAT_RESDIVMULTIPLIER_DEFAULT;
     }

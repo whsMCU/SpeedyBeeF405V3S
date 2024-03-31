@@ -31,6 +31,12 @@
 #define VIDEO_LINES_PAL           16
 
 typedef enum {
+    DISPLAYPORT_LAYER_FOREGROUND,
+    DISPLAYPORT_LAYER_BACKGROUND,
+    DISPLAYPORT_LAYER_COUNT,
+} displayPortLayer_e;
+
+typedef enum {
     // IO defined and MAX7456 was detected
     MAX7456_INIT_OK = 0,
     // IO defined, but MAX7456 could not be detected (maybe not yet
@@ -67,7 +73,8 @@ typedef struct max7456Register_s {
 void max7456Config_Init(void);
 
 max7456InitStatus_e max7456Init(void);
-
+void max7456WriteChar(uint8_t x, uint8_t y, uint8_t c);
+void max7456Write(uint8_t x, uint8_t y, const char *buff);
 bool max7456WriteNvm(uint8_t char_address, const uint8_t *font_data);
 
 bool max7456DmaInProgress(void);
@@ -75,8 +82,9 @@ bool max7456DmaInProgress(void);
 void print(const char string[], uint8_t x, uint8_t y);
 bool max7456_display_string(const char *str, uint8_t x, uint8_t y);
 void printMax7456Char(const uint8_t address, uint8_t x, uint8_t y);
-//bool    max7456LayerSupported(displayPortLayer_e layer);
-//bool    max7456LayerSelect(displayPortLayer_e layer);
-//bool    max7456LayerCopy(displayPortLayer_e destLayer, displayPortLayer_e sourceLayer);
+bool    max7456LayerSupported(displayPortLayer_e layer);
+bool    max7456LayerSelect(displayPortLayer_e layer);
+bool    max7456LayerCopy(displayPortLayer_e destLayer, displayPortLayer_e sourceLayer);
+void printMax7456(void);
 //bool    max7456IsDeviceDetected(void);
 //void    max7456SetBackgroundType(displayPortBackground_e backgroundType);

@@ -184,17 +184,14 @@
 
 #define CHARS_PER_LINE      30 // XXX Should be related to VIDEO_BUFFER_CHARS_*?
 
-typedef enum {
-    DISPLAYPORT_LAYER_FOREGROUND,
-    DISPLAYPORT_LAYER_BACKGROUND,
-    DISPLAYPORT_LAYER_COUNT,
-} displayPortLayer_e;
-
 #define MAX7456_SUPPORTED_LAYER_COUNT (DISPLAYPORT_LAYER_BACKGROUND + 1)
 
 typedef struct max7456Layer_s {
     uint8_t buffer[VIDEO_BUFFER_CHARS_PAL];
 } max7456Layer_t;
+
+static max7456Layer_t displayLayers[MAX7456_SUPPORTED_LAYER_COUNT];
+static displayPortLayer_e activeLayer = DISPLAYPORT_LAYER_FOREGROUND;
 
 uint16_t maxScreenSize = VIDEO_BUFFER_CHARS_PAL;
 
@@ -211,6 +208,98 @@ static bool fontIsLoading       = false;
 // previous states initialized outside the valid range to force update on first call
 #define INVALID_PREVIOUS_REGISTER_STATE 255
 
+static uint8_t *getLayerBuffer(displayPortLayer_e layer)
+{
+    return displayLayers[layer].buffer;
+}
+
+static uint8_t *getActiveLayerBuffer(void)
+{
+    return getLayerBuffer(activeLayer);
+}
+
+static void max7456ClearLayer(displayPortLayer_e layer)
+{
+    memset(getLayerBuffer(layer), 0x20, VIDEO_BUFFER_CHARS_PAL);
+}
+
+void max7456WriteChar(uint8_t x, uint8_t y, uint8_t c)
+{
+    uint8_t *buffer = getActiveLayerBuffer();
+    if (x < CHARS_PER_LINE && y < VIDEO_LINES_PAL) {
+        buffer[y * CHARS_PER_LINE + x] = c;
+    }
+}
+
+void max7456Write(uint8_t x, uint8_t y, const char *buff)
+{
+    if (y < VIDEO_LINES_PAL) {
+        uint8_t *buffer = getActiveLayerBuffer();
+        for (int i = 0; buff[i] && x + i < CHARS_PER_LINE; i++) {
+            buffer[y * CHARS_PER_LINE + x + i] = buff[i];
+        }
+    }
+}
+
+bool max7456LayerSupported(displayPortLayer_e layer)
+{
+    if (layer == DISPLAYPORT_LAYER_FOREGROUND || layer == DISPLAYPORT_LAYER_BACKGROUND) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool max7456LayerSelect(displayPortLayer_e layer)
+{
+    if (max7456LayerSupported(layer)) {
+        activeLayer = layer;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool max7456LayerCopy(displayPortLayer_e destLayer, displayPortLayer_e sourceLayer)
+{
+    if ((sourceLayer != destLayer) && max7456LayerSupported(sourceLayer) && max7456LayerSupported(destLayer)) {
+        memcpy(getLayerBuffer(destLayer), getLayerBuffer(sourceLayer), VIDEO_BUFFER_CHARS_PAL);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void printMax7456(void) {
+	uint8_t         currentCharMax7456;
+	uint8_t         posAddressLO;
+	uint8_t         posAddressHI;
+  unsigned int posAddress;
+  int i;
+
+  uint8_t *buffer = getActiveLayerBuffer();
+
+  posAddress = 0;
+
+  posAddressHI = posAddress >> 8;
+  posAddressLO = posAddress & 0xff;
+  gpioPinWrite(4, _DEF_LOW);
+  max7456Reg._regDmm.whole = 0x01;
+  spiWriteReg_nocs(MAX7456, MAX7456ADD_DMM, max7456Reg._regDmm.whole);
+
+  spiWriteReg_nocs(MAX7456, MAX7456ADD_DMAH, posAddressHI);
+
+  spiWriteReg_nocs(MAX7456, MAX7456ADD_DMAL, posAddressLO);
+
+  for (i = 0; i < VIDEO_BUFFER_CHARS_PAL; i++) {
+    currentCharMax7456 = buffer[i];
+    spiWriteReg_nocs(MAX7456, MAX7456ADD_DMDI, currentCharMax7456);
+  }
+
+  //end character (we're done).
+  spiWriteReg_nocs(MAX7456, MAX7456ADD_DMDI, 0xFF);
+  gpioPinWrite(4, _DEF_HIGH);
+}
 
 //-----------------------------------------------------------------------------
 // Implements Max7456::printMax7456Chars
@@ -332,8 +421,26 @@ void activateOSD(bool act)
 	}
 }
 
+static void osdDrawLogo(int x, int y)
+{
+    // display logo and help
+    int fontOffset = 160;
+    for (int row = 0; row < 4; row++) {
+        for (int column = 0; column < 24; column++) {
+            if (fontOffset <= SYM_END_OF_FONT)
+            	max7456WriteChar(x + column, y + row, fontOffset++);
+        }
+    }
+}
+
 max7456InitStatus_e max7456Init(void)
 {
+
+  // initialize all layers
+  for (unsigned i = 0; i < MAX7456_SUPPORTED_LAYER_COUNT; i++) {
+      max7456ClearLayer(i);
+  }
+
     gpioPinWrite(4, _DEF_HIGH);
 
     delay(100);
@@ -377,18 +484,34 @@ max7456InitStatus_e max7456Init(void)
     SPI_Set_Speed_hz(MAX7456, MAX7456_MAX_SPI_CLK_HZ);
 
 
-    setDisplayOffsets(60,18);
+    setDisplayOffsets(36,18);
 
     //setBlinkParams(_8fields, _BT_BT);
 
     activateOSD(true);
 
-    printMax7456Char(SYM_BATT_FULL, 5, 6);
-    print("Hello world :)", 0, 3);
+    osdDrawLogo(2, 1);
 
     char string_buffer[30];
     tfp_sprintf(string_buffer, "V%s", FC_VERSION_STRING);
-    print(string_buffer, 0, 5);
+    max7456Write(1, 0, string_buffer);
+
+    tfp_sprintf(string_buffer, "HELLO WORLD :)");
+    max7456Write(10, 0, string_buffer);
+
+
+    HAL_Delay(1000);
+    max7456ClearLayer(DISPLAYPORT_LAYER_FOREGROUND);
+		//x = 27, y = 12 limit
+//    printMax7456Char(SYM_BATT_FULL, 0, 0);
+//    printMax7456Char(SYM_BATT_5, 30, 1);
+//    printMax7456Char(SYM_BATT_4, 0, 8);
+//    printMax7456Char(SYM_BATT_3, 24, 9);
+//    printMax7456Char(SYM_BATT_2, 26, 10);
+//    printMax7456Char(SYM_BATT_1, 27, 11);
+//    printMax7456Char(SYM_BATT_EMPTY, 16, 12);
+//    print("Hello world :)", 0, 3);
+//    print(string_buffer, 0, 5);
     // Real init will be made later when driver detect idle.
     return MAX7456_INIT_OK;
 }

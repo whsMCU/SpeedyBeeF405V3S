@@ -358,14 +358,35 @@ osdState_e osdState = OSD_STATE_INIT;
 
 #define OSD_UPDATE_INTERVAL_US (1000000 / osdConfig.framerate_hz)
 
+#ifdef USE_ACC
+static void osdElementAngleRoll(char *buff)
+{
+    const float angle = attitude.values.roll / 10.0f;
+    osdPrintFloat(buff, SYM_ROLL, fabsf(angle), ((angle < 0) ? "-%02u" : " %02u"), 1, true, SYM_NONE);
+}
+
+static void osdElementAnglePitch(char *buff)
+{
+    const float angle = attitude.values.pitch / 10.0f;
+    osdPrintFloat(buff, SYM_PITCH, fabsf(angle), ((angle < 0) ? "-%02u" : " %02u"), 1, true, SYM_NONE);
+}
+#endif
+
 // Called when there is OSD update work to be done
 void osdUpdate(timeUs_t currentTimeUs)
 {
     //max7456_display_string("Hello, World!", 10, 10);
-    printMax7456Char(SYM_ROLL,13,13);
-    char string_buffer[30];
-    tfp_sprintf(string_buffer, "%s : %d", SYM_ROLL, attitude.values.roll);
-    print(string_buffer, 0, 7);
+	char buff[OSD_ELEMENT_BUFFER_LENGTH] = "";
+	osdElementAngleRoll(buff);
+  max7456Write(1, 5, buff);
+
+  osdElementAnglePitch(buff);
+  max7456Write(1, 6, buff);
+  printMax7456();
+//    printMax7456Char(SYM_ROLL,13,13);
+//    char string_buffer[30];
+//    tfp_sprintf(string_buffer, "%s : %d", SYM_ROLL, attitude.values.roll);
+//    print(string_buffer, 0, 7);
 
 }
 #endif // USE_OSD
