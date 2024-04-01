@@ -106,7 +106,7 @@ void batteryConfig_Init(void)
 	batteryConfig.currentMeterSource = CURRENT_METER_ADC;
 
 	// cells
-	batteryConfig.forceBatteryCellCount = 0; //0 will be ignored
+	batteryConfig.forceBatteryCellCount = 4; //0 will be ignored
 
 	// warnings / alerts
 	batteryConfig.useVBatAlerts = true;

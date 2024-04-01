@@ -290,7 +290,6 @@ osdState_e osdState = OSD_STATE_INIT;
 typedef enum {
     OSD_Buffer_Draw1 = 0,
     OSD_Buffer_Draw2,
-    OSD_Buffer_Draw3,
     OSD_Max7456_Draw
 } osdUpdateType_e;
 // Called when there is OSD update work to be done
@@ -303,30 +302,27 @@ void osdUpdate(timeUs_t currentTimeUs)
   switch(task)
   {
     case OSD_Buffer_Draw1:
-      time_tmp = micros();
-      osdDrawSingleElement(1, 5, OSD_ROLL_ANGLE);
-      osdDrawSingleElement(1, 6, OSD_PITCH_ANGLE);
+
+      osdDrawSingleElement(1, 10, OSD_ROLL_ANGLE);
+      osdDrawSingleElement(1, 11, OSD_PITCH_ANGLE);
       //osdDrawSingleElement(1, 7, OSD_THROTTLE_POS);
-      time_excut = micros() - time_tmp;
+      osdDrawSingleElement(16, 1, OSD_GPS_LON);
+      osdDrawSingleElement(16, 2, OSD_GPS_LAT);
       task = OSD_Buffer_Draw2;
       break;
 
     case OSD_Buffer_Draw2:
-      osdDrawSingleElement(1, 8, OSD_CURRENT_DRAW);
-      osdDrawSingleElement(1, 9, OSD_ALTITUDE);
-      osdDrawSingleElement(1, 10, OSD_AVG_CELL_VOLTAGE);
-      task = OSD_Buffer_Draw3;
-      break;
-
-    case OSD_Buffer_Draw3:
-      osdDrawSingleElement(8, 5, OSD_GPS_LON);
-      osdDrawSingleElement(8, 6, OSD_GPS_LAT);
+      osdDrawSingleElement(20, 9, OSD_CURRENT_DRAW);
+      osdDrawSingleElement(21, 10, OSD_ALTITUDE);
+      osdDrawSingleElement(21, 8, OSD_AVG_CELL_VOLTAGE);
       task = OSD_Max7456_Draw;
       break;
 
     case OSD_Max7456_Draw:
       //DrawOSD();
+      time_tmp = micros();
       max7456DrawScreen();
+      time_excut = micros() - time_tmp;
       if(spiIsBusy(MAX7456))
       {
         task = OSD_Max7456_Draw;

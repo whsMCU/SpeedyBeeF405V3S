@@ -198,7 +198,7 @@ uint16_t adcGetChannel(uint8_t channel)
         debug[3] = adcValues[adcOperatingConfig[3].dmaIndex];
     }
 #endif
-    return adcValues[adcOperatingConfig[channel].dmaIndex];
+    return adcValues[channel];
 }
 
 #ifdef USE_ADC_INTERNAL

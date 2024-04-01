@@ -32,16 +32,16 @@
 //
 #include "flight/imu.h"
 //#include "flight/pid_init.h"
-//#include "flight/position.h"
+#include "flight/position.h"
 
 #include "sensors/sensors.h"
 #include "sensors/barometer.h"
-//#include "sensors/compass.h"
+#include "sensors/compass.h"
 #include "sensors/gyro_init.h"
-//#include "sensors/adcinternal.h"
-//#include "sensors/battery.h"
-//
-//#include "drivers/gps/gps.h"
+#include "sensors/adcinternal.h"
+#include "sensors/battery.h"
+
+#include "drivers/gps/gps.h"
 
 #include "hw/timer.h"
 //

@@ -536,16 +536,16 @@ max7456InitStatus_e max7456Init(void)
 
     activateOSD(true);
 
-    osdDrawLogo(2, 1);
+    osdDrawLogo(2, 2);
 
     char string_buffer[30];
     tfp_sprintf(string_buffer, "V%s", FC_VERSION_STRING);
-    max7456Write(1, 0, string_buffer);
+    max7456Write(1, 1, string_buffer);
 
     tfp_sprintf(string_buffer, "HELLO WORLD :)");
-    max7456Write(10, 0, string_buffer);
+    max7456Write(10, 1, string_buffer);
 
-
+    DrawOSD();
     HAL_Delay(1000);
     max7456ClearLayer(DISPLAYPORT_LAYER_FOREGROUND);
 		//x = 27, y = 12 limit

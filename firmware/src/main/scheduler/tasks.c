@@ -220,7 +220,7 @@ static void taskHandleSerial(uint32_t currentTimeUs)
 
 static void taskBatteryAlerts(uint32_t currentTimeUs)
 {
-    if (true) { //!ARMING_FLAG(ARMED)
+    if (!ARMING_FLAG(ARMED)) {
         // the battery *might* fall out in flight, but if that happens the FC will likely be off too unless the user has battery backup.
         batteryUpdatePresence();
     }
@@ -336,7 +336,7 @@ void tasksInit(void)
 
     const bool useBatteryCurrent = batteryConfig.currentMeterSource != CURRENT_METER_NONE;
     setTaskEnabled(TASK_BATTERY_CURRENT, useBatteryCurrent);
-    const bool useBatteryAlerts = false;//batteryConfig.useVBatAlerts || batteryConfig.useConsumptionAlerts || featureIsEnabled(FEATURE_OSD);
+    const bool useBatteryAlerts = batteryConfig.useVBatAlerts || batteryConfig.useConsumptionAlerts;
     setTaskEnabled(TASK_BATTERY_ALERTS, (useBatteryVoltage || useBatteryCurrent) && useBatteryAlerts);
 
 
