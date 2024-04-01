@@ -79,12 +79,9 @@ bool max7456WriteNvm(uint8_t char_address, const uint8_t *font_data);
 
 bool max7456DmaInProgress(void);
 
-void print(const char string[], uint8_t x, uint8_t y);
-bool max7456_display_string(const char *str, uint8_t x, uint8_t y);
-void printMax7456Char(const uint8_t address, uint8_t x, uint8_t y);
 bool    max7456LayerSupported(displayPortLayer_e layer);
 bool    max7456LayerSelect(displayPortLayer_e layer);
 bool    max7456LayerCopy(displayPortLayer_e destLayer, displayPortLayer_e sourceLayer);
-void printMax7456(void);
-//bool    max7456IsDeviceDetected(void);
-//void    max7456SetBackgroundType(displayPortBackground_e backgroundType);
+void max7456ClearLayer(displayPortLayer_e layer);
+void DrawOSD(void);
+bool max7456DrawScreen(void);

@@ -70,7 +70,7 @@
 //#include "flight/position.h"
 
 #include "osd/osd.h"
-//#include "osd/osd_elements.h"
+#include "osd/osd_elements.h"
 //#include "osd/osd_warnings.h"
 
 #include "rx/crsf.h"
@@ -82,8 +82,6 @@
 #include "sensors/battery.h"
 //#include "sensors/esc_sensor.h"
 #include "sensors/sensors.h"
-
-#include "charset.h"
 
 typedef enum {
     OSD_LOGO_ARMING_OFF,
@@ -109,6 +107,7 @@ timeUs_t osdFlyTime = 0;
 float osdGForce = 0;
 #endif
 
+static statistic_t stats;
 timeUs_t resumeRefreshAt = 0;
 #define REFRESH_1S    1000 * 1000
 
@@ -255,79 +254,10 @@ void osdElementConfig_Init(void)
     osdElementConfig.item_pos[OSD_PITCH_ANGLE]  = OSD_POS(3, 3)| profileFlags;
     osdElementConfig.item_pos[OSD_ROLL_ANGLE]  = OSD_POS(3, 6)| profileFlags;
 }
-typedef uint8_t charact[54];
-//-----------------------------------------------------------------------------
-// Implements Max7456::getCARACFromProgMem
-//-----------------------------------------------------------------------------
-static void getCARACFromProgMem(const char *table, uint8_t i, charact car)
-{
-	unsigned long index;
-	uint8_t read;
-	index = i*54;
-	for(unsigned long j = 0 ; j < 54 ; j++)
-	{
-		read = table[index+j];
-		car[j] = read;
-		if (car[j] == 0x55)
-			car[j] = 0xff;
-	}
-}
-
-//-----------------------------------------------------------------------------
-// Implements Max7456::sendCharacter
-//-----------------------------------------------------------------------------
-static void sendCharacter(const charact chara, uint8_t x, uint8_t y)
-{
-	uint8_t charAddress;
-	if(y<0)
-		charAddress = x;
-	else
-		charAddress = x + (y<<4);
-	//activateOSD(false);
-	//datasheet p38
-	spiWriteReg(2, 0x09, charAddress);
-
-	for(uint8_t i = 0 ; i < 54 ; i++)
-	{
-		spiWriteReg(2, 0x0A, i);
-		spiWriteReg(2, 0x0B, chara[i]);
-	}
-
-	uint8_t _regCmm = 0xA0; //To write the NVM array
-	spiWriteReg(2, 0x08, _regCmm);
-	//while STAT[5] is not good, we wait.
-	while ((spiReadRegMsk(2, 0x0A) & 0x20) != 0x00);
-}
 
 void osdInit(void)
 {
 	max7456Init();
-
-//	charact currentChar; //represents a character as stored in memory (byte[54])
-//	uartPrintf(0, "Initializing...\r\n");
-//	uartPrintf(0, "Updating MAX7456 charset\r\n");
-//	uartPrintf(0, "Aare you sure? (y/n)\r\n");
-//
-//	char number[] = "000";
-//
-//	  for (int i = 0 ; i <= 0xff; i++)
-//	  {
-//		uartPrintf(0, "Inserting : ");
-//	    //dtostrf(i, 3, 0, number);
-//	    uartPrintf(0, "%d", i);
-//		uartPrintf(0, " of 255\r\n");
-//	    getCARACFromProgMem(tableOfAllCharacters, i, currentChar); //Because the table is too big for ram memory
-//
-//	    sendCharacter(currentChar, i & 0xF0, i & 0xF0); //We send currentChar at address i.
-//
-//	    for (int j = 0 ; j < 19 ; j++) //Rewind Serial.
-//	    {
-//		    //uartPrintf(0, char(0x08));
-//	    }
-//
-//	  }
-//		uartPrintf(0, "---------- DONE! ----------\r\n");
-//		uartPrintf(0, "please unplug your arduino.\r\n");
 }
 
 typedef struct osdStatsRenderingState_s {
@@ -357,36 +287,64 @@ typedef enum {
 osdState_e osdState = OSD_STATE_INIT;
 
 #define OSD_UPDATE_INTERVAL_US (1000000 / osdConfig.framerate_hz)
-
-#ifdef USE_ACC
-static void osdElementAngleRoll(char *buff)
-{
-    const float angle = attitude.values.roll / 10.0f;
-    osdPrintFloat(buff, SYM_ROLL, fabsf(angle), ((angle < 0) ? "-%02u" : " %02u"), 1, true, SYM_NONE);
-}
-
-static void osdElementAnglePitch(char *buff)
-{
-    const float angle = attitude.values.pitch / 10.0f;
-    osdPrintFloat(buff, SYM_PITCH, fabsf(angle), ((angle < 0) ? "-%02u" : " %02u"), 1, true, SYM_NONE);
-}
-#endif
-
+typedef enum {
+    OSD_Buffer_Draw1 = 0,
+    OSD_Buffer_Draw2,
+    OSD_Buffer_Draw3,
+    OSD_Max7456_Draw
+} osdUpdateType_e;
 // Called when there is OSD update work to be done
+uint32_t time_tmp = 0;
+uint32_t time_excut = 0;
 void osdUpdate(timeUs_t currentTimeUs)
 {
-    //max7456_display_string("Hello, World!", 10, 10);
-	char buff[OSD_ELEMENT_BUFFER_LENGTH] = "";
-	osdElementAngleRoll(buff);
-  max7456Write(1, 5, buff);
+  static uint8_t task = 0;
 
-  osdElementAnglePitch(buff);
-  max7456Write(1, 6, buff);
-  printMax7456();
-//    printMax7456Char(SYM_ROLL,13,13);
-//    char string_buffer[30];
-//    tfp_sprintf(string_buffer, "%s : %d", SYM_ROLL, attitude.values.roll);
-//    print(string_buffer, 0, 7);
+  switch(task)
+  {
+    case OSD_Buffer_Draw1:
+      time_tmp = micros();
+      osdDrawSingleElement(1, 5, OSD_ROLL_ANGLE);
+      osdDrawSingleElement(1, 6, OSD_PITCH_ANGLE);
+      //osdDrawSingleElement(1, 7, OSD_THROTTLE_POS);
+      time_excut = micros() - time_tmp;
+      task = OSD_Buffer_Draw2;
+      break;
 
+    case OSD_Buffer_Draw2:
+      osdDrawSingleElement(1, 8, OSD_CURRENT_DRAW);
+      osdDrawSingleElement(1, 9, OSD_ALTITUDE);
+      osdDrawSingleElement(1, 10, OSD_AVG_CELL_VOLTAGE);
+      task = OSD_Buffer_Draw3;
+      break;
+
+    case OSD_Buffer_Draw3:
+      osdDrawSingleElement(8, 5, OSD_GPS_LON);
+      osdDrawSingleElement(8, 6, OSD_GPS_LAT);
+      task = OSD_Max7456_Draw;
+      break;
+
+    case OSD_Max7456_Draw:
+      //DrawOSD();
+      max7456DrawScreen();
+      if(spiIsBusy(MAX7456))
+      {
+        task = OSD_Max7456_Draw;
+      }
+      else
+      {
+        task = OSD_Buffer_Draw1;
+      }
+      break;
+
+    default:
+      task = OSD_Buffer_Draw1;
+      break;
+  }
+}
+
+statistic_t *osdGetStats(void)
+{
+    return &stats;
 }
 #endif // USE_OSD

@@ -193,7 +193,11 @@ typedef struct max7456Layer_s {
 static max7456Layer_t displayLayers[MAX7456_SUPPORTED_LAYER_COUNT];
 static displayPortLayer_e activeLayer = DISPLAYPORT_LAYER_FOREGROUND;
 
+static uint8_t shadowBuffer[VIDEO_BUFFER_CHARS_PAL];
+
 uint16_t maxScreenSize = VIDEO_BUFFER_CHARS_PAL;
+
+static uint8_t  displayMemoryModeReg = 0;
 
 //Max bytes to update in one call to max7456DrawScreen()
 #define MAX_BYTES2SEND          250
@@ -201,13 +205,17 @@ uint16_t maxScreenSize = VIDEO_BUFFER_CHARS_PAL;
 #define MAX_ENCODE_US           20
 #define MAX_ENCODE_US_POLLED    10
 
+
+static uint8_t spiBuf[MAX_BYTES2SEND];
+
 max7456Register_t max7456Reg;
 
 static bool fontIsLoading       = false;
 
 // previous states initialized outside the valid range to force update on first call
 #define INVALID_PREVIOUS_REGISTER_STATE 255
-
+static uint8_t previousBlackWhiteRegister = INVALID_PREVIOUS_REGISTER_STATE;
+static uint8_t previousInvertRegister = INVALID_PREVIOUS_REGISTER_STATE;
 static uint8_t *getLayerBuffer(displayPortLayer_e layer)
 {
     return displayLayers[layer].buffer;
@@ -218,7 +226,14 @@ static uint8_t *getActiveLayerBuffer(void)
     return getLayerBuffer(activeLayer);
 }
 
-static void max7456ClearLayer(displayPortLayer_e layer)
+// When clearing the shadow buffer we fill with 0 so that the characters will
+// be flagged as changed when compared to the 0x20 used in the layer buffers.
+static void max7456ClearShadowBuffer(void)
+{
+    memset(shadowBuffer, 0, maxScreenSize);
+}
+
+void max7456ClearLayer(displayPortLayer_e layer)
 {
     memset(getLayerBuffer(layer), 0x20, VIDEO_BUFFER_CHARS_PAL);
 }
@@ -270,28 +285,20 @@ bool max7456LayerCopy(displayPortLayer_e destLayer, displayPortLayer_e sourceLay
     }
 }
 
-void printMax7456(void) {
+void DrawOSD(void) {
 	uint8_t         currentCharMax7456;
-	uint8_t         posAddressLO;
-	uint8_t         posAddressHI;
-  unsigned int posAddress;
-  int i;
 
   uint8_t *buffer = getActiveLayerBuffer();
 
-  posAddress = 0;
-
-  posAddressHI = posAddress >> 8;
-  posAddressLO = posAddress & 0xff;
   gpioPinWrite(4, _DEF_LOW);
   max7456Reg._regDmm.whole = 0x01;
   spiWriteReg_nocs(MAX7456, MAX7456ADD_DMM, max7456Reg._regDmm.whole);
 
-  spiWriteReg_nocs(MAX7456, MAX7456ADD_DMAH, posAddressHI);
+  spiWriteReg_nocs(MAX7456, MAX7456ADD_DMAH, 0);
 
-  spiWriteReg_nocs(MAX7456, MAX7456ADD_DMAL, posAddressLO);
+  spiWriteReg_nocs(MAX7456, MAX7456ADD_DMAL, 0);
 
-  for (i = 0; i < VIDEO_BUFFER_CHARS_PAL; i++) {
+  for (int i = 0; i < VIDEO_BUFFER_CHARS_PAL; i++) {
     currentCharMax7456 = buffer[i];
     spiWriteReg_nocs(MAX7456, MAX7456ADD_DMDI, currentCharMax7456);
   }
@@ -301,84 +308,120 @@ void printMax7456(void) {
   gpioPinWrite(4, _DEF_HIGH);
 }
 
-//-----------------------------------------------------------------------------
-// Implements Max7456::printMax7456Chars
-//-----------------------------------------------------------------------------
-static void printMax7456Chars(uint8_t chars[], uint8_t size, uint8_t x, uint8_t y) {
-	uint8_t         currentCharMax7456;
-	uint8_t         posAddressLO;
-	uint8_t         posAddressHI;
-  unsigned int posAddress;
+// Return true if screen still being transferred
+bool max7456DrawScreen(void)
+{
+  static uint16_t pos = 0;
 
-  posAddress = 30 * y + x;
+  uint8_t *buffer = getActiveLayerBuffer();
+  int spiBufIndex = 0;
+  int maxSpiBufStartIndex;
+  timeDelta_t maxEncodeTime;
+  bool setAddress = true;
+  bool autoInc = false;
+  int posLimit = pos + (maxScreenSize / 2);
 
-  posAddressHI = posAddress >> 8;
-  posAddressLO = posAddress;
-  gpioPinWrite(4, _DEF_LOW);
-  max7456Reg._regDmm.whole = 0x01;
-  spiWriteReg_nocs(MAX7456, MAX7456ADD_DMM, max7456Reg._regDmm.whole);
+  maxSpiBufStartIndex = MAX_BYTES2SEND;
+  //maxSpiBufStartIndex = spiUseMOSI_DMA(dev) ? MAX_BYTES2SEND : MAX_BYTES2SEND_POLLED;
+  maxEncodeTime = MAX_ENCODE_US;
+  //maxEncodeTime = spiUseMOSI_DMA(dev) ? MAX_ENCODE_US : MAX_ENCODE_US_POLLED;
 
-  spiWriteReg_nocs(MAX7456, MAX7456ADD_DMAH, posAddressHI);
-
-  spiWriteReg_nocs(MAX7456, MAX7456ADD_DMAL, posAddressLO);
-
-  for (int i = 0; i < size; i++) {
-    currentCharMax7456 = chars[i];
-    spiWriteReg_nocs(MAX7456, MAX7456ADD_DMDI, currentCharMax7456);
+  // Abort for now if the bus is still busy
+  if (spiIsBusy(MAX7456)) {
+      // Not finished yet
+      return true;
   }
 
-  //end character (we're done).
-  spiWriteReg_nocs(MAX7456, MAX7456ADD_DMDI, 0xFF);
-  gpioPinWrite(4, _DEF_HIGH);
-}
+  timeUs_t startTime = micros();
 
-void printMax7456Char(const uint8_t address, uint8_t x, uint8_t y) {
-	uint8_t ad = address;
-  printMax7456Chars(&ad, 1, x, y);
-}
-#define MAX7456_TABLE_ASCII
-//-----------------------------------------------------------------------------
-// Implements Max7456::giveMax7456CharFromAsciiChar
-//-----------------------------------------------------------------------------
-uint8_t giveMax7456CharFromAsciiChar(char ascii) {
-#ifdef MAX7456_TABLE_ASCII
-  if (ascii >= ' ' && ascii <= 'z')
-    return ascii - ' ';
-  else
-    return ascii;
-#else
-  return ascii;
-#endif
-}
+  // Allow for an ESCAPE, a reset of DMM and a two byte MAX7456ADD_DMM command at end of buffer
+  maxSpiBufStartIndex -= 4;
 
-//-----------------------------------------------------------------------------
-// Implements Max7456::print
-//-----------------------------------------------------------------------------
-void print(const char string[], uint8_t x, uint8_t y) {
-  char  currentChar;
-  uint8_t  size;
-  uint8_t* chars = NULL;
+  // Initialise the transfer buffer
+  while ((spiBufIndex < maxSpiBufStartIndex) && (pos < posLimit) && (cmpTimeUs(micros(), startTime) < maxEncodeTime)) {
+      if (buffer[pos] != shadowBuffer[pos]) {
+          if (buffer[pos] == 0xff) {
+              buffer[pos] = ' ';
+          }
 
-  if (!string)
-    return;
+          if (setAddress || !autoInc) {
+              if (buffer[pos + 1] != shadowBuffer[pos + 1]) {
+                  // It's worth auto incrementing
+                  spiBuf[spiBufIndex++] = MAX7456ADD_DMM;
+                  spiBuf[spiBufIndex++] = displayMemoryModeReg | DMM_AUTO_INC;
+                  autoInc = true;
+              } else {
+                  // It's not worth auto incrementing
+                  spiBuf[spiBufIndex++] = MAX7456ADD_DMM;
+                  spiBuf[spiBufIndex++] = displayMemoryModeReg;
+                  autoInc = false;
+              }
 
-  size = 0;
-  currentChar = string[0];
+              spiBuf[spiBufIndex++] = MAX7456ADD_DMAH;
+              spiBuf[spiBufIndex++] = pos >> 8;
+              spiBuf[spiBufIndex++] = MAX7456ADD_DMAL;
+              spiBuf[spiBufIndex++] = pos & 0xff;
 
-  while (currentChar != '\0') {
-    currentChar = string[++size];
+              setAddress = false;
+          }
+
+          spiBuf[spiBufIndex++] = MAX7456ADD_DMDI;
+          spiBuf[spiBufIndex++] = buffer[pos];
+
+          shadowBuffer[pos] = buffer[pos];
+      } else {
+          if (!setAddress) {
+              setAddress = true;
+              if (autoInc) {
+                  spiBuf[spiBufIndex++] = MAX7456ADD_DMDI;
+                  spiBuf[spiBufIndex++] = END_STRING;
+              }
+          }
+      }
+
+      if (++pos >= maxScreenSize) {
+          pos = 0;
+          break;
+      }
   }
 
-  chars = (uint8_t*)malloc(size * sizeof(uint8_t));
+  if (autoInc) {
+      if (!setAddress) {
+          spiBuf[spiBufIndex++] = MAX7456ADD_DMDI;
+          spiBuf[spiBufIndex++] = END_STRING;
+      }
 
-  for (uint8_t i = 0; i < size; i++) {
-    chars[i] = (string[i]);
+      spiBuf[spiBufIndex++] = MAX7456ADD_DMM;
+      spiBuf[spiBufIndex++] = displayMemoryModeReg;
   }
 
-  printMax7456Chars(chars, size, x, y);
-  free(chars);
+  if (spiBufIndex) {
+      SPI_ByteWrite_DMA(MAX7456, spiBuf, spiBufIndex);
+      // Non-blocking, so transfer still in progress if using DMA
+  }
+
+  return (pos != 0);
 }
 
+/**
+ * Sets inversion of black and white pixels.
+ */
+void max7456Invert(bool invert)
+{
+    if (invert) {
+        displayMemoryModeReg |= INVERT_PIXEL_COLOR;
+    } else {
+        displayMemoryModeReg &= ~INVERT_PIXEL_COLOR;
+    }
+
+    if (displayMemoryModeReg != previousInvertRegister) {
+        // clear the shadow buffer so all characters will be
+        // redrawn with the proper invert state
+        max7456ClearShadowBuffer();
+        previousInvertRegister = displayMemoryModeReg;
+        spiWriteReg(MAX7456, MAX7456ADD_DMM, displayMemoryModeReg);
+    }
+}
 
 void setDisplayOffsets(uint8_t horizontal, uint8_t vertical)
 {
@@ -440,6 +483,9 @@ max7456InitStatus_e max7456Init(void)
   for (unsigned i = 0; i < MAX7456_SUPPORTED_LAYER_COUNT; i++) {
       max7456ClearLayer(i);
   }
+
+  // Clear shadow to force redraw all screen
+  max7456ClearShadowBuffer();
 
     gpioPinWrite(4, _DEF_HIGH);
 
@@ -503,15 +549,7 @@ max7456InitStatus_e max7456Init(void)
     HAL_Delay(1000);
     max7456ClearLayer(DISPLAYPORT_LAYER_FOREGROUND);
 		//x = 27, y = 12 limit
-//    printMax7456Char(SYM_BATT_FULL, 0, 0);
-//    printMax7456Char(SYM_BATT_5, 30, 1);
-//    printMax7456Char(SYM_BATT_4, 0, 8);
-//    printMax7456Char(SYM_BATT_3, 24, 9);
-//    printMax7456Char(SYM_BATT_2, 26, 10);
-//    printMax7456Char(SYM_BATT_1, 27, 11);
-//    printMax7456Char(SYM_BATT_EMPTY, 16, 12);
-//    print("Hello world :)", 0, 3);
-//    print(string_buffer, 0, 5);
+
     // Real init will be made later when driver detect idle.
     return MAX7456_INIT_OK;
 }

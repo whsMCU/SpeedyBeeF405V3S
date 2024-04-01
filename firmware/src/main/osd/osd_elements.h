@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "drivers/display.h"
+#include "drivers/osd/max7456.h"
 
 #include "osd/osd.h"
 
@@ -37,7 +37,6 @@ typedef struct osdElementParms_s {
     uint8_t elemPosY;
     osdElementType_e type;
     char *buff;
-    displayPort_t *osdDisplayPort;
     bool drawElement;
     uint8_t attr;
 } osdElementParms_t;
@@ -54,13 +53,7 @@ char osdGetMetersToSelectedUnitSymbol(void);
 int32_t osdGetSpeedToSelectedUnit(int32_t value);
 char osdGetSpeedToSelectedUnitSymbol(void);
 char osdGetTemperatureSymbolForSelectedUnit(void);
-void osdAddActiveElements(void);
-uint8_t osdGetActiveElement();
-uint8_t osdGetActiveElementCount();
-bool osdDrawNextActiveElement(displayPort_t *osdDisplayPort, timeUs_t currentTimeUs);
-void osdDrawActiveElementsBackground(displayPort_t *osdDisplayPort);
-void osdElementsInit(bool backgroundLayerFlag);
+void osdDrawSingleElement(uint8_t elemPosX, uint8_t elemPosY, uint8_t item);
 void osdSyncBlink();
 void osdResetAlarms(void);
 void osdUpdateAlarms(void);
-bool osdElementsNeedAccelerometer(void);

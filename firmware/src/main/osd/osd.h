@@ -144,7 +144,6 @@ typedef enum {
     OSD_G_FORCE,
     OSD_MOTOR_DIAG,
     OSD_LOG_STATUS,
-    OSD_FLIP_ARROW,
     OSD_LINK_QUALITY,
     OSD_FLIGHT_DIST,
     OSD_STICK_OVERLAY_LEFT,
@@ -354,4 +353,5 @@ extern escSensorData_t *osdEscDataCombined;
 
 void osdInit(void);
 void osdUpdate(timeUs_t currentTimeUs);
+statistic_t *osdGetStats(void);
 int osdPrintFloat(char *buffer, char leadingSymbol, float value, char *formatString, unsigned decimalPlaces, bool round, char trailingSymbol);
