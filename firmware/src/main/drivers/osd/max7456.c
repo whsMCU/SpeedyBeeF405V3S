@@ -394,7 +394,11 @@ bool max7456DrawScreen(void)
   }
 
   if (spiBufIndex) {
-      SPI_ByteWrite_DMA(MAX7456, spiBuf, spiBufIndex);
+    osd.osd_excute_t = micros() - osd.osd_excute_t_tmp;
+    osd.osd_excute_t_tmp = micros();
+    SPI_ByteWrite_DMA(MAX7456, spiBuf, spiBufIndex);
+    osd.spi_tx_flag = false;
+    osd.spi_callback_t_tmp = micros();
       // Non-blocking, so transfer still in progress if using DMA
   }
 

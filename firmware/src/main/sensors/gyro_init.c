@@ -57,14 +57,14 @@ bool gyroInit(void)
 	bmi270.rxBuf = &gyroBuf1[GYRO_BUF_SIZE / 2];
 
 	bmi270.gyro_high_fsr = false;
-	bmi270.gyroSampleRateHz = 3200;
-	bmi270.gyroRateKHz = GYRO_RATE_3200_Hz;
+	bmi270.gyroSampleRateHz = 1600;
+	bmi270.gyroRateKHz = GYRO_RATE_1600_Hz;
 	bmi270.hardware_lpf = GYRO_HARDWARE_LPF_NORMAL;
 	bmi270.gyro_offset_yaw = 0;
 	bmi270.gyroCalibrationDuration = 125;
-	bmi270.sampleLooptime = 312;
-	bmi270.targetLooptime = 312;
-	bmi270.sampleRateHz = 3200;
+	bmi270.sampleLooptime = 624;
+	bmi270.targetLooptime = 624;
+	bmi270.sampleRateHz = 1600;
 
 	bmi270.scale = GYRO_SCALE_2000DPS;
 

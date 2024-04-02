@@ -301,20 +301,17 @@ typedef enum {
 void osdUpdate(timeUs_t currentTimeUs)
 {
   static uint8_t task = OSD_Buffer_Draw1;
-  osd.osd_excute_t_tmp = micros();
+
   switch(task)
   {
     case OSD_Buffer_Draw:
       osdDrawSingleElement(1, 10, OSD_ROLL_ANGLE);
       osdDrawSingleElement(1, 11, OSD_PITCH_ANGLE);
-
       task = OSD_Buffer_Draw1;
       break;
 
     case OSD_Buffer_Draw1:
-
       osdDrawSingleElement(21, 10, OSD_ALTITUDE);
-
       task = OSD_Buffer_Draw2;
       break;
 
@@ -335,9 +332,8 @@ void osdUpdate(timeUs_t currentTimeUs)
       task = OSD_Buffer_Draw;
       break;
   }
-  osd.osd_excute_t = micros() - osd.osd_excute_t_tmp;
 
-  max7456DrawScreen_test(); //40~60us
+  max7456DrawScreen();
 }
 
 statistic_t *osdGetStats(void)
