@@ -314,9 +314,18 @@ typedef struct osdConfig_s {
     uint8_t stat_show_cell_value;
 } osdConfig_t;
 
+typedef struct osd_s {
+  bool     spi_tx_flag;
+  uint32_t spi_callback_t;
+  uint32_t spi_callback_t_tmp;
+  uint32_t osd_excute_t;
+  uint32_t osd_excute_t_tmp;
+} osd_t;
+
 void osdConfig_Init(void);
 
 extern osdConfig_t osdConfig;
+extern osd_t osd;
 
 typedef struct osdElementConfig_s {
     uint16_t item_pos[OSD_ITEM_COUNT];

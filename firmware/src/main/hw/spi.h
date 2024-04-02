@@ -36,6 +36,8 @@ typedef enum {
     BUS_ABORT
 } busStatus_e;
 
+extern uint32_t time_callback_tmp;
+
 bool spiInit(void);
 bool spiDev_Init(void);
 bool spiBegin(uint8_t dev);

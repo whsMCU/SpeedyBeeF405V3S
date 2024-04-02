@@ -322,9 +322,7 @@ bool max7456DrawScreen(void)
   int posLimit = pos + (maxScreenSize / 2);
 
   maxSpiBufStartIndex = MAX_BYTES2SEND;
-  //maxSpiBufStartIndex = spiUseMOSI_DMA(dev) ? MAX_BYTES2SEND : MAX_BYTES2SEND_POLLED;
   maxEncodeTime = MAX_ENCODE_US;
-  //maxEncodeTime = spiUseMOSI_DMA(dev) ? MAX_ENCODE_US : MAX_ENCODE_US_POLLED;
 
   // Abort for now if the bus is still busy
   if (spiIsBusy(MAX7456)) {
@@ -397,6 +395,71 @@ bool max7456DrawScreen(void)
 
   if (spiBufIndex) {
       SPI_ByteWrite_DMA(MAX7456, spiBuf, spiBufIndex);
+      // Non-blocking, so transfer still in progress if using DMA
+  }
+
+  return (pos != 0);
+}
+
+uint8_t spiBuf_test[1000];
+
+// Return true if screen still being transferred
+bool max7456DrawScreen_test(void)
+{
+  static uint16_t pos = 0;
+  uint8_t *buffer = getActiveLayerBuffer();
+  static int spiBufIndex = 0;
+  int maxSpiBufStartIndex;
+
+  int posLimit = maxScreenSize;
+
+  maxSpiBufStartIndex = 1000;
+
+  // Abort for now if the bus is still busy
+  if (osd.spi_tx_flag == false) {
+      // Not finished yet
+      return true;
+  }
+
+  if(pos == 0)
+  {
+    spiBuf_test[spiBufIndex++] = MAX7456ADD_DMM;
+    spiBuf_test[spiBufIndex++] = displayMemoryModeReg;
+
+    spiBuf_test[spiBufIndex++] = MAX7456ADD_DMAH;
+    spiBuf_test[spiBufIndex++] = pos >> 8;
+    spiBuf_test[spiBufIndex++] = MAX7456ADD_DMAL;
+    spiBuf_test[spiBufIndex++] = pos & 0xff;
+  }
+
+  while((spiBufIndex < maxSpiBufStartIndex) && (pos < posLimit))
+  {
+    spiBuf_test[spiBufIndex++] = MAX7456ADD_DMDI;
+    spiBuf_test[spiBufIndex++] = buffer[pos];
+    ++pos;
+    if(pos%80 == 0)
+    {
+      if(pos >= maxScreenSize)
+      {
+        pos = 0;
+        break;
+      }
+      return true;
+    }
+
+//    if (++pos >= maxScreenSize) {
+//        pos = 0;
+//        break;
+//    }
+  }
+  spiBuf_test[spiBufIndex++] = MAX7456ADD_DMDI;
+  spiBuf_test[spiBufIndex++] = END_STRING;
+
+  if (spiBufIndex) {
+      SPI_ByteWrite_DMA(MAX7456, spiBuf_test, spiBufIndex);
+      osd.spi_tx_flag = false;
+      osd.spi_callback_t_tmp = micros();
+      spiBufIndex = 0;
       // Non-blocking, so transfer still in progress if using DMA
   }
 

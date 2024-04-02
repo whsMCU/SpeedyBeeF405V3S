@@ -85,3 +85,4 @@ bool    max7456LayerCopy(displayPortLayer_e destLayer, displayPortLayer_e source
 void max7456ClearLayer(displayPortLayer_e layer);
 void DrawOSD(void);
 bool max7456DrawScreen(void);
+bool max7456DrawScreen_test(void);

@@ -115,6 +115,8 @@ timeUs_t resumeRefreshAt = 0;
 
 osdConfig_t osdConfig;
 
+osd_t osd;
+
 osdElementConfig_t osdElementConfig;
 
 // Controls the display order of the OSD post-flight statistics.
@@ -218,8 +220,9 @@ void osdConfig_Init(void)
     // Enable the default stats
     osdConfig.enabled_stats = 0; // reset all to off and enable only a few initially
     osdConfig.units = UNIT_METRIC;
-
     osdConfig.framerate_hz = OSD_FRAMERATE_DEFAULT_HZ;
+
+    osd.spi_tx_flag = true;
 }
 
 vcdProfile_t vcdProfile;
@@ -288,55 +291,53 @@ osdState_e osdState = OSD_STATE_INIT;
 
 #define OSD_UPDATE_INTERVAL_US (1000000 / osdConfig.framerate_hz)
 typedef enum {
-    OSD_Buffer_Draw1 = 0,
+    OSD_Buffer_Draw = 0,
+    OSD_Buffer_Draw1,
     OSD_Buffer_Draw2,
-    OSD_Max7456_Draw
+    OSD_Buffer_Draw3
 } osdUpdateType_e;
 // Called when there is OSD update work to be done
-uint32_t time_tmp = 0;
-uint32_t time_excut = 0;
+
 void osdUpdate(timeUs_t currentTimeUs)
 {
-  static uint8_t task = 0;
-
+  static uint8_t task = OSD_Buffer_Draw1;
+  osd.osd_excute_t_tmp = micros();
   switch(task)
   {
-    case OSD_Buffer_Draw1:
-
+    case OSD_Buffer_Draw:
       osdDrawSingleElement(1, 10, OSD_ROLL_ANGLE);
       osdDrawSingleElement(1, 11, OSD_PITCH_ANGLE);
-      //osdDrawSingleElement(1, 7, OSD_THROTTLE_POS);
-      osdDrawSingleElement(16, 1, OSD_GPS_LON);
-      osdDrawSingleElement(16, 2, OSD_GPS_LAT);
+
+      task = OSD_Buffer_Draw1;
+      break;
+
+    case OSD_Buffer_Draw1:
+
+      osdDrawSingleElement(21, 10, OSD_ALTITUDE);
+
       task = OSD_Buffer_Draw2;
       break;
 
     case OSD_Buffer_Draw2:
-      osdDrawSingleElement(20, 9, OSD_CURRENT_DRAW);
-      osdDrawSingleElement(21, 10, OSD_ALTITUDE);
       osdDrawSingleElement(21, 8, OSD_AVG_CELL_VOLTAGE);
-      task = OSD_Max7456_Draw;
+      osdDrawSingleElement(20, 9, OSD_CURRENT_DRAW);
+      task = OSD_Buffer_Draw3;
       break;
 
-    case OSD_Max7456_Draw:
-      //DrawOSD();
-      time_tmp = micros();
-      max7456DrawScreen();
-      time_excut = micros() - time_tmp;
-      if(spiIsBusy(MAX7456))
-      {
-        task = OSD_Max7456_Draw;
-      }
-      else
-      {
-        task = OSD_Buffer_Draw1;
-      }
+    case OSD_Buffer_Draw3:
+      osdDrawSingleElement(16, 1, OSD_GPS_LON);
+      osdDrawSingleElement(16, 2, OSD_GPS_LAT);
+      //osdDrawSingleElement(1, 7, OSD_THROTTLE_POS);
+      task = OSD_Buffer_Draw;
       break;
 
     default:
-      task = OSD_Buffer_Draw1;
+      task = OSD_Buffer_Draw;
       break;
   }
+  osd.osd_excute_t = micros() - osd.osd_excute_t_tmp;
+
+  max7456DrawScreen_test(); //40~60us
 }
 
 statistic_t *osdGetStats(void)
