@@ -45,11 +45,11 @@ unsigned short LF, LR, RR, RF;
 
 void motorConfig_Init(void)
 {
-	motorConfig.minthrottle = 1070;
-    motorConfig.maxthrottle = 2000;
-    motorConfig.mincommand = 1000;
-    motorConfig.digitalIdleOffsetValue = 550;
-    motorConfig.motorPoleCount = 14;   // Most brushes motors that we use are 14 poles
+  motorConfig.minthrottle = 1070;
+  motorConfig.maxthrottle = 2000;
+  motorConfig.mincommand = 1000;
+  motorConfig.digitalIdleOffsetValue = 550;
+  motorConfig.motorPoleCount = 14;   // Most brushes motors that we use are 14 poles
 
 }
 

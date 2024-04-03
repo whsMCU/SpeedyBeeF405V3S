@@ -153,9 +153,9 @@ static void Encode_Msg_PID_Gain(unsigned char id, float p, float i, float d)
 }
 static void debugPrint(uint32_t currentTimeUs)
 {
-	for (task_t *task = queueFirst(); task != NULL; task = queueNext()) {
-		  task->maxtaskPeriodTimeUs = 0;
-	}
+//	for (task_t *task = queueFirst(); task != NULL; task = queueNext()) {
+//		  task->maxtaskPeriodTimeUs = 0;
+//	}
 	//Encode_Msg_AHRS();
 //    cliPrintf("BARO : %d cm, Load : %d, count : %d \n\r", baro.BaroAlt, getAverageSystemLoadPercent(), getCycleCounter());
 	  //cliPrintf("excute_time : %4.d us, max : %4.d us, callback : %4.d us, uartAvalavle : %4.d \n\r", excute_time, excute_max, rxRuntimeState.callbackTime, rxRuntimeState.uartAvalable);
@@ -319,10 +319,13 @@ void tasksInit(void)
 {
     schedulerInit();
 
+    //setTaskEnabled(TASK_MAIN, true);
+
     setTaskEnabled(TASK_SERIAL, true);
     setTaskEnabled(TASK_LED, true);
     setTaskEnabled(TASK_DEBUG, true);
     rescheduleTask(TASK_SERIAL, TASK_PERIOD_HZ(100));
+
 
 	const bool useBatteryVoltage = batteryConfig.voltageMeterSource != VOLTAGE_METER_NONE;
     setTaskEnabled(TASK_BATTERY_VOLTAGE, useBatteryVoltage);
@@ -419,11 +422,11 @@ void tasksInit(void)
 //#ifdef USE_ESC_SENSOR
 //    setTaskEnabled(TASK_ESC_SENSOR, featureIsEnabled(FEATURE_ESC_SENSOR));
 //#endif
-//
-//#ifdef USE_ADC_INTERNAL
-//    setTaskEnabled(TASK_ADC_INTERNAL, true);
-//#endif
-//
+
+#ifdef USE_ADC_INTERNAL
+    setTaskEnabled(TASK_ADC_INTERNAL, true);
+#endif
+
 //#ifdef USE_PINIOBOX
 //    pinioBoxTaskControl();
 //#endif
