@@ -312,6 +312,7 @@ void osdUpdate(timeUs_t currentTimeUs)
 
     case OSD_Buffer_Draw1:
       osdDrawSingleElement(21, 10, OSD_ALTITUDE);
+      osdDrawSingleElement(11, 10, OSD_FLYMODE);
       task = OSD_Buffer_Draw2;
       break;
 

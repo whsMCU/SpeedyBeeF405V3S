@@ -492,7 +492,15 @@ void processRxModes(uint32_t currentTimeUs)
 		rxRuntimeState.failsafe_flag = 0;
 	}
 	ENABLE_FLIGHT_MODE(ANGLE_MODE);
-	//ENABLE_FLIGHT_MODE(HEADFREE_MODE);
+
+  if(rcData[SA] == 2000)
+  {
+    ENABLE_FLIGHT_MODE(HEADFREE_MODE);
+  }
+  else
+  {
+    DISABLE_FLIGHT_MODE(HEADFREE_MODE);
+  }
 }
 
 void parseRcChannels(const char *input, rxConfig_t *rxConfig)
