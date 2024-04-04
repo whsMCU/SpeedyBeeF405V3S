@@ -206,7 +206,7 @@ void scheduler(void)
 				taskTotalExecutionTime += taskExecutionTimeUs;
 				selectedTask->taskExecutionTimeUs = micros() - currentTimeBeforeTaskCallUs;
 				selectedTask->taskExcutedEndUs = currentTimeBeforeTaskCallUs;
-		        selectedTask->totalExecutionTimeUs += taskExecutionTimeUs;   // time consumed by scheduler + task
+		    selectedTask->totalExecutionTimeUs += taskExecutionTimeUs;   // time consumed by scheduler + task
 			}
 		}
 	}
@@ -215,8 +215,8 @@ void scheduler(void)
 	{
 		crsfDataReceive(uartRead(_DEF_UART2), (void*) &rxRuntimeState);
 	}
-  	rxRuntimeState.rcFrameStatusFn(&rxRuntimeState);
-    scheduleCount++;
+  rxRuntimeState.rcFrameStatusFn(&rxRuntimeState);
+  scheduleCount++;
 }
 
 uint16_t getAverageSystemLoadPercent(void)
