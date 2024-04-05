@@ -15,12 +15,20 @@
 #include "drivers/accgyro/accgyro_spi_bmi270.h"
 #include "sensors/sensors.h"
 
+#include "sensors/barometer.h"
+#include "sensors/compass.h"
+#include "sensors/opflow.h"
+#include "sensors/rangefinder.h"
+
 
 static bool is_init = false;
 
 #ifdef _USE_HW_CLI
 static void cliSensor(cli_args_t *args);
 #endif
+
+uint8_t requestedSensors[SENSOR_INDEX_COUNT] = { GYRO_NONE,  BARO_NONE, MAG_NONE, RANGEFINDER_NONE, OPFLOW_NONE };
+uint8_t detectedSensors[SENSOR_INDEX_COUNT] = { GYRO_NONE,  BARO_NONE, MAG_NONE, RANGEFINDER_NONE, OPFLOW_NONE };
 
 bool Sensor_Init(void)
 {

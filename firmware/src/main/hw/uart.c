@@ -23,6 +23,7 @@ static bool is_open[UART_MAX_CH];
 static qbuffer_t ring_buffer[UART_MAX_CH];
 static volatile uint8_t rx_buf[UART_MAX_CH-1][MAX_SIZE];
 static volatile uint8_t rx_buf2[MAX_SIZE];
+static volatile uint8_t rx_buf3[MAX_SIZE];
 static volatile uint8_t rx_buf5[MAX_SIZE];
 static volatile uint8_t rx_buf6[MAX_SIZE];
 
@@ -99,7 +100,7 @@ bool uartOpen(uint8_t ch, uint32_t baud)
     	huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
     	huart3.Init.OverSampling = UART_OVERSAMPLING_16;
 
-    	qbufferCreate(&ring_buffer[ch], (uint8_t *)&rx_buf[ch-1][0], MAX_SIZE);
+    	qbufferCreate(&ring_buffer[ch], (uint8_t *)&rx_buf3, MAX_SIZE);
 
     	if (HAL_UART_Init(&huart3) != HAL_OK)
     	{
@@ -109,12 +110,10 @@ bool uartOpen(uint8_t ch, uint32_t baud)
     	{
     		ret = true;
         is_open[ch] = true;
-        if(HAL_UART_Receive_DMA(&huart3, (uint8_t *)&rx_buf[ch-1][0], MAX_SIZE) != HAL_OK)
+        if(HAL_UART_Receive_IT(&huart3, (uint8_t *)&rx_buf3, 1) != HAL_OK)
         {
           ret = false;
         }
-        ring_buffer[ch].in  = ring_buffer[ch].len - hdma_usart3_rx.Instance->NDTR;
-        ring_buffer[ch].out = ring_buffer[ch].in;
     	}
       break;
 
@@ -227,7 +226,7 @@ uint32_t uartAvailable(uint8_t ch)
       ret = qbufferAvailable(&ring_buffer[ch]);
       break;
     case _DEF_UART3:
-    	ring_buffer[ch].in = (ring_buffer[ch].len - hdma_usart3_rx.Instance->NDTR);
+    	//ring_buffer[ch].in = (ring_buffer[ch].len - hdma_usart3_rx.Instance->NDTR);
       ret = qbufferAvailable(&ring_buffer[ch]);
       break;
 
@@ -673,10 +672,16 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		rxRuntimeState.RxCallback_Flag = false;
 	}
 
+  if(huart->Instance == USART3)
+  {
+    HAL_UART_Receive_IT(&huart3, (uint8_t *)&rx_buf3, 1);
+    qbufferWrite(&ring_buffer[_DEF_UART3], (uint8_t *)&rx_buf3, 1);
+  }
+
   if(huart->Instance == UART5)
   {
-    HAL_UART_Receive_IT(&huart2, (uint8_t *)&rx_buf5, 1);
-    qbufferWrite(&ring_buffer[_DEF_UART2], (uint8_t *)&rx_buf5, 1);
+    HAL_UART_Receive_IT(&huart5, (uint8_t *)&rx_buf5, 1);
+    qbufferWrite(&ring_buffer[_DEF_UART5], (uint8_t *)&rx_buf5, 1);
   }
 
 	if(huart->Instance == USART6)

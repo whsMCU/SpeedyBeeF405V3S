@@ -95,6 +95,8 @@
 //#include "sensors/esc_sensor.h"
 #include "sensors/gyro.h"
 #include "sensors/gyro_init.h"
+#include "sensors/opflow.h"
+#include "sensors/rangefinder.h"
 //#include "sensors/initialisation.h"
 
 //#include "telemetry/telemetry.h"
@@ -182,6 +184,14 @@ void init(void)
     baroStartCalibration();
 #endif
 
+#ifdef USE_RANGEFINDER
+    rangefinderInit();
+#endif
+
+#ifdef USE_OPFLOW
+    opflowInit();
+#endif
+
 	batteryInit(); // always needs doing, regardless of features.
 
 #ifdef USE_PERSISTENT_STATS
@@ -213,6 +223,14 @@ void Param_Config_Init(void)
 	motorConfig_Init();
 #ifdef USE_GPS
 	gpsConfig_Init();
+#endif
+
+#ifdef USE_OPFLOW
+	opflow_Init();
+#endif
+
+#ifdef USE_RANGEFINDER
+	rangefinder_Init();
 #endif
 	barometerConfig_Init();
 #ifdef USE_MAG

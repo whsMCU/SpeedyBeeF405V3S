@@ -336,3 +336,34 @@ int16_t qMultiply(fix12_t q, int16_t input) {
 fix12_t  qConstruct(int16_t num, int16_t den) {
     return (num << 12) / den;
 }
+
+float bellCurve(const float x, const float curveWidth)
+{
+    return powf(M_EULERf, -sq(x) / (2.0f * sq(curveWidth)));
+}
+
+float fast_fsqrtf(const double value) {
+    float ret = 0.0f;
+#ifdef USE_ARM_MATH
+    arm_sqrt_f32(value, &ret);
+#else
+    ret = sqrtf(value);
+#endif
+    if (isnan(ret))
+    {
+        return 0.0f;
+    }
+    return ret;
+}
+
+// function to calculate the normalization (pythagoras) of a 2-dimensional vector
+float calc_length_pythagorean_2D(const float firstElement, const float secondElement)
+{
+  return fast_fsqrtf(sq(firstElement) + sq(secondElement));
+}
+
+// function to calculate the normalization (pythagoras) of a 3-dimensional vector
+float calc_length_pythagorean_3D(const float firstElement, const float secondElement, const float thirdElement)
+{
+  return fast_fsqrtf(sq(firstElement) + sq(secondElement) + sq(thirdElement));
+}

@@ -85,8 +85,8 @@
 //#include "io/asyncfatfs/asyncfatfs.h"
 //#include "io/flashfs.h"
 //#include "io/gps.h"
-//#include "io/opflow.h"
-//#include "io/rangefinder.h"
+#include "io/opflow.h"
+#include "io/rangefinder.h"
 //#include "io/ledstrip.h"
 //#include "io/osd.h"
 //#include "io/serial.h"
@@ -112,13 +112,13 @@
 #include "sensors/sensors.h"
 //#include "sensors/diagnostics.h"
 #include "sensors/battery.h"
-//#include "sensors/rangefinder.h"
+#include "sensors/rangefinder.h"
 //#include "sensors/acceleration.h"
 #include "sensors/barometer.h"
 //#include "sensors/pitotmeter.h"
 #include "sensors/compass.h"
 #include "sensors/gyro.h"
-//#include "sensors/opflow.h"
+#include "sensors/opflow.h"
 //#include "sensors/temperature.h"
 //#include "sensors/esc_sensor.h"
 
@@ -3734,13 +3734,13 @@ static mspResult_e mspProcessSensorCommand(uint16_t cmdMSP, sbuf_t *src)
     switch (cmdMSP) {
 #if defined(USE_RANGEFINDER_MSP)
         case MSP2_SENSOR_RANGEFINDER:
-            //mspRangefinderReceiveNewData(sbufPtr(src));
+            mspRangefinderReceiveNewData(sbufPtr(src));
             break;
 #endif
 
 #if defined(USE_OPFLOW_MSP)
         case MSP2_SENSOR_OPTIC_FLOW:
-            //mspOpflowReceiveNewData(sbufPtr(src));
+            mspOpflowReceiveNewData(sbufPtr(src));
             break;
 #endif
 

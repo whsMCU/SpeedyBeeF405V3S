@@ -54,7 +54,7 @@ void resetMspPort(uint8_t ch, mspPort_t *mspPortToReset)
 
 void mspSerialAllocatePorts(void)
 {
-    resetMspPort(_DEF_UART5, &mspPorts[0]);
+    resetMspPort(_DEF_UART3, &mspPorts[0]);
 }
 
 //void mspSerialReleasePortIfAllocated(serialPort_t *serialPort)
@@ -502,7 +502,7 @@ void mspSerialInit(void)
 {
     memset(mspPorts, 0, sizeof(mspPorts));
 
-    uartOpen(_DEF_UART5, 115200);
+    uartOpen(_DEF_UART3, 115200);
     mspSerialAllocatePorts();
 }
 

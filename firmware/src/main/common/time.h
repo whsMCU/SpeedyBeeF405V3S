@@ -40,6 +40,20 @@ typedef uint32_t timeUs_t;
 #define TIMEZONE_OFFSET_MINUTES_MIN -780  // -13 hours
 #define TIMEZONE_OFFSET_MINUTES_MAX 780   // +13 hours
 
+// Constants for better readability
+#define MILLISECS_PER_SEC 1000
+#define USECS_PER_SEC (1000 * 1000)
+
+#define HZ2US(hz)   (1000000 / (hz))
+#define HZ2MS(hz)   (1000 / (hz))
+#define US2S(us)    ((us) * 1e-6f)
+#define US2MS(us)   ((us) * 1e-3f)
+#define MS2US(ms)   ((ms) * 1000)
+#define MS2S(ms)    ((ms) * 1e-3f)
+#define S2MS(s)     ((s) * MILLISECS_PER_SEC)
+#define DS2MS(ds)   ((ds) * 100)
+#define HZ2S(hz)    US2S(HZ2US(hz))
+
 static inline timeDelta_t cmpTimeUs(timeUs_t a, timeUs_t b) { return (timeDelta_t)(a - b); }
 static inline int32_t cmpTimeCycles(uint32_t a, uint32_t b) { return (int32_t)(a - b); }
 

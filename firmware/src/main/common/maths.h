@@ -34,6 +34,7 @@
 // Use floating point M_PI instead explicitly.
 #define M_PIf       3.14159265358979323846f
 #define M_EULERf    2.71828182845904523536f
+#define M_LN2f      0.69314718055994530942f
 
 #define RAD    (M_PIf / 180.0f)
 #define DEGREES_TO_DECIDEGREES(angle) ((angle) * 10)
@@ -152,6 +153,13 @@ void arraySubInt32(int32_t *dest, int32_t *array1, int32_t *array2, int count);
 int16_t qPercent(fix12_t q);
 int16_t qMultiply(fix12_t q, int16_t input);
 fix12_t qConstruct(int16_t num, int16_t den);
+
+void arraySubInt32(int32_t *dest, int32_t *array1, int32_t *array2, int count);
+
+float bellCurve(const float x, const float curveWidth);
+float fast_fsqrtf(const double value);
+float calc_length_pythagorean_2D(const float firstElement, const float secondElement);
+float calc_length_pythagorean_3D(const float firstElement, const float secondElement, const float thirdElement);
 
 static inline int constrain(int amt, int low, int high)
 {

@@ -51,6 +51,8 @@
 #include "sensors/compass.h"
 #include "sensors/gyro.h"
 #include "sensors/sensors.h"
+#include "sensors/opflow.h"
+#include "sensors/rangefinder.h"
 
 
 #include "rx/rx.h"
@@ -227,21 +229,32 @@ void taskUpdateRangefinder(timeUs_t currentTimeUs)
 {
     UNUSED(currentTimeUs);
 
-//    if (!sensors(SENSOR_RANGEFINDER))
-//        return;
-//
-//    // Update and adjust task to update at required rate
-//    const uint32_t newDeadline = rangefinderUpdate();
-//    if (newDeadline != 0) {
-//        rescheduleTask(TASK_SELF, newDeadline);
-//    }
-//
-//    /*
-//     * Process raw rangefinder readout
-//     */
+    if (!sensors(SENSOR_RANGEFINDER))
+        return;
+
+    // Update and adjust task to update at required rate
+    const uint32_t newDeadline = rangefinderUpdate();
+    if (newDeadline != 0) {
+        rescheduleTask(TASK_SELF, newDeadline);
+    }
+
+    /*
+     * Process raw rangefinder readout
+     */
 //    if (rangefinderProcess(calculateCosTiltAngle())) {
 //        updatePositionEstimator_SurfaceTopic(currentTimeUs, rangefinderGetLatestAltitude());
 //    }
+}
+#endif
+
+#ifdef USE_OPFLOW
+void taskUpdateOpticalFlow(timeUs_t currentTimeUs)
+{
+    if (!sensors(SENSOR_OPFLOW))
+        return;
+
+    opflowUpdate(currentTimeUs);
+//    updatePositionEstimator_OpticalFlowTopic(currentTimeUs);
 }
 #endif
 
@@ -326,6 +339,10 @@ task_attribute_t task_attributes[TASK_COUNT] = {
 
 #ifdef USE_RANGEFINDER
     [TASK_RANGEFINDER] = DEFINE_TASK("RANGEFINDER", taskUpdateRangefinder, TASK_PERIOD_MS(70)),
+#endif
+
+#ifdef USE_OPFLOW
+    [TASK_OPFLOW] = DEFINE_TASK("OPFLOW", taskUpdateOpticalFlow, TASK_PERIOD_HZ(10)),
 #endif
 };
 
@@ -450,6 +467,14 @@ void tasksInit(void)
 
 #ifdef USE_ADC_INTERNAL
     setTaskEnabled(TASK_ADC_INTERNAL, true);
+#endif
+
+#ifdef USE_RANGEFINDER
+    setTaskEnabled(TASK_RANGEFINDER, sensors(SENSOR_RANGEFINDER));
+#endif
+
+#ifdef USE_OPFLOW
+    setTaskEnabled(TASK_OPFLOW, sensors(SENSOR_OPFLOW));
 #endif
 
 //#ifdef USE_PINIOBOX
