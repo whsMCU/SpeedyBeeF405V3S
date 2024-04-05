@@ -109,6 +109,8 @@
 
 #include "fc/stats.h"
 
+#include "msp/msp_serial.h"
+
 #include "rx/rx.h"
 
 static void Param_Config_Init(void);
@@ -118,6 +120,8 @@ void init(void)
 	Param_Config_Init();
 	tasksInitData();
 	cliOpen(_DEF_USB, 57600);
+
+	mspSerialInit();
 	//mixerInit(mixerConfig.mixerMode);
 
 	bmi270_Init();

@@ -143,6 +143,19 @@ bool qbufferTxEmpty(qbuffer_t *p_node)
   return p_node->in == p_node->out;
 }
 
+bool qbufferTxBytesFree(qbuffer_t *p_node)
+{
+  uint32_t bytesUsed;
+
+  if (p_node->in >= p_node->out) {
+      bytesUsed = p_node->in - p_node->out;
+  } else {
+      bytesUsed = p_node->size + p_node->in - p_node->out;
+  }
+
+  return (p_node->size - 1) - bytesUsed;
+}
+
 void qbufferFlush(qbuffer_t *p_node)
 {
   p_node->in  = 0;

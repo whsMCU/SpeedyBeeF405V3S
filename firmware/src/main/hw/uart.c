@@ -23,6 +23,7 @@ static bool is_open[UART_MAX_CH];
 static qbuffer_t ring_buffer[UART_MAX_CH];
 static volatile uint8_t rx_buf[UART_MAX_CH-1][MAX_SIZE];
 static volatile uint8_t rx_buf2[MAX_SIZE];
+static volatile uint8_t rx_buf5[MAX_SIZE];
 static volatile uint8_t rx_buf6[MAX_SIZE];
 
 UART_HandleTypeDef huart1;
@@ -155,7 +156,7 @@ bool uartOpen(uint8_t ch, uint32_t baud)
     	huart5.Init.HwFlowCtl = UART_HWCONTROL_NONE;
     	huart5.Init.OverSampling = UART_OVERSAMPLING_16;
 
-    	qbufferCreate(&ring_buffer[ch], (uint8_t *)&rx_buf[ch-1][0], MAX_SIZE);
+    	qbufferCreate(&ring_buffer[ch], (uint8_t *)&rx_buf5, MAX_SIZE);
 
     	if (HAL_UART_Init(&huart5) != HAL_OK)
     	{
@@ -165,12 +166,10 @@ bool uartOpen(uint8_t ch, uint32_t baud)
     	{
     		ret = true;
         is_open[ch] = true;
-        if(HAL_UART_Receive_DMA(&huart5, (uint8_t *)&rx_buf[ch-1][0], MAX_SIZE) != HAL_OK)
+        if(HAL_UART_Receive_IT(&huart5, (uint8_t *)&rx_buf5, 1) != HAL_OK)
         {
           ret = false;
         }
-        ring_buffer[ch].in  = ring_buffer[ch].len - hdma_uart5_rx.Instance->NDTR;
-        ring_buffer[ch].out = ring_buffer[ch].in;
     	}
       break;
 
@@ -205,6 +204,13 @@ bool uartOpen(uint8_t ch, uint32_t baud)
   return ret;
 }
 
+bool uartIsConnected(uint8_t ch)
+{
+  bool ret = false;
+
+  return is_open[ch];
+}
+
 uint32_t uartAvailable(uint8_t ch)
 {
   uint32_t ret = 0;
@@ -231,7 +237,7 @@ uint32_t uartAvailable(uint8_t ch)
       break;
 
     case _DEF_UART5:
-    	ring_buffer[ch].in = (ring_buffer[ch].len - hdma_uart5_rx.Instance->NDTR);
+    	//ring_buffer[ch].in = (ring_buffer[ch].len - hdma_uart5_rx.Instance->NDTR);
       ret = qbufferAvailable(&ring_buffer[ch]);
       break;
 
@@ -274,6 +280,46 @@ bool uartTxBufEmpty(uint8_t ch)
       break;
   }
   return ret;
+}
+
+uint32_t uartTotalTxBytesFree(uint8_t ch)
+{
+  uint32_t ret = 0;
+
+  switch(ch)
+  {
+
+    case _DEF_USB:
+      //ret = cdcAvailable();
+      break;
+
+    case _DEF_UART2:
+      ret = qbufferTxBytesFree(&ring_buffer[ch]);
+      break;
+    case _DEF_UART3:
+      ret = qbufferTxBytesFree(&ring_buffer[ch]);
+      break;
+
+    case _DEF_UART4:
+      ret = qbufferTxBytesFree(&ring_buffer[ch]);
+      break;
+
+    case _DEF_UART5:
+      ret = qbufferTxBytesFree(&ring_buffer[ch]);
+      break;
+
+    case _DEF_UART6:
+      ret = qbufferTxBytesFree(&ring_buffer[ch]);
+      break;
+  }
+  return ret;
+}
+
+void waitForSerialPortToFinishTransmitting(uint8_t ch)
+{
+    while (!uartTxBufEmpty(ch)) {
+        delay(10);
+    };
 }
 
 uint8_t uartRead(uint8_t ch)
@@ -626,6 +672,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		qbufferWrite(&ring_buffer[_DEF_UART2], (uint8_t *)&rx_buf2, 1);
 		rxRuntimeState.RxCallback_Flag = false;
 	}
+
+  if(huart->Instance == UART5)
+  {
+    HAL_UART_Receive_IT(&huart2, (uint8_t *)&rx_buf5, 1);
+    qbufferWrite(&ring_buffer[_DEF_UART2], (uint8_t *)&rx_buf5, 1);
+  }
+
 	if(huart->Instance == USART6)
 	{
 		HAL_UART_Receive_IT(&huart6, (uint8_t *)&rx_buf6, 1);

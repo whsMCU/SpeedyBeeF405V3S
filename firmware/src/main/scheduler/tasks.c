@@ -55,11 +55,14 @@
 
 #include "rx/rx.h"
 
+#include "msp/fc_msp.h"
+#include "msp/msp_serial.h"
+
 #include "osd/osd.h"
 
 #include "scheduler/tasks.h"
 
-//#include "msp/msp.h"
+#include "msp/fc_msp.h"
 
 //#include "telemetry/telemetry.h"
 //#include "telemetry/crsf.h"
@@ -213,10 +216,34 @@ static void taskHandleSerial(uint32_t currentTimeUs)
     UNUSED(currentTimeUs);
 
     cliMain();
+
+    // Allow MSP processing even if in CLI mode
+    mspSerialProcess(ARMING_FLAG(ARMED) ? MSP_SKIP_NON_MSP_DATA : MSP_EVALUATE_NON_MSP_DATA, mspFcProcessCommand);
     //SerialCom();
-    // bool evaluateMspData = ARMING_FLAG(ARMED) ? MSP_SKIP_NON_MSP_DATA : MSP_EVALUATE_NON_MSP_DATA;
-    // mspSerialProcess(evaluateMspData, mspFcProcessCommand, mspFcProcessReply);
 }
+
+#ifdef USE_RANGEFINDER
+void taskUpdateRangefinder(timeUs_t currentTimeUs)
+{
+    UNUSED(currentTimeUs);
+
+//    if (!sensors(SENSOR_RANGEFINDER))
+//        return;
+//
+//    // Update and adjust task to update at required rate
+//    const uint32_t newDeadline = rangefinderUpdate();
+//    if (newDeadline != 0) {
+//        rescheduleTask(TASK_SELF, newDeadline);
+//    }
+//
+//    /*
+//     * Process raw rangefinder readout
+//     */
+//    if (rangefinderProcess(calculateCosTiltAngle())) {
+//        updatePositionEstimator_SurfaceTopic(currentTimeUs, rangefinderGetLatestAltitude());
+//    }
+}
+#endif
 
 static void taskBatteryAlerts(uint32_t currentTimeUs)
 {
@@ -298,7 +325,7 @@ task_attribute_t task_attributes[TASK_COUNT] = {
 #endif
 
 #ifdef USE_RANGEFINDER
-    [TASK_RANGEFINDER] = DEFINE_TASK("RANGEFINDER", NULL, NULL, taskUpdateRangefinder, TASK_PERIOD_HZ(10), TASK_PRIORITY_LOWEST),
+    [TASK_RANGEFINDER] = DEFINE_TASK("RANGEFINDER", taskUpdateRangefinder, TASK_PERIOD_MS(70)),
 #endif
 };
 
@@ -354,16 +381,14 @@ void tasksInit(void)
 	rescheduleTask(TASK_ACCEL, TASK_PERIOD_HZ(1000));
 	setTaskEnabled(TASK_ATTITUDE, true);
 
-//
-//#ifdef USE_RANGEFINDER
-//    if (sensors(SENSOR_RANGEFINDER)) {
-//        setTaskEnabled(TASK_RANGEFINDER, featureIsEnabled(FEATURE_RANGEFINDER));
-//    }
-//#endif
 
-    setTaskEnabled(TASK_RX, true);
+#ifdef USE_RANGEFINDER
+  setTaskEnabled(TASK_RANGEFINDER, true);
+#endif
 
-    setTaskEnabled(TASK_DISPATCH, dispatchIsEnabled());
+  setTaskEnabled(TASK_RX, true);
+
+  setTaskEnabled(TASK_DISPATCH, dispatchIsEnabled());
 
 //#ifdef USE_BEEPER
 //    setTaskEnabled(TASK_BEEPER, true);
