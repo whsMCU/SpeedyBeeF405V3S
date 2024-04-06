@@ -66,6 +66,33 @@ float pt1FilterApply(pt1Filter_t *filter, float input)
     return filter->state;
 }
 
+// PT1 Low Pass filter
+static float pt1ComputeRC(const float f_cut)
+{
+    return 1.0f / (2.0f * M_PIf * f_cut);
+}
+
+// f_cut = cutoff frequency
+void pt1FilterInitRC(pt1Filter3_t *filter, float tau, float dT)
+{
+    filter->state = 0.0f;
+    filter->RC = tau;
+    filter->dT = dT;
+    filter->alpha = filter->dT / (filter->RC + filter->dT);
+}
+
+void pt1FilterInit3(pt1Filter3_t *filter, float f_cut, float dT)
+{
+    pt1FilterInitRC(filter, pt1ComputeRC(f_cut), dT);
+}
+
+float pt1FilterApply3(pt1Filter3_t *filter, float input, float dT)
+{
+    filter->dT = dT;
+    filter->state = filter->state + dT / (filter->RC + dT) * (input - filter->state);
+    return filter->state;
+}
+
 // PT2 Low Pass filter
 
 float pt2FilterGain(float f_cut, float dT)

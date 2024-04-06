@@ -30,6 +30,13 @@ typedef struct pt1Filter_s {
     float k;
 } pt1Filter_t;
 
+typedef struct pt1Filter3_s {
+    float state;
+    float RC;
+    float dT;
+    float alpha;
+} pt1Filter3_t;
+
 typedef struct pt2Filter_s {
     float state;
     float state1;
@@ -98,6 +105,8 @@ float pt1FilterGain(float f_cut, float dT);
 void pt1FilterInit(pt1Filter_t *filter, float k);
 void pt1FilterUpdateCutoff(pt1Filter_t *filter, float k);
 float pt1FilterApply(pt1Filter_t *filter, float input);
+void pt1FilterInit3(pt1Filter3_t *filter, float f_cut, float dT);
+float pt1FilterApply3(pt1Filter3_t *filter, float input, float dT);
 
 float pt2FilterGain(float f_cut, float dT);
 void pt2FilterInit(pt2Filter_t *filter, float k);

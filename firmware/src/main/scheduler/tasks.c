@@ -60,6 +60,8 @@
 #include "msp/fc_msp.h"
 #include "msp/msp_serial.h"
 
+#include "navigation/navigation.h"
+
 #include "osd/osd.h"
 
 #include "scheduler/tasks.h"
@@ -241,9 +243,9 @@ void taskUpdateRangefinder(timeUs_t currentTimeUs)
     /*
      * Process raw rangefinder readout
      */
-//    if (rangefinderProcess(calculateCosTiltAngle())) {
-//        updatePositionEstimator_SurfaceTopic(currentTimeUs, rangefinderGetLatestAltitude());
-//    }
+    if (rangefinderProcess(getCosTiltAngle())) {
+        updatePositionEstimator_SurfaceTopic(currentTimeUs, rangefinderGetLatestAltitude());
+    }
 }
 #endif
 
@@ -254,7 +256,7 @@ void taskUpdateOpticalFlow(timeUs_t currentTimeUs)
         return;
 
     opflowUpdate(currentTimeUs);
-//    updatePositionEstimator_OpticalFlowTopic(currentTimeUs);
+    updatePositionEstimator_OpticalFlowTopic(currentTimeUs);
 }
 #endif
 

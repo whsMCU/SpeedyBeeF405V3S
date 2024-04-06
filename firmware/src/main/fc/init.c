@@ -79,6 +79,8 @@
 //#include "msp/msp.h"
 //#include "msp/msp_serial.h"
 
+#include "navigation/navigation.h"
+
 #include "osd/osd.h"
 
 #include "rx/rx.h"
@@ -183,7 +185,7 @@ void init(void)
 #ifdef USE_BARO
     baroStartCalibration();
 #endif
-
+    initializePositionEstimator();
 #ifdef USE_RANGEFINDER
     rangefinderInit();
 #endif
@@ -191,6 +193,9 @@ void init(void)
 #ifdef USE_OPFLOW
     opflowInit();
 #endif
+
+    nav_Init();
+    positionEstimationConfig_Init();
 
 	batteryInit(); // always needs doing, regardless of features.
 
