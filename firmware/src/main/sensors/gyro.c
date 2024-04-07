@@ -188,9 +188,10 @@ void taskGyroUpdate(timeUs_t currentTimeUs)
 	bmi270.gyroADC[Y] = bmi270.gyroADC[Y] * bmi270.scale;
 	bmi270.gyroADC[Z] = bmi270.gyroADC[Z] * bmi270.scale;
 
-	for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-			bmi270.gyroADCf[axis] = bmi270.gyroADC[axis];
-	}
+  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+    bmi270.gyroADCf[axis] = bmi270.lowpassFilterApplyFn((filter_t *)&bmi270.lowpassFilter[axis], bmi270.gyroADC[axis]);
+  }
+
   for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
       // integrate using trapezium rule to avoid bias
   		bmi270.gyro_accumulatedMeasurements[axis] += 0.5f * (bmi270.gyroPrevious[axis] + bmi270.gyroADCf[axis]) * bmi270.targetLooptime;

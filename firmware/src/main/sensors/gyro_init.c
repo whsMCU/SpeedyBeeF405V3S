@@ -81,7 +81,23 @@ bool gyroInit(void)
 	bmi270.accelerationTrims.values.pitch = -35;
 	bmi270.accelerationTrims.values.yaw = -9;
 
-    return true;
+  filterApplyFnPtr *lowpassFilterApplyFn;
+  gyroLowpassFilter_t *lowpassFilter = NULL;
+
+  lowpassFilterApplyFn = &bmi270.lowpassFilterApplyFn;
+  lowpassFilter = bmi270.lowpassFilter;
+
+  float lpfHz = 250.f;
+  float gyroDt = 312 * 1e-6f;
+
+	const float gain = pt1FilterGain(lpfHz, gyroDt);
+	*lowpassFilterApplyFn = nullFilterApply;
+	*lowpassFilterApplyFn = (filterApplyFnPtr) pt1FilterApply;
+  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+      pt1FilterInit(&lowpassFilter[axis].pt1FilterState, gain);
+  }
+
+  return true;
 }
 
 int16_t gyroRateDps(int axis)

@@ -32,6 +32,12 @@
 
 //#include "flight/pid.h"
 
+typedef union gyroLowpassFilter_u {
+    pt1Filter_t pt1FilterState;
+    biquadFilter_t biquadFilterState;
+    pt2Filter_t pt2FilterState;
+    pt3Filter_t pt3FilterState;
+} gyroLowpassFilter_t;
 
 typedef struct gyroCalibration_s {
     float sum[XYZ_AXIS_COUNT];
@@ -60,6 +66,10 @@ typedef struct gyro_s {
     float gyroPrevious[XYZ_AXIS_COUNT];
     int gyro_accumulatedMeasurementCount;
     gyroCalibration_t calibration;
+
+    // lowpass gyro soft filter
+    filterApplyFnPtr lowpassFilterApplyFn;
+    gyroLowpassFilter_t lowpassFilter[XYZ_AXIS_COUNT];
 
     uint8_t *txBuf, *rxBuf;
     float gyroZero[XYZ_AXIS_COUNT];
