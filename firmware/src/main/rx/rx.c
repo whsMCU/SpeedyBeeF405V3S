@@ -117,7 +117,7 @@ void rxConfig_Init(void)
 	rxConfig.maxcheck = 1900;
 	rxConfig.deadband = 10;                       // introduce a deadband around the stick center for pitch and roll axis. Must be greater than zero.
 	rxConfig.yaw_deadband = 10;                   // introduce a deadband around the stick center for yaw axis. Must be greater than zero.
-	rxConfig.yaw_control_reversed = false;
+	rxConfig.yaw_control_reversed = true;
 //	rxConfig.rx_min_usec = RX_MIN_USEC;          // any of first 4 channels below this value will trigger rx loss detection
 //	rxConfig.rx_max_usec = RX_MAX_USEC;         // any of first 4 channels above this value will trigger rx loss detection
 //	rxConfig.rssi_src_frame_errors = false;

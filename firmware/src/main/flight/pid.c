@@ -157,27 +157,27 @@ void pidInit(void)
 {
 	roll.in.kp = 3;
 	roll.in.ki = 2;
-	roll.in.kd = 1;
+	roll.in.kd = 0;
 
 	roll.out.kp = 20;
 	roll.out.ki = 1.5;
-	roll.out.kd = 2;
+	roll.out.kd = 0;
 
 	pitch.in.kp = 3;
 	pitch.in.ki = 2;
-	pitch.in.kd = 1;
+	pitch.in.kd = 0;
 
 	pitch.out.kp = 20;
 	pitch.out.ki = 1.5;
-	pitch.out.kd = 2;
+	pitch.out.kd = 0;
 
 	yaw_heading.kp = 25;
 	yaw_heading.ki = 0;
-	yaw_heading.kd = 10;
+	yaw_heading.kd = 0;
 
 	yaw_rate.kp = 10;
 	yaw_rate.ki = 0;
-	yaw_rate.kd = 1;
+	yaw_rate.kd = 0;
 }
 
 float yaw_heading_reference;
