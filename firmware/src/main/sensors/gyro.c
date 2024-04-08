@@ -189,7 +189,7 @@ void taskGyroUpdate(timeUs_t currentTimeUs)
 	bmi270.gyroADC[Z] = bmi270.gyroADC[Z] * bmi270.scale;
 
   for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-    bmi270.gyroADCf[axis] = bmi270.lowpassFilterApplyFn((filter_t *)&bmi270.lowpassFilter[axis], bmi270.gyroADC[axis]);
+    bmi270.gyroADCf[axis] = bmi270.lowpass2FilterApplyFn((filter_t *)&bmi270.lowpass2Filter[axis], bmi270.gyroADC[axis]);
   }
 
   for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {

@@ -71,6 +71,10 @@ typedef struct gyro_s {
     filterApplyFnPtr lowpassFilterApplyFn;
     gyroLowpassFilter_t lowpassFilter[XYZ_AXIS_COUNT];
 
+    // lowpass2 gyro soft filter
+    filterApplyFnPtr lowpass2FilterApplyFn;
+    gyroLowpassFilter_t lowpass2Filter[XYZ_AXIS_COUNT];
+
     uint8_t *txBuf, *rxBuf;
     float gyroZero[XYZ_AXIS_COUNT];
     int16_t gyro_offset_yaw;
