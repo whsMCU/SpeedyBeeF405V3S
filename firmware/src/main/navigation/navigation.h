@@ -480,6 +480,7 @@ typedef struct {
 
 void nav_Init(void);
 void positionEstimationConfig_Init(void);
+void initializePositionEstimator(void);
 
 void navigationUsePIDs(void);
 void navigationInit(void);

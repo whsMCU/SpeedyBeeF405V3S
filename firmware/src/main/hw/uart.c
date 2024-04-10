@@ -22,6 +22,7 @@ static bool is_open[UART_MAX_CH];
 
 static qbuffer_t ring_buffer[UART_MAX_CH];
 static volatile uint8_t rx_buf[UART_MAX_CH-1][MAX_SIZE];
+static volatile uint8_t rx_buf1[MAX_SIZE];
 static volatile uint8_t rx_buf2[MAX_SIZE];
 static volatile uint8_t rx_buf3[MAX_SIZE];
 static volatile uint8_t rx_buf5[MAX_SIZE];
@@ -64,6 +65,30 @@ bool uartOpen(uint8_t ch, uint32_t baud)
     case _DEF_USB:
       is_open[ch] = true;
       ret = true;
+      break;
+
+    case _DEF_UART1:
+      huart1.Instance = USART1;
+      huart1.Init.BaudRate = baud;
+      huart1.Init.WordLength = UART_WORDLENGTH_8B;
+      huart1.Init.StopBits = UART_STOPBITS_1;
+      huart1.Init.Parity = UART_PARITY_NONE;
+      huart1.Init.Mode = UART_MODE_TX_RX;
+      huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+      huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+
+      qbufferCreate(&ring_buffer[ch], (uint8_t *)&rx_buf1, MAX_SIZE);
+
+      if (HAL_UART_Init(&huart1) != HAL_OK)
+      {
+        Error_Handler();
+      }
+      else
+      {
+        ret = true;
+        is_open[ch] = true;
+        HAL_UART_Receive_IT(&huart1, (uint8_t *)&rx_buf1, 1);
+      }
       break;
 
     case _DEF_UART2:
@@ -221,6 +246,11 @@ uint32_t uartAvailable(uint8_t ch)
       ret = cdcAvailable();
       break;
 
+    case _DEF_UART1:
+      //ring_buffer[ch].in = (ring_buffer[ch].len - hdma_usart2_rx.Instance->NDTR);
+      ret = qbufferAvailable(&ring_buffer[ch]);
+      break;
+
     case _DEF_UART2:
     	//ring_buffer[ch].in = (ring_buffer[ch].len - hdma_usart2_rx.Instance->NDTR);
       ret = qbufferAvailable(&ring_buffer[ch]);
@@ -258,7 +288,9 @@ bool uartTxBufEmpty(uint8_t ch)
     case _DEF_USB:
       //ret = cdcAvailable();
       break;
-
+    case _DEF_UART1:
+      ret = qbufferTxEmpty(&ring_buffer[ch]);
+      break;
     case _DEF_UART2:
       ret = qbufferTxEmpty(&ring_buffer[ch]);
       break;
@@ -291,7 +323,9 @@ uint32_t uartTotalTxBytesFree(uint8_t ch)
     case _DEF_USB:
       //ret = cdcAvailable();
       break;
-
+    case _DEF_UART1:
+      ret = qbufferTxBytesFree(&ring_buffer[ch]);
+      break;
     case _DEF_UART2:
       ret = qbufferTxBytesFree(&ring_buffer[ch]);
       break;
@@ -330,7 +364,9 @@ uint8_t uartRead(uint8_t ch)
     case _DEF_USB:
       ret = cdcRead();
       break;
-
+    case _DEF_UART1:
+      qbufferRead(&ring_buffer[ch], &ret, 1);
+      break;
     case _DEF_UART2:
     	qbufferRead(&ring_buffer[ch], &ret, 1);
       break;
@@ -366,7 +402,13 @@ uint32_t uartWrite(uint8_t ch, uint8_t *p_data, uint32_t length)
     case _DEF_USB:
       ret = cdcWrite(p_data, length);
       break; 
-
+    case _DEF_UART1:
+      status = HAL_UART_Transmit(&huart1, p_data, length, 100);
+      if (status == HAL_OK)
+      {
+        ret = length;
+      }
+      break;
     case _DEF_UART2:
       status = HAL_UART_Transmit(&huart2, p_data, length, 100);
       if (status == HAL_OK)
@@ -420,6 +462,14 @@ uint32_t uartWriteIT(uint8_t ch, uint8_t *p_data, uint32_t length)
   {
     case _DEF_USB:
       status = HAL_UART_Transmit_IT(&huart2, p_data, length);
+      if (status == HAL_OK)
+      {
+        ret = length;
+      }
+      break;
+
+    case _DEF_UART1:
+      status = HAL_UART_Transmit_IT(&huart1, p_data, length);
       if (status == HAL_OK)
       {
         ret = length;
@@ -525,6 +575,10 @@ uint32_t uartGetBaud(uint8_t ch)
       ret = cdcGetBaud();
       break;
 
+    case _DEF_UART1:
+      ret = huart1.Init.BaudRate;
+      break;
+
     case _DEF_UART2:
       ret = huart2.Init.BaudRate;
       break;
@@ -565,6 +619,17 @@ bool uartSetBaud(uint8_t ch, uint32_t baud)
     		ret = true;
     	}
 			break;
+
+    case _DEF_UART1:
+      huart1.Init.BaudRate = baud;
+      if (HAL_UART_Init(&huart1) != HAL_OK)
+      {
+        Error_Handler();
+      }else
+      {
+        ret = true;
+      }
+      break;
 
 		case _DEF_UART2:
 			huart2.Init.BaudRate = baud;
@@ -656,12 +721,53 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
   }
 }
 
+uint8_t uart1_rx_data = 0;
 uint8_t uart6_rx_data = 0;
+uint8_t telemetry_rx_buf[20];
+uint8_t telemetry_rx_cplt_flag;
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	static uint32_t pre_time = 0;
 	static unsigned char cnt = 0;
+
+  if(huart->Instance == USART1)
+  {
+    HAL_UART_Receive_IT(&huart1, (uint8_t *)&rx_buf1, 1);
+    qbufferWrite(&ring_buffer[_DEF_UART1], (uint8_t *)&rx_buf1, 1);
+    qbufferRead(&ring_buffer[_DEF_UART1], (uint8_t *)&uart1_rx_data, 1);
+
+    switch(cnt)
+    {
+    case 0:
+      if(uart1_rx_data == 0x47)
+      {
+        telemetry_rx_buf[cnt] = uart1_rx_data;
+        cnt++;
+      }
+      break;
+    case 1:
+      if(uart1_rx_data == 0x53)
+      {
+        telemetry_rx_buf[cnt] = uart1_rx_data;
+        cnt++;
+      }
+      else
+        cnt = 0;
+      break;
+    case 19:
+      telemetry_rx_buf[cnt] = uart1_rx_data;
+      cnt = 0;
+      telemetry_rx_cplt_flag = 1;
+      break;
+    default:
+      telemetry_rx_buf[cnt] = uart1_rx_data;
+      cnt++;
+      break;
+    }
+
+  }
+
 	if(huart->Instance == USART2)
 	{
 		rxRuntimeState.callbackTime = micros() - pre_time;
