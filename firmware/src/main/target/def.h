@@ -60,7 +60,7 @@
 #define USE_MAX7456
 #define USE_MOTOR
 
-//#define USE_MAG
+#define USE_MAG
 #define USE_OPFLOW
 #define USE_OPFLOW_MSP
 #define USE_RANGEFINDER

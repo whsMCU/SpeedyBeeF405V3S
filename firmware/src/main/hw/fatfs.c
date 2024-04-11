@@ -155,7 +155,7 @@ void cliFatfs(cli_args_t *args)
       while(cliKeepLoop())
       {
         len = 0;
-        fp_ret = f_read (&log_file, &data, 1, &len);
+        fp_ret = f_read(&log_file, &data, 1, &len);
 
         if (fp_ret != FR_OK)
         {

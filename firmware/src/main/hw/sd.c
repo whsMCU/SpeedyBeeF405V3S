@@ -67,7 +67,6 @@ bool sdInit(void)
 	  spiBegin(SDCARD);
   }
 
-  is_detected = true;
   if (gpioPinRead(_PIN_GPIO_SDCARD_DETECT) == true)
   {
     is_detected = true;

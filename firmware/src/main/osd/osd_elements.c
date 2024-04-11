@@ -1250,7 +1250,7 @@ static void osdElementRcChannels(osdElementParms_t *element)
     for (int i = 0; i < OSD_RCCHANNELS_COUNT; i++) {
         if (osdConfig.rcChannels[i] >= 0) {
             // Translate (1000, 2000) to (-1000, 1000)
-            int data = scaleRange(rcData[osdConfig.rcChannels[i]], PWM_RANGE_MIN, PWM_RANGE_MAX, -1000, 1000);
+            int data = scaleRange(rcData[osdConfig.rcChannels[i]], PWM_RANGE_MIN, PWM_RANGE_MAX, 1000, 2000);
             // Opt for the simplest formatting for now.
             // Decimal notation can be added when tfp_sprintf supports float among fancy options.
             char fmtbuf[6];

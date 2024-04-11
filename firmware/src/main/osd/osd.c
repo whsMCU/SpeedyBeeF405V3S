@@ -220,7 +220,11 @@ void osdConfig_Init(void)
     // Enable the default stats
     osdConfig.enabled_stats = 0; // reset all to off and enable only a few initially
     osdConfig.units = UNIT_METRIC;
-    osdConfig.framerate_hz = OSD_FRAMERATE_DEFAULT_HZ;
+    osdConfig.framerate_hz = 250;
+    osdConfig.rcChannels[0] = 0;
+    osdConfig.rcChannels[1] = 1;
+    osdConfig.rcChannels[2] = 2;
+    osdConfig.rcChannels[3] = 3;
 
     osd.spi_tx_flag = true;
 }
@@ -294,7 +298,9 @@ typedef enum {
     OSD_Buffer_Draw = 0,
     OSD_Buffer_Draw1,
     OSD_Buffer_Draw2,
-    OSD_Buffer_Draw3
+    OSD_Buffer_Draw3,
+    OSD_Buffer_Draw4,
+    OSD_Buffer_Draw5
 } osdUpdateType_e;
 // Called when there is OSD update work to be done
 
@@ -326,6 +332,19 @@ void osdUpdate(timeUs_t currentTimeUs)
       osdDrawSingleElement(16, 1, OSD_GPS_LON);
       osdDrawSingleElement(16, 2, OSD_GPS_LAT);
       //osdDrawSingleElement(1, 7, OSD_THROTTLE_POS);
+      task = OSD_Buffer_Draw4;
+      break;
+
+    case OSD_Buffer_Draw4:
+      //osdDrawSingleElement(10, 3, OSD_COMPASS_BAR);
+      osdDrawSingleElement(12, 4, OSD_NUMERICAL_HEADING);
+      task = OSD_Buffer_Draw5;
+      break;
+
+    case OSD_Buffer_Draw5:
+      osdDrawSingleElement(10, 3, OSD_COMPASS_BAR);
+      //osdDrawSingleElement(1, 1, OSD_DISARMED);
+      //osdDrawSingleElement(12, 4, OSD_NUMERICAL_HEADING);
       task = OSD_Buffer_Draw;
       break;
 
