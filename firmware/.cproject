@@ -52,6 +52,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/lib/USB_DEVICE/Target}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/main}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/main/common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/main/common/ini}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/main/common/json}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/main/config}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/main/scheduler}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/main/drivers}&quot;"/>
@@ -100,7 +102,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="src/main/drivers/rangefinder/etc|src/main/fc/etc|src/main/scheduler/etc|src/main/telemetry/etc|src/main/config/etc|src/main/msp/etc|src/main/rx/etc|src/main/osd/etc|src/main/sensors/etc|src/main/drivers/etc|src/main/io/etc|src/main/flight/etc|tools/openocd-v0.12.0-i686-w64-mingw32|tools/OpenOCD-20231002-0.12.0|SpeedyBeeF405V3_CUBE" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="src/main/common/etc|src/main/drivers/rangefinder/etc|src/main/fc/etc|src/main/scheduler/etc|src/main/telemetry/etc|src/main/config/etc|src/main/msp/etc|src/main/rx/etc|src/main/osd/etc|src/main/sensors/etc|src/main/drivers/etc|src/main/io/etc|src/main/flight/etc|tools/openocd-v0.12.0-i686-w64-mingw32|tools/OpenOCD-20231002-0.12.0|SpeedyBeeF405V3_CUBE" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -171,7 +173,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="src/main/drivers/rangefinder/etc|src/main/fc/etc|src/main/scheduler/etc|src/main/telemetry/etc|src/main/config/etc|src/main/msp/etc|src/main/rx/etc|src/main/osd/etc|src/main/sensors/etc|src/main/drivers/etc|src/main/io/etc|src/main/flight/etc|tools/openocd-v0.12.0-i686-w64-mingw32|tools/OpenOCD-20231002-0.12.0|SpeedyBeeF405V3_CUBE" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="src/main/common/etc|src/main/drivers/rangefinder/etc|src/main/fc/etc|src/main/scheduler/etc|src/main/telemetry/etc|src/main/config/etc|src/main/msp/etc|src/main/rx/etc|src/main/osd/etc|src/main/sensors/etc|src/main/drivers/etc|src/main/io/etc|src/main/flight/etc|tools/openocd-v0.12.0-i686-w64-mingw32|tools/OpenOCD-20231002-0.12.0|SpeedyBeeF405V3_CUBE" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

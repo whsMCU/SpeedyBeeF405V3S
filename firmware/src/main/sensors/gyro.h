@@ -120,9 +120,6 @@ typedef struct gyro_s {
 
 extern imu_t bmi270;
 
-
-void gyroConfig_init(void);
-void gyroDeviceConfig_Init(void);
 void taskGyroUpdate(timeUs_t currentTimeUs);
 void gyroFiltering(timeUs_t currentTimeUs);
 bool gyroGetAccumulationAverage(float *accumulationAverage);

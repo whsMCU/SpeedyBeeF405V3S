@@ -34,6 +34,7 @@
 
 //#include "config/config.h"
 //#include "config/feature.h"
+#include "config/sdcard.h"
 
 #include "drivers/gps/M8N.h"
 
@@ -121,7 +122,13 @@ static void Param_Config_Init(void);
 
 void init(void)
 {
-	Param_Config_Init();
+  Param_Config_Init();
+  bool existing = loadFromSDCard();
+  if(existing)
+  {
+    readSDCard();
+  }
+
 	tasksInitData();
 	cliOpen(_DEF_USB, 57600);
 	uartOpen(_DEF_UART1, 115200);
@@ -145,7 +152,7 @@ void init(void)
 
     // Finally initialize the gyro filtering
 	//gyroInitFilters();
-	pidInit();
+
 	//mixerInitProfile();
 
 	/////////////// LED //////////////////
@@ -222,9 +229,9 @@ void Param_Config_Init(void)
 
 	boardAlignment_Init(0, 0, 0);
 //	failsafeConfig_Init();
-//	accelerometerConfig_init();
-//	gyroConfig_init();
-//	gyroDeviceConfig_Init();
+	gyroConfig_init();
+
+  pidInit();
 	statsConfig_Init();
 	motorConfig_Init();
 #ifdef USE_GPS

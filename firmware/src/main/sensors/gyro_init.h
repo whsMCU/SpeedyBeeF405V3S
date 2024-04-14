@@ -27,6 +27,7 @@
 
 #include "drivers/accgyro/accgyro.h"
 
+void gyroConfig_init(void);
 void gyroSetTargetLooptime(uint8_t pidDenom);
 void gyroPreInit(void);
 bool gyroInit(void);

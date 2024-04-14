@@ -13,7 +13,7 @@
 #include "diskio.h"
 #include <drivers/sdcard/sd_diskio.h>
 
-
+#include "ini/iniparser.h"
 
 static bool is_init = false;
 
@@ -75,6 +75,53 @@ FRESULT fatfsDir(char* path)
   }
 
   return res;
+}
+
+static int parse_ini_file(char * ini_name)
+{
+    dictionary  *   ini ;
+
+    /* Some temporary variables to hold query results */
+    int             b ;
+    int             i ;
+    double          d ;
+    const char  *   s ;
+
+    ini = iniparser_load(ini_name);
+    if (ini==NULL) {
+        fprintf(stderr, "cannot parse file: %s\n", ini_name);
+        return -1 ;
+    }
+    iniparser_dump(ini, stderr);
+
+    /* Get pizza attributes */
+    cliPrintf("Pizza:\n\r");
+
+    b = iniparser_getboolean(ini, "pizza:ham", -1);
+    cliPrintf("Ham:       [%d]\n\r", b);
+    b = iniparser_getboolean(ini, "pizza:mushrooms", -1);
+    cliPrintf("Mushrooms: [%d]\n\r", b);
+    b = iniparser_getboolean(ini, "pizza:capres", -1);
+    cliPrintf("Capres:    [%d]\n\r", b);
+    b = iniparser_getboolean(ini, "pizza:cheese", -1);
+    cliPrintf("Cheese:    [%d]\n\r", b);
+
+    /* Get wine attributes */
+    cliPrintf("Wine:\n\r");
+    s = iniparser_getstring(ini, "wine:grape", NULL);
+    cliPrintf("Grape:     [%s]\n\r", s ? s : "UNDEF");
+
+    i = iniparser_getint(ini, "wine:year", -1);
+    cliPrintf("Year:      [%d]\n\r", i);
+
+    s = iniparser_getstring(ini, "wine:country", NULL);
+    cliPrintf("Country:   [%s]\n\r", s ? s : "UNDEF");
+
+    d = iniparser_getdouble(ini, "wine:alcohol", -1.0);
+    cliPrintf("Alcohol:   [%g]\n\r", d);
+
+    iniparser_freedict(ini);
+    return 0 ;
 }
 
 void cliFatfs(cli_args_t *args)
@@ -180,11 +227,58 @@ void cliFatfs(cli_args_t *args)
     ret = true;
   }
 
+  if (args->argc == 1 && args->isStr(0, "ini") == true)
+  {
+    FRESULT fp_ret;
+    FIL ini_file;
+    uint32_t pre_time;
+
+    pre_time = millis();
+    fp_ret = f_open(&ini_file, "cfg.ini", FA_CREATE_ALWAYS | FA_WRITE | FA_READ);
+    if (fp_ret == FR_OK)
+    {
+      f_printf(&ini_file,
+      "#\n"
+      "# This is an example of ini file\n"
+      "#\n"
+      "\n"
+      "[Pizza]\n"
+      "\n"
+      "Ham       = yes ;\n"
+      "Mushrooms = TRUE ;\n"
+      "Capres    = 0 ;\n"
+      "Cheese    = Non ;\n"
+      "\n"
+      "\n"
+      "[Wine]\n"
+      "\n"
+      "Grape     = Cabernet Sauvignon ;\n"
+      "Year      = 1989 ;\n"
+      "Country   = Spain ;\n"
+      "Alcohol   = 12.5  ;\n"
+      "\n");
+
+      f_close(&ini_file);
+
+      parse_ini_file("cfg.ini");
+
+      //f_close(&ini_file);
+    }
+    else
+    {
+      cliPrintf("f_open fail\r\n");
+    }
+    cliPrintf("%d ms\r\n", millis()-pre_time);
+
+    ret = true;
+  }
+
   if (ret != true)
   {
     cliPrintf("fatfs info\n\r");
     cliPrintf("fatfs dir\n\r");
     cliPrintf("fatfs test\n\r");
+    cliPrintf("fatfs ini\n\r");
   }
 }
 

@@ -49,6 +49,30 @@
 // gyro types are supported with SPI DMA.
 #define GYRO_BUF_SIZE 32
 
+void gyroConfig_init(void)
+{
+  bmi270.gyro_high_fsr = false;
+  bmi270.gyroSampleRateHz = 3200;
+  bmi270.gyroRateKHz = GYRO_RATE_3200_Hz;
+  bmi270.hardware_lpf = GYRO_HARDWARE_LPF_NORMAL;
+  bmi270.gyro_offset_yaw = 0;
+  bmi270.gyroCalibrationDuration = 125;
+  bmi270.sampleLooptime = 312;
+  bmi270.targetLooptime = 312;
+  bmi270.sampleRateHz = 3200;
+  bmi270.scale = GYRO_SCALE_2000DPS;
+
+  bmi270.accSampleRateHz = 800;
+  bmi270.acc_1G = 512 * 4;
+  bmi270.acc_1G_rec = 1.0f / bmi270.acc_1G;
+  bmi270.acc_high_fsr = false;
+
+  resetFlightDynamicsTrims(&bmi270.accelerationTrims);
+  bmi270.accelerationTrims.values.roll = 29;
+  bmi270.accelerationTrims.values.pitch = -35;
+  bmi270.accelerationTrims.values.yaw = -9;
+}
+
 bool gyroInit(void)
 {
 	static uint8_t gyroBuf1[GYRO_BUF_SIZE];
@@ -56,30 +80,7 @@ bool gyroInit(void)
 	bmi270.txBuf = gyroBuf1;
 	bmi270.rxBuf = &gyroBuf1[GYRO_BUF_SIZE / 2];
 
-	bmi270.gyro_high_fsr = false;
-	bmi270.gyroSampleRateHz = 3200;
-	bmi270.gyroRateKHz = GYRO_RATE_3200_Hz;
-	bmi270.hardware_lpf = GYRO_HARDWARE_LPF_NORMAL;
-	bmi270.gyro_offset_yaw = 0;
-	bmi270.gyroCalibrationDuration = 125;
-	bmi270.sampleLooptime = 312;
-	bmi270.targetLooptime = 312;
-	bmi270.sampleRateHz = 3200;
-
-	bmi270.scale = GYRO_SCALE_2000DPS;
-
 	bmi270Config();
-
-	bmi270.accSampleRateHz = 800;
-
-	bmi270.acc_1G = 512 * 4;
-	bmi270.acc_1G_rec = 1.0f / bmi270.acc_1G;
-	bmi270.acc_high_fsr = false;
-
-	resetFlightDynamicsTrims(&bmi270.accelerationTrims);
-	bmi270.accelerationTrims.values.roll = 29;
-	bmi270.accelerationTrims.values.pitch = -35;
-	bmi270.accelerationTrims.values.yaw = -9;
 
   filterApplyFnPtr *lowpassFilterApplyFn;
   gyroLowpassFilter_t *lowpassFilter = NULL;
