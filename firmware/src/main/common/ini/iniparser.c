@@ -258,7 +258,7 @@ void iniparser_dump(const dictionary * d, FILE * f)
   It is Ok to specify @c stderr or @c stdout as output files.
  */
 /*--------------------------------------------------------------------------*/
-void iniparser_dump_ini(const dictionary * d, FILE * f)
+void iniparser_dump_ini(const dictionary * d, FIL * f)
 {
     size_t       i ;
     size_t       nsec ;
@@ -296,7 +296,7 @@ void iniparser_dump_ini(const dictionary * d, FILE * f)
   file.  It is Ok to specify @c stderr or @c stdout as output files.
  */
 /*--------------------------------------------------------------------------*/
-void iniparser_dumpsection_ini(const dictionary * d, const char * s, FILE * f)
+void iniparser_dumpsection_ini(const dictionary * d, const char * s, FIL * f)
 {
     size_t  j ;
     char    keym[ASCIILINESZ+1];
@@ -850,7 +850,7 @@ dictionary * iniparser_load(const char * ininame)
     FRESULT fp_ret;
     FIL in ;
     dictionary * dict ;
-    fp_ret = f_open(&in, ininame, FA_READ);
+    fp_ret = f_open(&in, ininame, FA_READ | FA_WRITE);
     if (fp_ret != FR_OK) {
         iniparser_error_callback("iniparser: cannot open %s\n", ininame);
         return NULL ;
