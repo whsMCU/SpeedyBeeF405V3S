@@ -26,6 +26,8 @@
 
 #include "common/utils.h"
 
+#include "config/sdcard.h"
+
 #include "fc/dispatch.h"
 #include "fc/runtime_config.h"
 
@@ -53,7 +55,6 @@
 #include "sensors/sensors.h"
 #include "sensors/opflow.h"
 #include "sensors/rangefinder.h"
-
 
 #include "rx/rx.h"
 
@@ -240,6 +241,7 @@ void gcsMain(void)
           roll.in.kp = *(float*)&telemetry_rx_buf[3];
           roll.in.ki = *(float*)&telemetry_rx_buf[7];
           roll.in.kd = *(float*)&telemetry_rx_buf[11];
+          writeSDCard(PID_Roll_in);
           //EP_PIDGain_Write(telemetry_rx_buf[2], roll.in.kp, roll.in.ki, roll.in.kd);
           //EP_PIDGain_Read(telemetry_rx_buf[2], &roll.in.kp, &roll.in.ki, &roll.in.kd);
           Encode_Msg_PID_Gain(&telemetry_tx_buf[0], telemetry_rx_buf[2], roll.in.kp, roll.in.ki, roll.in.kd);
@@ -249,6 +251,7 @@ void gcsMain(void)
           roll.out.kp = *(float*)&telemetry_rx_buf[3];
           roll.out.ki = *(float*)&telemetry_rx_buf[7];
           roll.out.kd = *(float*)&telemetry_rx_buf[11];
+          writeSDCard(PID_Roll_out);
           //EP_PIDGain_Write(telemetry_rx_buf[2], roll.out.kp, roll.out.ki, roll.out.kd);
           //EP_PIDGain_Read(telemetry_rx_buf[2], &roll.out.kp, &roll.out.ki, &roll.out.kd);
           Encode_Msg_PID_Gain(&telemetry_tx_buf[0], telemetry_rx_buf[2], roll.out.kp, roll.out.ki, roll.out.kd);
@@ -258,6 +261,7 @@ void gcsMain(void)
           pitch.in.kp = *(float*)&telemetry_rx_buf[3];
           pitch.in.ki = *(float*)&telemetry_rx_buf[7];
           pitch.in.kd = *(float*)&telemetry_rx_buf[11];
+          writeSDCard(PID_pitch_in);
           //EP_PIDGain_Write(telemetry_rx_buf[2], pitch.in.kp, pitch.in.ki, pitch.in.kd);
           //EP_PIDGain_Read(telemetry_rx_buf[2], &pitch.in.kp, &pitch.in.ki, &pitch.in.kd);
           Encode_Msg_PID_Gain(&telemetry_tx_buf[0], telemetry_rx_buf[2], pitch.in.kp, pitch.in.ki, pitch.in.kd);
@@ -267,6 +271,7 @@ void gcsMain(void)
           pitch.out.kp = *(float*)&telemetry_rx_buf[3];
           pitch.out.ki = *(float*)&telemetry_rx_buf[7];
           pitch.out.kd = *(float*)&telemetry_rx_buf[11];
+          writeSDCard(PID_pitch_out);
           //EP_PIDGain_Write(telemetry_rx_buf[2], pitch.out.kp, pitch.out.ki, pitch.out.kd);
           //EP_PIDGain_Read(telemetry_rx_buf[2], &pitch.out.kp, &pitch.out.ki, &pitch.out.kd);
           Encode_Msg_PID_Gain(&telemetry_tx_buf[0], telemetry_rx_buf[2], pitch.out.kp, pitch.out.ki, pitch.out.kd);
@@ -276,6 +281,7 @@ void gcsMain(void)
           yaw_heading.kp = *(float*)&telemetry_rx_buf[3];
           yaw_heading.ki = *(float*)&telemetry_rx_buf[7];
           yaw_heading.kd = *(float*)&telemetry_rx_buf[11];
+          writeSDCard(PID_yaw_heading);
           //EP_PIDGain_Write(telemetry_rx_buf[2], yaw_heading.kp, yaw_heading.ki, yaw_heading.kd);
           //EP_PIDGain_Read(telemetry_rx_buf[2], &yaw_heading.kp, &yaw_heading.ki, &yaw_heading.kd);
           Encode_Msg_PID_Gain(&telemetry_tx_buf[0], telemetry_rx_buf[2], yaw_heading.kp, yaw_heading.ki, yaw_heading.kd);
@@ -285,6 +291,7 @@ void gcsMain(void)
           yaw_rate.kp = *(float*)&telemetry_rx_buf[3];
           yaw_rate.ki = *(float*)&telemetry_rx_buf[7];
           yaw_rate.kd = *(float*)&telemetry_rx_buf[11];
+          writeSDCard(PID_yaw_rate);
           //EP_PIDGain_Write(telemetry_rx_buf[2], yaw_rate.kp, yaw_rate.ki, yaw_rate.kd);
           //EP_PIDGain_Read(telemetry_rx_buf[2], &yaw_rate.kp, &yaw_rate.ki, &yaw_rate.kd);
           Encode_Msg_PID_Gain(&telemetry_tx_buf[0], telemetry_rx_buf[2], yaw_rate.kp, yaw_rate.ki, yaw_rate.kd);

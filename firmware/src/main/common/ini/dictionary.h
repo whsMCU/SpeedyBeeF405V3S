@@ -19,6 +19,7 @@
  ---------------------------------------------------------------------------*/
 
 #include <stdio.h>
+#include "ff.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -161,7 +162,7 @@ void dictionary_unset(dictionary * d, const char * key);
   output file pointers.
  */
 /*--------------------------------------------------------------------------*/
-void dictionary_dump(const dictionary * d, FILE * out);
+void dictionary_dump(const dictionary * d, FIL * out);
 
 #ifdef __cplusplus
 }

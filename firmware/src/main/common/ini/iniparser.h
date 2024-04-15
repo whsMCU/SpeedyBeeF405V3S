@@ -116,7 +116,7 @@ void iniparser_dumpsection_ini(const dictionary * d, const char * s, FIL * f);
   purposes mostly.
  */
 /*--------------------------------------------------------------------------*/
-void iniparser_dump(const dictionary * d, FILE * f);
+void iniparser_dump(const dictionary * d, FIL * f);
 
 /*-------------------------------------------------------------------------*/
 /**
