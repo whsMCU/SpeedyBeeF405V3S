@@ -115,8 +115,8 @@ static void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf)
   telemetry_tx_buf[7] = (unsigned short)(attitude.values.yaw*10);
   telemetry_tx_buf[8] = ((unsigned short)(attitude.values.yaw*10))>>8;
 
-  telemetry_tx_buf[9] = (short)(baro.BaroAlt*10);
-  telemetry_tx_buf[10] = ((short)(baro.BaroAlt*10))>>8;
+  telemetry_tx_buf[9] = (short)(getEstimatedAltitudeCm()*10);
+  telemetry_tx_buf[10] = ((short)(getEstimatedAltitudeCm()*10))>>8;
 
   telemetry_tx_buf[11] = (short)((rcData[ROLL]-1500)*0.1f*100);
   telemetry_tx_buf[12] = ((short)((rcData[ROLL]-1500)*0.1f*100))>>8;
@@ -152,8 +152,8 @@ void Encode_Msg_GPS(unsigned char* telemetry_tx_buf)
   telemetry_tx_buf[9] = posllh.lon>>16;
   telemetry_tx_buf[10] = posllh.lon>>24;
 
-  telemetry_tx_buf[11] = (unsigned short)(getBatteryAverageCellVoltage()*100);
-  telemetry_tx_buf[12] = ((unsigned short)(getBatteryAverageCellVoltage()*100))>>8;
+  telemetry_tx_buf[11] = (unsigned short)(getBatteryAverageCellVoltage());
+  telemetry_tx_buf[12] = ((unsigned short)(getBatteryAverageCellVoltage()))>>8;
 
   telemetry_tx_buf[13] = 0x00;//iBus.SwA == 1000 ? 0 : 1;
   telemetry_tx_buf[14] = 0x00;//iBus.SwC == 1000 ? 0 : iBus.SwC == 1500 ? 1 : 2;
