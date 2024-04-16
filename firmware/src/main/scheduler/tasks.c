@@ -97,9 +97,9 @@ static void ledUpdate(uint32_t currentTimeUs)
     }
 }
 
-uint8_t telemetry_tx_buf[20];
+uint8_t telemetry_tx_buf[40];
 
-static void Encode_Msg_AHRS(void)
+static void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf)
 {
   telemetry_tx_buf[0] = 0x46;
   telemetry_tx_buf[1] = 0x43;
@@ -133,8 +133,40 @@ static void Encode_Msg_AHRS(void)
   telemetry_tx_buf[19] = 0xff;
 
   for(int i=0;i<19;i++) telemetry_tx_buf[19] = telemetry_tx_buf[19] - telemetry_tx_buf[i];
+}
 
-  uartWrite(0, &telemetry_tx_buf[0], 20);
+void Encode_Msg_GPS(unsigned char* telemetry_tx_buf)
+{
+  telemetry_tx_buf[0] = 0x46;
+  telemetry_tx_buf[1] = 0x43;
+
+  telemetry_tx_buf[2] = 0x11;
+
+  telemetry_tx_buf[3] = posllh.lat;
+  telemetry_tx_buf[4] = posllh.lat>>8;
+  telemetry_tx_buf[5] = posllh.lat>>16;
+  telemetry_tx_buf[6] = posllh.lat>>24;
+
+  telemetry_tx_buf[7] = posllh.lon;
+  telemetry_tx_buf[8] = posllh.lon>>8;
+  telemetry_tx_buf[9] = posllh.lon>>16;
+  telemetry_tx_buf[10] = posllh.lon>>24;
+
+  telemetry_tx_buf[11] = (unsigned short)(getBatteryAverageCellVoltage()*100);
+  telemetry_tx_buf[12] = ((unsigned short)(getBatteryAverageCellVoltage()*100))>>8;
+
+  telemetry_tx_buf[13] = 0x00;//iBus.SwA == 1000 ? 0 : 1;
+  telemetry_tx_buf[14] = 0x00;//iBus.SwC == 1000 ? 0 : iBus.SwC == 1500 ? 1 : 2;
+
+  telemetry_tx_buf[15] = rxRuntimeState.failsafe_flag;
+
+  telemetry_tx_buf[16] = 0x00;
+  telemetry_tx_buf[17] = 0x00;
+  telemetry_tx_buf[18] = 0x00;
+
+  telemetry_tx_buf[19] = 0xff;
+
+  for(int i=0;i<19;i++) telemetry_tx_buf[19] = telemetry_tx_buf[19] - telemetry_tx_buf[i];
 }
 
 void Encode_Msg_PID_Gain(unsigned char* telemetry_tx_buf, unsigned char id, float p, float i, float d)
@@ -163,10 +195,29 @@ void Encode_Msg_PID_Gain(unsigned char* telemetry_tx_buf, unsigned char id, floa
 }
 static void debugPrint(uint32_t currentTimeUs)
 {
-//	for (task_t *task = queueFirst(); task != NULL; task = queueNext()) {
-//		  task->maxtaskPeriodTimeUs = 0;
-//	}
-	//Encode_Msg_AHRS();
+  static uint8_t state = 0;
+
+  switch(state)
+  {
+    case 0:
+      Encode_Msg_AHRS(&telemetry_tx_buf[0]);
+      uartWriteIT(_DEF_UART1, &telemetry_tx_buf[0], 20);
+      state++;
+      break;
+
+    case 5:
+      Encode_Msg_AHRS(&telemetry_tx_buf[0]);
+      Encode_Msg_GPS(&telemetry_tx_buf[20]);
+      uartWriteIT(_DEF_UART1, &telemetry_tx_buf[0], 40);
+      state = 0;
+
+    default:
+      Encode_Msg_AHRS(&telemetry_tx_buf[0]);
+      uartWriteIT(_DEF_UART1, &telemetry_tx_buf[0], 20);
+      state++;
+      break;
+  }
+  //Encode_Msg_PID_Gain();
 //    cliPrintf("BARO : %d cm, Load : %d, count : %d \n\r", baro.BaroAlt, getAverageSystemLoadPercent(), getCycleCounter());
 	  //cliPrintf("excute_time : %4.d us, max : %4.d us, callback : %4.d us, uartAvalavle : %4.d \n\r", excute_time, excute_max, rxRuntimeState.callbackTime, rxRuntimeState.uartAvalable);
 
@@ -435,7 +486,7 @@ task_attribute_t task_attributes[TASK_COUNT] = {
     [TASK_DISPATCH] = DEFINE_TASK("DISPATCH", dispatchProcess, TASK_PERIOD_HZ(1000)),
 
     [TASK_LED] = DEFINE_TASK("LED", ledUpdate, TASK_PERIOD_HZ(100)),
-    [TASK_DEBUG] = DEFINE_TASK("DEBUG", debugPrint, 10000000),//TASK_PERIOD_HZ(50)
+    [TASK_DEBUG] = DEFINE_TASK("DEBUG", debugPrint, TASK_PERIOD_HZ(50)),
 
 #ifdef USE_BEEPER
     [TASK_BEEPER] = DEFINE_TASK("BEEPER", NULL, NULL, beeperUpdate, TASK_PERIOD_HZ(100), TASK_PRIORITY_LOW),

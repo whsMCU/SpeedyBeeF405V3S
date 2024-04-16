@@ -92,7 +92,7 @@ static int parse_ini_file(char * ini_name)
         fprintf(stderr, "cannot parse file: %s\n", ini_name);
         return -1 ;
     }
-    iniparser_dump(ini, stderr);
+    //iniparser_dump(ini, stderr);
 
     /* Get pizza attributes */
     cliPrintf("Pizza:\n\r");
