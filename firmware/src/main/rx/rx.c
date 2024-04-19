@@ -36,7 +36,7 @@
 //#include "config/config_reset.h"
 //#include "config/feature.h"
 
-//#include "fc/rc_controls.h"
+#include "fc/rc_controls.h"
 //#include "fc/rc_modes.h"
 #include "fc/stats.h"
 #include "fc/runtime_config.h"
@@ -76,7 +76,6 @@ static uint8_t rxChannelCount;
 
 static float rcRaw[MAX_SUPPORTED_RC_CHANNEL_COUNT];     // last received raw value, as it comes
 uint16_t rcData[MAX_SUPPORTED_RC_CHANNEL_COUNT];           // scaled, modified, checked and constrained values
-float rcCommand[4];           // interval [1000;2000] for THROTTLE and [-500;+500] for ROLL/PITCH/YAW
 
 uint32_t validRxSignalTimeout[MAX_SUPPORTED_RC_CHANNEL_COUNT];
 
@@ -115,9 +114,7 @@ void rxConfig_Init(void)
 	rxConfig.midrc = RX_MID_USEC;
 	rxConfig.mincheck = 1050;
 	rxConfig.maxcheck = 1900;
-	rxConfig.deadband = 10;                       // introduce a deadband around the stick center for pitch and roll axis. Must be greater than zero.
-	rxConfig.yaw_deadband = 10;                   // introduce a deadband around the stick center for yaw axis. Must be greater than zero.
-	rxConfig.yaw_control_reversed = true;
+
 //	rxConfig.rx_min_usec = RX_MIN_USEC;          // any of first 4 channels below this value will trigger rx loss detection
 //	rxConfig.rx_max_usec = RX_MAX_USEC;         // any of first 4 channels above this value will trigger rx loss detection
 //	rxConfig.rssi_src_frame_errors = false;
@@ -268,19 +265,19 @@ static void updateRcCommands(void)
 
         float tmp = MIN(ABS((rcData[axis] - rxConfig.midrc) * 0.1f), 50);
         if (axis == ROLL || axis == PITCH) {
-            if (tmp > rxConfig.deadband) {
-                tmp -= rxConfig.deadband;
+            if (tmp > rcControlsConfig.deadband) {
+                tmp -= rcControlsConfig.deadband;
             } else {
                 tmp = 0;
             }
             rcCommand[axis] = tmp;
         } else {
-            if (tmp > rxConfig.yaw_deadband) {
-                tmp -= rxConfig.yaw_deadband;
+            if (tmp > rcControlsConfig.yaw_deadband) {
+                tmp -= rcControlsConfig.yaw_deadband;
             } else {
                 tmp = 0;
             }
-            rcCommand[axis] = tmp * -GET_DIRECTION(rxConfig.yaw_control_reversed);
+            rcCommand[axis] = tmp * -GET_DIRECTION(rcControlsConfig.yaw_control_reversed);
         }
         if (rcData[axis] < rxConfig.midrc) {
             rcCommand[axis] = -rcCommand[axis];
@@ -500,6 +497,11 @@ void processRxModes(uint32_t currentTimeUs)
   else
   {
     DISABLE_FLIGHT_MODE(HEADFREE_MODE);
+  }
+
+  if (!ARMING_FLAG(ARMED))
+  {
+    processRcStickPositions();
   }
 }
 
