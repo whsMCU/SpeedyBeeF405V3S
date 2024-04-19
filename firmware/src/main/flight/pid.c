@@ -25,6 +25,7 @@
 #include "pid.h"
 #include "sensors/gyro.h"
 #include "flight/imu.h"
+#include "fc/rc_controls.h"
 #include "rx/rx.h"
 #include "drivers/motor.h"
 
