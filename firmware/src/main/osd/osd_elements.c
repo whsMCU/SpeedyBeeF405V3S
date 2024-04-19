@@ -1717,7 +1717,7 @@ void osdUpdateAlarms(void)
     }
 
 #ifdef USE_RX_LINK_QUALITY_INFO
-    if (rxGetLinkQualityPercent() < osdConfig()->link_quality_alarm) {
+    if (rxGetLinkQualityPercent() < osdConfig.link_quality_alarm) {
         SET_BLINK(OSD_LINK_QUALITY);
     } else {
         CLR_BLINK(OSD_LINK_QUALITY);

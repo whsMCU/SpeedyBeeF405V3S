@@ -119,9 +119,9 @@ void rxConfig_Init(void)
 //	rxConfig.rx_max_usec = RX_MAX_USEC;         // any of first 4 channels above this value will trigger rx loss detection
 //	rxConfig.rssi_src_frame_errors = false;
 //	rxConfig.rssi_channel = 0;
-//	rxConfig.rssi_scale = RSSI_SCALE_DEFAULT;
-//	rxConfig.rssi_offset = 0;
-//	rxConfig.rssi_invert = 0;
+	rxConfig.rssi_scale = RSSI_SCALE_DEFAULT;
+	rxConfig.rssi_offset = 0;
+	rxConfig.rssi_invert = 0;
 //	rxConfig.rssi_src_frame_lpf_period = 30;
 //	rxConfig.fpvCamAngleDegrees = 0;
 //	rxConfig.airModeActivateThreshold = 25;
@@ -334,6 +334,70 @@ void taskUpdateRxMain(uint32_t currentTimeUs)
         break;
     }
 }
+
+#ifdef USE_RX_LINK_QUALITY_INFO
+#define LINK_QUALITY_SAMPLE_COUNT 16
+
+uint16_t updateLinkQualitySamples(uint16_t value)
+{
+    static uint16_t samples[LINK_QUALITY_SAMPLE_COUNT];
+    static uint8_t sampleIndex = 0;
+    static uint16_t sum = 0;
+
+    sum += value - samples[sampleIndex];
+    samples[sampleIndex] = value;
+    sampleIndex = (sampleIndex + 1) % LINK_QUALITY_SAMPLE_COUNT;
+    return sum / LINK_QUALITY_SAMPLE_COUNT;
+}
+
+void rxSetRfMode(uint8_t rfModeValue)
+{
+    rfMode = rfModeValue;
+}
+#endif
+
+static void setLinkQuality(bool validFrame, timeDelta_t currentDeltaTimeUs)
+{
+    static uint16_t rssiSum = 0;
+    static uint16_t rssiCount = 0;
+    static timeDelta_t resampleTimeUs = 0;
+
+#ifdef USE_RX_LINK_QUALITY_INFO
+    if (linkQualitySource == LQ_SOURCE_NONE) {
+        // calculate new sample mean
+        linkQuality = updateLinkQualitySamples(validFrame ? LINK_QUALITY_MAX_VALUE : 0);
+    }
+#endif
+
+    if (rssiSource == RSSI_SOURCE_FRAME_ERRORS) {
+        resampleTimeUs += currentDeltaTimeUs;
+        rssiSum += validFrame ? RSSI_MAX_VALUE : 0;
+        rssiCount++;
+
+        if (resampleTimeUs >= FRAME_ERR_RESAMPLE_US) {
+            setRssi(rssiSum / rssiCount, rssiSource);
+            rssiSum = 0;
+            rssiCount = 0;
+            resampleTimeUs -= FRAME_ERR_RESAMPLE_US;
+        }
+    }
+}
+
+void setLinkQualityDirect(uint16_t linkqualityValue)
+{
+#ifdef USE_RX_LINK_QUALITY_INFO
+    linkQuality = linkqualityValue;
+#else
+    UNUSED(linkqualityValue);
+#endif
+}
+
+#ifdef USE_RX_LINK_UPLINK_POWER
+void rxSetUplinkTxPwrMw(uint16_t uplinkTxPwrMwValue)
+{
+    uplinkTxPwrMw = uplinkTxPwrMwValue;
+}
+#endif
 
 #define PPM_RCVR_TIMEOUT            0
 
@@ -617,11 +681,11 @@ uint16_t getRssi(void)
     uint16_t rssiValue = rssi;
 
     // RSSI_Invert option
-    if (0) { //.rssi_invert = 0
+    if (rxConfig.rssi_invert) {
         rssiValue = RSSI_MAX_VALUE - rssiValue;
     }
 
-    return 100 / 100.0f * rssiValue + 0 * RSSI_OFFSET_SCALING; //.rssi_scale = 100, .rssi_offset = 0
+    return rxConfig.rssi_scale / 100.0f * rssiValue + rxConfig.rssi_offset * RSSI_OFFSET_SCALING; //.rssi_scale = 100, .rssi_offset = 0
 }
 
 uint8_t getRssiPercent(void)
