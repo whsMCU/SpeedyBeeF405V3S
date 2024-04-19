@@ -136,7 +136,7 @@ void rxConfig_Init(void)
 //	rxConfig.srxl2_unit_id = 1;
 //	rxConfig.srxl2_baud_fast = true;
 //	rxConfig.sbus_baud_fast = false;
-//	rxConfig.crsf_use_rx_snr = false;
+	rxConfig.crsf_use_rx_snr = false;
 //	rxConfig.msp_override_channels_mask = 0;
 //	rxConfig.crsf_use_negotiated_baud = false;
 
