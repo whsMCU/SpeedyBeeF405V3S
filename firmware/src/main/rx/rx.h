@@ -257,6 +257,7 @@ bool isRssiConfigured(void);
 
 #define LINK_QUALITY_MAX_VALUE 1023
 
+void setLinkQuality(bool validFrame, uint32_t currentDeltaTimeUs);
 uint16_t rxGetLinkQuality(void);
 void setLinkQualityDirect(uint16_t linkqualityValue);
 uint16_t rxGetLinkQualityPercent(void);

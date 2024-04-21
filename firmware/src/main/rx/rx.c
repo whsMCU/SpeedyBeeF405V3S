@@ -356,7 +356,7 @@ void rxSetRfMode(uint8_t rfModeValue)
 }
 #endif
 
-static void setLinkQuality(bool validFrame, timeDelta_t currentDeltaTimeUs)
+void setLinkQuality(bool validFrame, uint32_t currentDeltaTimeUs)
 {
     static uint16_t rssiSum = 0;
     static uint16_t rssiCount = 0;

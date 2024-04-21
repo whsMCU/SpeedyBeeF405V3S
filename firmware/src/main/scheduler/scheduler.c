@@ -215,7 +215,10 @@ void scheduler(void)
 	{
 		crsfDataReceive(uartRead(_DEF_UART2), (void*) &rxRuntimeState);
 	}
-  rxRuntimeState.rcFrameStatusFn(&rxRuntimeState);
+	bool signalReceived = false;
+	const uint8_t frameStatus = rxRuntimeState.rcFrameStatusFn(&rxRuntimeState);
+  signalReceived = (frameStatus & RX_FRAME_COMPLETE) && !(frameStatus & (RX_FRAME_FAILSAFE | RX_FRAME_DROPPED));
+  setLinkQuality(signalReceived, currentTimeUs);
   scheduleCount++;
 }
 
