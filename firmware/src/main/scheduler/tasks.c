@@ -69,8 +69,8 @@
 
 #include "msp/fc_msp.h"
 
-//#include "telemetry/telemetry.h"
-//#include "telemetry/crsf.h"
+#include "telemetry/telemetry.h"
+#include "telemetry/crsf.h"
 
 
 
@@ -445,6 +445,30 @@ void taskUpdateOpticalFlow(timeUs_t currentTimeUs)
 }
 #endif
 
+#ifdef USE_TELEMETRY
+
+#define GYRO_TEMP_READ_DELAY_US 3e6    // Only read the gyro temp every 3 seconds
+void subTaskTelemetryPollSensors(timeUs_t currentTimeUs)
+{
+    static timeUs_t lastGyroTempTimeUs = 0;
+
+    if (cmpTimeUs(currentTimeUs, lastGyroTempTimeUs) >= GYRO_TEMP_READ_DELAY_US) {
+        // Read out gyro temperature if used for telemmetry
+        //gyroReadTemperature();
+        lastGyroTempTimeUs = currentTimeUs;
+    }
+}
+
+static void taskTelemetry(timeUs_t currentTimeUs)
+{
+    //if (!cliMode && featureIsEnabled(FEATURE_TELEMETRY)) {
+        subTaskTelemetryPollSensors(currentTimeUs);
+
+        telemetryProcess(currentTimeUs);
+    //}
+}
+#endif
+
 static void taskBatteryAlerts(uint32_t currentTimeUs)
 {
     if (!ARMING_FLAG(ARMED)) {
@@ -513,7 +537,7 @@ task_attribute_t task_attributes[TASK_COUNT] = {
 #endif
 
 #ifdef USE_TELEMETRY
-    [TASK_TELEMETRY] = DEFINE_TASK("TELEMETRY", NULL, NULL, taskTelemetry, TASK_PERIOD_HZ(250), TASK_PRIORITY_LOW),
+    [TASK_TELEMETRY] = DEFINE_TASK("TELEMETRY", taskTelemetry, TASK_PERIOD_HZ(250)),
 #endif
 
 #ifdef USE_LED_STRIP

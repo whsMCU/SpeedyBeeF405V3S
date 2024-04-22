@@ -27,7 +27,8 @@
 #include "hw.h"
 
 #include "rx/crsf_protocol.h"
-//#include "telemetry/msp_shared.h"
+#include "telemetry/msp_shared.h"
+
 
 void initCrsfTelemetry(void);
 uint32_t getCrsfDesiredSpeed(void);

@@ -44,6 +44,8 @@ typedef struct mspPacket_s {
     int16_t result;
 } mspPacket_t;
 
+typedef int mspDescriptor_t;
+
 typedef enum {
     MSP_FLAG_DONT_REPLY           = (1 << 0),
 } mspFlags_e;

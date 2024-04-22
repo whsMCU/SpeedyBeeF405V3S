@@ -31,8 +31,8 @@
 //#include "build/version.h"
 
 
-#include "config/config.h"
-#include "config/feature.h"
+//#include "config/config.h"
+//#include "config/feature.h"
 
 #include "crc.h"
 #include "maths.h"
@@ -44,7 +44,7 @@
 //#include "drivers/nvic.h"
 //#include "drivers/persistent.h"
 
-#include "fc/rc_modes.h"
+//#include "fc/rc_modes.h"
 #include "runtime_config.h"
 
 #include "flight/imu.h"
@@ -157,38 +157,38 @@ bool bufferCrsfMspFrame(uint8_t *frameStart, int frameLength)
     }
 }
 
-//bool handleCrsfMspFrameBuffer(mspResponseFnPtr responseFn)
-//{
-//    static bool replyPending = false;
-//    if (replyPending) {
-//        if (crsfRxIsTelemetryBufEmpty()) {
-//            replyPending = sendMspReply(CRSF_FRAME_TX_MSP_FRAME_SIZE, responseFn);
-//        }
-//        return replyPending;
-//    }
-//    if (!mspRxBuffer.len) {
-//        return false;
-//    }
-//    int pos = 0;
-//    while (true) {
-//        const uint8_t mspFrameLength = mspRxBuffer.bytes[pos];
-//        if (handleMspFrame(&mspRxBuffer.bytes[CRSF_MSP_LENGTH_OFFSET + pos], mspFrameLength, NULL)) {
-//            if (crsfRxIsTelemetryBufEmpty()) {
-//                replyPending = sendMspReply(CRSF_FRAME_TX_MSP_FRAME_SIZE, responseFn);
-//            } else {
-//                replyPending = true;
-//            }
-//        }
-//        pos += CRSF_MSP_LENGTH_OFFSET + mspFrameLength;
-//        ATOMIC_BLOCK(NVIC_PRIO_SERIALUART1) {
-//            if (pos >= mspRxBuffer.len) {
-//                mspRxBuffer.len = 0;
-//                return replyPending;
-//            }
-//        }
-//    }
-//    return replyPending;
-//}
+bool handleCrsfMspFrameBuffer(mspResponseFnPtr responseFn)
+{
+    static bool replyPending = false;
+    if (replyPending) {
+        if (crsfRxIsTelemetryBufEmpty()) {
+            replyPending = sendMspReply(CRSF_FRAME_TX_MSP_FRAME_SIZE, responseFn);
+        }
+        return replyPending;
+    }
+    if (!mspRxBuffer.len) {
+        return false;
+    }
+    int pos = 0;
+    while (true) {
+        const uint8_t mspFrameLength = mspRxBuffer.bytes[pos];
+        if (handleMspFrame(&mspRxBuffer.bytes[CRSF_MSP_LENGTH_OFFSET + pos], mspFrameLength, NULL)) {
+            if (crsfRxIsTelemetryBufEmpty()) {
+                replyPending = sendMspReply(CRSF_FRAME_TX_MSP_FRAME_SIZE, responseFn);
+            } else {
+                replyPending = true;
+            }
+        }
+        pos += CRSF_MSP_LENGTH_OFFSET + mspFrameLength;
+        //ATOMIC_BLOCK(NVIC_PRIO_SERIALUART1) {
+            if (pos >= mspRxBuffer.len) {
+                mspRxBuffer.len = 0;
+                return replyPending;
+            }
+        //}
+    }
+    return replyPending;
+}
 #endif
 
 static void crsfInitializeFrame(sbuf_t *dst)
@@ -355,7 +355,7 @@ void crsfFrameFlightMode(sbuf_t *dst)
     } else
 
 #if defined(USE_GPS)
-    if (!ARMING_FLAG(ARMED) && featureIsEnabled(FEATURE_GPS) && (!STATE(GPS_FIX) || !STATE(GPS_FIX_HOME))) {
+    if (!ARMING_FLAG(ARMED) && (!STATE(GPS_FIX) || !STATE(GPS_FIX_HOME))) {
         flightMode = "WAIT"; // Waiting for GPS lock
     } else
 #endif
@@ -695,8 +695,7 @@ void initCrsfTelemetry(void)
         crsfSchedule[index++] = BIT(CRSF_FRAME_FLIGHT_MODE_INDEX);
     }
 #ifdef USE_GPS
-    if (featureIsEnabled(FEATURE_GPS)
-       && telemetryIsSensorEnabled(SENSOR_ALTITUDE | SENSOR_LAT_LONG | SENSOR_GROUND_SPEED | SENSOR_HEADING)) {
+    if (telemetryIsSensorEnabled(SENSOR_ALTITUDE | SENSOR_LAT_LONG | SENSOR_GROUND_SPEED | SENSOR_HEADING)) {
         crsfSchedule[index++] = BIT(CRSF_FRAME_GPS_INDEX);
     }
 #endif
@@ -792,7 +791,7 @@ void handleCrsfTelemetry(timeUs_t currentTimeUs)
     // Send ad-hoc response frames as soon as possible
 #if defined(USE_MSP_OVER_TELEMETRY)
     if (mspReplyPending) {
-        //mspReplyPending = handleCrsfMspFrameBuffer(&crsfSendMspResponse);
+        mspReplyPending = handleCrsfMspFrameBuffer(&crsfSendMspResponse);
         crsfLastCycleTime = currentTimeUs; // reset telemetry timing due to ad-hoc request
         return;
     }

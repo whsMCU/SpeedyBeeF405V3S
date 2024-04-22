@@ -35,8 +35,8 @@
 //#include "drivers/serial_softserial.h"
 
 
-#include "config/config.h"
-#include "fc/rc_modes.h"
+//#include "config/config.h"
+//#include "fc/rc_modes.h"
 #include "runtime_config.h"
 
 //#include "msp/msp_serial.h"
@@ -112,7 +112,7 @@ void telemetryInit(void)
     initIbusTelemetry();
 #endif
 #if defined(USE_MSP_OVER_TELEMETRY)
-    //initSharedMsp();
+    initSharedMsp();
 #endif
 
     telemetryCheckState();

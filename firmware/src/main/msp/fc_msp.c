@@ -63,7 +63,7 @@
 //#include "fc/fc_core.h"
 //#include "fc/config.h"
 //#include "fc/controlrate_profile.h"
-//#include "fc/fc_msp.h"
+#include "msp/fc_msp.h"
 //#include "fc/fc_msp_box.h"
 //#include "fc/firmware_update.h"
 //#include "fc/rc_adjustments.h"
@@ -122,16 +122,13 @@
 //#include "sensors/temperature.h"
 //#include "sensors/esc_sensor.h"
 
-//#include "telemetry/telemetry.h"
+#include "telemetry/telemetry.h"
 
 #ifdef USE_HARDWARE_REVISION_DETECTION
 #include "hardware_revision.h"
 #endif
 
 extern timeDelta_t cycleTime; // FIXME dependency on mw.c
-
-#define INAV_IDENTIFIER "INAV"
-#define TARGET_BOARD_IDENTIFIER "SB43"
 
 static const char * const flightControllerIdentifier = INAV_IDENTIFIER; // 4 UPPER CASE alpha numeric characters that identify the flight controller.
 static const char * const boardIdentifier = TARGET_BOARD_IDENTIFIER;

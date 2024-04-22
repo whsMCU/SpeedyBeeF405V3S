@@ -102,7 +102,7 @@
 #include "sensors/rangefinder.h"
 //#include "sensors/initialisation.h"
 
-//#include "telemetry/telemetry.h"
+#include "telemetry/telemetry.h"
 
 #include "flight/pid.h"
 
@@ -218,6 +218,11 @@ void init(void)
 //#endif
 
 	osdInit();
+
+#ifdef USE_TELEMETRY
+    // Telemetry will initialise displayport and register with CMS by itself.
+    telemetryInit();
+#endif
     tasksInit();
 }
 

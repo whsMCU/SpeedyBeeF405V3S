@@ -138,8 +138,6 @@ uint32_t qbufferAvailable(qbuffer_t *p_node)
 
 bool qbufferTxEmpty(qbuffer_t *p_node)
 {
-	p_node->in == p_node->out;
-
   return p_node->in == p_node->out;
 }
 

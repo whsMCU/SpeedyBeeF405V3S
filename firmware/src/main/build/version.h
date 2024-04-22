@@ -30,6 +30,9 @@
 
 #define FC_VERSION_STRING STR(FC_VERSION_MAJOR) "." STR(FC_VERSION_MINOR) "." STR(FC_VERSION_PATCH_LEVEL)
 
+#define INAV_IDENTIFIER "INAV"
+#define TARGET_BOARD_IDENTIFIER "SB43"
+
 extern const char* const targetName;
 
 #define GIT_SHORT_REVISION_LENGTH   7 // lower case hexadecimal digits.
