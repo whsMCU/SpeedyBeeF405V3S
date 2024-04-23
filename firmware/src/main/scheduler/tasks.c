@@ -642,19 +642,12 @@ void tasksInit(void)
 //    setTaskEnabled(TASK_DASHBOARD, featureIsEnabled(FEATURE_DASHBOARD));
 //#endif
 
-//#ifdef USE_TELEMETRY
-//    if (featureIsEnabled(FEATURE_TELEMETRY)) {
-//        setTaskEnabled(TASK_TELEMETRY, true);
-//        if (rxRuntimeState.serialrxProvider == SERIALRX_JETIEXBUS) {
-//            // Reschedule telemetry to 500hz for Jeti Exbus
-//            rescheduleTask(TASK_TELEMETRY, TASK_PERIOD_HZ(500));
-//        } else if (rxRuntimeState.serialrxProvider == SERIALRX_CRSF) {
-//            // Reschedule telemetry to 500hz, 2ms for CRSF
-//            rescheduleTask(TASK_TELEMETRY, TASK_PERIOD_HZ(500));
-//        }
-//    }
-//#endif
-//
+#ifdef USE_TELEMETRY
+    setTaskEnabled(TASK_TELEMETRY, true);
+    // Reschedule telemetry to 500hz, 2ms for CRSF
+    rescheduleTask(TASK_TELEMETRY, TASK_PERIOD_HZ(250));
+#endif
+
 //#ifdef USE_LED_STRIP
 //    setTaskEnabled(TASK_LEDSTRIP, featureIsEnabled(FEATURE_LED_STRIP));
 //#endif

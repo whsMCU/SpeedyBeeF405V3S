@@ -38,6 +38,8 @@
 #include "rx/rx.h"
 #include "rx/crsf.h"
 
+#include "msp/msp_serial.h"
+
 #include "telemetry/crsf.h"
 
 #define CRSF_TIME_NEEDED_PER_FRAME_US   1750 // a maximally sized 64byte payload will take ~1550us, round up to 1750.
@@ -595,7 +597,7 @@ void crsfRxSendTelemetryData(void)
 {
     // if there is telemetry data to write
     if (telemetryBufLen > 0) {
-        //serialWriteBuf(serialPort, telemetryBuf, telemetryBufLen);
+        serialWriteBuf(_DEF_UART2, telemetryBuf, telemetryBufLen);
         telemetryBufLen = 0; // reset telemetry buffer
     }
 }

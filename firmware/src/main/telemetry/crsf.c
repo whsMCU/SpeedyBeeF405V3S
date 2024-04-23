@@ -527,6 +527,7 @@ void handleCrsfTelemetry(timeUs_t currentTimeUs)
     if (!crsfTelemetryEnabled) {
         return;
     }
+
     // Give the receiver a chance to send any outstanding telemetry data.
     // This needs to be done at high frequency, to enable the RX to send the telemetry frame
     // in between the RX frames.

@@ -112,3 +112,4 @@ int mspSerialPush(uint8_t cmd, const uint8_t *data, int datalen);
 int mspSerialPushVersion(uint8_t cmd, const uint8_t *data, int datalen, mspVersion_e version);
 //uint32_t mspSerialTxBytesFree(uint8_t ch);
 //mspPort_t * mspSerialPortFind(const struct serialPort_s *serialPort);
+void serialWriteBuf(uint8_t ch, uint8_t *data, int count);
