@@ -92,6 +92,7 @@ void opflow_Init(void)
 static bool opflowDetect(opflowDev_t * dev, uint8_t opflowHardwareToUse)
 {
     opticalFlowSensor_e opflowHardware = OPFLOW_NONE;
+    requestedSensors[SENSOR_INDEX_OPFLOW] = opflowHardwareToUse;
 
     if (virtualOpflowDetect(dev, &opflowMSPVtable)) {
         opflowHardware = OPFLOW_MSP;

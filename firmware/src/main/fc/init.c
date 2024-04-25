@@ -180,8 +180,8 @@ void init(void)
     rxInit();
 
 #ifdef USE_GPS
-        //gpsInit();
-        M8N_Initialization();
+    //gpsInit();
+    M8N_Initialization();
 #endif
 
 //#ifdef USE_ACC

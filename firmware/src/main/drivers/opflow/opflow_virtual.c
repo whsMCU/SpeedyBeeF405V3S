@@ -48,7 +48,7 @@ static bool virtualOpflowInit(opflowDev_t * dev)
 
 static bool virtualOpflowUpdate(opflowDev_t * dev)
 {
-    //UNUSED(dev);
+    UNUSED(dev);
     return highLevelDeviceVTable->update(&dev->rawData);
 }
 
