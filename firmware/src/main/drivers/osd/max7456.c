@@ -593,9 +593,10 @@ max7456InitStatus_e max7456Init(void)
     //_regVm0 = 0b00000100;
     spiWriteReg(MAX7456, MAX7456ADD_VM0, max7456Reg._regVm0.whole);
 
+    max7456Reg._regVm1.whole = 0b01000111;
+    spiWriteReg(MAX7456, MAX7456ADD_VM1, max7456Reg._regVm1.whole);
 
     SPI_Set_Speed_hz(MAX7456, MAX7456_MAX_SPI_CLK_HZ);
-
 
     setDisplayOffsets(36,18);
 

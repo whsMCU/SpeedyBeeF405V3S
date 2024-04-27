@@ -61,7 +61,7 @@
 //#include "fc/core.h"
 //#include "fc/rc_controls.h"
 //#include "fc/rc_modes.h"
-//#include "fc/runtime_config.h"
+#include "fc/runtime_config.h"
 //#include "fc/stats.h"
 
 //#include "flight/failsafe.h"
@@ -359,6 +359,11 @@ void osdUpdate(timeUs_t currentTimeUs)
     default:
       task = OSD_Buffer_Draw;
       break;
+  }
+
+  if(ARMING_FLAG(ARMED))
+  {
+    max7456ClearLayer(0);
   }
 
   max7456DrawScreen();
