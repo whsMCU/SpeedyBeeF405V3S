@@ -308,6 +308,7 @@ typedef enum {
 void osdUpdate(timeUs_t currentTimeUs)
 {
   static uint8_t task = OSD_Buffer_Draw1;
+  static uint32_t count = 0;
 
   switch(task)
   {
@@ -361,12 +362,14 @@ void osdUpdate(timeUs_t currentTimeUs)
       break;
   }
 
-  if(ARMING_FLAG(ARMED))
+  max7456DrawScreen();
+
+  if(count > 500)
   {
     max7456ClearLayer(0);
+    count = 0;
   }
-
-  max7456DrawScreen();
+  count++;
 }
 
 statistic_t *osdGetStats(void)
