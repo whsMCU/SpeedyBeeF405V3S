@@ -338,7 +338,6 @@ void osdUpdate(timeUs_t currentTimeUs)
       break;
 
     case OSD_Buffer_Draw4:
-      //osdDrawSingleElement(10, 3, OSD_COMPASS_BAR);
       osdDrawSingleElement(1, 2, OSD_RSSI_VALUE);
       osdDrawSingleElement(12, 4, OSD_NUMERICAL_HEADING);
       task = OSD_Buffer_Draw5;
@@ -346,8 +345,7 @@ void osdUpdate(timeUs_t currentTimeUs)
 
     case OSD_Buffer_Draw5:
       osdDrawSingleElement(10, 3, OSD_COMPASS_BAR);
-      //osdDrawSingleElement(1, 1, OSD_LINK_QUALITY);
-      //osdDrawSingleElement(12, 4, OSD_NUMERICAL_HEADING);
+      //osdDrawSingleElement(1, 6, OSD_ROLL_PIDS);
       task = OSD_Buffer_Draw6;
       break;
 
