@@ -26,8 +26,8 @@
 #include "common/maths.h"
 #include "common/time.h"
 
-#include "config/config.h"
-#include "config/feature.h"
+//#include "config/config.h"
+//#include "config/feature.h"
 
 #include "rc_controls.h"
 
@@ -35,7 +35,7 @@
 
 #include "rc_modes.h"
 
-#include "msp_box.h"
+//#include "msp_box.h"
 
 #define STICKY_MODE_BOOT_DELAY_US 5e6
 
@@ -166,7 +166,7 @@ void updateActivatedModes(void)
 
     rcModeUpdate(&newMask);
 
-    airmodeEnabled = featureIsEnabled(FEATURE_AIRMODE) || IS_RC_MODE_ACTIVE(BOXAIRMODE);
+    //airmodeEnabled = featureIsEnabled(FEATURE_AIRMODE) || IS_RC_MODE_ACTIVE(BOXAIRMODE);
 }
 
 bool isModeActivationConditionPresent(boxId_e modeId)
@@ -251,26 +251,26 @@ void analyzeModeActivationConditions(void)
 #endif
 }
 
-void MSP_SET_MODE_RANGE(uint32_t i, uint8_t boxId, uint8_t auxChannelIndex, uint32_t start, uint32_t end){
-	uint32_t start_value = CHANNEL_VALUE_TO_STEP(start);
-	uint32_t end_value = CHANNEL_VALUE_TO_STEP(end);
-	  //i = sbufReadU8(src);
-	  if (i < MAX_MODE_ACTIVATION_CONDITION_COUNT) {
-	      modeActivationCondition_t *mac = &modeActivationConditions[i];
-	      //i = sbufReadU8(src);
-	      const box_t *box = findBoxByPermanentId(boxId);
-	      if (box) {
-	          mac->modeId = box->boxId;
-	          mac->auxChannelIndex = auxChannelIndex;
-	          mac->range.startStep = (uint8_t)start_value;
-	          mac->range.endStep = (uint8_t)end_value;
-//	          if (sbufBytesRemaining(src) != 0) {
-//	              mac->modeLogic = sbufReadU8(src);
-//
-//	              i = sbufReadU8(src);
-//	              mac->linkedTo = findBoxByPermanentId(i)->boxId;
-//	          }
-	          rcControlsInit();
-	      }
-	  }
-}
+//void MSP_SET_MODE_RANGE(uint32_t i, uint8_t boxId, uint8_t auxChannelIndex, uint32_t start, uint32_t end){
+//	uint32_t start_value = CHANNEL_VALUE_TO_STEP(start);
+//	uint32_t end_value = CHANNEL_VALUE_TO_STEP(end);
+//	  //i = sbufReadU8(src);
+//	  if (i < MAX_MODE_ACTIVATION_CONDITION_COUNT) {
+//	      modeActivationCondition_t *mac = &modeActivationConditions[i];
+//	      //i = sbufReadU8(src);
+//	      const box_t *box = findBoxByPermanentId(boxId);
+//	      if (box) {
+//	          mac->modeId = box->boxId;
+//	          mac->auxChannelIndex = auxChannelIndex;
+//	          mac->range.startStep = (uint8_t)start_value;
+//	          mac->range.endStep = (uint8_t)end_value;
+////	          if (sbufBytesRemaining(src) != 0) {
+////	              mac->modeLogic = sbufReadU8(src);
+////
+////	              i = sbufReadU8(src);
+////	              mac->linkedTo = findBoxByPermanentId(i)->boxId;
+////	          }
+//	          rcControlsInit();
+//	      }
+//	  }
+//}

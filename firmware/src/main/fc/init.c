@@ -57,6 +57,7 @@
 //#include "fc/core.h"
 //#include "fc/rc_modes.h"
 //#include "fc/rc_controls.h"
+#include "fc/rc_adjustments.h"
 #include "fc/runtime_config.h"
 #include "fc/stats.h"
 //#include "fc/controlrate_profile.h"
@@ -128,6 +129,7 @@ void init(void)
   {
     readSDCard();
   }
+  activeAdjustmentRangeReset();
 
 	tasksInitData();
 	cliOpen(_DEF_USB, 57600);

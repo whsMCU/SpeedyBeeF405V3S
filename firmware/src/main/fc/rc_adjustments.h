@@ -22,6 +22,8 @@
 
 #include <stdbool.h>
 
+#include "hw.h"
+
 #include "fc/rc_modes.h"
 
 typedef enum {
@@ -108,7 +110,7 @@ typedef struct continuosAdjustmentState_s {
 } continuosAdjustmentState_t;
 
 struct controlRateConfig_s;
-void processRcAdjustments(struct controlRateConfig_s *controlRateConfig);
+void processRcAdjustments(void);
 const char *getAdjustmentsRangeName(void);
 int getAdjustmentsRangeValue(void);
 void activeAdjustmentRangeReset(void);

@@ -37,6 +37,7 @@
 //#include "config/feature.h"
 
 #include "fc/rc_controls.h"
+#include "fc/rc_adjustments.h"
 //#include "fc/rc_modes.h"
 #include "fc/stats.h"
 #include "fc/runtime_config.h"
@@ -72,7 +73,15 @@ static uint16_t uplinkTxPwrMw = 0;  //Uplink Tx power in mW
 rssiSource_e rssiSource;
 linkQualitySource_e linkQualitySource;
 
+static bool rxDataProcessingRequired = false;
+static bool auxiliaryProcessingRequired = false;
+
+static bool rxSignalReceived = false;
+static bool rxFlightChannelsValid = false;
 static uint8_t rxChannelCount;
+
+static timeUs_t needRxSignalBefore = 0;
+static timeUs_t suspendRxSignalUntil = 0;
 
 static float rcRaw[MAX_SUPPORTED_RC_CHANNEL_COUNT];     // last received raw value, as it comes
 uint16_t rcData[MAX_SUPPORTED_RC_CHANNEL_COUNT];           // scaled, modified, checked and constrained values
@@ -246,6 +255,11 @@ void rxInit(void)
     #endif
 }
 
+bool rxIsReceivingSignal(void)
+{
+    return rxSignalReceived;
+}
+
 #define THROTTLE_LOOKUP_LENGTH 12
 static int16_t lookupThrottleRC[THROTTLE_LOOKUP_LENGTH];    // lookup table for expo & mid THROTTLE
 
@@ -308,6 +322,11 @@ static void updateRcCommands(void)
 		 rcCommand[YAW] = rcCommandBuff.Z;
 	 }
 	}
+}
+
+bool taskUpdateRxMainInProgress(void)
+{
+    return (rxState != RX_STATE_CHECK);
 }
 
 void taskUpdateRxMain(uint32_t currentTimeUs)
@@ -398,6 +417,49 @@ void rxSetUplinkTxPwrMw(uint16_t uplinkTxPwrMwValue)
     uplinkTxPwrMw = uplinkTxPwrMwValue;
 }
 #endif
+
+void rxFrameCheck(timeUs_t currentTimeUs, timeDelta_t currentDeltaTimeUs)
+{
+    bool signalReceived = false;
+    bool useDataDrivenProcessing = true;
+    timeDelta_t needRxSignalMaxDelayUs = DELAY_100_MS;
+
+    DEBUG_SET(DEBUG_RX_SIGNAL_LOSS, 2, MIN(2000, currentDeltaTimeUs / 100));
+
+    if (taskUpdateRxMainInProgress()) {
+        //  no need to check for new data as a packet is being processed already
+        return;
+    }
+
+    const uint8_t frameStatus = rxRuntimeState.rcFrameStatusFn(&rxRuntimeState);
+    DEBUG_SET(DEBUG_RX_SIGNAL_LOSS, 1, (frameStatus & RX_FRAME_FAILSAFE));
+    signalReceived = (frameStatus & RX_FRAME_COMPLETE) && !(frameStatus & (RX_FRAME_FAILSAFE | RX_FRAME_DROPPED));
+    setLinkQuality(signalReceived, currentDeltaTimeUs);
+    //auxiliaryProcessingRequired |= (frameStatus & RX_FRAME_PROCESSING_REQUIRED);
+
+
+    if (signalReceived) {
+        //  true only when a new packet arrives
+        needRxSignalBefore = currentTimeUs + needRxSignalMaxDelayUs;
+        rxSignalReceived = true; // immediately process packet data
+        if (useDataDrivenProcessing) {
+            rxDataProcessingRequired = true;
+            //  process the new Rx packet when it arrives
+        }
+    } else {
+        //  watch for next packet
+        if (cmpTimeUs(currentTimeUs, needRxSignalBefore) > 0) {
+            //  initial time to signalReceived failure is 100ms, then we check every 100ms
+            rxSignalReceived = false;
+            needRxSignalBefore = currentTimeUs + needRxSignalMaxDelayUs;
+            //  review and process rcData values every 100ms in case failsafe changed them
+            rxDataProcessingRequired = true;
+        }
+    }
+
+    DEBUG_SET(DEBUG_RX_SIGNAL_LOSS, 0, rxSignalReceived);
+}
+
 
 #define PPM_RCVR_TIMEOUT            0
 
@@ -566,6 +628,9 @@ void processRxModes(uint32_t currentTimeUs)
   if (!ARMING_FLAG(ARMED))
   {
     processRcStickPositions();
+  }
+  if (!ARMING_FLAG(ARMED)) {
+      processRcAdjustments();
   }
 }
 

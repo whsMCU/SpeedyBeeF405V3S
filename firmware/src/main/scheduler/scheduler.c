@@ -215,10 +215,12 @@ void scheduler(void)
 	{
 		crsfDataReceive(uartRead(_DEF_UART2), (void*) &rxRuntimeState);
 	}
-	bool signalReceived = false;
-	const uint8_t frameStatus = rxRuntimeState.rcFrameStatusFn(&rxRuntimeState);
-  signalReceived = (frameStatus & RX_FRAME_COMPLETE) && !(frameStatus & (RX_FRAME_FAILSAFE | RX_FRAME_DROPPED));
-  setLinkQuality(signalReceived, currentTimeUs);
+
+  // Check for incoming RX data. Don't do this in the checker as that is called repeatedly within
+  // a given gyro loop, and ELRS takes a long time to process this and so can only be safely processed
+  // before the checkers
+  rxFrameCheck(currentTimeUs, cmpTimeUs(currentTimeUs, getTask(TASK_RX)->lastExecutedAtUs));
+
   scheduleCount++;
 }
 

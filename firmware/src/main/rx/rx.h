@@ -235,6 +235,7 @@ void rxFailsafeChannelConfigs_Init(void);
 
 void rxInit(void);
 void rxProcessPending(bool state);
+bool taskUpdateRxMainInProgress(void);
 bool rxUpdateCheck(uint32_t currentTimeUs, int32_t currentDeltaTimeUs);
 void rxFrameCheck(uint32_t currentTimeUs, int32_t currentDeltaTimeUs);
 bool rxIsReceivingSignal(void);
