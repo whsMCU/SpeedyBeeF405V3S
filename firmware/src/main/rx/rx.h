@@ -284,5 +284,7 @@ int32_t rxGetFrameDelta(int32_t *frameAgeUs);
 
 uint32_t rxFrameTimeUs(void);
 
+int8_t calculateThrottlePercent(void);
+
 void taskUpdateRxMain(uint32_t currentTimeUs);
 void processRxModes(uint32_t currentTimeUs);

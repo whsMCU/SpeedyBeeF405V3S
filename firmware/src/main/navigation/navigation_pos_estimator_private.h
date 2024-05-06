@@ -24,6 +24,7 @@
 #include "common/maths.h"
 #include "common/filter.h"
 //#include "common/calibration.h"
+#include "common/vector.h"
 
 #include "sensors/sensors.h"
 
