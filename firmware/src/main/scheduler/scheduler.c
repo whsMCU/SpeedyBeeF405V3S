@@ -171,6 +171,17 @@ void setTaskEnabled(taskId_e taskId, bool enabled)
     }
 }
 
+timeDelta_t getTaskDeltaTimeUs(taskId_e taskId)
+{
+    if (taskId == TASK_SELF) {
+        return currentTask->taskLatestDeltaTimeUs;
+    } else if (taskId < TASK_COUNT) {
+        return getTask(taskId)->taskLatestDeltaTimeUs;
+    } else {
+        return 0;
+    }
+}
+
 void schedulerInit(void)
 {
     queueClear();
@@ -204,6 +215,10 @@ void scheduler(void)
 				selectedTask->attribute->taskFunc(currentTimeBeforeTaskCallUs);
 				taskExecutionTimeUs = micros() - currentTimeBeforeTaskCallUs;
 				taskTotalExecutionTime += taskExecutionTimeUs;
+
+				selectedTask->taskLatestDeltaTimeUs = cmpTimeUs(currentTimeUs, selectedTask->lastStatsAtUs);
+				selectedTask->lastStatsAtUs = currentTimeUs;
+
 				selectedTask->taskExecutionTimeUs = micros() - currentTimeBeforeTaskCallUs;
 				selectedTask->taskExcutedEndUs = currentTimeBeforeTaskCallUs;
 		    selectedTask->totalExecutionTimeUs += taskExecutionTimeUs;   // time consumed by scheduler + task

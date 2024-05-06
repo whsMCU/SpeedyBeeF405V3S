@@ -301,7 +301,9 @@ typedef enum {
     OSD_Buffer_Draw3,
     OSD_Buffer_Draw4,
     OSD_Buffer_Draw5,
-    OSD_Buffer_Draw6
+    OSD_Buffer_Draw6,
+    OSD_Buffer_Draw7,
+    OSD_Buffer_Draw8
 } osdUpdateType_e;
 // Called when there is OSD update work to be done
 
@@ -333,7 +335,6 @@ void osdUpdate(timeUs_t currentTimeUs)
     case OSD_Buffer_Draw3:
       osdDrawSingleElement(16, 1, OSD_GPS_LON);
       osdDrawSingleElement(16, 2, OSD_GPS_LAT);
-      //osdDrawSingleElement(1, 7, OSD_THROTTLE_POS);
       task = OSD_Buffer_Draw4;
       break;
 
@@ -345,13 +346,25 @@ void osdUpdate(timeUs_t currentTimeUs)
 
     case OSD_Buffer_Draw5:
       osdDrawSingleElement(10, 3, OSD_COMPASS_BAR);
-      //osdDrawSingleElement(1, 6, OSD_ROLL_PIDS);
+
       task = OSD_Buffer_Draw6;
       break;
 
     case OSD_Buffer_Draw6:
       osdDrawSingleElement(1, 1, OSD_LINK_QUALITY);
       osdDrawSingleElement(1, 3, OSD_RSSI_DBM_VALUE);
+      task = OSD_Buffer_Draw7;
+      break;
+
+    case OSD_Buffer_Draw7:
+      osdDrawSingleElement(1, 6, OSD_ROLL_PIDS);
+      osdDrawSingleElement(1, 5, OSD_PITCH_PIDS);
+      task = OSD_Buffer_Draw8;
+      break;
+
+    case OSD_Buffer_Draw8:
+      osdDrawSingleElement(1, 7, OSD_YAW_PIDS);
+      osdDrawSingleElement(1, 4, OSD_THROTTLE_POS);
       task = OSD_Buffer_Draw;
       break;
 
@@ -360,7 +373,7 @@ void osdUpdate(timeUs_t currentTimeUs)
       break;
   }
 
-  max7456DrawScreen();
+    max7456DrawScreen();
 
   if(count > 500)
   {

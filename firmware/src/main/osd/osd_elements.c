@@ -158,6 +158,8 @@
 //#include "sensors/esc_sensor.h"
 #include "sensors/sensors.h"
 
+#include "navigation/navigation_pos_estimator_private.h"
+
 #ifdef USE_GPS_PLUS_CODES
 // located in lib/main/google/olc
 #include "olc.h"
@@ -420,7 +422,7 @@ void osdFormatDistanceString(char *ptr, int distance, char leadingSymbol)
 
 static void osdFormatPID(char * buff, const char * label, const PIDSingle * pid)
 {
-    tfp_sprintf(buff, "%s %3d %3d %3d", label, (int)(pid->kp*10), (int)(pid->ki*10), (int)(pid->kd*10));
+    tfp_sprintf(buff, "%s %3d %3d %3d", label, (int)(pid->kp), (int)(pid->ki), (int)(pid->kd));
 }
 
 #ifdef USE_RTC_TIME
@@ -652,7 +654,7 @@ static void osdElementAltitude(osdElementParms_t *element)
     haveGps = sensors(SENSOR_GPS) && STATE(GPS_FIX);
 #endif // USE_GPS
     if (haveBaro || haveGps) {
-        osdFormatAltitudeString(element->buff, getEstimatedAltitudeCm(), element->type);
+        osdFormatAltitudeString(element->buff, (int32_t)posEstimator.surface.alt, element->type);  //getEstimatedAltitudeCm()
     } else {
         element->buff[0] = SYM_ALTITUDE;
         element->buff[1] = SYM_HYPHEN; // We use this symbol when we don't have a valid measure
@@ -1224,17 +1226,17 @@ static void osdElementPidRateProfile(osdElementParms_t *element)
 
 static void osdElementPidsPitch(osdElementParms_t *element)
 {
-    osdFormatPID(element->buff, "PIT", &pitch.in);
+    osdFormatPID(element->buff, "RP_OUT", &roll.out);
 }
 
 static void osdElementPidsRoll(osdElementParms_t *element)
 {
-    osdFormatPID(element->buff, "ROL", &roll.in);
+    osdFormatPID(element->buff, "RP_IN ", &roll.in);
 }
 
 static void osdElementPidsYaw(osdElementParms_t *element)
 {
-    //osdFormatPID(element->buff, "YAW", &currentPidProfile->pid[PID_YAW]);
+    osdFormatPID(element->buff, "YW_DEG", &yaw_heading);
 }
 
 static void osdElementPower(osdElementParms_t *element)
@@ -1351,7 +1353,7 @@ static void osdElementStickOverlay(osdElementParms_t *element)
 
 static void osdElementThrottlePosition(osdElementParms_t *element)
 {
-    //tfp_sprintf(element->buff, "%c%3d", SYM_THR, calculateThrottlePercent());
+    tfp_sprintf(element->buff, "%c%3d", SYM_THR, calculateThrottlePercent());
 }
 
 static void osdElementTimer(osdElementParms_t *element)

@@ -139,18 +139,23 @@ typedef struct {
 typedef struct {
   // Task static data
   task_attribute_t *attribute;
+
+  timeDelta_t taskLatestDeltaTimeUs;
   uint32_t lastExecutedAtUs;          // last time of invocation
   uint32_t taskExecutionTimeUs;
+
   uint32_t taskPeriodTimeUs;
   uint32_t maxtaskPeriodTimeUs;
   uint32_t taskExcutedEndUs;
   uint32_t totalExecutionTimeUs;      // total time consumed by task since boot
+  timeUs_t lastStatsAtUs;             // time of last stats gathering for rate calculation
 } task_t;
 
 
 void schedulerInit(void);
 void rescheduleTask(taskId_e taskId, int32_t newPeriodUs);
 void setTaskEnabled(taskId_e taskId, bool newEnabledState);
+timeDelta_t getTaskDeltaTimeUs(taskId_e taskId);
 void scheduler(void);
 uint32_t schedulerExecuteTask(task_t *selectedTask, uint32_t currentTimeUs);
 void taskSystemLoad(uint32_t currentTimeUs);

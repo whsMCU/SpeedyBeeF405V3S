@@ -32,6 +32,7 @@
 #include "common/axis.h"
 #include "common/filter.h"
 
+#include "config/sdcard.h"
 //#include "config/config.h"
 //#include "config/config_reset.h"
 //#include "config/feature.h"
@@ -632,6 +633,16 @@ void processRxModes(uint32_t currentTimeUs)
   if (!ARMING_FLAG(ARMED)) {
       processRcAdjustments();
   }
+
+  if(rcData[SF] == 2000)
+  {
+    writeSDCard(PID_Roll_in);
+    writeSDCard(PID_Roll_out);
+    writeSDCard(PID_pitch_in);
+    writeSDCard(PID_pitch_out);
+    writeSDCard(PID_yaw_heading);
+    writeSDCard(PID_yaw_rate);
+  }
 }
 
 void parseRcChannels(const char *input, rxConfig_t *rxConfig)
@@ -852,6 +863,17 @@ int32_t rxGetFrameDelta(int32_t *frameAgeUs)
 uint32_t rxFrameTimeUs(void)
 {
     return rxRuntimeState.lastRcFrameTimeUs;
+}
+
+// calculate the throttle stick percent - integer math is good enough here.
+// returns negative values for reversed thrust in 3D mode
+int8_t calculateThrottlePercent(void)
+{
+    uint8_t ret = 0;
+    int channelData = constrain(rcData[THROTTLE], PWM_RANGE_MIN, PWM_RANGE_MAX);
+
+    ret = constrain(((channelData - rxConfig.mincheck) * 100) / (PWM_RANGE_MAX - rxConfig.mincheck), 0, 100);
+    return ret;
 }
 
 #ifdef _USE_HW_CLI
