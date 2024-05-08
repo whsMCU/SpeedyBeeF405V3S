@@ -43,6 +43,15 @@ unsigned short LF, LR, RR, RF;
 //TIM4->CCR3 // LR
 //TIM4->CCR4 // LF
 
+//ROLL
+//angle : +, gyro : +, rx : +
+
+//PITCH
+//angle : +, gyro : +, rx : +
+
+//YAW
+//angle : +, gyro : -, rx : -
+
 void motorConfig_Init(void)
 {
   motorConfig.minthrottle = 1070;
