@@ -36,11 +36,11 @@ PIDDouble pitch;
 PIDSingle yaw_heading;
 PIDSingle yaw_rate;
 
-#define DT 0.001f
+//#define DT 0.001f
 #define OUTER_DERIV_FILT_ENABLE 1
 #define INNER_DERIV_FILT_ENABLE 1
 
-void Double_Roll_Pitch_PID_Calculation(PIDDouble* axis, float set_point_angle, float angle/*BNO080 Rotation Angle*/, float rate/*ICM-20602 Angular Rate*/)
+void Double_Roll_Pitch_PID_Calculation(PIDDouble* axis, float set_point_angle, float angle/*BNO080 Rotation Angle*/, float rate/*ICM-20602 Angular Rate*/, float DT)
 {
 	/*********** Double PID Outer Begin (Roll and Pitch Angular Position Control) *************/
 	axis->out.reference = set_point_angle;	//Set point of outer PID control
@@ -96,7 +96,7 @@ void Double_Roll_Pitch_PID_Calculation(PIDDouble* axis, float set_point_angle, f
 	/****************************************************************************************/
 }
 
-void Single_Yaw_Heading_PID_Calculation(PIDSingle* axis, float set_point_angle, float angle/*BNO080 Rotation Angle*/, float rate/*ICM-20602 Angular Rate*/)
+void Single_Yaw_Heading_PID_Calculation(PIDSingle* axis, float set_point_angle, float angle/*BNO080 Rotation Angle*/, float rate/*ICM-20602 Angular Rate*/, float DT)
 {
 	/*********** Single PID Begin (Yaw Angular Position) *************/
 	axis->reference = set_point_angle;	//Set point of yaw heading @ yaw stick is center.
@@ -119,7 +119,7 @@ void Single_Yaw_Heading_PID_Calculation(PIDSingle* axis, float set_point_angle, 
 	/***************************************************************/
 }
 
-void Single_Yaw_Rate_PID_Calculation(PIDSingle* axis, float set_point_rate, float rate/*ICM-20602 Angular Rate*/)
+void Single_Yaw_Rate_PID_Calculation(PIDSingle* axis, float set_point_rate, float rate/*ICM-20602 Angular Rate*/, float DT)
 {
 	/*********** Single PID Begin (Yaw Angular Rate Control) *************/
 	axis->reference = set_point_rate;	//Set point of yaw heading @ yaw stick is not center.
@@ -190,8 +190,12 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 	imu_roll = (float)attitude.values.roll/10;
 	imu_pitch = (float)attitude.values.pitch/10;
 	imu_yaw = (float)attitude.values.yaw/10;
-  Double_Roll_Pitch_PID_Calculation(&pitch, rcCommand[PITCH], imu_pitch, bmi270.gyroADCf[Y]);
-  Double_Roll_Pitch_PID_Calculation(&roll, rcCommand[ROLL], imu_roll, bmi270.gyroADCf[X]);
+
+  static timeUs_t previousUpdateTimeUs;
+  const float dT = US2S(currentTimeUs - previousUpdateTimeUs);
+
+  Double_Roll_Pitch_PID_Calculation(&pitch, rcCommand[PITCH], imu_pitch, bmi270.gyroADCf[Y], dT);
+  Double_Roll_Pitch_PID_Calculation(&roll, rcCommand[ROLL], imu_roll, bmi270.gyroADCf[X], dT);
 
   if(rcData[THROTTLE] < 1030 || !ARMING_FLAG(ARMED))
   {
@@ -201,7 +205,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   if(rcData[YAW] < 1485 || rcData[YAW] > 1515)
   {
 	  yaw_heading_reference = imu_yaw;
-	  Single_Yaw_Rate_PID_Calculation(&yaw_rate, rcCommand[YAW] * 10.f, bmi270.gyroADCf[Z]); //left -, right +
+	  Single_Yaw_Rate_PID_Calculation(&yaw_rate, rcCommand[YAW] * 10.f, bmi270.gyroADCf[Z], dT); //left -, right +
 
 	  LF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - pitch.in.pid_result + roll.in.pid_result - yaw_rate.pid_result;
 	  LR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + pitch.in.pid_result + roll.in.pid_result + yaw_rate.pid_result;
@@ -210,13 +214,15 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   }
   else
   {
-	  Single_Yaw_Heading_PID_Calculation(&yaw_heading, yaw_heading_reference, imu_yaw, bmi270.gyroADCf[Z]);
+	  Single_Yaw_Heading_PID_Calculation(&yaw_heading, yaw_heading_reference, imu_yaw, bmi270.gyroADCf[Z], dT);
 
 	  LF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - pitch.in.pid_result + roll.in.pid_result - yaw_heading.pid_result;
 	  LR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + pitch.in.pid_result + roll.in.pid_result + yaw_heading.pid_result;
 	  RR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + pitch.in.pid_result - roll.in.pid_result - yaw_heading.pid_result;
 	  RF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - pitch.in.pid_result - roll.in.pid_result + yaw_heading.pid_result;
   }
+
+  previousUpdateTimeUs = currentTimeUs;
 
 
   motorWriteAll();

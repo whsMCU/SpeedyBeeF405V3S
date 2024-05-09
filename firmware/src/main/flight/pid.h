@@ -70,9 +70,9 @@ extern PIDSingle yaw_heading;
 extern PIDSingle yaw_rate;
 
 
-void Double_Roll_Pitch_PID_Calculation(PIDDouble* axis, float set_point_angle, float angle, float rate);
-void Single_Yaw_Rate_PID_Calculation(PIDSingle* axis, float set_point, float value);
-void Single_Yaw_Heading_PID_Calculation(PIDSingle* axis, float set_point, float angle, float rate);
+void Double_Roll_Pitch_PID_Calculation(PIDDouble* axis, float set_point_angle, float angle, float rate, float DT);
+void Single_Yaw_Rate_PID_Calculation(PIDSingle* axis, float set_point, float value, float DT);
+void Single_Yaw_Heading_PID_Calculation(PIDSingle* axis, float set_point, float angle, float rate, float DT);
 void Reset_PID_Integrator(PIDSingle* axis);
 void Reset_All_PID_Integrator(void);
 
