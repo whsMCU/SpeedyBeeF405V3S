@@ -205,11 +205,8 @@ void scheduler(void)
 			if (selectedTask) {
 				currentTask = selectedTask;
 				selectedTask->taskPeriodTimeUs = currentTimeUs - selectedTask->lastExecutedAtUs;
-				if(selectedTask->taskPeriodTimeUs > selectedTask->maxtaskPeriodTimeUs)
-				{
-					selectedTask->maxtaskPeriodTimeUs = selectedTask->taskPeriodTimeUs;
-				}
-				selectedTask->lastExecutedAtUs = currentTimeUs;
+        selectedTask->lastExecutedAtUs = currentTimeUs;
+
 				// Execute task
 				const uint32_t currentTimeBeforeTaskCallUs = micros();
 				selectedTask->attribute->taskFunc(currentTimeBeforeTaskCallUs);

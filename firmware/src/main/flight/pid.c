@@ -40,6 +40,8 @@ PIDSingle yaw_rate;
 #define OUTER_DERIV_FILT_ENABLE 1
 #define INNER_DERIV_FILT_ENABLE 1
 
+float tmp_DT;
+
 void Double_Roll_Pitch_PID_Calculation(PIDDouble* axis, float set_point_angle, float angle/*BNO080 Rotation Angle*/, float rate/*ICM-20602 Angular Rate*/, float DT)
 {
 	/*********** Double PID Outer Begin (Roll and Pitch Angular Position Control) *************/
@@ -193,6 +195,9 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 
   static timeUs_t previousUpdateTimeUs;
   const float dT = US2S(currentTimeUs - previousUpdateTimeUs);
+  previousUpdateTimeUs = currentTimeUs;
+
+  tmp_DT = dT;
 
   Double_Roll_Pitch_PID_Calculation(&pitch, rcCommand[PITCH], imu_pitch, bmi270.gyroADCf[Y], dT);
   Double_Roll_Pitch_PID_Calculation(&roll, rcCommand[ROLL], imu_roll, bmi270.gyroADCf[X], dT);
@@ -222,7 +227,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 	  RF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - pitch.in.pid_result - roll.in.pid_result + yaw_heading.pid_result;
   }
 
-  previousUpdateTimeUs = currentTimeUs;
+
 
 
   motorWriteAll();

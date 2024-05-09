@@ -145,7 +145,7 @@ typedef struct {
   uint32_t taskExecutionTimeUs;
 
   uint32_t taskPeriodTimeUs;
-  uint32_t maxtaskPeriodTimeUs;
+
   uint32_t taskExcutedEndUs;
   uint32_t totalExecutionTimeUs;      // total time consumed by task since boot
   timeUs_t lastStatsAtUs;             // time of last stats gathering for rate calculation
