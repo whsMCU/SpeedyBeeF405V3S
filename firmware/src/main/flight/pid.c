@@ -53,9 +53,7 @@ void Double_Roll_Pitch_PID_Calculation(PIDDouble* axis, float set_point_angle, f
 
 	axis->out.error_sum = axis->out.error_sum + axis->out.error * DT;	//Define summation of outer loop
 #define OUT_ERR_SUM_MAX 500
-#define OUT_I_ERR_MIN -OUT_ERR_SUM_MAX
-	if(axis->out.error_sum > OUT_ERR_SUM_MAX) axis->out.error_sum = OUT_ERR_SUM_MAX;
-	else if(axis->out.error_sum < OUT_I_ERR_MIN) axis->out.error_sum = OUT_I_ERR_MIN;
+	if(abs(axis->out.error_sum) > OUT_ERR_SUM_MAX) axis->out.error_sum = OUT_ERR_SUM_MAX;
 	axis->out.i_result = axis->out.error_sum * axis->out.ki;			//Calculate I result of outer loop
 
 	axis->out.error_deriv = -rate;										//Define derivative of outer loop (rate = ICM-20602 Angular Rate)
@@ -78,10 +76,8 @@ void Double_Roll_Pitch_PID_Calculation(PIDDouble* axis, float set_point_angle, f
 	axis->in.p_result = axis->in.error * axis->in.kp;			//Calculate P result of inner loop
 
 	axis->in.error_sum = axis->in.error_sum + axis->in.error * DT;	//Define summation of inner loop
-#define IN_ERR_SUM_MAX 500
-#define IN_I_ERR_MIN -IN_ERR_SUM_MAX
-	if(axis->in.error_sum > IN_ERR_SUM_MAX) axis->in.error_sum = IN_ERR_SUM_MAX;
-	else if(axis->in.error_sum < IN_I_ERR_MIN) axis->in.error_sum = IN_I_ERR_MIN;
+	#define IN_ERR_SUM_MAX 500
+	if(abs(axis->in.error_sum) > IN_ERR_SUM_MAX) axis->in.error_sum = IN_ERR_SUM_MAX;
 	axis->in.i_result = axis->in.error_sum * axis->in.ki;							//Calculate I result of inner loop
 
 	axis->in.error_deriv = -(axis->in.meas_value - axis->in.meas_value_prev) / DT;	//Define derivative of inner loop
