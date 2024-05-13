@@ -56,7 +56,7 @@
 #include "fc/init.h"
 //#include "fc/core.h"
 //#include "fc/rc_modes.h"
-//#include "fc/rc_controls.h"
+#include "fc/rc_controls.h"
 #include "fc/rc_adjustments.h"
 #include "fc/runtime_config.h"
 #include "fc/stats.h"
@@ -263,19 +263,19 @@ void Param_Config_Init(void)
 	imuConfig_Init();
 	rxConfig_Init();
 	rxChannelRangeConfigs_Init();
-//	rxFailsafeChannelConfigs_Init();
+	rxFailsafeChannelConfigs_Init();
 	batteryConfig_Init();
 //	controlRateProfiles_Init();
 //	mixerConfig_Init();
 //	throttleCorrectionConfig_Init();
 //	featureConfig_Init();
 	positionConfig_Init();
-//	rcControlsConfig_Init();
-//	armingConfig_Init();
-//	flight3DConfig_Init();
+	rcControlsConfig_Init();
+	armingConfig_Init();
+	flight3DConfig_Init();
 #ifdef USE_OSD
-//	vcdProfile_Init();
+	vcdProfile_Init();
 	osdConfig_Init();
-//	osdElementConfig_Init();
+	osdElementConfig_Init();
 #endif
 }

@@ -50,7 +50,7 @@ unsigned short LF, LR, RR, RF;
 //angle : +, gyro : +, rx : +
 
 //YAW
-//angle : +, gyro : -, rx : -
+//angle : +, gyro : -, rx : +  //gyro mul negative sign
 
 void motorConfig_Init(void)
 {

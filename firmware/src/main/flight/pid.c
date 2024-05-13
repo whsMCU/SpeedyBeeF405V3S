@@ -53,7 +53,7 @@ void Double_Roll_Pitch_PID_Calculation(PIDDouble* axis, float set_point_angle, f
 
 	axis->out.error_sum = axis->out.error_sum + axis->out.error * DT;	//Define summation of outer loop
 #define OUT_ERR_SUM_MAX 500
-	if(abs(axis->out.error_sum) > OUT_ERR_SUM_MAX) axis->out.error_sum = OUT_ERR_SUM_MAX;
+	if(fabsf(axis->out.error_sum) > OUT_ERR_SUM_MAX) axis->out.error_sum = OUT_ERR_SUM_MAX;
 	axis->out.i_result = axis->out.error_sum * axis->out.ki;			//Calculate I result of outer loop
 
 	axis->out.error_deriv = -rate;										//Define derivative of outer loop (rate = ICM-20602 Angular Rate)
@@ -77,7 +77,7 @@ void Double_Roll_Pitch_PID_Calculation(PIDDouble* axis, float set_point_angle, f
 
 	axis->in.error_sum = axis->in.error_sum + axis->in.error * DT;	//Define summation of inner loop
 	#define IN_ERR_SUM_MAX 500
-	if(abs(axis->in.error_sum) > IN_ERR_SUM_MAX) axis->in.error_sum = IN_ERR_SUM_MAX;
+	if(fabsf(axis->in.error_sum) > IN_ERR_SUM_MAX) axis->in.error_sum = IN_ERR_SUM_MAX;
 	axis->in.i_result = axis->in.error_sum * axis->in.ki;							//Calculate I result of inner loop
 
 	axis->in.error_deriv = -(axis->in.meas_value - axis->in.meas_value_prev) / DT;	//Define derivative of inner loop
@@ -206,7 +206,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   if(rcData[YAW] < 1485 || rcData[YAW] > 1515)
   {
 	  yaw_heading_reference = imu_yaw;
-	  Single_Yaw_Rate_PID_Calculation(&yaw_rate, rcCommand[YAW] * 10.f, bmi270.gyroADCf[Z], dT); //left -, right +
+	  Single_Yaw_Rate_PID_Calculation(&yaw_rate, rcCommand[YAW] * 10.f, -bmi270.gyroADCf[Z], dT); //left -, right +
 
 	  LF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - pitch.in.pid_result + roll.in.pid_result - yaw_rate.pid_result;
 	  LR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + pitch.in.pid_result + roll.in.pid_result + yaw_rate.pid_result;
@@ -215,7 +215,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   }
   else
   {
-	  Single_Yaw_Heading_PID_Calculation(&yaw_heading, yaw_heading_reference, imu_yaw, bmi270.gyroADCf[Z], dT);
+	  Single_Yaw_Heading_PID_Calculation(&yaw_heading, yaw_heading_reference, imu_yaw, -bmi270.gyroADCf[Z], dT);
 
 	  LF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - pitch.in.pid_result + roll.in.pid_result - yaw_heading.pid_result;
 	  LR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + pitch.in.pid_result + roll.in.pid_result + yaw_heading.pid_result;
