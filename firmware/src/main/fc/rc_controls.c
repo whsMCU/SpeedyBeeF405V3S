@@ -326,14 +326,14 @@ void processRcStickPositions()
             break;
         case THR_CE + YAW_CE + PIT_CE + ROL_HI:
             //accelerometerTrimsDelta.values.roll = 1;
-            roll.in.kd += 1;
-            pitch.in.kd += 1;
+            roll.in.kd += 0.1;
+            pitch.in.kd += 0.1;
             shouldApplyRollAndPitchTrimDelta = true;
             break;
         case THR_CE + YAW_CE + PIT_CE + ROL_LO:
             //accelerometerTrimsDelta.values.roll = -1;
-            roll.in.kd -= 1;
-            pitch.in.kd -= 1;
+            roll.in.kd -= 0.1;
+            pitch.in.kd -= 0.1;
             shouldApplyRollAndPitchTrimDelta = true;
             break;
 
