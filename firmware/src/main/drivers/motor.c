@@ -59,7 +59,6 @@ void motorConfig_Init(void)
   motorConfig.mincommand = 1000;
   motorConfig.digitalIdleOffsetValue = 550;
   motorConfig.motorPoleCount = 14;   // Most brushes motors that we use are 14 poles
-
 }
 
 void motorShutdown(void)
