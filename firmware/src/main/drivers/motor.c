@@ -109,6 +109,11 @@ void motorWriteAll(void)
   TIM4->CCR4 = motor.motor[L_F];
 }
 
+//TIM4->CCR1 // RR
+//TIM4->CCR2 // RF
+//TIM4->CCR3 // LR
+//TIM4->CCR4 // LF
+
 void motorDisable(void)
 {
   TIM4->CCR1 = 10500;

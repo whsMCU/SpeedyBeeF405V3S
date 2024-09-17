@@ -588,7 +588,7 @@ void processRxModes(uint32_t currentTimeUs)
 		if(rcData[THROTTLE] <1030)
 		{
 			ENABLE_ARMING_FLAG(ARMED);
-			yaw_heading_reference = (float)attitude.values.yaw/10;;
+			yaw_heading_reference = (float)attitude.values.yaw/10;
 #ifdef USE_PERSISTENT_STATS
 			 statsOnArm();
 #endif

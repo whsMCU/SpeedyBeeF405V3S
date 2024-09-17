@@ -92,7 +92,7 @@ static void ledUpdate(uint32_t currentTimeUs)
         }
         else
         {
-			LED0_TOGGLE;
+          LED0_TOGGLE;
         }
     }
 }

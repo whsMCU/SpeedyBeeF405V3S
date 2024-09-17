@@ -190,7 +190,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 	imu_yaw = (float)attitude.values.yaw/10;
 
   static timeUs_t previousUpdateTimeUs;
-  const float dT = US2S(currentTimeUs - previousUpdateTimeUs);
+  float dT = (float)US2S(currentTimeUs - previousUpdateTimeUs);
   previousUpdateTimeUs = currentTimeUs;
 
   tmp_DT = dT;
