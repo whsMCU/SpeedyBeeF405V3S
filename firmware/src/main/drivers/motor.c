@@ -35,6 +35,7 @@
 #include "rx/rx.h"
 
 motorConfig_t motorConfig;
+motor_t motor;
 
 unsigned short LF, LR, RR, RF;
 
@@ -74,34 +75,38 @@ void motorWriteAll(void)
 	{
 	  if(rcData[THROTTLE] > 1030)
 	  {
-		  TIM4->CCR1 = RR > 21000 ? 21000 : RR < 11000 ? 11000 : RR;
-		  TIM4->CCR2 = RF > 21000 ? 21000 : RF < 11000 ? 11000 : RF;
-		  TIM4->CCR3 = LR > 21000 ? 21000 : LR < 11000 ? 11000 : LR;
-		  TIM4->CCR4 = LF > 21000 ? 21000 : LF < 11000 ? 11000 : LF;
+		  motor.motor[R_R] = RR > 21000 ? 21000 : RR < 11000 ? 11000 : RR;
+		  motor.motor[R_F] = RF > 21000 ? 21000 : RF < 11000 ? 11000 : RF;
+		  motor.motor[L_R] = LR > 21000 ? 21000 : LR < 11000 ? 11000 : LR;
+		  motor.motor[L_F] = LF > 21000 ? 21000 : LF < 11000 ? 11000 : LF;
 	  }
 	  else
 	  {
-		  TIM4->CCR1 = 11000;
-		  TIM4->CCR2 = 11000;
-		  TIM4->CCR3 = 11000;
-		  TIM4->CCR4 = 11000;
+	    motor.motor[R_R] = 11000;
+	    motor.motor[R_F] = 11000;
+	    motor.motor[L_R] = 11000;
+	    motor.motor[L_F] = 11000;
 	  }
 	}
 	else
 	{
-	  TIM5->CCR1 = 10500;
-	  TIM5->CCR2 = 10500;
-	  TIM5->CCR3 = 10500;
-	  TIM5->CCR4 = 10500;
+	  motor.motor[R_R] = 10500;
+	  motor.motor[R_F] = 10500;
+	  motor.motor[L_R] = 10500;
+	  motor.motor[L_F] = 10500;
 	}
   }
   else
   {
-	  TIM4->CCR1 = 10500;
-	  TIM4->CCR2 = 10500;
-	  TIM4->CCR3 = 10500;
-	  TIM4->CCR4 = 10500;
+    motor.motor[R_R] = 10500;
+    motor.motor[R_F] = 10500;
+    motor.motor[L_R] = 10500;
+    motor.motor[L_F] = 10500;
   }
+  TIM4->CCR1 = motor.motor[R_R];
+  TIM4->CCR2 = motor.motor[R_F];
+  TIM4->CCR3 = motor.motor[L_R];
+  TIM4->CCR4 = motor.motor[L_F];
 }
 
 void motorDisable(void)

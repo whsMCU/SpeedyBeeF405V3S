@@ -35,7 +35,20 @@ typedef struct motorConfig_s {
     uint8_t motorPoleCount;                // Magnetic poles in the motors for calculating actual RPM from eRPM provided by ESC telemetry
 } motorConfig_t;
 
+typedef struct motor_s {
+    uint16_t motor[4];        // Idle value for DShot protocol, full motor output = 10000
+} motor_t;
+
+typedef enum {
+  R_R,
+  R_F,
+  L_R,
+  L_F
+}motor_e;
+
 extern motorConfig_t motorConfig;
+
+extern motor_t motor;
 
 extern unsigned short LF, LR, RR, RF;
 
