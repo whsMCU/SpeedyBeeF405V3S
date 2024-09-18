@@ -554,72 +554,72 @@ max7456InitStatus_e max7456Init(void)
   // Clear shadow to force redraw all screen
   max7456ClearShadowBuffer();
 
-    gpioPinWrite(4, _DEF_HIGH);
+  gpioPinWrite(4, _DEF_HIGH);
 
-    delay(100);
+  delay(100);
 
-    SPI_Set_Speed_hz(MAX7456, MAX7456_INIT_MAX_SPI_CLK_HZ);
+  SPI_Set_Speed_hz(MAX7456, MAX7456_INIT_MAX_SPI_CLK_HZ);
 
-    // Write 0xff to conclude any current SPI transaction the MAX7456 is expecting
-    spiWrite(MAX7456, END_STRING);
+  // Write 0xff to conclude any current SPI transaction the MAX7456 is expecting
+  spiWrite(MAX7456, END_STRING);
 
-    uint8_t osdm = spiReadRegMsk(MAX7456, MAX7456ADD_OSDM);
+  uint8_t osdm = spiReadRegMsk(MAX7456, MAX7456ADD_OSDM);
 
-    if (osdm != 0x1B) {
-        //IOConfigGPIO(dev->busType_u.spi.csnPin, IOCFG_IPU);
-        return MAX7456_INIT_NOT_FOUND;
-    }
+  if (osdm != 0x1B) {
+      //IOConfigGPIO(dev->busType_u.spi.csnPin, IOCFG_IPU);
+      return MAX7456_INIT_NOT_FOUND;
+  }
 
-    max7456Reg._isActivatedOsd = false;
+  max7456Reg._isActivatedOsd = false;
 
-    max7456Reg._regVm1.whole = 0b01000111;
+  max7456Reg._regVm1.whole = 0b01000111;
 
-    max7456Reg._regVm0.whole = 0x00;
-    max7456Reg._regVm0.bits.videoSelect=1; //PAL
-    max7456Reg._regVm0.bits.softwareResetBit = 1;
-    //uint8_t _regVm0 = 0b01000010;
-    spiWriteReg(MAX7456, MAX7456ADD_VM0, max7456Reg._regVm0.whole);
-    delay(500);
+  max7456Reg._regVm0.whole = 0x00;
+  max7456Reg._regVm0.bits.videoSelect=1; //PAL
+  max7456Reg._regVm0.bits.softwareResetBit = 1;
+  //uint8_t _regVm0 = 0b01000010;
+  spiWriteReg(MAX7456, MAX7456ADD_VM0, max7456Reg._regVm0.whole);
+  delay(500);
 
 
-    for (int x = 0; x < 16; x++) {
-    	max7456Reg._regRb[x].whole = 0x00;
-    	max7456Reg._regRb[x].bits.characterWhiteLevel = 2;
-      spiWriteReg(MAX7456, x + MAX7456ADD_RB0, max7456Reg._regRb[x].whole);
-    }
+  for (int x = 0; x < 16; x++) {
+    max7456Reg._regRb[x].whole = 0x00;
+    max7456Reg._regRb[x].bits.characterWhiteLevel = 2;
+    spiWriteReg(MAX7456, x + MAX7456ADD_RB0, max7456Reg._regRb[x].whole);
+  }
 
-    max7456Reg._regVm0.whole = 0x00;
-    max7456Reg._regVm0.bits.verticalSynch = 1;
-    //_regVm0 = 0b00000100;
-    spiWriteReg(MAX7456, MAX7456ADD_VM0, max7456Reg._regVm0.whole);
+  max7456Reg._regVm0.whole = 0x00;
+  max7456Reg._regVm0.bits.verticalSynch = 1;
+  //_regVm0 = 0b00000100;
+  spiWriteReg(MAX7456, MAX7456ADD_VM0, max7456Reg._regVm0.whole);
 
-    max7456Reg._regVm1.whole = 0b01000111;
-    spiWriteReg(MAX7456, MAX7456ADD_VM1, max7456Reg._regVm1.whole);
+  max7456Reg._regVm1.whole = 0b01000111;
+  spiWriteReg(MAX7456, MAX7456ADD_VM1, max7456Reg._regVm1.whole);
 
-    SPI_Set_Speed_hz(MAX7456, MAX7456_MAX_SPI_CLK_HZ);
+  SPI_Set_Speed_hz(MAX7456, MAX7456_MAX_SPI_CLK_HZ);
 
-    setDisplayOffsets(36,18);
+  setDisplayOffsets(36,18);
 
-    //setBlinkParams(_8fields, _BT_BT);
+  //setBlinkParams(_8fields, _BT_BT);
 
-    activateOSD(true);
+  activateOSD(true);
 
-    osdDrawLogo(2, 2);
+  osdDrawLogo(2, 2);
 
-    char string_buffer[30];
-    tfp_sprintf(string_buffer, "V%s", FC_VERSION_STRING);
-    max7456Write(1, 1, string_buffer);
+  char string_buffer[30];
+  tfp_sprintf(string_buffer, "V%s", FC_VERSION_STRING);
+  max7456Write(1, 1, string_buffer);
 
-    tfp_sprintf(string_buffer, "HELLO WORLD :)");
-    max7456Write(10, 1, string_buffer);
+  tfp_sprintf(string_buffer, "HELLO WORLD :)");
+  max7456Write(10, 1, string_buffer);
 
-    DrawOSD();
-    HAL_Delay(1000);
-    max7456ClearLayer(DISPLAYPORT_LAYER_FOREGROUND);
-		//x = 27, y = 12 limit
+  DrawOSD();
+  HAL_Delay(1000);
+  max7456ClearLayer(DISPLAYPORT_LAYER_FOREGROUND);
+  //x = 27, y = 12 limit
 
-    // Real init will be made later when driver detect idle.
-    return MAX7456_INIT_OK;
+  // Real init will be made later when driver detect idle.
+  return MAX7456_INIT_OK;
 }
 
 bool max7456DmaInProgress(void)
