@@ -154,29 +154,29 @@ void Reset_All_PID_Integrator(void)
 
 void pidInit(void)
 {
-	roll.in.kp = 3;
-	roll.in.ki = 2;
-	roll.in.kd = 0;
+	roll.in.kp = 10;
+	roll.in.ki = 3;
+	roll.in.kd = 2.5;
 
-	roll.out.kp = 20;
-	roll.out.ki = 1.5;
-	roll.out.kd = 0;
+	roll.out.kp = 40;
+	roll.out.ki = 0;
+	roll.out.kd = 2.5;
 
-	pitch.in.kp = 3;
-	pitch.in.ki = 2;
-	pitch.in.kd = 0;
+	pitch.in.kp = 10;
+	pitch.in.ki = 3;
+	pitch.in.kd = 1.5;
 
-	pitch.out.kp = 20;
-	pitch.out.ki = 1.5;
-	pitch.out.kd = 0;
+	pitch.out.kp = 40;
+	pitch.out.ki = 0;
+	pitch.out.kd = 2.5;
 
-	yaw_heading.kp = 25;
+	yaw_heading.kp = 100;
 	yaw_heading.ki = 0;
-	yaw_heading.kd = 0;
+	yaw_heading.kd = 20;
 
-	yaw_rate.kp = 10;
+	yaw_rate.kp = 15;
 	yaw_rate.ki = 0;
-	yaw_rate.kd = 0;
+	yaw_rate.kd = 2;
 }
 
 float yaw_heading_reference;
@@ -222,9 +222,6 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 	  RR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + pitch.in.pid_result - roll.in.pid_result - yaw_heading.pid_result;
 	  RF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - pitch.in.pid_result - roll.in.pid_result + yaw_heading.pid_result;
   }
-
-
-
 
   motorWriteAll();
 }

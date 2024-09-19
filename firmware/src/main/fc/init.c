@@ -129,6 +129,7 @@ void init(void)
   {
     readSDCard();
   }
+
   activeAdjustmentRangeReset();
 
 	tasksInitData();
