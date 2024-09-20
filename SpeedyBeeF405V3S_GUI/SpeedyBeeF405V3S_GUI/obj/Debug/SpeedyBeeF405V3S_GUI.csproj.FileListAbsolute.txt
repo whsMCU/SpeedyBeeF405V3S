@@ -1,0 +1,10 @@
+D:\STM32CubeIDE\SpeedyBeeF405V3S\SpeedyBeeF405V3S_GUI\SpeedyBeeF405V3S_GUI\obj\Debug\SpeedyBeeF405V3S_GUI.csproj.AssemblyReference.cache
+D:\STM32CubeIDE\SpeedyBeeF405V3S\SpeedyBeeF405V3S_GUI\SpeedyBeeF405V3S_GUI\obj\Debug\SpeedyBeeF405V3S_GUI.Form1.resources
+D:\STM32CubeIDE\SpeedyBeeF405V3S\SpeedyBeeF405V3S_GUI\SpeedyBeeF405V3S_GUI\obj\Debug\SpeedyBeeF405V3S_GUI.Properties.Resources.resources
+D:\STM32CubeIDE\SpeedyBeeF405V3S\SpeedyBeeF405V3S_GUI\SpeedyBeeF405V3S_GUI\obj\Debug\SpeedyBeeF405V3S_GUI.csproj.GenerateResource.cache
+D:\STM32CubeIDE\SpeedyBeeF405V3S\SpeedyBeeF405V3S_GUI\SpeedyBeeF405V3S_GUI\obj\Debug\SpeedyBeeF405V3S_GUI.csproj.CoreCompileInputs.cache
+D:\STM32CubeIDE\SpeedyBeeF405V3S\SpeedyBeeF405V3S_GUI\SpeedyBeeF405V3S_GUI\bin\Debug\SpeedyBeeF405V3S_GUI.exe.config
+D:\STM32CubeIDE\SpeedyBeeF405V3S\SpeedyBeeF405V3S_GUI\SpeedyBeeF405V3S_GUI\bin\Debug\SpeedyBeeF405V3S_GUI.exe
+D:\STM32CubeIDE\SpeedyBeeF405V3S\SpeedyBeeF405V3S_GUI\SpeedyBeeF405V3S_GUI\bin\Debug\SpeedyBeeF405V3S_GUI.pdb
+D:\STM32CubeIDE\SpeedyBeeF405V3S\SpeedyBeeF405V3S_GUI\SpeedyBeeF405V3S_GUI\obj\Debug\SpeedyBeeF405V3S_GUI.exe
+D:\STM32CubeIDE\SpeedyBeeF405V3S\SpeedyBeeF405V3S_GUI\SpeedyBeeF405V3S_GUI\obj\Debug\SpeedyBeeF405V3S_GUI.pdb
