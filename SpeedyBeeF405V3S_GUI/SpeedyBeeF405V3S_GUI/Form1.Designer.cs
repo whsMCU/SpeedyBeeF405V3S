@@ -120,6 +120,8 @@
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.label36 = new System.Windows.Forms.Label();
+            this.textBox11 = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.pictureBox6 = new System.Windows.Forms.PictureBox();
             this.pictureBox5 = new System.Windows.Forms.PictureBox();
@@ -136,8 +138,6 @@
             this.button1 = new System.Windows.Forms.Button();
             this.label10 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
-            this.label36 = new System.Windows.Forms.Label();
-            this.textBox11 = new System.Windows.Forms.TextBox();
             this.webBrowser1 = new System.Windows.Forms.WebBrowser();
             this.webBrowser2 = new System.Windows.Forms.WebBrowser();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -727,8 +727,32 @@
             this.panel3.Location = new System.Drawing.Point(351, 23);
             this.panel3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(808, 56);
+            this.panel3.Size = new System.Drawing.Size(738, 56);
             this.panel3.TabIndex = 72;
+            // 
+            // label36
+            // 
+            this.label36.Font = new System.Drawing.Font("Consolas", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label36.Location = new System.Drawing.Point(595, 28);
+            this.label36.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label36.Name = "label36";
+            this.label36.Size = new System.Drawing.Size(139, 25);
+            this.label36.TabIndex = 51;
+            this.label36.Text = "00:00:00";
+            // 
+            // textBox11
+            // 
+            this.textBox11.BackColor = System.Drawing.SystemColors.Control;
+            this.textBox11.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox11.Font = new System.Drawing.Font("Microsoft Sans Serif", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox11.Location = new System.Drawing.Point(99, 9);
+            this.textBox11.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.textBox11.Name = "textBox11";
+            this.textBox11.ReadOnly = true;
+            this.textBox11.Size = new System.Drawing.Size(488, 33);
+            this.textBox11.TabIndex = 0;
+            this.textBox11.Text = "MCU Drone flight monitor";
+            this.textBox11.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // panel2
             // 
@@ -907,50 +931,28 @@
             this.label15.TabIndex = 42;
             this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // label36
-            // 
-            this.label36.Font = new System.Drawing.Font("Consolas", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label36.Location = new System.Drawing.Point(622, 28);
-            this.label36.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label36.Name = "label36";
-            this.label36.Size = new System.Drawing.Size(152, 25);
-            this.label36.TabIndex = 51;
-            this.label36.Text = "00:00:00";
-            // 
-            // textBox11
-            // 
-            this.textBox11.BackColor = System.Drawing.SystemColors.Control;
-            this.textBox11.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox11.Font = new System.Drawing.Font("Microsoft Sans Serif", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox11.Location = new System.Drawing.Point(99, 9);
-            this.textBox11.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.textBox11.Name = "textBox11";
-            this.textBox11.ReadOnly = true;
-            this.textBox11.Size = new System.Drawing.Size(488, 33);
-            this.textBox11.TabIndex = 0;
-            this.textBox11.Text = "MCU Drone flight monitor";
-            this.textBox11.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
             // webBrowser1
             // 
             this.webBrowser1.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
-            this.webBrowser1.Location = new System.Drawing.Point(351, 26);
+            this.webBrowser1.Location = new System.Drawing.Point(351, 79);
             this.webBrowser1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.webBrowser1.MinimumSize = new System.Drawing.Size(23, 18);
             this.webBrowser1.Name = "webBrowser1";
+            this.webBrowser1.ScriptErrorsSuppressed = true;
             this.webBrowser1.ScrollBarsEnabled = false;
-            this.webBrowser1.Size = new System.Drawing.Size(808, 522);
+            this.webBrowser1.Size = new System.Drawing.Size(738, 512);
             this.webBrowser1.TabIndex = 70;
             // 
             // webBrowser2
             // 
             this.webBrowser2.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
-            this.webBrowser2.Location = new System.Drawing.Point(351, 26);
+            this.webBrowser2.Location = new System.Drawing.Point(351, 79);
             this.webBrowser2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.webBrowser2.MinimumSize = new System.Drawing.Size(23, 18);
             this.webBrowser2.Name = "webBrowser2";
+            this.webBrowser2.ScriptErrorsSuppressed = true;
             this.webBrowser2.ScrollBarsEnabled = false;
-            this.webBrowser2.Size = new System.Drawing.Size(808, 623);
+            this.webBrowser2.Size = new System.Drawing.Size(738, 512);
             this.webBrowser2.TabIndex = 71;
             // 
             // groupBox1
@@ -1060,7 +1062,6 @@
             this.Controls.Add(this.label12);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
-            this.Controls.Add(this.webBrowser2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.OpenClose);
@@ -1070,6 +1071,7 @@
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.label24);
             this.Controls.Add(this.webBrowser1);
+            this.Controls.Add(this.webBrowser2);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);

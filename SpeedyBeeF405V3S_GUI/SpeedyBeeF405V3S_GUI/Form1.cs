@@ -27,7 +27,7 @@ namespace SpeedyBeeF405V3S_GUI
             this.Text = "MCU Drone 제어프로그램";
             ((Control)webBrowser1).Enabled = false;
             ((Control)webBrowser2).Enabled = false;
-            webBrowser1.Navigate("https://www.openstreetmap.org/#map=2/50.8/5.6");
+            webBrowser1.Navigate("https://www.openstreetmap.org/#map=19/35.196569/126.829348");
             webBrowser1.Visible = true;
             webBrowser2.Visible = false;
             received_data = 2;
