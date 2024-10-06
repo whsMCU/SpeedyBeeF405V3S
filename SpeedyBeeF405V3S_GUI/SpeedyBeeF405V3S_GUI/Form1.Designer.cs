@@ -76,9 +76,9 @@
             this.comboBox_port = new System.Windows.Forms.ComboBox();
             this.serialPort = new System.IO.Ports.SerialPort(this.components);
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.label14 = new System.Windows.Forms.Label();
+            this.lb_roll = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
+            this.lb_pitch = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label27 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -95,9 +95,9 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label20 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
-            this.label19 = new System.Windows.Forms.Label();
+            this.lb_altitude = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this.label18 = new System.Windows.Forms.Label();
+            this.lb_heading = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
@@ -186,9 +186,9 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.label14);
+            this.groupBox3.Controls.Add(this.lb_roll);
             this.groupBox3.Controls.Add(this.label11);
-            this.groupBox3.Controls.Add(this.label4);
+            this.groupBox3.Controls.Add(this.lb_pitch);
             this.groupBox3.Controls.Add(this.label2);
             this.groupBox3.Font = new System.Drawing.Font("Arial", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox3.Location = new System.Drawing.Point(13, 293);
@@ -200,16 +200,16 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Attitude";
             // 
-            // label14
+            // lb_roll
             // 
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(138, 58);
-            this.label14.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(16, 21);
-            this.label14.TabIndex = 53;
-            this.label14.Text = "-";
+            this.lb_roll.AutoSize = true;
+            this.lb_roll.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_roll.Location = new System.Drawing.Point(138, 58);
+            this.lb_roll.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_roll.Name = "lb_roll";
+            this.lb_roll.Size = new System.Drawing.Size(16, 21);
+            this.lb_roll.TabIndex = 53;
+            this.lb_roll.Text = "-";
             // 
             // label11
             // 
@@ -222,16 +222,16 @@
             this.label11.TabIndex = 52;
             this.label11.Text = "Roll angle";
             // 
-            // label4
+            // lb_pitch
             // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(138, 30);
-            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(16, 21);
-            this.label4.TabIndex = 51;
-            this.label4.Text = "-";
+            this.lb_pitch.AutoSize = true;
+            this.lb_pitch.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_pitch.Location = new System.Drawing.Point(138, 30);
+            this.lb_pitch.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_pitch.Name = "lb_pitch";
+            this.lb_pitch.Size = new System.Drawing.Size(16, 21);
+            this.lb_pitch.TabIndex = 51;
+            this.lb_pitch.Text = "-";
             // 
             // label2
             // 
@@ -338,9 +338,9 @@
             this.groupBox4.Controls.Add(this.label6);
             this.groupBox4.Controls.Add(this.label20);
             this.groupBox4.Controls.Add(this.label7);
-            this.groupBox4.Controls.Add(this.label19);
+            this.groupBox4.Controls.Add(this.lb_altitude);
             this.groupBox4.Controls.Add(this.label8);
-            this.groupBox4.Controls.Add(this.label18);
+            this.groupBox4.Controls.Add(this.lb_heading);
             this.groupBox4.Controls.Add(this.label9);
             this.groupBox4.Controls.Add(this.label17);
             this.groupBox4.Controls.Add(this.label16);
@@ -429,15 +429,15 @@
             this.label7.TabIndex = 20;
             this.label7.Text = "Heading";
             // 
-            // label19
+            // lb_altitude
             // 
-            this.label19.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label19.Location = new System.Drawing.Point(147, 96);
-            this.label19.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(149, 19);
-            this.label19.TabIndex = 46;
-            this.label19.Text = "-";
+            this.lb_altitude.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_altitude.Location = new System.Drawing.Point(147, 96);
+            this.lb_altitude.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_altitude.Name = "lb_altitude";
+            this.lb_altitude.Size = new System.Drawing.Size(149, 19);
+            this.lb_altitude.TabIndex = 46;
+            this.lb_altitude.Text = "-";
             // 
             // label8
             // 
@@ -450,15 +450,15 @@
             this.label8.TabIndex = 27;
             this.label8.Text = "Altitude";
             // 
-            // label18
+            // lb_heading
             // 
-            this.label18.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label18.Location = new System.Drawing.Point(147, 72);
-            this.label18.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(149, 19);
-            this.label18.TabIndex = 45;
-            this.label18.Text = "-";
+            this.lb_heading.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_heading.Location = new System.Drawing.Point(147, 72);
+            this.lb_heading.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_heading.Name = "lb_heading";
+            this.lb_heading.Size = new System.Drawing.Size(149, 19);
+            this.lb_heading.TabIndex = 45;
+            this.lb_heading.Text = "-";
             // 
             // label9
             // 
@@ -1106,9 +1106,9 @@
         private System.Windows.Forms.ComboBox comboBox_port;
         private System.IO.Ports.SerialPort serialPort;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label lb_roll;
         private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label lb_pitch;
         private System.Windows.Forms.Label label2;
         public System.Windows.Forms.Label label27;
         private System.Windows.Forms.GroupBox groupBox2;
@@ -1125,9 +1125,9 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label lb_altitude;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label lb_heading;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Label label16;

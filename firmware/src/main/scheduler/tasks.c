@@ -112,8 +112,8 @@ static void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf)
   telemetry_tx_buf[5] = (short)(attitude.values.pitch*10);
   telemetry_tx_buf[6] = ((short)(attitude.values.pitch*10))>>8;
 
-  telemetry_tx_buf[7] = (unsigned short)(attitude.values.yaw*10);
-  telemetry_tx_buf[8] = ((unsigned short)(attitude.values.yaw*10))>>8;
+  telemetry_tx_buf[7] = (short)(attitude.values.yaw*10);
+  telemetry_tx_buf[8] = ((short)(attitude.values.yaw*10))>>8;
 
   telemetry_tx_buf[9] = (short)(getEstimatedAltitudeCm()*10);
   telemetry_tx_buf[10] = ((short)(getEstimatedAltitudeCm()*10))>>8;
@@ -510,7 +510,7 @@ task_attribute_t task_attributes[TASK_COUNT] = {
     [TASK_DISPATCH] = DEFINE_TASK("DISPATCH", dispatchProcess, TASK_PERIOD_HZ(1000)),
 
     [TASK_LED] = DEFINE_TASK("LED", ledUpdate, TASK_PERIOD_HZ(100)),
-    [TASK_DEBUG] = DEFINE_TASK("DEBUG", debugPrint, TASK_PERIOD_HZ(50)),
+    [TASK_DEBUG] = DEFINE_TASK("DEBUG", debugPrint, TASK_PERIOD_HZ(30)),
 
 #ifdef USE_BEEPER
     [TASK_BEEPER] = DEFINE_TASK("BEEPER", NULL, NULL, beeperUpdate, TASK_PERIOD_HZ(100), TASK_PRIORITY_LOW),

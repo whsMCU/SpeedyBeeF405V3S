@@ -298,7 +298,7 @@ void imuUpdateEulerAngles(void)
 {
     quaternionProducts buffer;
 
-    if (false) {//FLIGHT_MODE(HEADFREE_MODE)
+    if (FLIGHT_MODE(HEADFREE_MODE)) {
        imuQuaternionComputeProducts(&headfree, &buffer);
 
        attitude.values.roll = lrintf(atan2_approx((+2.0f * (buffer.wx + buffer.yz)), (+1.0f - 2.0f * (buffer.xx + buffer.yy))) * (1800.0f / M_PIf));

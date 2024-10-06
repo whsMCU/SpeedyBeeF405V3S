@@ -10,12 +10,12 @@ namespace Ball_Ballancer_CS.Class
     public class DataPassing
     {
         public static readonly byte
-        P  = 1,
-        I  = 2,
-        D  = 3,
-        X  = 1,
-        Y  = 2,
-        Z  = 3;
+        P = 1,
+        I = 2,
+        D = 3,
+        X = 1,
+        Y = 2,
+        Z = 3;
 
         List<byte> recvData = new List<byte>();
         byte[] buff = new byte[1024];
@@ -23,7 +23,7 @@ namespace Ball_Ballancer_CS.Class
         int cnt = 0;
         byte checksum = 0xff;
 
-        float[] data = new float[4];
+        float[] data = new float[9];
 
         public DataPassing()
         {
@@ -90,14 +90,19 @@ namespace Ball_Ballancer_CS.Class
 
         public float[] Passing()
         {
-            if (buff_pass[2] == 0x10) //터치패널 좌표 데이터 수신
+            if (buff_pass[2] == 0x10) //AHRS Data 수신
             {
                 data[0] = 0;
-                data[X] = BitConverter.ToInt16(buff_pass, 3);
-                data[Y] = BitConverter.ToInt16(buff_pass, 5);
-                data[Z] = BitConverter.ToInt16(buff_pass, 7);
+                data[1] = BitConverter.ToInt16(buff_pass, 3)/100;
+                data[2] = BitConverter.ToInt16(buff_pass, 5)/100;
+                data[3] = BitConverter.ToUInt16(buff_pass, 7)/100;
+                data[4] = BitConverter.ToInt16(buff_pass, 9)/10;
+                data[5] = BitConverter.ToInt16(buff_pass, 11)/100;
+                data[6] = BitConverter.ToInt16(buff_pass, 13)/100;
+                data[7] = BitConverter.ToInt16(buff_pass, 15)/100;
+                data[8] = BitConverter.ToInt16(buff_pass, 17)/10;
             }
-            else if (buff_pass[2] == 0x20) // PID 게인값 수신
+            else if (buff_pass[2] == 0x11) // GPS Data 수신
             {
                 data[0] = 1;
                 data[P] = BitConverter.ToSingle(buff_pass, 3);

@@ -11,7 +11,7 @@ namespace SpeedyBeeF405V3S_GUI
 {
     public partial class Form1 : Form
     {
-        float[] passed_data = new float[4];
+        float[] passed_data = new float[9];
         UTF8 UTF8 = new UTF8();
         DataPassing data = new DataPassing();
 
@@ -84,6 +84,7 @@ namespace SpeedyBeeF405V3S_GUI
                     //first_receive = 0;
                     button6.Enabled = false;
                     //flight_timer.Enabled = false;
+                    comboBox_port.Enabled = true;  //COM포트설정 콤보박스 활성화
                 }
             }
             catch (System.Exception ex)
@@ -120,7 +121,10 @@ namespace SpeedyBeeF405V3S_GUI
                         {
                             if (passed_data[0] == 0)
                             {
-                                //tb_X_Point.Text = passed_data[1].ToString();
+                                lb_roll.Text = passed_data[1].ToString();
+                                lb_pitch.Text = passed_data[2].ToString();
+                                lb_heading.Text = passed_data[3].ToString();
+                                lb_altitude.Text = passed_data[4].ToString();
                                 if (passed_data[1] != 0)
                                 {
 
@@ -128,9 +132,9 @@ namespace SpeedyBeeF405V3S_GUI
                             }
                             else if (passed_data[0] == 1)
                             {
-                                tb_P.Text = passed_data[1].ToString();
-                                tb_I.Text = passed_data[2].ToString();
-                                tb_D.Text = passed_data[3].ToString();
+                                //lb_roll.Text = passed_data[1].ToString();
+                                //lb_pitch.Text = passed_data[2].ToString();
+                                //tb_D.Text = passed_data[3].ToString();
                             }
 
                         }

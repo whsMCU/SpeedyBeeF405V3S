@@ -49,65 +49,14 @@
 #include "rx/crsf.h"
 
 
-/* USER CODE END Includes */
-
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
-
-/* USER CODE END PTD */
-
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-
-/* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
-
-/* USER CODE END PM */
-
-/* Private variables ---------------------------------------------------------*/
-
-/* USER CODE BEGIN PV */
-
-/* USER CODE END PV */
-
-/* Private function prototypes -----------------------------------------------*/
-void SystemClock_Config(void);
-/* USER CODE BEGIN PFP */
-
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
 void hwInit(void);
 
-/* USER CODE END 0 */
-
-/**
-  * @brief  The application entry point.
-  * @retval int
-  */
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
 
-  /* USER CODE END 1 */
-
-  /* MCU Configuration--------------------------------------------------------*/
-
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
-
-  /* USER CODE BEGIN Init */
-
-  /* USER CODE END Init */
-
-  /* Configure the system clock */
   SystemClock_Config();
   //cycleCounterInit();
 
-  /* USER CODE BEGIN SysInit */
   hwInit();
 
 //  TIM4->CCR1 = 21000;
@@ -122,37 +71,12 @@ int main(void)
 //  HAL_Delay(8000);
 
   init();
-  /* USER CODE END SysInit */
-
-  /* Initialize all configured peripherals */
-//  MX_GPIO_Init();
-//  MX_DMA_Init();
-//  MX_USB_DEVICE_Init();
-//  MX_TIM4_Init();
-//  MX_I2C2_Init();
-//  MX_SPI1_Init();
-//  MX_SPI2_Init();
-//  MX_USART2_UART_Init();
-//  MX_USART6_UART_Init();
-//  MX_USART3_UART_Init();
-//  MX_UART4_Init();
-//  MX_UART5_Init();
-//  MX_USART1_UART_Init();
-//  MX_FATFS_Init();
-//  MX_ADC1_Init();
-//  MX_RTC_Init();
-  /* USER CODE BEGIN 2 */
-
-  /* USER CODE END 2 */
-
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
 
   while (1)
   {
 	  scheduler();
   }
-  /* USER CODE END 3 */
+
 }
 
 void hwInit(void)
@@ -177,10 +101,7 @@ void hwInit(void)
     fatfsInit();
   }
 }
-/**
-  * @brief System Clock Configuration
-  * @retval None
-  */
+
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
@@ -223,14 +144,6 @@ void SystemClock_Config(void)
   }
 }
 
-/* USER CODE BEGIN 4 */
-
-/* USER CODE END 4 */
-
-/**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
