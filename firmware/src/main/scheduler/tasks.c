@@ -101,6 +101,8 @@ uint8_t telemetry_tx_buf[40];
 
 static void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf)
 {
+  static uint32_t temp = 0;
+  temp++;
   telemetry_tx_buf[0] = 0x46;
   telemetry_tx_buf[1] = 0x43;
 
@@ -115,8 +117,11 @@ static void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf)
   telemetry_tx_buf[7] = (short)(attitude.values.yaw*10);
   telemetry_tx_buf[8] = ((short)(attitude.values.yaw*10))>>8;
 
-  telemetry_tx_buf[9] = (short)(getEstimatedAltitudeCm()*10);
-  telemetry_tx_buf[10] = ((short)(getEstimatedAltitudeCm()*10))>>8;
+//  telemetry_tx_buf[9] = (short)(getEstimatedAltitudeCm()*10);
+//  telemetry_tx_buf[10] = ((short)(getEstimatedAltitudeCm()*10))>>8;
+
+  telemetry_tx_buf[9] = (short)(temp*10);
+  telemetry_tx_buf[10] = ((short)(temp*10))>>8;
 
   telemetry_tx_buf[11] = (short)((rcData[ROLL]-1500)*0.1f*100);
   telemetry_tx_buf[12] = ((short)((rcData[ROLL]-1500)*0.1f*100))>>8;
@@ -195,28 +200,28 @@ void Encode_Msg_PID_Gain(unsigned char* telemetry_tx_buf, unsigned char id, floa
 }
 static void debugPrint(uint32_t currentTimeUs)
 {
-  static uint8_t state = 0;
-
-  switch(state)
-  {
-    case 0:
-      Encode_Msg_AHRS(&telemetry_tx_buf[0]);
-      uartWriteIT(_DEF_UART1, &telemetry_tx_buf[0], 20);
-      state++;
-      break;
-
-    case 5:
-      Encode_Msg_AHRS(&telemetry_tx_buf[0]);
-      Encode_Msg_GPS(&telemetry_tx_buf[20]);
-      uartWriteIT(_DEF_UART1, &telemetry_tx_buf[0], 40);
-      state = 0;
-
-    default:
-      Encode_Msg_AHRS(&telemetry_tx_buf[0]);
-      uartWriteIT(_DEF_UART1, &telemetry_tx_buf[0], 20);
-      state++;
-      break;
-  }
+//  static uint8_t state = 0;
+//
+//  switch(state)
+//  {
+//    case 0:
+//      Encode_Msg_AHRS(&telemetry_tx_buf[0]);
+//      uartWriteIT(_DEF_UART1, &telemetry_tx_buf[0], 20);
+//      state++;
+//      break;
+//
+//    case 5:
+//      Encode_Msg_AHRS(&telemetry_tx_buf[0]);
+//      Encode_Msg_GPS(&telemetry_tx_buf[20]);
+//      uartWriteIT(_DEF_UART1, &telemetry_tx_buf[0], 40);
+//      state = 0;
+//
+//    default:
+//      Encode_Msg_AHRS(&telemetry_tx_buf[0]);
+//      uartWriteIT(_DEF_UART1, &telemetry_tx_buf[0], 20);
+//      state++;
+//      break;
+//  }
   //Encode_Msg_PID_Gain();
 //    cliPrintf("BARO : %d cm, Load : %d, count : %d \n\r", baro.BaroAlt, getAverageSystemLoadPercent(), getCycleCounter());
 	  //cliPrintf("excute_time : %4.d us, max : %4.d us, callback : %4.d us, uartAvalavle : %4.d \n\r", excute_time, excute_max, rxRuntimeState.callbackTime, rxRuntimeState.uartAvalable);
@@ -391,6 +396,11 @@ void gcsMain(void)
             break;
           }
           break;
+
+        case 0x20:
+          Encode_Msg_AHRS(&telemetry_tx_buf[0]);
+          uartWriteIT(_DEF_UART1, &telemetry_tx_buf[0], 20);
+        break;
 
         }
       }

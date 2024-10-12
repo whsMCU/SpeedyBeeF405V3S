@@ -5,12 +5,14 @@ using System.Drawing;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
+using System.Timers;
 using System.Windows.Forms;
 
 namespace SpeedyBeeF405V3S_GUI
 {
     public partial class Form1 : Form
     {
+        private static System.Timers.Timer AHRS_Timer;
         float[] passed_data = new float[9];
         UTF8 UTF8 = new UTF8();
         DataPassing data = new DataPassing();
@@ -60,6 +62,11 @@ namespace SpeedyBeeF405V3S_GUI
                         serialPort.Open();  //시리얼포트 열기
                         OpenClose.Text = "Close";
                         comboBox_port.Enabled = false;  //COM포트설정 콤보박스 비활성화
+
+                        AHRS_Timer = new System.Timers.Timer(1000);
+                        AHRS_Timer.Elapsed += OnTimedEvent;
+                        AHRS_Timer.AutoReset = true;
+                        AHRS_Timer.Enabled = true;
                     }
                     else
                     {
@@ -72,6 +79,7 @@ namespace SpeedyBeeF405V3S_GUI
                 }
                 else  //시리얼포트가 열려 있으면
                 {
+                    AHRS_Timer.Enabled = false;
                     //clear_waypoint_labels();
                     serialPort.Close();
                     OpenClose.Text = "Open";
@@ -145,6 +153,42 @@ namespace SpeedyBeeF405V3S_GUI
             catch (System.Exception)
             {
             }
+        }
+
+        private void OnTimedEvent(object source, ElapsedEventArgs e)
+        {
+            byte[] buff = new byte[20];
+            try
+            {
+                buff[0] = 0x47;
+                buff[1] = 0x53;
+                buff[2] = 0x20;
+                buff[3] = 0;
+                buff[4] = 0;
+                buff[5] = 0;
+                buff[6] = 0;
+                buff[7] = 0;
+                buff[8] = 0;
+                buff[9] = 0;
+                buff[10] = 0;
+                buff[11] = 0;
+                buff[12] = 0;
+                buff[13] = 0;
+                buff[14] = 0;
+                buff[15] = 0;
+                buff[16] = 0;
+                buff[17] = 0;
+                buff[18] = 0;
+                buff[19] = 0xff;
+
+                for (int i = 0; i < 19; i++)
+                {
+                    buff[19] -= buff[i];
+                }
+
+                serialPort.Write(Encoding.UTF8.GetString(buff));
+            }
+            catch { }
         }
 
         private void bt_pid_recive_Click(object sender, EventArgs e)

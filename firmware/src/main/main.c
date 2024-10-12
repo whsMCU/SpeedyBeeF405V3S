@@ -48,6 +48,7 @@
 #include "rx/rx.h"
 #include "rx/crsf.h"
 
+void SystemClock_Config();
 
 void hwInit(void);
 
