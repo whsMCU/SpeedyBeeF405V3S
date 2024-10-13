@@ -736,7 +736,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     HAL_UART_Receive_IT(&huart1, (uint8_t *)&rx_buf1, 1);
     qbufferWrite(&ring_buffer[_DEF_UART1], (uint8_t *)&rx_buf1, 1);
     qbufferRead(&ring_buffer[_DEF_UART1], (uint8_t *)&uart1_rx_data, 1);
-
     switch(cnt)
     {
     case 0:
@@ -765,7 +764,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
       cnt++;
       break;
     }
-
   }
 
 	if(huart->Instance == USART2)
@@ -858,7 +856,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     hdma_usart1_rx.Init.MemInc = DMA_MINC_ENABLE;
     hdma_usart1_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
     hdma_usart1_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
-    hdma_usart1_rx.Init.Mode = DMA_NORMAL;
+    hdma_usart1_rx.Init.Mode = DMA_CIRCULAR;
     hdma_usart1_rx.Init.Priority = DMA_PRIORITY_LOW;
     hdma_usart1_rx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
     if (HAL_DMA_Init(&hdma_usart1_rx) != HAL_OK)
