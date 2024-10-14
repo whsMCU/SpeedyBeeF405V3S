@@ -27,6 +27,7 @@ static volatile uint8_t rx_buf2[MAX_SIZE];
 static volatile uint8_t rx_buf3[MAX_SIZE];
 static volatile uint8_t rx_buf5[MAX_SIZE];
 static volatile uint8_t rx_buf6[MAX_SIZE];
+static volatile uint8_t rx_data[UART_MAX_CH];
 
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
@@ -87,7 +88,7 @@ bool uartOpen(uint8_t ch, uint32_t baud)
       {
         ret = true;
         is_open[ch] = true;
-        HAL_UART_Receive_IT(&huart1, (uint8_t *)&rx_buf1, 1);
+        HAL_UART_Receive_IT(&huart1, (uint8_t *)&rx_data[_DEF_UART1], 1);
       }
       break;
 
@@ -111,7 +112,7 @@ bool uartOpen(uint8_t ch, uint32_t baud)
     	{
     		ret = true;
         is_open[ch] = true;
-        HAL_UART_Receive_IT(&huart2, (uint8_t *)&rx_buf2, 1);
+        HAL_UART_Receive_IT(&huart2, (uint8_t *)&rx_data[_DEF_UART2], 1);
     	}
       break;
 
@@ -135,7 +136,7 @@ bool uartOpen(uint8_t ch, uint32_t baud)
     	{
     		ret = true;
         is_open[ch] = true;
-        if(HAL_UART_Receive_IT(&huart3, (uint8_t *)&rx_buf3, 1) != HAL_OK)
+        if(HAL_UART_Receive_IT(&huart3, (uint8_t *)&rx_data[_DEF_UART3], 1) != HAL_OK)
         {
           ret = false;
         }
@@ -190,7 +191,7 @@ bool uartOpen(uint8_t ch, uint32_t baud)
     	{
     		ret = true;
         is_open[ch] = true;
-        if(HAL_UART_Receive_IT(&huart5, (uint8_t *)&rx_buf5, 1) != HAL_OK)
+        if(HAL_UART_Receive_IT(&huart5, (uint8_t *)&rx_data[_DEF_UART5], 1) != HAL_OK)
         {
           ret = false;
         }
@@ -217,7 +218,7 @@ bool uartOpen(uint8_t ch, uint32_t baud)
     	{
     		ret = true;
     		is_open[ch] = true;
-        if(HAL_UART_Receive_IT(&huart6, (uint8_t *)&rx_buf6, 1) != HAL_OK)
+        if(HAL_UART_Receive_IT(&huart6, (uint8_t *)&rx_data[_DEF_UART6], 1) != HAL_OK)
     		{
     			ret = false;
     		}
@@ -733,8 +734,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
   if(huart->Instance == USART1)
   {
-    HAL_UART_Receive_IT(&huart1, (uint8_t *)&rx_buf1, 1);
-    qbufferWrite(&ring_buffer[_DEF_UART1], (uint8_t *)&rx_buf1, 1);
+    HAL_UART_Receive_IT(&huart1, (uint8_t *)&rx_data[_DEF_UART1], 1);
+    qbufferWrite(&ring_buffer[_DEF_UART1], (uint8_t *)&rx_data[_DEF_UART1], 1);
     qbufferRead(&ring_buffer[_DEF_UART1], (uint8_t *)&uart1_rx_data, 1);
     switch(cnt)
     {
@@ -771,27 +772,27 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		rxRuntimeState.callbackTime = micros() - pre_time;
 		pre_time = micros();
 		rxRuntimeState.RxCallback_Flag = true;
-		HAL_UART_Receive_IT(&huart2, (uint8_t *)&rx_buf2, 1);
-		qbufferWrite(&ring_buffer[_DEF_UART2], (uint8_t *)&rx_buf2, 1);
+		HAL_UART_Receive_IT(&huart2, (uint8_t *)&rx_data[_DEF_UART2], 1);
+		qbufferWrite(&ring_buffer[_DEF_UART2], (uint8_t *)&rx_data[_DEF_UART2], 1);
 		rxRuntimeState.RxCallback_Flag = false;
 	}
 
   if(huart->Instance == USART3)
   {
-    HAL_UART_Receive_IT(&huart3, (uint8_t *)&rx_buf3, 1);
-    qbufferWrite(&ring_buffer[_DEF_UART3], (uint8_t *)&rx_buf3, 1);
+    HAL_UART_Receive_IT(&huart3, (uint8_t *)&rx_data[_DEF_UART3], 1);
+    qbufferWrite(&ring_buffer[_DEF_UART3], (uint8_t *)&rx_data[_DEF_UART3], 1);
   }
 
   if(huart->Instance == UART5)
   {
-    HAL_UART_Receive_IT(&huart5, (uint8_t *)&rx_buf5, 1);
-    qbufferWrite(&ring_buffer[_DEF_UART5], (uint8_t *)&rx_buf5, 1);
+    HAL_UART_Receive_IT(&huart5, (uint8_t *)&rx_data[_DEF_UART5], 1);
+    qbufferWrite(&ring_buffer[_DEF_UART5], (uint8_t *)&rx_data[_DEF_UART5], 1);
   }
 
 	if(huart->Instance == USART6)
 	{
-		HAL_UART_Receive_IT(&huart6, (uint8_t *)&rx_buf6, 1);
-		qbufferWrite(&ring_buffer[_DEF_UART6], (uint8_t *)&rx_buf6, 1);
+		HAL_UART_Receive_IT(&huart6, (uint8_t *)&rx_data[_DEF_UART6], 1);
+		qbufferWrite(&ring_buffer[_DEF_UART6], (uint8_t *)&rx_data[_DEF_UART6], 1);
 		qbufferRead(&ring_buffer[_DEF_UART6], (uint8_t *)&uart6_rx_data, 1);
 		switch(cnt)
 		{
