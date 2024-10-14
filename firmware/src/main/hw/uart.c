@@ -739,31 +739,31 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     qbufferRead(&ring_buffer[_DEF_UART1], (uint8_t *)&uart1_rx_data, 1);
     switch(cnt)
     {
-    case 0:
-      if(uart1_rx_data == 0x47)
-      {
+      case 0:
+        if(uart1_rx_data == 0x47)
+        {
+          telemetry_rx_buf[cnt] = uart1_rx_data;
+          cnt++;
+        }
+        break;
+      case 1:
+        if(uart1_rx_data == 0x53)
+        {
+          telemetry_rx_buf[cnt] = uart1_rx_data;
+          cnt++;
+        }
+        else
+          cnt = 0;
+        break;
+      case 19:
         telemetry_rx_buf[cnt] = uart1_rx_data;
-        cnt++;
-      }
-      break;
-    case 1:
-      if(uart1_rx_data == 0x53)
-      {
-        telemetry_rx_buf[cnt] = uart1_rx_data;
-        cnt++;
-      }
-      else
         cnt = 0;
-      break;
-    case 19:
-      telemetry_rx_buf[cnt] = uart1_rx_data;
-      cnt = 0;
-      telemetry_rx_cplt_flag = 1;
-      break;
-    default:
-      telemetry_rx_buf[cnt] = uart1_rx_data;
-      cnt++;
-      break;
+        telemetry_rx_cplt_flag = 1;
+        break;
+      default:
+        telemetry_rx_buf[cnt] = uart1_rx_data;
+        cnt++;
+        break;
     }
   }
 
