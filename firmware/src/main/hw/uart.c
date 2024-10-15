@@ -736,7 +736,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   {
     HAL_UART_Receive_IT(&huart1, (uint8_t *)&rx_data[_DEF_UART1], 1);
     qbufferWrite(&ring_buffer[_DEF_UART1], (uint8_t *)&rx_data[_DEF_UART1], 1);
-    qbufferRead(&ring_buffer[_DEF_UART1], (uint8_t *)&uart1_rx_data, 1);
+    uart1_rx_data = uartRead(_DEF_UART1);
+    //qbufferRead(&ring_buffer[_DEF_UART1], (uint8_t *)&uart1_rx_data, 1);
     switch(cnt)
     {
       case 0:
