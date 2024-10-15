@@ -101,8 +101,6 @@ uint8_t telemetry_tx_buf[40];
 
 static void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf)
 {
-  static uint32_t temp = 0;
-  temp++;
   telemetry_tx_buf[0] = 0x46;
   telemetry_tx_buf[1] = 0x43;
 
@@ -117,11 +115,8 @@ static void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf)
   telemetry_tx_buf[7] = (short)(attitude.values.yaw*10);
   telemetry_tx_buf[8] = ((short)(attitude.values.yaw*10))>>8;
 
-//  telemetry_tx_buf[9] = (short)(getEstimatedAltitudeCm()*10);
-//  telemetry_tx_buf[10] = ((short)(getEstimatedAltitudeCm()*10))>>8;
-
-  telemetry_tx_buf[9] = (short)(temp*10);
-  telemetry_tx_buf[10] = ((short)(temp*10))>>8;
+  telemetry_tx_buf[9] = (short)(getEstimatedAltitudeCm()*10);
+  telemetry_tx_buf[10] = ((short)(getEstimatedAltitudeCm()*10))>>8;
 
   telemetry_tx_buf[11] = (short)((rcData[ROLL]-1500)*0.1f*100);
   telemetry_tx_buf[12] = ((short)((rcData[ROLL]-1500)*0.1f*100))>>8;

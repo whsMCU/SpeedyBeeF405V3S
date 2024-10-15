@@ -133,6 +133,10 @@ namespace SpeedyBeeF405V3S_GUI
                                 lb_pitch.Text = passed_data[2].ToString();
                                 lb_heading.Text = passed_data[3].ToString();
                                 lb_altitude.Text = passed_data[4].ToString();
+                                lb_rc_roll.Text = passed_data[5].ToString();
+                                lb_rc_pitch.Text = passed_data[6].ToString();
+                                lb_rc_yaw.Text = passed_data[7].ToString();
+                                lb_rc_throttle.Text = passed_data[8].ToString();
                                 if (passed_data[1] != 0)
                                 {
 

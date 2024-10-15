@@ -150,6 +150,14 @@
             this.label41 = new System.Windows.Forms.Label();
             this.tb_P = new System.Windows.Forms.TextBox();
             this.rx_timer_blink = new System.Windows.Forms.Timer(this.components);
+            this.label4 = new System.Windows.Forms.Label();
+            this.lb_rc_roll = new System.Windows.Forms.Label();
+            this.lb_rc_pitch = new System.Windows.Forms.Label();
+            this.label18 = new System.Windows.Forms.Label();
+            this.lb_rc_yaw = new System.Windows.Forms.Label();
+            this.label42 = new System.Windows.Forms.Label();
+            this.lb_rc_throttle = new System.Windows.Forms.Label();
+            this.label44 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -331,6 +339,14 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.lb_rc_throttle);
+            this.groupBox4.Controls.Add(this.label44);
+            this.groupBox4.Controls.Add(this.lb_rc_yaw);
+            this.groupBox4.Controls.Add(this.label42);
+            this.groupBox4.Controls.Add(this.lb_rc_pitch);
+            this.groupBox4.Controls.Add(this.label18);
+            this.groupBox4.Controls.Add(this.lb_rc_roll);
+            this.groupBox4.Controls.Add(this.label4);
             this.groupBox4.Controls.Add(this.label37);
             this.groupBox4.Controls.Add(this.label38);
             this.groupBox4.Controls.Add(this.label22);
@@ -361,7 +377,7 @@
             this.label37.Location = new System.Drawing.Point(147, 164);
             this.label37.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(149, 19);
+            this.label37.Size = new System.Drawing.Size(45, 20);
             this.label37.TabIndex = 51;
             this.label37.Text = "-";
             // 
@@ -382,7 +398,7 @@
             this.label22.Location = new System.Drawing.Point(147, 142);
             this.label22.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(149, 19);
+            this.label22.Size = new System.Drawing.Size(45, 20);
             this.label22.TabIndex = 49;
             this.label22.Text = "-";
             // 
@@ -414,7 +430,7 @@
             this.label20.Location = new System.Drawing.Point(147, 120);
             this.label20.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(149, 19);
+            this.label20.Size = new System.Drawing.Size(45, 20);
             this.label20.TabIndex = 47;
             this.label20.Text = "-";
             // 
@@ -435,7 +451,7 @@
             this.lb_altitude.Location = new System.Drawing.Point(147, 96);
             this.lb_altitude.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_altitude.Name = "lb_altitude";
-            this.lb_altitude.Size = new System.Drawing.Size(149, 19);
+            this.lb_altitude.Size = new System.Drawing.Size(45, 20);
             this.lb_altitude.TabIndex = 46;
             this.lb_altitude.Text = "-";
             // 
@@ -456,7 +472,7 @@
             this.lb_heading.Location = new System.Drawing.Point(147, 72);
             this.lb_heading.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_heading.Name = "lb_heading";
-            this.lb_heading.Size = new System.Drawing.Size(149, 19);
+            this.lb_heading.Size = new System.Drawing.Size(45, 20);
             this.lb_heading.TabIndex = 45;
             this.lb_heading.Text = "-";
             // 
@@ -477,7 +493,7 @@
             this.label17.Location = new System.Drawing.Point(147, 48);
             this.label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(149, 19);
+            this.label17.Size = new System.Drawing.Size(45, 20);
             this.label17.TabIndex = 44;
             this.label17.Text = "-";
             // 
@@ -487,7 +503,7 @@
             this.label16.Location = new System.Drawing.Point(147, 24);
             this.label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(149, 19);
+            this.label16.Size = new System.Drawing.Size(45, 20);
             this.label16.TabIndex = 43;
             this.label16.Text = "-";
             // 
@@ -1043,6 +1059,90 @@
             this.rx_timer_blink.Interval = 200;
             this.rx_timer_blink.Tick += new System.EventHandler(this.Rx_timer_blink_Tick);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(184, 23);
+            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(75, 21);
+            this.label4.TabIndex = 52;
+            this.label4.Text = "RC_ROLL";
+            // 
+            // lb_rc_roll
+            // 
+            this.lb_rc_roll.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_rc_roll.Location = new System.Drawing.Point(266, 25);
+            this.lb_rc_roll.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_rc_roll.Name = "lb_rc_roll";
+            this.lb_rc_roll.Size = new System.Drawing.Size(45, 20);
+            this.lb_rc_roll.TabIndex = 53;
+            this.lb_rc_roll.Text = "-";
+            // 
+            // lb_rc_pitch
+            // 
+            this.lb_rc_pitch.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_rc_pitch.Location = new System.Drawing.Point(266, 53);
+            this.lb_rc_pitch.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_rc_pitch.Name = "lb_rc_pitch";
+            this.lb_rc_pitch.Size = new System.Drawing.Size(45, 20);
+            this.lb_rc_pitch.TabIndex = 55;
+            this.lb_rc_pitch.Text = "-";
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label18.Location = new System.Drawing.Point(184, 51);
+            this.label18.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(78, 21);
+            this.label18.TabIndex = 54;
+            this.label18.Text = "RC_PITCH";
+            // 
+            // lb_rc_yaw
+            // 
+            this.lb_rc_yaw.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_rc_yaw.Location = new System.Drawing.Point(266, 77);
+            this.lb_rc_yaw.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_rc_yaw.Name = "lb_rc_yaw";
+            this.lb_rc_yaw.Size = new System.Drawing.Size(45, 20);
+            this.lb_rc_yaw.TabIndex = 57;
+            this.lb_rc_yaw.Text = "-";
+            // 
+            // label42
+            // 
+            this.label42.AutoSize = true;
+            this.label42.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label42.Location = new System.Drawing.Point(184, 78);
+            this.label42.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label42.Name = "label42";
+            this.label42.Size = new System.Drawing.Size(69, 21);
+            this.label42.TabIndex = 56;
+            this.label42.Text = "RC_YAW";
+            // 
+            // lb_rc_throttle
+            // 
+            this.lb_rc_throttle.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_rc_throttle.Location = new System.Drawing.Point(266, 105);
+            this.lb_rc_throttle.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_rc_throttle.Name = "lb_rc_throttle";
+            this.lb_rc_throttle.Size = new System.Drawing.Size(45, 20);
+            this.lb_rc_throttle.TabIndex = 59;
+            this.lb_rc_throttle.Text = "-";
+            // 
+            // label44
+            // 
+            this.label44.AutoSize = true;
+            this.label44.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label44.Location = new System.Drawing.Point(184, 106);
+            this.label44.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label44.Name = "label44";
+            this.label44.Size = new System.Drawing.Size(69, 21);
+            this.label44.TabIndex = 58;
+            this.label44.Text = "RC_Thro";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -1180,6 +1280,14 @@
         private System.Windows.Forms.Label label41;
         private System.Windows.Forms.TextBox tb_P;
         private System.Windows.Forms.Timer rx_timer_blink;
+        private System.Windows.Forms.Label lb_rc_yaw;
+        private System.Windows.Forms.Label label42;
+        private System.Windows.Forms.Label lb_rc_pitch;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label lb_rc_roll;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label lb_rc_throttle;
+        private System.Windows.Forms.Label label44;
     }
 }
 

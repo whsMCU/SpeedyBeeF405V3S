@@ -730,7 +730,8 @@ uint8_t telemetry_rx_cplt_flag;
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	static uint32_t pre_time = 0;
-	static unsigned char cnt = 0;
+	static unsigned char cnt1 = 0;
+  static unsigned char cnt6 = 0;
 
   if(huart->Instance == USART1)
   {
@@ -738,32 +739,32 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     qbufferWrite(&ring_buffer[_DEF_UART1], (uint8_t *)&rx_data[_DEF_UART1], 1);
     uart1_rx_data = uartRead(_DEF_UART1);
     //qbufferRead(&ring_buffer[_DEF_UART1], (uint8_t *)&uart1_rx_data, 1);
-    switch(cnt)
+    switch(cnt1)
     {
       case 0:
         if(uart1_rx_data == 0x47)
         {
-          telemetry_rx_buf[cnt] = uart1_rx_data;
-          cnt++;
+          telemetry_rx_buf[cnt1] = uart1_rx_data;
+          cnt1++;
         }
         break;
       case 1:
         if(uart1_rx_data == 0x53)
         {
-          telemetry_rx_buf[cnt] = uart1_rx_data;
-          cnt++;
+          telemetry_rx_buf[cnt1] = uart1_rx_data;
+          cnt1++;
         }
         else
-          cnt = 0;
+          cnt1 = 0;
         break;
       case 19:
-        telemetry_rx_buf[cnt] = uart1_rx_data;
-        cnt = 0;
+        telemetry_rx_buf[cnt1] = uart1_rx_data;
+        cnt1 = 0;
         telemetry_rx_cplt_flag = 1;
         break;
       default:
-        telemetry_rx_buf[cnt] = uart1_rx_data;
-        cnt++;
+        telemetry_rx_buf[cnt1] = uart1_rx_data;
+        cnt1++;
         break;
     }
   }
@@ -795,32 +796,32 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		HAL_UART_Receive_IT(&huart6, (uint8_t *)&rx_data[_DEF_UART6], 1);
 		qbufferWrite(&ring_buffer[_DEF_UART6], (uint8_t *)&rx_data[_DEF_UART6], 1);
 		qbufferRead(&ring_buffer[_DEF_UART6], (uint8_t *)&uart6_rx_data, 1);
-		switch(cnt)
+		switch(cnt6)
 		{
 		case 0:
 			if(uart6_rx_data == 0xb5)
 			{
-				m8n_rx_buf[cnt] = uart6_rx_data;
-				cnt++;
+				m8n_rx_buf[cnt6] = uart6_rx_data;
+				cnt6++;
 			}
 			break;
 		case 1:
 			if(uart6_rx_data == 0x62)
 			{
-				m8n_rx_buf[cnt] = uart6_rx_data;
-				cnt++;
+				m8n_rx_buf[cnt6] = uart6_rx_data;
+				cnt6++;
 			}
 			else
-				cnt = 0;
+			  cnt6 = 0;
 			break;
 		case 35:
-			m8n_rx_buf[cnt] = uart6_rx_data;
-			cnt = 0;
+			m8n_rx_buf[cnt6] = uart6_rx_data;
+			cnt6 = 0;
 			m8n_rx_cplt_flag = 1;
 			break;
 		default:
-			m8n_rx_buf[cnt] = uart6_rx_data;
-			cnt++;
+			m8n_rx_buf[cnt6] = uart6_rx_data;
+			cnt6++;
 			break;
 		}
 	}
