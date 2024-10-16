@@ -718,7 +718,6 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
         /* Disable the UART Error Interrupt: (Frame error, noise error, overrun error) */
         CLEAR_BIT(huart->Instance->CR3, USART_CR3_EIE);
   	}
-
   }
 }
 
@@ -774,7 +773,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		pre_time = micros();
 		rxRuntimeState.RxCallback_Flag = true;
 		HAL_UART_Receive_IT(&huart2, (uint8_t *)&rx_data[_DEF_UART2], 1);
-		qbufferWrite(&ring_buffer[_DEF_UART2], (uint8_t *)&rx_data[_DEF_UART2], 1);
+		//qbufferWrite(&ring_buffer[_DEF_UART2], (uint8_t *)&rx_data[_DEF_UART2], 1);
 		rxRuntimeState.RxCallback_Flag = false;
 	}
 

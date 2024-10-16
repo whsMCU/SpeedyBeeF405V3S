@@ -127,8 +127,8 @@ static void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf)
   telemetry_tx_buf[15] = (unsigned short)((rcData[YAW]-1000)*0.36f*100);
   telemetry_tx_buf[16] = ((unsigned short)((rcData[YAW]-1000)*0.36f*100))>>8;
 
-  telemetry_tx_buf[17] = (short)(rcData[THROTTLE]*10);
-  telemetry_tx_buf[18] = ((short)(rcData[THROTTLE]*10))>>8;
+  telemetry_tx_buf[17] = (unsigned short)(rcData[THROTTLE]*10);
+  telemetry_tx_buf[18] = ((unsigned short)(rcData[THROTTLE]*10))>>8;
 
   telemetry_tx_buf[19] = 0xff;
 

@@ -100,7 +100,7 @@ namespace Ball_Ballancer_CS.Class
                 data[5] = BitConverter.ToInt16(buff_pass, 11)/100;
                 data[6] = BitConverter.ToInt16(buff_pass, 13)/100;
                 data[7] = BitConverter.ToInt16(buff_pass, 15)/100;
-                data[8] = BitConverter.ToInt16(buff_pass, 17)/10-100;
+                data[8] = (BitConverter.ToInt16(buff_pass, 17)/10)-1000;
             }
             else if (buff_pass[2] == 0x11) // GPS Data 수신
             {

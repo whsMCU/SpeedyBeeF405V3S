@@ -3,11 +3,11 @@
   "WorkspaceRootPath": "D:\\STM32CubeIDE\\SpeedyBeeF405V3S\\SpeedyBeeF405V3S_GUI\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{4E757116-2404-4773-B93A-03B298585EEF}|SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI.csproj|D:\\STM32CubeIDE\\SpeedyBeeF405V3S\\SpeedyBeeF405V3S_GUI\\speedybeef405v3s_gui\\class\\datapassing.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{4E757116-2404-4773-B93A-03B298585EEF}|SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI.csproj|d:\\stm32cubeide\\speedybeef405v3s\\speedybeef405v3s_gui\\speedybeef405v3s_gui\\class\\datapassing.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4E757116-2404-4773-B93A-03B298585EEF}|SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI.csproj|solutionrelative:speedybeef405v3s_gui\\class\\datapassing.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4E757116-2404-4773-B93A-03B298585EEF}|SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI.csproj|d:\\stm32cubeide\\speedybeef405v3s\\speedybeef405v3s_gui\\speedybeef405v3s_gui\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{4E757116-2404-4773-B93A-03B298585EEF}|SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI.csproj|D:\\STM32CubeIDE\\SpeedyBeeF405V3S\\SpeedyBeeF405V3S_GUI\\speedybeef405v3s_gui\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4E757116-2404-4773-B93A-03B298585EEF}|SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI.csproj|solutionrelative:speedybeef405v3s_gui\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -15,7 +15,7 @@
       "RelativeMoniker": "D:0:0:{4E757116-2404-4773-B93A-03B298585EEF}|SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI.csproj|solutionrelative:speedybeef405v3s_gui\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4E757116-2404-4773-B93A-03B298585EEF}|SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI.csproj|d:\\stm32cubeide\\speedybeef405v3s\\speedybeef405v3s_gui\\speedybeef405v3s_gui\\form1.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{4E757116-2404-4773-B93A-03B298585EEF}|SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI.csproj|D:\\STM32CubeIDE\\SpeedyBeeF405V3S\\SpeedyBeeF405V3S_GUI\\speedybeef405v3s_gui\\form1.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4E757116-2404-4773-B93A-03B298585EEF}|SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI.csproj|solutionrelative:speedybeef405v3s_gui\\form1.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -36,7 +36,7 @@
               "RelativeDocumentMoniker": "SpeedyBeeF405V3S_GUI\\Form1.Designer.cs",
               "ToolTip": "D:\\STM32CubeIDE\\SpeedyBeeF405V3S\\SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI\\Form1.Designer.cs",
               "RelativeToolTip": "SpeedyBeeF405V3S_GUI\\Form1.Designer.cs",
-              "ViewState": "AQIAABsEAAAAAAAAAAAewCQEAAAAAAAA",
+              "ViewState": "AQIAAG8EAAAAAAAAAAAewHgEAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-10-15T13:46:21.711Z",
               "EditorCaption": ""
@@ -49,7 +49,7 @@
               "RelativeDocumentMoniker": "SpeedyBeeF405V3S_GUI\\Class\\DataPassing.cs",
               "ToolTip": "D:\\STM32CubeIDE\\SpeedyBeeF405V3S\\SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI\\Class\\DataPassing.cs",
               "RelativeToolTip": "SpeedyBeeF405V3S_GUI\\Class\\DataPassing.cs",
-              "ViewState": "AQIAAE0AAAAAAAAAAAAQwF8AAABBAAAA",
+              "ViewState": "AQIAAE0AAAAAAAAAAAAQwHAAAAAMAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-10-06T11:32:23.019Z",
               "EditorCaption": ""
