@@ -773,7 +773,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		pre_time = micros();
 		rxRuntimeState.RxCallback_Flag = true;
 		HAL_UART_Receive_IT(&huart2, (uint8_t *)&rx_data[_DEF_UART2], 1);
-		//qbufferWrite(&ring_buffer[_DEF_UART2], (uint8_t *)&rx_data[_DEF_UART2], 1);
+		qbufferWrite(&ring_buffer[_DEF_UART2], (uint8_t *)&rx_data[_DEF_UART2], 1);
 		rxRuntimeState.RxCallback_Flag = false;
 	}
 
@@ -917,7 +917,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     __HAL_LINKDMA(uartHandle,hdmarx,hdma_usart2_rx);
 
     /* USART2 interrupt Init */
-    HAL_NVIC_SetPriority(USART2_IRQn, 1, 2);
+    HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(USART2_IRQn);
   /* USER CODE BEGIN USART2_MspInit 1 */
 

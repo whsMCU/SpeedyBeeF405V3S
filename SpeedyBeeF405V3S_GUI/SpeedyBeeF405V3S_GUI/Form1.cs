@@ -28,10 +28,8 @@ namespace SpeedyBeeF405V3S_GUI
             al = new ArrayList();
             this.Text = "MCU Drone 제어프로그램";
             ((Control)webBrowser1).Enabled = false;
-            ((Control)webBrowser2).Enabled = false;
             webBrowser1.Navigate("https://www.openstreetmap.org/#map=19/35.196569/126.829348");
             webBrowser1.Visible = true;
-            webBrowser2.Visible = false;
             received_data = 2;
             textBox10.Text = (zoom - 14).ToString();
         }
@@ -86,7 +84,6 @@ namespace SpeedyBeeF405V3S_GUI
                     //Location_update_timer.Enabled = false;
                     webBrowser1.Navigate("https://www.openstreetmap.org/#map=2/50.8/5.6");
                     webBrowser1.Visible = true;
-                    webBrowser2.Visible = false;
                     label12.Visible = false;
                     label24.Visible = false;
                     //first_receive = 0;
@@ -137,6 +134,11 @@ namespace SpeedyBeeF405V3S_GUI
                                 lb_rc_pitch.Text = passed_data[6].ToString();
                                 lb_rc_yaw.Text = passed_data[7].ToString();
                                 lb_rc_throttle.Text = passed_data[8].ToString();
+                                lb_lat.Text = passed_data[9].ToString();
+                                lb_long.Text = passed_data[10].ToString();
+                                lb_bat.Text = passed_data[11].ToString();
+                                lb_fail.Text = passed_data[12].ToString();
+                                lb_armed.Text = passed_data[13].ToString();
                                 if (passed_data[1] != 0)
                                 {
 

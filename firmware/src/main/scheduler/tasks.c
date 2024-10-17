@@ -124,15 +124,37 @@ static void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf)
   telemetry_tx_buf[13] = (short)((rcData[PITCH]-1500)*0.1f*100);
   telemetry_tx_buf[14] = ((short)((rcData[PITCH]-1500)*0.1f*100))>>8;
 
-  telemetry_tx_buf[15] = (unsigned short)((rcData[YAW]-1000)*0.36f*100);
-  telemetry_tx_buf[16] = ((unsigned short)((rcData[YAW]-1000)*0.36f*100))>>8;
+  telemetry_tx_buf[15] = (unsigned short)((rcData[YAW]-1000)*0.36f*10);
+  telemetry_tx_buf[16] = ((unsigned short)((rcData[YAW]-1000)*0.36f*10))>>8;
 
   telemetry_tx_buf[17] = (unsigned short)(rcData[THROTTLE]*10);
   telemetry_tx_buf[18] = ((unsigned short)(rcData[THROTTLE]*10))>>8;
 
-  telemetry_tx_buf[19] = 0xff;
+  telemetry_tx_buf[19] = posllh.lat;
+  telemetry_tx_buf[20] = posllh.lat>>8;
+  telemetry_tx_buf[21] = posllh.lat>>16;
+  telemetry_tx_buf[22] = posllh.lat>>24;
 
-  for(int i=0;i<19;i++) telemetry_tx_buf[19] = telemetry_tx_buf[19] - telemetry_tx_buf[i];
+  telemetry_tx_buf[23] = posllh.lon;
+  telemetry_tx_buf[24] = posllh.lon>>8;
+  telemetry_tx_buf[25] = posllh.lon>>16;
+  telemetry_tx_buf[26] = posllh.lon>>24;
+
+  telemetry_tx_buf[27] = (unsigned short)(getBatteryAverageCellVoltage());
+  telemetry_tx_buf[28] = ((unsigned short)(getBatteryAverageCellVoltage()))>>8;
+
+  telemetry_tx_buf[29] = 0x00;//iBus.SwA == 1000 ? 0 : 1;
+  telemetry_tx_buf[30] = 0x00;//iBus.SwC == 1000 ? 0 : iBus.SwC == 1500 ? 1 : 2;
+
+  telemetry_tx_buf[31] = rxRuntimeState.failsafe_flag;
+  telemetry_tx_buf[32] = 0x00;
+
+  telemetry_tx_buf[33] = ARMING_FLAG(ARMED);
+  telemetry_tx_buf[34] = 0x00;
+
+  telemetry_tx_buf[35] = 0xff;
+
+  for(int i=0;i<35;i++) telemetry_tx_buf[35] = telemetry_tx_buf[35] - telemetry_tx_buf[i];
 }
 
 void Encode_Msg_GPS(unsigned char* telemetry_tx_buf)
@@ -275,20 +297,20 @@ void gcsMain(void)
   {
     telemetry_rx_cplt_flag = 0;
 
-    if(!ARMING_FLAG(ARMED))
-    {
-      unsigned char chksum = 0xff;
-      for(int i=0;i<19;i++) chksum = chksum - telemetry_rx_buf[i];
+    unsigned char chksum = 0xff;
+    for(int i=0;i<19;i++) chksum = chksum - telemetry_rx_buf[i];
 
-      if(chksum == telemetry_rx_buf[19])
+    if(chksum == telemetry_rx_buf[19])
+    {
+      //LL_TIM_CC_EnableChannel(TIM3, LL_TIM_CHANNEL_CH4);
+      //TIM3->PSC = 1000;
+      //HAL_Delay(10);
+      //LL_TIM_CC_DisableChannel(TIM3, LL_TIM_CHANNEL_CH4);
+      switch(telemetry_rx_buf[2])
       {
-        //LL_TIM_CC_EnableChannel(TIM3, LL_TIM_CHANNEL_CH4);
-        //TIM3->PSC = 1000;
-        //HAL_Delay(10);
-        //LL_TIM_CC_DisableChannel(TIM3, LL_TIM_CHANNEL_CH4);
-        switch(telemetry_rx_buf[2])
+      case 0:
+        if(!ARMING_FLAG(ARMED))
         {
-        case 0:
           roll.in.kp = *(float*)&telemetry_rx_buf[3];
           roll.in.ki = *(float*)&telemetry_rx_buf[7];
           roll.in.kd = *(float*)&telemetry_rx_buf[11];
@@ -297,8 +319,11 @@ void gcsMain(void)
           //EP_PIDGain_Read(telemetry_rx_buf[2], &roll.in.kp, &roll.in.ki, &roll.in.kd);
           Encode_Msg_PID_Gain(&telemetry_tx_buf[0], telemetry_rx_buf[2], roll.in.kp, roll.in.ki, roll.in.kd);
           uartWriteIT(_DEF_UART1, &telemetry_tx_buf[0], 20);
-          break;
-        case 1:
+        }
+        break;
+      case 1:
+        if(!ARMING_FLAG(ARMED))
+        {
           roll.out.kp = *(float*)&telemetry_rx_buf[3];
           roll.out.ki = *(float*)&telemetry_rx_buf[7];
           roll.out.kd = *(float*)&telemetry_rx_buf[11];
@@ -307,8 +332,11 @@ void gcsMain(void)
           //EP_PIDGain_Read(telemetry_rx_buf[2], &roll.out.kp, &roll.out.ki, &roll.out.kd);
           Encode_Msg_PID_Gain(&telemetry_tx_buf[0], telemetry_rx_buf[2], roll.out.kp, roll.out.ki, roll.out.kd);
           uartWriteIT(_DEF_UART1, &telemetry_tx_buf[0], 20);
-          break;
-        case 2:
+        }
+        break;
+      case 2:
+        if(!ARMING_FLAG(ARMED))
+        {
           pitch.in.kp = *(float*)&telemetry_rx_buf[3];
           pitch.in.ki = *(float*)&telemetry_rx_buf[7];
           pitch.in.kd = *(float*)&telemetry_rx_buf[11];
@@ -317,8 +345,11 @@ void gcsMain(void)
           //EP_PIDGain_Read(telemetry_rx_buf[2], &pitch.in.kp, &pitch.in.ki, &pitch.in.kd);
           Encode_Msg_PID_Gain(&telemetry_tx_buf[0], telemetry_rx_buf[2], pitch.in.kp, pitch.in.ki, pitch.in.kd);
           uartWriteIT(_DEF_UART1, &telemetry_tx_buf[0], 20);
-          break;
-        case 3:
+        }
+        break;
+      case 3:
+        if(!ARMING_FLAG(ARMED))
+        {
           pitch.out.kp = *(float*)&telemetry_rx_buf[3];
           pitch.out.ki = *(float*)&telemetry_rx_buf[7];
           pitch.out.kd = *(float*)&telemetry_rx_buf[11];
@@ -327,8 +358,11 @@ void gcsMain(void)
           //EP_PIDGain_Read(telemetry_rx_buf[2], &pitch.out.kp, &pitch.out.ki, &pitch.out.kd);
           Encode_Msg_PID_Gain(&telemetry_tx_buf[0], telemetry_rx_buf[2], pitch.out.kp, pitch.out.ki, pitch.out.kd);
           uartWriteIT(_DEF_UART1, &telemetry_tx_buf[0], 20);
-          break;
-        case 4:
+        }
+        break;
+      case 4:
+        if(!ARMING_FLAG(ARMED))
+        {
           yaw_heading.kp = *(float*)&telemetry_rx_buf[3];
           yaw_heading.ki = *(float*)&telemetry_rx_buf[7];
           yaw_heading.kd = *(float*)&telemetry_rx_buf[11];
@@ -337,8 +371,11 @@ void gcsMain(void)
           //EP_PIDGain_Read(telemetry_rx_buf[2], &yaw_heading.kp, &yaw_heading.ki, &yaw_heading.kd);
           Encode_Msg_PID_Gain(&telemetry_tx_buf[0], telemetry_rx_buf[2], yaw_heading.kp, yaw_heading.ki, yaw_heading.kd);
           uartWriteIT(_DEF_UART1, &telemetry_tx_buf[0], 20);
-          break;
-        case 5:
+        }
+        break;
+      case 5:
+        if(!ARMING_FLAG(ARMED))
+        {
           yaw_rate.kp = *(float*)&telemetry_rx_buf[3];
           yaw_rate.ki = *(float*)&telemetry_rx_buf[7];
           yaw_rate.kd = *(float*)&telemetry_rx_buf[11];
@@ -347,8 +384,11 @@ void gcsMain(void)
           //EP_PIDGain_Read(telemetry_rx_buf[2], &yaw_rate.kp, &yaw_rate.ki, &yaw_rate.kd);
           Encode_Msg_PID_Gain(&telemetry_tx_buf[0], telemetry_rx_buf[2], yaw_rate.kp, yaw_rate.ki, yaw_rate.kd);
           uartWriteIT(_DEF_UART1, &telemetry_tx_buf[0], 20);
-          break;
-        case 0x10:
+        }
+        break;
+      case 0x10:
+        if(!ARMING_FLAG(ARMED))
+        {
           switch(telemetry_rx_buf[3])
           {
           case 0:
@@ -390,14 +430,14 @@ void gcsMain(void)
             uartWrite(_DEF_UART1, &telemetry_tx_buf[0], 20);
             break;
           }
-          break;
-
-        case 0x20:
-          Encode_Msg_AHRS(&telemetry_tx_buf[0]);
-          uartWriteIT(_DEF_UART1, &telemetry_tx_buf[0], 20);
+        }
         break;
 
-        }
+      case 0x20:
+        Encode_Msg_AHRS(&telemetry_tx_buf[0]);
+        uartWriteIT(_DEF_UART1, &telemetry_tx_buf[0], 36);
+      break;
+
       }
     }
   }
