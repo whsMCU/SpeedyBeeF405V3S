@@ -113,6 +113,7 @@ namespace SpeedyBeeF405V3S_GUI
             //richTextBox_received.Text = richTextBox_received.Text + string.Format("{0:X2}", ReceiveData);  //int 형식을 string형식으로 변환하여 출력
             try
             {
+                if (received_data == 0) received_data = 1;
                 int iRecSize = serialPort.BytesToRead; // 수신된 데이터 갯수
 
                 if (iRecSize != 0) // 수신된 데이터의 수가 0이 아닐때만 처리하자
@@ -137,8 +138,10 @@ namespace SpeedyBeeF405V3S_GUI
                                 lb_lat.Text = passed_data[9].ToString();
                                 lb_long.Text = passed_data[10].ToString();
                                 lb_bat.Text = passed_data[11].ToString();
+                                battery_bar_level = (int)passed_data[11];
                                 lb_fail.Text = passed_data[12].ToString();
                                 lb_armed.Text = passed_data[13].ToString();
+                                start = (byte)passed_data[13];
                                 if (passed_data[1] != 0)
                                 {
 
@@ -314,9 +317,40 @@ namespace SpeedyBeeF405V3S_GUI
             {
                 indicator_off();
             }
-            if (received_data == 10)
+            if (received_data == 5)
             {
                 received_data = 0;
+            }
+        }
+
+        private void timer_status_Tick(object sender, EventArgs e)
+        {
+            if (start == 0)
+            {
+                pictureBox1.Visible = true;
+                pictureBox2.Visible = false;
+            }
+            if (start == 1)
+            {
+                pictureBox1.Visible = false;
+                pictureBox2.Visible = true;
+            }
+
+            if (battery_bar_level > 124) battery_bar_level = 124;
+            if (battery_bar_level < 85) battery_bar_level = 85;
+            if (battery_bar_level > 108) panel5.BackColor = Color.Lime;
+            else if (battery_bar_level > 100) panel5.BackColor = Color.Yellow;
+            else panel5.BackColor = Color.Red;
+
+            panel6.Size = new Size(34, 134 - ((battery_bar_level - 80) * 3));
+        }
+
+        private void flight_timer_Tick(object sender, EventArgs e)
+        {
+            if(start == 1)
+            {
+                flight_timer_seconds++;
+                label36.Text = ("00:" + (flight_timer_seconds / 60).ToString("00.") + ":" + (flight_timer_seconds % 60).ToString("00."));
             }
         }
     }

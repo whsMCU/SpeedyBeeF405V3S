@@ -522,6 +522,73 @@ uint32_t uartWriteIT(uint8_t ch, uint8_t *p_data, uint32_t length)
   return ret;
 }
 
+uint32_t uartWriteDMA(uint8_t ch, uint8_t *p_data, uint32_t length)
+{
+  uint32_t ret = 0;
+  HAL_StatusTypeDef status;
+
+  switch(ch)
+  {
+    case _DEF_USB:
+      status = HAL_UART_Transmit_DMA(&huart2, p_data, length);
+      if (status == HAL_OK)
+      {
+        ret = length;
+      }
+      break;
+
+    case _DEF_UART1:
+      status = HAL_UART_Transmit_DMA(&huart1, p_data, length);
+      if (status == HAL_OK)
+      {
+        ret = length;
+      }
+      break;
+
+    case _DEF_UART2:
+      status = HAL_UART_Transmit_DMA(&huart2, p_data, length);
+      if (status == HAL_OK)
+      {
+        ret = length;
+      }
+      break;
+
+    case _DEF_UART3:
+      status = HAL_UART_Transmit_DMA(&huart3, p_data, length);
+      if (status == HAL_OK)
+      {
+        ret = length;
+      }
+      break;
+
+    case _DEF_UART4:
+      status = HAL_UART_Transmit_DMA(&huart4, p_data, length);
+      if (status == HAL_OK)
+      {
+        ret = length;
+      }
+      break;
+
+    case _DEF_UART5:
+      status = HAL_UART_Transmit_DMA(&huart5, p_data, length);
+      if (status == HAL_OK)
+      {
+        ret = length;
+      }
+      break;
+
+    case _DEF_UART6:
+      status = HAL_UART_Transmit_DMA(&huart6, p_data, length);
+      if (status == HAL_OK)
+      {
+        ret = length;
+      }
+      break;
+  }
+
+  return ret;
+}
+
 void serialPrint(uint8_t channel, const char *str)
 {
     uint8_t ch;

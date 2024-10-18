@@ -435,7 +435,7 @@ void gcsMain(void)
 
       case 0x20:
         Encode_Msg_AHRS(&telemetry_tx_buf[0]);
-        uartWriteIT(_DEF_UART1, &telemetry_tx_buf[0], 36);
+        uartWriteDMA(_DEF_UART1, &telemetry_tx_buf[0], 36);
       break;
 
       }
