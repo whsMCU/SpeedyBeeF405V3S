@@ -63,9 +63,9 @@ void compassConfig_Init(void)
   compassConfig.mag_alignment = ALIGN_DEFAULT;
   memset(&compassConfig.mag_customAlignment, 0x00, sizeof(compassConfig.mag_customAlignment));
   compassConfig.mag_hardware = MAG_DEFAULT;
-	compassConfig.magZero.values.roll = -352;
-	compassConfig.magZero.values.pitch = -368;
-	compassConfig.magZero.values.yaw = 75;
+	compassConfig.magZero.values.roll = -421;//-352;
+	compassConfig.magZero.values.pitch = -469;//-368;
+	compassConfig.magZero.values.yaw = 60;//75;
 }
 
 static int16_t magADCRaw[XYZ_AXIS_COUNT];

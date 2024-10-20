@@ -68,7 +68,7 @@ namespace Ball_Ballancer_CS.Class
                         }
                         break;
 
-                    case 35:
+                    case 39:
                         buff_pass[cnt] = buff[i];
                         cnt = 0;
                         recived_data_flag = true;
@@ -106,6 +106,7 @@ namespace Ball_Ballancer_CS.Class
                 data[11] = BitConverter.ToInt16(buff_pass, 27);
                 data[12] = BitConverter.ToInt16(buff_pass, 31);
                 data[13] = BitConverter.ToInt16(buff_pass, 33);
+                data[14] = BitConverter.ToUInt32(buff_pass, 35);
             }
             else if (buff_pass[2] == 0x11) // GPS Data 수신
             {

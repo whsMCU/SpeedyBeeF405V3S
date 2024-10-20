@@ -142,6 +142,7 @@ namespace SpeedyBeeF405V3S_GUI
                                 lb_fail.Text = passed_data[12].ToString();
                                 lb_armed.Text = passed_data[13].ToString();
                                 start = (byte)passed_data[13];
+                                lb_debug.Text = passed_data[14].ToString();
                                 if (passed_data[1] != 0)
                                 {
 

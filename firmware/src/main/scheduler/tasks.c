@@ -98,6 +98,7 @@ static void ledUpdate(uint32_t currentTimeUs)
 }
 
 uint8_t telemetry_tx_buf[40];
+uint32_t debug1;
 
 static void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf)
 {
@@ -152,9 +153,14 @@ static void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf)
   telemetry_tx_buf[33] = ARMING_FLAG(ARMED);
   telemetry_tx_buf[34] = 0x00;
 
-  telemetry_tx_buf[35] = 0xff;
+  telemetry_tx_buf[35] = debug[0];
+  telemetry_tx_buf[36] = debug[0]>>8;
+  telemetry_tx_buf[37] = debug[0]>>16;
+  telemetry_tx_buf[38] = debug[0]>>24;
 
-  for(int i=0;i<35;i++) telemetry_tx_buf[35] = telemetry_tx_buf[35] - telemetry_tx_buf[i];
+  telemetry_tx_buf[39] = 0xff;
+
+  for(int i=0;i<39;i++) telemetry_tx_buf[39] = telemetry_tx_buf[39] - telemetry_tx_buf[i];
 }
 
 void Encode_Msg_GPS(unsigned char* telemetry_tx_buf)
@@ -435,7 +441,7 @@ void gcsMain(void)
 
       case 0x20:
         Encode_Msg_AHRS(&telemetry_tx_buf[0]);
-        uartWriteDMA(_DEF_UART1, &telemetry_tx_buf[0], 36);
+        uartWriteDMA(_DEF_UART1, &telemetry_tx_buf[0], 40);
       break;
 
       }

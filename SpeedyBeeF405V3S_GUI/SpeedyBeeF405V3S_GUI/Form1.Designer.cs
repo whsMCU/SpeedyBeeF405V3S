@@ -160,6 +160,7 @@
             this.rx_timer_blink = new System.Windows.Forms.Timer(this.components);
             this.timer_status = new System.Windows.Forms.Timer(this.components);
             this.flight_timer = new System.Windows.Forms.Timer(this.components);
+            this.lb_debug = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -861,6 +862,7 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.lb_debug);
             this.panel2.Controls.Add(this.lb_fail);
             this.panel2.Controls.Add(this.lb_armed);
             this.panel2.Controls.Add(this.pictureBox6);
@@ -1156,6 +1158,17 @@
             this.flight_timer.Interval = 1000;
             this.flight_timer.Tick += new System.EventHandler(this.flight_timer_Tick);
             // 
+            // lb_debug
+            // 
+            this.lb_debug.AutoSize = true;
+            this.lb_debug.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_debug.Location = new System.Drawing.Point(3, 227);
+            this.lb_debug.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_debug.Name = "lb_debug";
+            this.lb_debug.Size = new System.Drawing.Size(16, 21);
+            this.lb_debug.TabIndex = 86;
+            this.lb_debug.Text = "-";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -1301,6 +1314,7 @@
         private System.Windows.Forms.Label lb_armed;
         private System.Windows.Forms.Timer timer_status;
         private System.Windows.Forms.Timer flight_timer;
+        private System.Windows.Forms.Label lb_debug;
     }
 }
 
