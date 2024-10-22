@@ -13,7 +13,7 @@ namespace SpeedyBeeF405V3S_GUI
     public partial class Form1 : Form
     {
         private static System.Timers.Timer AHRS_Timer;
-        float[] passed_data = new float[9];
+        float[] passed_data = new float[30];
         UTF8 UTF8 = new UTF8();
         DataPassing data = new DataPassing();
 
@@ -27,9 +27,6 @@ namespace SpeedyBeeF405V3S_GUI
             InitializeComponent();
             al = new ArrayList();
             this.Text = "MCU Drone 제어프로그램";
-            ((Control)webBrowser1).Enabled = false;
-            webBrowser1.Navigate("https://www.openstreetmap.org/#map=19/35.196569/126.829348");
-            webBrowser1.Visible = true;
             received_data = 2;
             textBox10.Text = (zoom - 14).ToString();
         }
@@ -81,9 +78,6 @@ namespace SpeedyBeeF405V3S_GUI
                     //clear_waypoint_labels();
                     serialPort.Close();
                     OpenClose.Text = "Open";
-                    //Location_update_timer.Enabled = false;
-                    webBrowser1.Navigate("https://www.openstreetmap.org/#map=2/50.8/5.6");
-                    webBrowser1.Visible = true;
                     label12.Visible = false;
                     label24.Visible = false;
                     //first_receive = 0;
@@ -142,7 +136,16 @@ namespace SpeedyBeeF405V3S_GUI
                                 lb_fail.Text = passed_data[12].ToString();
                                 lb_armed.Text = passed_data[13].ToString();
                                 start = (byte)passed_data[13];
-                                lb_debug.Text = passed_data[14].ToString();
+
+                                lb_motor0.Text = passed_data[14].ToString();
+                                lb_motor1.Text = passed_data[15].ToString();
+                                lb_motor2.Text = passed_data[16].ToString();
+                                lb_motor3.Text = passed_data[17].ToString();
+
+                                lb_debug0.Text = passed_data[18].ToString();
+                                lb_debug1.Text = passed_data[19].ToString();
+                                lb_debug2.Text = passed_data[20].ToString();
+                                lb_debug3.Text = passed_data[21].ToString();
                                 if (passed_data[1] != 0)
                                 {
 

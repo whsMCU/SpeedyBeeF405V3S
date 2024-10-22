@@ -39,6 +39,7 @@
 #include "drivers/compass/compass.h"
 #include "drivers/sensor.h"
 #include "drivers/gps/gps.h"
+#include "drivers/motor.h"
 
 #include "drivers/gps/M8N.h"
 
@@ -97,7 +98,7 @@ static void ledUpdate(uint32_t currentTimeUs)
     }
 }
 
-uint8_t telemetry_tx_buf[40];
+uint8_t telemetry_tx_buf[60];
 uint32_t debug1;
 
 static void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf)
@@ -153,14 +154,41 @@ static void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf)
   telemetry_tx_buf[33] = ARMING_FLAG(ARMED);
   telemetry_tx_buf[34] = 0x00;
 
-  telemetry_tx_buf[35] = debug[0];
-  telemetry_tx_buf[36] = debug[0]>>8;
-  telemetry_tx_buf[37] = debug[0]>>16;
-  telemetry_tx_buf[38] = debug[0]>>24;
+  telemetry_tx_buf[35] = motor.motor[L_F];
+  telemetry_tx_buf[36] = motor.motor[L_F]>>8;
 
-  telemetry_tx_buf[39] = 0xff;
+  telemetry_tx_buf[37] = motor.motor[L_R];
+  telemetry_tx_buf[38] = motor.motor[L_R]>>8;
 
-  for(int i=0;i<39;i++) telemetry_tx_buf[39] = telemetry_tx_buf[39] - telemetry_tx_buf[i];
+  telemetry_tx_buf[39] = motor.motor[R_F];
+  telemetry_tx_buf[40] = motor.motor[R_F]>>8;
+
+  telemetry_tx_buf[41] = motor.motor[R_R];
+  telemetry_tx_buf[42] = motor.motor[R_R]>>8;
+
+  telemetry_tx_buf[43] = debug[0];
+  telemetry_tx_buf[44] = debug[0]>>8;
+  telemetry_tx_buf[45] = debug[0]>>16;
+  telemetry_tx_buf[46] = debug[0]>>24;
+
+  telemetry_tx_buf[47] = debug[1];
+  telemetry_tx_buf[48] = debug[1]>>8;
+  telemetry_tx_buf[49] = debug[1]>>16;
+  telemetry_tx_buf[50] = debug[1]>>24;
+
+  telemetry_tx_buf[51] = debug[2];
+  telemetry_tx_buf[52] = debug[2]>>8;
+  telemetry_tx_buf[53] = debug[2]>>16;
+  telemetry_tx_buf[54] = debug[2]>>24;
+
+  telemetry_tx_buf[55] = debug[3];
+  telemetry_tx_buf[56] = debug[3]>>8;
+  telemetry_tx_buf[57] = debug[3]>>16;
+  telemetry_tx_buf[58] = debug[3]>>24;
+
+  telemetry_tx_buf[59] = 0xff;
+
+  for(int i=0;i<59;i++) telemetry_tx_buf[59] = telemetry_tx_buf[59] - telemetry_tx_buf[i];
 }
 
 void Encode_Msg_GPS(unsigned char* telemetry_tx_buf)
@@ -441,7 +469,7 @@ void gcsMain(void)
 
       case 0x20:
         Encode_Msg_AHRS(&telemetry_tx_buf[0]);
-        uartWriteDMA(_DEF_UART1, &telemetry_tx_buf[0], 40);
+        uartWriteDMA(_DEF_UART1, &telemetry_tx_buf[0], 60);
       break;
 
       }

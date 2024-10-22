@@ -112,16 +112,6 @@
             this.label13 = new System.Windows.Forms.Label();
             this.label24 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.label35 = new System.Windows.Forms.Label();
-            this.label34 = new System.Windows.Forms.Label();
-            this.label33 = new System.Windows.Forms.Label();
-            this.label32 = new System.Windows.Forms.Label();
-            this.label31 = new System.Windows.Forms.Label();
-            this.label30 = new System.Windows.Forms.Label();
-            this.label29 = new System.Windows.Forms.Label();
-            this.label28 = new System.Windows.Forms.Label();
-            this.label23 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -147,7 +137,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.label10 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
-            this.webBrowser1 = new System.Windows.Forms.WebBrowser();
+            this.lb_debug0 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.bt_pid_recive = new System.Windows.Forms.Button();
             this.bt_pid_send = new System.Windows.Forms.Button();
@@ -160,7 +150,24 @@
             this.rx_timer_blink = new System.Windows.Forms.Timer(this.components);
             this.timer_status = new System.Windows.Forms.Timer(this.components);
             this.flight_timer = new System.Windows.Forms.Timer(this.components);
-            this.lb_debug = new System.Windows.Forms.Label();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.lb_motor0 = new System.Windows.Forms.Label();
+            this.label28 = new System.Windows.Forms.Label();
+            this.label23 = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.label21 = new System.Windows.Forms.Label();
+            this.lb_debug3 = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.lb_debug2 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.lb_debug1 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.lb_motor1 = new System.Windows.Forms.Label();
+            this.lb_motor2 = new System.Windows.Forms.Label();
+            this.lb_motor3 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -174,6 +181,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel7.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.groupBox5.SuspendLayout();
+            this.groupBox6.SuspendLayout();
             this.SuspendLayout();
             // 
             // OpenClose
@@ -629,145 +638,6 @@
             this.panel1.Size = new System.Drawing.Size(21, 19);
             this.panel1.TabIndex = 69;
             // 
-            // label35
-            // 
-            this.label35.AutoSize = true;
-            this.label35.BackColor = System.Drawing.Color.Yellow;
-            this.label35.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label35.ForeColor = System.Drawing.Color.Red;
-            this.label35.Location = new System.Drawing.Point(589, 540);
-            this.label35.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(15, 15);
-            this.label35.TabIndex = 83;
-            this.label35.Text = "8";
-            this.label35.Visible = false;
-            // 
-            // label34
-            // 
-            this.label34.AutoSize = true;
-            this.label34.BackColor = System.Drawing.Color.Yellow;
-            this.label34.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label34.ForeColor = System.Drawing.Color.Red;
-            this.label34.Location = new System.Drawing.Point(564, 540);
-            this.label34.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(15, 15);
-            this.label34.TabIndex = 82;
-            this.label34.Text = "7";
-            this.label34.Visible = false;
-            // 
-            // label33
-            // 
-            this.label33.AutoSize = true;
-            this.label33.BackColor = System.Drawing.Color.Yellow;
-            this.label33.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label33.ForeColor = System.Drawing.Color.Red;
-            this.label33.Location = new System.Drawing.Point(540, 540);
-            this.label33.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(15, 15);
-            this.label33.TabIndex = 81;
-            this.label33.Text = "6";
-            this.label33.Visible = false;
-            // 
-            // label32
-            // 
-            this.label32.AutoSize = true;
-            this.label32.BackColor = System.Drawing.Color.Yellow;
-            this.label32.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label32.ForeColor = System.Drawing.Color.Red;
-            this.label32.Location = new System.Drawing.Point(515, 540);
-            this.label32.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(15, 15);
-            this.label32.TabIndex = 80;
-            this.label32.Text = "5";
-            this.label32.Visible = false;
-            // 
-            // label31
-            // 
-            this.label31.AutoSize = true;
-            this.label31.BackColor = System.Drawing.Color.Yellow;
-            this.label31.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label31.ForeColor = System.Drawing.Color.Red;
-            this.label31.Location = new System.Drawing.Point(491, 540);
-            this.label31.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(15, 15);
-            this.label31.TabIndex = 79;
-            this.label31.Text = "4";
-            this.label31.Visible = false;
-            // 
-            // label30
-            // 
-            this.label30.AutoSize = true;
-            this.label30.BackColor = System.Drawing.Color.Yellow;
-            this.label30.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label30.ForeColor = System.Drawing.Color.Red;
-            this.label30.Location = new System.Drawing.Point(466, 540);
-            this.label30.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(15, 15);
-            this.label30.TabIndex = 78;
-            this.label30.Text = "3";
-            this.label30.Visible = false;
-            // 
-            // label29
-            // 
-            this.label29.AutoSize = true;
-            this.label29.BackColor = System.Drawing.Color.Yellow;
-            this.label29.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label29.ForeColor = System.Drawing.Color.Red;
-            this.label29.Location = new System.Drawing.Point(441, 540);
-            this.label29.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(15, 15);
-            this.label29.TabIndex = 77;
-            this.label29.Text = "2";
-            this.label29.Visible = false;
-            // 
-            // label28
-            // 
-            this.label28.AutoSize = true;
-            this.label28.BackColor = System.Drawing.Color.Yellow;
-            this.label28.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label28.ForeColor = System.Drawing.Color.Red;
-            this.label28.Location = new System.Drawing.Point(416, 540);
-            this.label28.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(15, 15);
-            this.label28.TabIndex = 76;
-            this.label28.Text = "1";
-            this.label28.Visible = false;
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.BackColor = System.Drawing.Color.Yellow;
-            this.label23.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label23.ForeColor = System.Drawing.Color.Red;
-            this.label23.Location = new System.Drawing.Point(387, 540);
-            this.label23.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(19, 15);
-            this.label23.TabIndex = 75;
-            this.label23.Text = "W";
-            this.label23.Visible = false;
-            // 
-            // label12
-            // 
-            this.label12.BackColor = System.Drawing.Color.Transparent;
-            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.ForeColor = System.Drawing.Color.Red;
-            this.label12.Location = new System.Drawing.Point(746, 301);
-            this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(20, 16);
-            this.label12.TabIndex = 74;
-            this.label12.Text = "H";
-            this.label12.Visible = false;
-            // 
             // panel4
             // 
             this.panel4.Controls.Add(this.label1);
@@ -862,7 +732,6 @@
             // 
             // panel2
             // 
-            this.panel2.Controls.Add(this.lb_debug);
             this.panel2.Controls.Add(this.lb_fail);
             this.panel2.Controls.Add(this.lb_armed);
             this.panel2.Controls.Add(this.pictureBox6);
@@ -1047,17 +916,16 @@
             this.label15.TabIndex = 42;
             this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // webBrowser1
+            // lb_debug0
             // 
-            this.webBrowser1.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
-            this.webBrowser1.Location = new System.Drawing.Point(351, 79);
-            this.webBrowser1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.webBrowser1.MinimumSize = new System.Drawing.Size(23, 18);
-            this.webBrowser1.Name = "webBrowser1";
-            this.webBrowser1.ScriptErrorsSuppressed = true;
-            this.webBrowser1.ScrollBarsEnabled = false;
-            this.webBrowser1.Size = new System.Drawing.Size(738, 512);
-            this.webBrowser1.TabIndex = 70;
+            this.lb_debug0.AutoSize = true;
+            this.lb_debug0.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_debug0.Location = new System.Drawing.Point(115, 28);
+            this.lb_debug0.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_debug0.Name = "lb_debug0";
+            this.lb_debug0.Size = new System.Drawing.Size(16, 21);
+            this.lb_debug0.TabIndex = 86;
+            this.lb_debug0.Text = "-";
             // 
             // groupBox1
             // 
@@ -1158,34 +1026,219 @@
             this.flight_timer.Interval = 1000;
             this.flight_timer.Tick += new System.EventHandler(this.flight_timer_Tick);
             // 
-            // lb_debug
+            // groupBox5
             // 
-            this.lb_debug.AutoSize = true;
-            this.lb_debug.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_debug.Location = new System.Drawing.Point(3, 227);
-            this.lb_debug.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lb_debug.Name = "lb_debug";
-            this.lb_debug.Size = new System.Drawing.Size(16, 21);
-            this.lb_debug.TabIndex = 86;
-            this.lb_debug.Text = "-";
+            this.groupBox5.Controls.Add(this.lb_motor3);
+            this.groupBox5.Controls.Add(this.lb_motor2);
+            this.groupBox5.Controls.Add(this.lb_motor1);
+            this.groupBox5.Controls.Add(this.lb_motor0);
+            this.groupBox5.Controls.Add(this.label28);
+            this.groupBox5.Controls.Add(this.label23);
+            this.groupBox5.Controls.Add(this.label19);
+            this.groupBox5.Controls.Add(this.label16);
+            this.groupBox5.Location = new System.Drawing.Point(369, 110);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(335, 177);
+            this.groupBox5.TabIndex = 85;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "MOTOR";
+            // 
+            // lb_motor0
+            // 
+            this.lb_motor0.AutoSize = true;
+            this.lb_motor0.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_motor0.Location = new System.Drawing.Point(117, 65);
+            this.lb_motor0.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_motor0.Name = "lb_motor0";
+            this.lb_motor0.Size = new System.Drawing.Size(16, 21);
+            this.lb_motor0.TabIndex = 92;
+            this.lb_motor0.Text = "-";
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label28.Location = new System.Drawing.Point(174, 140);
+            this.label28.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(83, 21);
+            this.label28.TabIndex = 91;
+            this.label28.Text = "MOTOR[3]";
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label23.Location = new System.Drawing.Point(19, 139);
+            this.label23.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(83, 21);
+            this.label23.TabIndex = 90;
+            this.label23.Text = "MOTOR[1]";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label19.Location = new System.Drawing.Point(174, 65);
+            this.label19.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(83, 21);
+            this.label19.TabIndex = 89;
+            this.label19.Text = "MOTOR[2]";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label16.Location = new System.Drawing.Point(19, 65);
+            this.label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(83, 21);
+            this.label16.TabIndex = 88;
+            this.label16.Text = "MOTOR[0]";
+            // 
+            // groupBox6
+            // 
+            this.groupBox6.Controls.Add(this.label21);
+            this.groupBox6.Controls.Add(this.lb_debug3);
+            this.groupBox6.Controls.Add(this.label17);
+            this.groupBox6.Controls.Add(this.lb_debug2);
+            this.groupBox6.Controls.Add(this.label14);
+            this.groupBox6.Controls.Add(this.lb_debug1);
+            this.groupBox6.Controls.Add(this.label12);
+            this.groupBox6.Controls.Add(this.lb_debug0);
+            this.groupBox6.Location = new System.Drawing.Point(746, 110);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(335, 177);
+            this.groupBox6.TabIndex = 86;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "DEBUG";
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label21.Location = new System.Drawing.Point(7, 128);
+            this.label21.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(79, 21);
+            this.label21.TabIndex = 93;
+            this.label21.Text = "DEBUG[3]";
+            // 
+            // lb_debug3
+            // 
+            this.lb_debug3.AutoSize = true;
+            this.lb_debug3.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_debug3.Location = new System.Drawing.Point(115, 128);
+            this.lb_debug3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_debug3.Name = "lb_debug3";
+            this.lb_debug3.Size = new System.Drawing.Size(16, 21);
+            this.lb_debug3.TabIndex = 92;
+            this.lb_debug3.Text = "-";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label17.Location = new System.Drawing.Point(7, 96);
+            this.label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(79, 21);
+            this.label17.TabIndex = 91;
+            this.label17.Text = "DEBUG[2]";
+            // 
+            // lb_debug2
+            // 
+            this.lb_debug2.AutoSize = true;
+            this.lb_debug2.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_debug2.Location = new System.Drawing.Point(115, 96);
+            this.lb_debug2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_debug2.Name = "lb_debug2";
+            this.lb_debug2.Size = new System.Drawing.Size(16, 21);
+            this.lb_debug2.TabIndex = 90;
+            this.lb_debug2.Text = "-";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.Location = new System.Drawing.Point(7, 61);
+            this.label14.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(79, 21);
+            this.label14.TabIndex = 89;
+            this.label14.Text = "DEBUG[1]";
+            // 
+            // lb_debug1
+            // 
+            this.lb_debug1.AutoSize = true;
+            this.lb_debug1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_debug1.Location = new System.Drawing.Point(115, 61);
+            this.lb_debug1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_debug1.Name = "lb_debug1";
+            this.lb_debug1.Size = new System.Drawing.Size(16, 21);
+            this.lb_debug1.TabIndex = 88;
+            this.lb_debug1.Text = "-";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label12.Location = new System.Drawing.Point(7, 28);
+            this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(79, 21);
+            this.label12.TabIndex = 87;
+            this.label12.Text = "DEBUG[0]";
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
+            // 
+            // lb_motor1
+            // 
+            this.lb_motor1.AutoSize = true;
+            this.lb_motor1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_motor1.Location = new System.Drawing.Point(117, 140);
+            this.lb_motor1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_motor1.Name = "lb_motor1";
+            this.lb_motor1.Size = new System.Drawing.Size(16, 21);
+            this.lb_motor1.TabIndex = 93;
+            this.lb_motor1.Text = "-";
+            // 
+            // lb_motor2
+            // 
+            this.lb_motor2.AutoSize = true;
+            this.lb_motor2.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_motor2.Location = new System.Drawing.Point(267, 65);
+            this.lb_motor2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_motor2.Name = "lb_motor2";
+            this.lb_motor2.Size = new System.Drawing.Size(16, 21);
+            this.lb_motor2.TabIndex = 94;
+            this.lb_motor2.Text = "-";
+            // 
+            // lb_motor3
+            // 
+            this.lb_motor3.AutoSize = true;
+            this.lb_motor3.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_motor3.Location = new System.Drawing.Point(267, 139);
+            this.lb_motor3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_motor3.Name = "lb_motor3";
+            this.lb_motor3.Size = new System.Drawing.Size(16, 21);
+            this.lb_motor3.TabIndex = 95;
+            this.lb_motor3.Text = "-";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1184, 661);
+            this.Controls.Add(this.groupBox6);
+            this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.label35);
-            this.Controls.Add(this.label34);
-            this.Controls.Add(this.label33);
-            this.Controls.Add(this.label32);
-            this.Controls.Add(this.label31);
-            this.Controls.Add(this.label30);
-            this.Controls.Add(this.label29);
-            this.Controls.Add(this.label28);
-            this.Controls.Add(this.label23);
-            this.Controls.Add(this.label12);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel1);
@@ -1196,7 +1249,6 @@
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.label24);
-            this.Controls.Add(this.webBrowser1);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -1220,6 +1272,10 @@
             this.panel7.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
+            this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1258,16 +1314,6 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label24;
         public System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label label35;
-        private System.Windows.Forms.Label label34;
-        private System.Windows.Forms.Label label33;
-        private System.Windows.Forms.Label label32;
-        private System.Windows.Forms.Label label31;
-        private System.Windows.Forms.Label label30;
-        private System.Windows.Forms.Label label29;
-        private System.Windows.Forms.Label label28;
-        private System.Windows.Forms.Label label23;
-        private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label3;
@@ -1291,7 +1337,6 @@
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label36;
         private System.Windows.Forms.TextBox textBox11;
-        private System.Windows.Forms.WebBrowser webBrowser1;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button bt_pid_recive;
         private System.Windows.Forms.Button bt_pid_send;
@@ -1314,7 +1359,25 @@
         private System.Windows.Forms.Label lb_armed;
         private System.Windows.Forms.Timer timer_status;
         private System.Windows.Forms.Timer flight_timer;
-        private System.Windows.Forms.Label lb_debug;
+        private System.Windows.Forms.Label lb_debug0;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.Label lb_debug3;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label lb_debug2;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label lb_debug1;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.Label lb_motor0;
+        private System.Windows.Forms.Label label28;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Label lb_motor3;
+        private System.Windows.Forms.Label lb_motor2;
+        private System.Windows.Forms.Label lb_motor1;
     }
 }
 

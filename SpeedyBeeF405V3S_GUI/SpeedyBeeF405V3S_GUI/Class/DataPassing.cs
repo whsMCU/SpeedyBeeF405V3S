@@ -23,7 +23,7 @@ namespace Ball_Ballancer_CS.Class
         int cnt = 0;
         byte checksum = 0xff;
 
-        float[] data = new float[20];
+        float[] data = new float[30];
 
         public DataPassing()
         {
@@ -68,7 +68,7 @@ namespace Ball_Ballancer_CS.Class
                         }
                         break;
 
-                    case 39:
+                    case 59:
                         buff_pass[cnt] = buff[i];
                         cnt = 0;
                         recived_data_flag = true;
@@ -106,7 +106,14 @@ namespace Ball_Ballancer_CS.Class
                 data[11] = BitConverter.ToInt16(buff_pass, 27);
                 data[12] = BitConverter.ToInt16(buff_pass, 31);
                 data[13] = BitConverter.ToInt16(buff_pass, 33);
-                data[14] = BitConverter.ToUInt32(buff_pass, 35);
+                data[14] = BitConverter.ToUInt16(buff_pass, 35);
+                data[15] = BitConverter.ToUInt16(buff_pass, 37);
+                data[16] = BitConverter.ToUInt16(buff_pass, 39);
+                data[17] = BitConverter.ToUInt16(buff_pass, 41);
+                data[18] = BitConverter.ToUInt32(buff_pass, 43);
+                data[19] = BitConverter.ToUInt32(buff_pass, 47);
+                data[20] = BitConverter.ToUInt32(buff_pass, 51);
+                data[21] = BitConverter.ToUInt32(buff_pass, 55);
             }
             else if (buff_pass[2] == 0x11) // GPS Data 수신
             {
