@@ -791,7 +791,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 
 uint8_t uart1_rx_data = 0;
 uint8_t uart6_rx_data = 0;
-uint8_t telemetry_rx_buf[20];
+uint8_t telemetry_rx_buf[80];
 uint8_t telemetry_rx_cplt_flag;
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)

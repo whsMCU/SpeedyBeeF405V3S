@@ -342,128 +342,56 @@ void gcsMain(void)
       //LL_TIM_CC_DisableChannel(TIM3, LL_TIM_CHANNEL_CH4);
       switch(telemetry_rx_buf[2])
       {
-      case 0:
+      case 0x00:
         if(!ARMING_FLAG(ARMED))
         {
-          roll.in.kp = *(float*)&telemetry_rx_buf[3];
-          roll.in.ki = *(float*)&telemetry_rx_buf[7];
-          roll.in.kd = *(float*)&telemetry_rx_buf[11];
           writeSDCard(PID_Roll_in);
-          //EP_PIDGain_Write(telemetry_rx_buf[2], roll.in.kp, roll.in.ki, roll.in.kd);
-          //EP_PIDGain_Read(telemetry_rx_buf[2], &roll.in.kp, &roll.in.ki, &roll.in.kd);
-          Encode_Msg_PID_Gain(&telemetry_tx_buf[0], telemetry_rx_buf[2], roll.in.kp, roll.in.ki, roll.in.kd);
-          uartWriteIT(_DEF_UART1, &telemetry_tx_buf[0], 20);
-        }
-        break;
-      case 1:
-        if(!ARMING_FLAG(ARMED))
-        {
-          roll.out.kp = *(float*)&telemetry_rx_buf[3];
-          roll.out.ki = *(float*)&telemetry_rx_buf[7];
-          roll.out.kd = *(float*)&telemetry_rx_buf[11];
           writeSDCard(PID_Roll_out);
-          //EP_PIDGain_Write(telemetry_rx_buf[2], roll.out.kp, roll.out.ki, roll.out.kd);
-          //EP_PIDGain_Read(telemetry_rx_buf[2], &roll.out.kp, &roll.out.ki, &roll.out.kd);
-          Encode_Msg_PID_Gain(&telemetry_tx_buf[0], telemetry_rx_buf[2], roll.out.kp, roll.out.ki, roll.out.kd);
-          uartWriteIT(_DEF_UART1, &telemetry_tx_buf[0], 20);
-        }
-        break;
-      case 2:
-        if(!ARMING_FLAG(ARMED))
-        {
-          pitch.in.kp = *(float*)&telemetry_rx_buf[3];
-          pitch.in.ki = *(float*)&telemetry_rx_buf[7];
-          pitch.in.kd = *(float*)&telemetry_rx_buf[11];
           writeSDCard(PID_pitch_in);
-          //EP_PIDGain_Write(telemetry_rx_buf[2], pitch.in.kp, pitch.in.ki, pitch.in.kd);
-          //EP_PIDGain_Read(telemetry_rx_buf[2], &pitch.in.kp, &pitch.in.ki, &pitch.in.kd);
-          Encode_Msg_PID_Gain(&telemetry_tx_buf[0], telemetry_rx_buf[2], pitch.in.kp, pitch.in.ki, pitch.in.kd);
-          uartWriteIT(_DEF_UART1, &telemetry_tx_buf[0], 20);
-        }
-        break;
-      case 3:
-        if(!ARMING_FLAG(ARMED))
-        {
-          pitch.out.kp = *(float*)&telemetry_rx_buf[3];
-          pitch.out.ki = *(float*)&telemetry_rx_buf[7];
-          pitch.out.kd = *(float*)&telemetry_rx_buf[11];
           writeSDCard(PID_pitch_out);
-          //EP_PIDGain_Write(telemetry_rx_buf[2], pitch.out.kp, pitch.out.ki, pitch.out.kd);
-          //EP_PIDGain_Read(telemetry_rx_buf[2], &pitch.out.kp, &pitch.out.ki, &pitch.out.kd);
-          Encode_Msg_PID_Gain(&telemetry_tx_buf[0], telemetry_rx_buf[2], pitch.out.kp, pitch.out.ki, pitch.out.kd);
-          uartWriteIT(_DEF_UART1, &telemetry_tx_buf[0], 20);
-        }
-        break;
-      case 4:
-        if(!ARMING_FLAG(ARMED))
-        {
-          yaw_heading.kp = *(float*)&telemetry_rx_buf[3];
-          yaw_heading.ki = *(float*)&telemetry_rx_buf[7];
-          yaw_heading.kd = *(float*)&telemetry_rx_buf[11];
           writeSDCard(PID_yaw_heading);
-          //EP_PIDGain_Write(telemetry_rx_buf[2], yaw_heading.kp, yaw_heading.ki, yaw_heading.kd);
-          //EP_PIDGain_Read(telemetry_rx_buf[2], &yaw_heading.kp, &yaw_heading.ki, &yaw_heading.kd);
-          Encode_Msg_PID_Gain(&telemetry_tx_buf[0], telemetry_rx_buf[2], yaw_heading.kp, yaw_heading.ki, yaw_heading.kd);
-          uartWriteIT(_DEF_UART1, &telemetry_tx_buf[0], 20);
-        }
-        break;
-      case 5:
-        if(!ARMING_FLAG(ARMED))
-        {
-          yaw_rate.kp = *(float*)&telemetry_rx_buf[3];
-          yaw_rate.ki = *(float*)&telemetry_rx_buf[7];
-          yaw_rate.kd = *(float*)&telemetry_rx_buf[11];
           writeSDCard(PID_yaw_rate);
-          //EP_PIDGain_Write(telemetry_rx_buf[2], yaw_rate.kp, yaw_rate.ki, yaw_rate.kd);
-          //EP_PIDGain_Read(telemetry_rx_buf[2], &yaw_rate.kp, &yaw_rate.ki, &yaw_rate.kd);
-          Encode_Msg_PID_Gain(&telemetry_tx_buf[0], telemetry_rx_buf[2], yaw_rate.kp, yaw_rate.ki, yaw_rate.kd);
-          uartWriteIT(_DEF_UART1, &telemetry_tx_buf[0], 20);
         }
         break;
+
       case 0x10:
         if(!ARMING_FLAG(ARMED))
         {
-          switch(telemetry_rx_buf[3])
-          {
-          case 0:
-            Encode_Msg_PID_Gain(&telemetry_tx_buf[0], telemetry_rx_buf[3], roll.in.kp, roll.in.ki, roll.in.kd);
-            uartWrite(_DEF_UART1, &telemetry_tx_buf[0], 20);
-            break;
-          case 1:
-            Encode_Msg_PID_Gain(&telemetry_tx_buf[0], telemetry_rx_buf[3], roll.out.kp, roll.out.ki, roll.out.kd);
-            uartWrite(_DEF_UART1, &telemetry_tx_buf[0], 20);
-            break;
-          case 2:
-            Encode_Msg_PID_Gain(&telemetry_tx_buf[0], telemetry_rx_buf[3], pitch.in.kp, pitch.in.ki, pitch.in.kd);
-            uartWrite(_DEF_UART1, &telemetry_tx_buf[0], 20);
-            break;
-          case 3:
-            Encode_Msg_PID_Gain(&telemetry_tx_buf[0], telemetry_rx_buf[3], pitch.out.kp, pitch.out.ki, pitch.out.kd);
-            uartWrite(_DEF_UART1, &telemetry_tx_buf[0], 20);
-            break;
-          case 4:
-            Encode_Msg_PID_Gain(&telemetry_tx_buf[0], telemetry_rx_buf[3], yaw_heading.kp, yaw_heading.ki, yaw_heading.kd);
-            uartWrite(_DEF_UART1, &telemetry_tx_buf[0], 20);
-            break;
-          case 5:
-            Encode_Msg_PID_Gain(&telemetry_tx_buf[0], telemetry_rx_buf[3], yaw_rate.kp, yaw_rate.ki, yaw_rate.kd);
-            uartWrite(_DEF_UART1, &telemetry_tx_buf[0], 20);
-            break;
-          case 6:
-            Encode_Msg_PID_Gain(&telemetry_tx_buf[0], 0, roll.in.kp, roll.in.ki, roll.in.kd);
-            uartWrite(_DEF_UART1, &telemetry_tx_buf[0], 20);
-            Encode_Msg_PID_Gain(&telemetry_tx_buf[0], 1, roll.out.kp, roll.out.ki, roll.out.kd);
-            uartWrite(_DEF_UART1, &telemetry_tx_buf[0], 20);
-            Encode_Msg_PID_Gain(&telemetry_tx_buf[0], 2, pitch.in.kp, pitch.in.ki, pitch.in.kd);
-            uartWrite(_DEF_UART1, &telemetry_tx_buf[0], 20);
-            Encode_Msg_PID_Gain(&telemetry_tx_buf[0], 3, pitch.out.kp, pitch.out.ki, pitch.out.kd);
-            uartWrite(_DEF_UART1, &telemetry_tx_buf[0], 20);
-            Encode_Msg_PID_Gain(&telemetry_tx_buf[0], 4, yaw_heading.kp, yaw_heading.ki, yaw_heading.kd);
-            uartWrite(_DEF_UART1, &telemetry_tx_buf[0], 20);
-            Encode_Msg_PID_Gain(&telemetry_tx_buf[0], 5, yaw_rate.kp, yaw_rate.ki, yaw_rate.kd);
-            uartWrite(_DEF_UART1, &telemetry_tx_buf[0], 20);
-            break;
-          }
+          telemetry_tx_buf[0] = 0x46;
+          telemetry_tx_buf[1] = 0x43;
+
+          telemetry_tx_buf[2] = 0x20;
+
+          *(float*)&telemetry_tx_buf[3] = roll.in.kp;
+          *(float*)&telemetry_tx_buf[7] = roll.in.ki;
+          *(float*)&telemetry_tx_buf[11] = roll.in.kd;
+
+          *(float*)&telemetry_tx_buf[15] = roll.out.kp;
+          *(float*)&telemetry_tx_buf[19] = roll.out.ki;
+          *(float*)&telemetry_tx_buf[23] = roll.out.kd;
+
+
+          *(float*)&telemetry_tx_buf[27] = pitch.in.kp;
+          *(float*)&telemetry_tx_buf[31] = pitch.in.ki;
+          *(float*)&telemetry_tx_buf[35] = pitch.in.kd;
+
+          *(float*)&telemetry_tx_buf[39] = pitch.out.kp;
+          *(float*)&telemetry_tx_buf[43] = pitch.out.ki;
+          *(float*)&telemetry_tx_buf[47] = pitch.out.kd;
+
+          *(float*)&telemetry_tx_buf[51] = yaw_heading.kp;
+          *(float*)&telemetry_tx_buf[55] = yaw_heading.ki;
+          *(float*)&telemetry_tx_buf[59] = yaw_heading.kd;
+
+          *(float*)&telemetry_tx_buf[63] = yaw_rate.kp;
+          *(float*)&telemetry_tx_buf[67] = yaw_rate.ki;
+          *(float*)&telemetry_tx_buf[71] = yaw_rate.kd;
+
+          telemetry_tx_buf[75] = 0xff;
+
+          for(int i=0;i<75;i++) telemetry_tx_buf[75] = telemetry_tx_buf[75] - telemetry_tx_buf[i];
+
+          uartWriteDMA(_DEF_UART1, &telemetry_tx_buf[0], 76);
         }
         break;
 

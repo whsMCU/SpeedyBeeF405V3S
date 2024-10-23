@@ -34,7 +34,7 @@ typedef enum {
 
 extern const uint32_t baudRates[];
 
-extern uint8_t telemetry_rx_buf[20];
+extern uint8_t telemetry_rx_buf[80];
 extern uint8_t telemetry_rx_cplt_flag;
 
 bool     uartInit(void);

@@ -1,4 +1,8 @@
 ﻿using Ball_Ballancer_CS.Class;
+using GMap.NET;
+using GMap.NET.MapProviders;
+using GMap.NET.WindowsForms;
+using GMap.NET.WindowsForms.Markers;
 using System;
 using System.Collections;
 using System.Drawing;
@@ -22,6 +26,8 @@ namespace SpeedyBeeF405V3S_GUI
 
         float[] pb_point = new float[2];
 
+        public GMapOverlay MarkerOverlay = new GMapOverlay("markers");
+
         public Form1()
         {
             InitializeComponent();
@@ -29,6 +35,15 @@ namespace SpeedyBeeF405V3S_GUI
             this.Text = "MCU Drone 제어프로그램";
             received_data = 2;
             textBox10.Text = (zoom - 14).ToString();
+
+            PointLatLng p = new PointLatLng(37.497872, 127.0275142);
+            gMapControl1.Overlays.Add(MarkerOverlay);
+            gMapControl1.MapProvider = GMapProviders.GoogleMap;
+            gMapControl1.Position = p;
+            gMapControl1.MinZoom = 5;
+            gMapControl1.MaxZoom = 19;
+            gMapControl1.Zoom = 14;
+            AddMarker(p, "test");
         }
 
         private void Form1_Load(object sender, EventArgs e)  //폼이 로드되면
@@ -39,6 +54,19 @@ namespace SpeedyBeeF405V3S_GUI
             }
             catch { }
         }
+        public void AddMarker(PointLatLng p, string text)
+        {
+            GMarkerGoogle gMarker = new GMarkerGoogle(p, GMarkerGoogleType.blue_dot);
+            gMarker.ToolTipMode = MarkerTooltipMode.OnMouseOver;
+            gMarker.ToolTipText = text;
+            gMarker.ToolTip.TextPadding = new Size(10, 10);
+            gMarker.ToolTip.Fill = new SolidBrush(Color.DimGray);
+            gMarker.ToolTip.Foreground = new SolidBrush(Color.White);
+            gMarker.ToolTip.Offset = new Point(10, -30);
+            gMarker.ToolTip.Stroke = new Pen(Color.Transparent, .0f);
+            MarkerOverlay.Markers.Add(gMarker);
+        }
+
         private void OpenClose_Click(object sender, EventArgs e)  //통신 연결하기 버튼
         {
             try
@@ -204,93 +232,6 @@ namespace SpeedyBeeF405V3S_GUI
             catch { }
         }
 
-        private void bt_pid_recive_Click(object sender, EventArgs e)
-        {
-            byte[] buff = new byte[20];
-            try
-            {
-                buff[0] = 0x47;
-                buff[1] = 0x53;
-                buff[2] = 0x10;
-                buff[3] = 0;
-                buff[4] = 0;
-                buff[5] = 0;
-                buff[6] = 0;
-                buff[7] = 0;
-                buff[8] = 0;
-                buff[9] = 0;
-                buff[10] = 0;
-                buff[11] = 0;
-                buff[12] = 0;
-                buff[13] = 0;
-                buff[14] = 0;
-                buff[15] = 0;
-                buff[16] = 0;
-                buff[17] = 0;
-                buff[18] = 0;
-                buff[19] = 0xff;
-            }
-            catch { }
-
-            for (int i = 0; i < 19; i++)
-            {
-                buff[19] -= buff[i];
-            }
-
-            try
-            {
-                serialPort.Write(Encoding.UTF8.GetString(buff));
-            }
-            catch { }
-        }
-
-        private void bt_pid_send_Click(object sender, EventArgs e)
-        {
-            byte[] buff = new byte[20];
-            float float_buff;
-            byte[] tmp = new byte[4];
-            try
-            {
-                buff[0] = 0x47;
-                buff[1] = 0x53;
-                buff[2] = 0x00;
-                float_buff = float.Parse(tb_P.Text);
-                tmp = BitConverter.GetBytes(float_buff);
-                buff[3] = tmp[0];
-                buff[4] = tmp[1];
-                buff[5] = tmp[2];
-                buff[6] = tmp[3];
-                float_buff = float.Parse(tb_I.Text);
-                tmp = BitConverter.GetBytes(float_buff);
-                buff[7] = tmp[0];
-                buff[8] = tmp[1];
-                buff[9] = tmp[2];
-                buff[10] = tmp[3];
-                float_buff = float.Parse(tb_D.Text);
-                tmp = BitConverter.GetBytes(float_buff);
-                buff[11] = tmp[0];
-                buff[12] = tmp[1];
-                buff[13] = tmp[2];
-                buff[14] = tmp[3];
-                buff[15] = 0;
-                buff[16] = 0;
-                buff[17] = 0;
-                buff[18] = 0;
-                buff[19] = 0xff;
-            }
-            catch { }
-
-            for (int i = 0; i < 19; i++)
-            {
-                buff[19] -= buff[i];
-            }
-
-            try
-            {
-                serialPort.Write(buff, 0, 20);
-            }
-            catch { }
-        }
         private void indicator_on()
         {
             Graphics g = panel1.CreateGraphics();
@@ -356,6 +297,227 @@ namespace SpeedyBeeF405V3S_GUI
                 flight_timer_seconds++;
                 label36.Text = ("00:" + (flight_timer_seconds / 60).ToString("00.") + ":" + (flight_timer_seconds % 60).ToString("00."));
             }
+        }
+
+        private void bt_pid_recive_Click(object sender, EventArgs e)
+        {
+            byte[] buff = new byte[20];
+            try
+            {
+                buff[0] = 0x47;
+                buff[1] = 0x53;
+                buff[2] = 0x10;
+                buff[3] = 0;
+                buff[4] = 0;
+                buff[5] = 0;
+                buff[6] = 0;
+                buff[7] = 0;
+                buff[8] = 0;
+                buff[9] = 0;
+                buff[10] = 0;
+                buff[11] = 0;
+                buff[12] = 0;
+                buff[13] = 0;
+                buff[14] = 0;
+                buff[15] = 0;
+                buff[16] = 0;
+                buff[17] = 0;
+                buff[18] = 0;
+                buff[19] = 0xff;
+            }
+            catch { }
+
+            for (int i = 0; i < 19; i++)
+            {
+                buff[19] -= buff[i];
+            }
+
+            try
+            {
+                serialPort.Write(Encoding.UTF8.GetString(buff));
+            }
+            catch { }
+        }
+
+        private void bt_pid_send_Click(object sender, EventArgs e)
+        {
+            byte[] buff = new byte[100];
+            float float_buff;
+            byte[] tmp = new byte[4];
+            try
+            {
+                buff[0] = 0x47;
+                buff[1] = 0x53;
+                buff[2] = 0x00;
+
+                float_buff = float.Parse(tb_R_I_P.Text);
+                tmp = BitConverter.GetBytes(float_buff);
+                buff[3] = tmp[0];
+                buff[4] = tmp[1];
+                buff[5] = tmp[2];
+                buff[6] = tmp[3];
+                float_buff = float.Parse(tb_R_I_I.Text);
+                tmp = BitConverter.GetBytes(float_buff);
+                buff[7] = tmp[0];
+                buff[8] = tmp[1];
+                buff[9] = tmp[2];
+                buff[10] = tmp[3];
+                float_buff = float.Parse(tb_R_I_D.Text);
+                tmp = BitConverter.GetBytes(float_buff);
+                buff[11] = tmp[0];
+                buff[12] = tmp[1];
+                buff[13] = tmp[2];
+                buff[14] = tmp[3];
+
+                float_buff = float.Parse(tb_R_O_P.Text);
+                tmp = BitConverter.GetBytes(float_buff);
+                buff[15] = tmp[0];
+                buff[16] = tmp[1];
+                buff[17] = tmp[2];
+                buff[18] = tmp[3];
+                float_buff = float.Parse(tb_R_O_I.Text);
+                tmp = BitConverter.GetBytes(float_buff);
+                buff[19] = tmp[0];
+                buff[20] = tmp[1];
+                buff[21] = tmp[2];
+                buff[22] = tmp[3];
+                float_buff = float.Parse(tb_R_O_D.Text);
+                tmp = BitConverter.GetBytes(float_buff);
+                buff[23] = tmp[0];
+                buff[24] = tmp[1];
+                buff[25] = tmp[2];
+                buff[26] = tmp[3];
+
+                float_buff = float.Parse(tb_P_I_P.Text);
+                tmp = BitConverter.GetBytes(float_buff);
+                buff[27] = tmp[0];
+                buff[28] = tmp[1];
+                buff[29] = tmp[2];
+                buff[30] = tmp[3];
+                float_buff = float.Parse(tb_P_I_I.Text);
+                tmp = BitConverter.GetBytes(float_buff);
+                buff[31] = tmp[0];
+                buff[32] = tmp[1];
+                buff[33] = tmp[2];
+                buff[34] = tmp[3];
+                float_buff = float.Parse(tb_P_I_D.Text);
+                tmp = BitConverter.GetBytes(float_buff);
+                buff[35] = tmp[0];
+                buff[36] = tmp[1];
+                buff[37] = tmp[2];
+                buff[38] = tmp[3];
+
+                float_buff = float.Parse(tb_P_O_P.Text);
+                tmp = BitConverter.GetBytes(float_buff);
+                buff[39] = tmp[0];
+                buff[40] = tmp[1];
+                buff[41] = tmp[2];
+                buff[42] = tmp[3];
+                float_buff = float.Parse(tb_P_O_I.Text);
+                tmp = BitConverter.GetBytes(float_buff);
+                buff[43] = tmp[0];
+                buff[44] = tmp[1];
+                buff[45] = tmp[2];
+                buff[46] = tmp[3];
+                float_buff = float.Parse(tb_P_O_D.Text);
+                tmp = BitConverter.GetBytes(float_buff);
+                buff[47] = tmp[0];
+                buff[48] = tmp[1];
+                buff[49] = tmp[2];
+                buff[50] = tmp[3];
+
+                float_buff = float.Parse(tb_Y_A_P.Text);
+                tmp = BitConverter.GetBytes(float_buff);
+                buff[51] = tmp[0];
+                buff[52] = tmp[1];
+                buff[53] = tmp[2];
+                buff[54] = tmp[3];
+                float_buff = float.Parse(tb_Y_A_I.Text);
+                tmp = BitConverter.GetBytes(float_buff);
+                buff[55] = tmp[0];
+                buff[56] = tmp[1];
+                buff[57] = tmp[2];
+                buff[58] = tmp[3];
+                float_buff = float.Parse(tb_Y_A_D.Text);
+                tmp = BitConverter.GetBytes(float_buff);
+                buff[59] = tmp[0];
+                buff[60] = tmp[1];
+                buff[61] = tmp[2];
+                buff[62] = tmp[3];
+
+                float_buff = float.Parse(tb_Y_R_P.Text);
+                tmp = BitConverter.GetBytes(float_buff);
+                buff[63] = tmp[0];
+                buff[64] = tmp[1];
+                buff[65] = tmp[2];
+                buff[66] = tmp[3];
+                float_buff = float.Parse(tb_Y_R_I.Text);
+                tmp = BitConverter.GetBytes(float_buff);
+                buff[67] = tmp[0];
+                buff[68] = tmp[1];
+                buff[69] = tmp[2];
+                buff[70] = tmp[3];
+                float_buff = float.Parse(tb_Y_R_D.Text);
+                tmp = BitConverter.GetBytes(float_buff);
+                buff[71] = tmp[0];
+                buff[72] = tmp[1];
+                buff[73] = tmp[2];
+                buff[74] = tmp[3];
+
+                buff[75] = 0xff;
+            }
+            catch { }
+
+            for (int i = 0; i < 75; i++)
+            {
+                buff[75] -= buff[i];
+            }
+
+            try
+            {
+                serialPort.Write(buff, 0, 76);
+            }
+            catch { }
+        }
+
+        private void bt_pid_save_Click(object sender, EventArgs e)
+        {
+            byte[] buff = new byte[20];
+            try
+            {
+                buff[0] = 0x47;
+                buff[1] = 0x53;
+                buff[2] = 0x00;
+                buff[3] = 0;
+                buff[4] = 0;
+                buff[5] = 0;
+                buff[6] = 0;
+                buff[7] = 0;
+                buff[8] = 0;
+                buff[9] = 0;
+                buff[10] = 0;
+                buff[11] = 0;
+                buff[12] = 0;
+                buff[13] = 0;
+                buff[14] = 0;
+                buff[15] = 0;
+                buff[16] = 0;
+                buff[17] = 0;
+                buff[18] = 0;
+                buff[19] = 0xff;
+            }
+            catch { }
+
+            for (int i = 0; i < 19; i++)
+            {
+                buff[19] -= buff[i];
+            }
+
+            try
+            {
+                serialPort.Write(Encoding.UTF8.GetString(buff));
+            }
+            catch { }
         }
     }
 }
