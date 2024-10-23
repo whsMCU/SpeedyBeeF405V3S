@@ -348,7 +348,7 @@ namespace SpeedyBeeF405V3S_GUI
             {
                 buff[0] = 0x47;
                 buff[1] = 0x53;
-                buff[2] = 0x00;
+                buff[2] = 0x30;
 
                 float_buff = float.Parse(tb_R_I_P.Text);
                 tmp = BitConverter.GetBytes(float_buff);
