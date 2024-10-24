@@ -174,16 +174,32 @@ namespace SpeedyBeeF405V3S_GUI
                                 lb_debug1.Text = passed_data[19].ToString();
                                 lb_debug2.Text = passed_data[20].ToString();
                                 lb_debug3.Text = passed_data[21].ToString();
-                                if (passed_data[1] != 0)
-                                {
-
-                                }
                             }
                             else if (passed_data[0] == 1)
                             {
-                                //lb_roll.Text = passed_data[1].ToString();
-                                //lb_pitch.Text = passed_data[2].ToString();
-                                //tb_D.Text = passed_data[3].ToString();
+                                tb_FC_R_I_P.Text = passed_data[1].ToString();
+                                tb_FC_R_I_I.Text = passed_data[2].ToString();
+                                tb_FC_R_I_D.Text = passed_data[3].ToString();
+
+                                tb_FC_R_O_P.Text = passed_data[4].ToString();
+                                tb_FC_R_O_I.Text = passed_data[5].ToString();
+                                tb_FC_R_O_D.Text = passed_data[6].ToString();
+
+                                tb_FC_P_I_P.Text = passed_data[7].ToString();
+                                tb_FC_P_I_I.Text = passed_data[8].ToString();
+                                tb_FC_P_I_D.Text = passed_data[9].ToString();
+
+                                tb_FC_P_O_P.Text = passed_data[10].ToString();
+                                tb_FC_P_O_I.Text = passed_data[11].ToString();
+                                tb_FC_P_O_D.Text = passed_data[12].ToString();
+
+                                tb_FC_Y_A_P.Text = passed_data[13].ToString();
+                                tb_FC_Y_A_I.Text = passed_data[14].ToString();
+                                tb_FC_Y_A_D.Text = passed_data[15].ToString();
+
+                                tb_FC_Y_R_P.Text = passed_data[16].ToString();
+                                tb_FC_Y_R_I.Text = passed_data[17].ToString();
+                                tb_FC_Y_R_D.Text = passed_data[18].ToString();
                             }
 
                         }
@@ -518,6 +534,33 @@ namespace SpeedyBeeF405V3S_GUI
                 serialPort.Write(Encoding.UTF8.GetString(buff));
             }
             catch { }
+        }
+
+        private void bt_pid_copy_Click(object sender, EventArgs e)
+        {
+            tb_R_I_P.Text = tb_FC_R_I_P.Text;
+            tb_R_I_I.Text = tb_FC_R_I_I.Text;
+            tb_R_I_D.Text = tb_FC_R_I_D.Text;
+
+            tb_R_O_P.Text = tb_FC_R_O_P.Text;
+            tb_R_O_I.Text = tb_FC_R_O_I.Text;
+            tb_R_O_D.Text = tb_FC_R_O_D.Text;
+
+            tb_P_I_P.Text = tb_FC_P_I_P.Text;
+            tb_P_I_I.Text = tb_FC_P_I_I.Text;
+            tb_P_I_D.Text = tb_FC_P_I_D.Text;
+
+            tb_P_O_P.Text = tb_FC_P_O_P.Text;
+            tb_P_O_I.Text = tb_FC_P_O_I.Text;
+            tb_P_O_D.Text =  tb_FC_P_O_D.Text;
+
+            tb_Y_A_P.Text = tb_FC_Y_A_P.Text;
+            tb_Y_A_I.Text = tb_FC_Y_A_I.Text;
+            tb_Y_A_D.Text = tb_FC_Y_A_D.Text;
+
+            tb_Y_R_P.Text = tb_FC_Y_R_P.Text;
+            tb_Y_R_I.Text = tb_FC_Y_R_I.Text;
+            tb_Y_R_D.Text = tb_FC_Y_R_D.Text;
         }
     }
 }

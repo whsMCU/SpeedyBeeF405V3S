@@ -139,6 +139,59 @@
             this.label15 = new System.Windows.Forms.Label();
             this.lb_debug0 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.bt_pid_save = new System.Windows.Forms.Button();
+            this.bt_pid_copy = new System.Windows.Forms.Button();
+            this.tb_FC_Y_R_D = new System.Windows.Forms.TextBox();
+            this.tb_FC_Y_R_I = new System.Windows.Forms.TextBox();
+            this.tb_FC_Y_R_P = new System.Windows.Forms.TextBox();
+            this.label46 = new System.Windows.Forms.Label();
+            this.label47 = new System.Windows.Forms.Label();
+            this.tb_FC_Y_A_D = new System.Windows.Forms.TextBox();
+            this.tb_FC_Y_A_I = new System.Windows.Forms.TextBox();
+            this.tb_FC_Y_A_P = new System.Windows.Forms.TextBox();
+            this.tb_FC_P_O_D = new System.Windows.Forms.TextBox();
+            this.tb_FC_P_O_I = new System.Windows.Forms.TextBox();
+            this.tb_FC_P_O_P = new System.Windows.Forms.TextBox();
+            this.label48 = new System.Windows.Forms.Label();
+            this.label49 = new System.Windows.Forms.Label();
+            this.tb_FC_P_I_D = new System.Windows.Forms.TextBox();
+            this.tb_FC_P_I_I = new System.Windows.Forms.TextBox();
+            this.tb_FC_P_I_P = new System.Windows.Forms.TextBox();
+            this.tb_FC_R_O_D = new System.Windows.Forms.TextBox();
+            this.tb_FC_R_O_I = new System.Windows.Forms.TextBox();
+            this.tb_FC_R_O_P = new System.Windows.Forms.TextBox();
+            this.label50 = new System.Windows.Forms.Label();
+            this.label51 = new System.Windows.Forms.Label();
+            this.label52 = new System.Windows.Forms.Label();
+            this.tb_FC_R_I_D = new System.Windows.Forms.TextBox();
+            this.label53 = new System.Windows.Forms.Label();
+            this.tb_FC_R_I_I = new System.Windows.Forms.TextBox();
+            this.label54 = new System.Windows.Forms.Label();
+            this.tb_FC_R_I_P = new System.Windows.Forms.TextBox();
+            this.tb_Y_R_D = new System.Windows.Forms.TextBox();
+            this.tb_Y_R_I = new System.Windows.Forms.TextBox();
+            this.tb_Y_R_P = new System.Windows.Forms.TextBox();
+            this.label43 = new System.Windows.Forms.Label();
+            this.label45 = new System.Windows.Forms.Label();
+            this.tb_Y_A_D = new System.Windows.Forms.TextBox();
+            this.tb_Y_A_I = new System.Windows.Forms.TextBox();
+            this.tb_Y_A_P = new System.Windows.Forms.TextBox();
+            this.tb_P_O_D = new System.Windows.Forms.TextBox();
+            this.tb_P_O_I = new System.Windows.Forms.TextBox();
+            this.tb_P_O_P = new System.Windows.Forms.TextBox();
+            this.label34 = new System.Windows.Forms.Label();
+            this.label35 = new System.Windows.Forms.Label();
+            this.tb_P_I_D = new System.Windows.Forms.TextBox();
+            this.tb_P_I_I = new System.Windows.Forms.TextBox();
+            this.tb_P_I_P = new System.Windows.Forms.TextBox();
+            this.tb_R_O_D = new System.Windows.Forms.TextBox();
+            this.tb_R_O_I = new System.Windows.Forms.TextBox();
+            this.tb_R_O_P = new System.Windows.Forms.TextBox();
+            this.label33 = new System.Windows.Forms.Label();
+            this.label32 = new System.Windows.Forms.Label();
+            this.label31 = new System.Windows.Forms.Label();
+            this.label30 = new System.Windows.Forms.Label();
+            this.label29 = new System.Windows.Forms.Label();
             this.bt_pid_recive = new System.Windows.Forms.Button();
             this.bt_pid_send = new System.Windows.Forms.Button();
             this.label39 = new System.Windows.Forms.Label();
@@ -168,60 +221,10 @@
             this.lb_debug1 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.gMapControl1 = new GMap.NET.WindowsForms.GMapControl();
-            this.label29 = new System.Windows.Forms.Label();
-            this.label30 = new System.Windows.Forms.Label();
-            this.label31 = new System.Windows.Forms.Label();
-            this.label32 = new System.Windows.Forms.Label();
-            this.label33 = new System.Windows.Forms.Label();
-            this.tb_R_O_D = new System.Windows.Forms.TextBox();
-            this.tb_R_O_I = new System.Windows.Forms.TextBox();
-            this.tb_R_O_P = new System.Windows.Forms.TextBox();
-            this.tb_P_O_D = new System.Windows.Forms.TextBox();
-            this.tb_P_O_I = new System.Windows.Forms.TextBox();
-            this.tb_P_O_P = new System.Windows.Forms.TextBox();
-            this.label34 = new System.Windows.Forms.Label();
-            this.label35 = new System.Windows.Forms.Label();
-            this.tb_P_I_D = new System.Windows.Forms.TextBox();
-            this.tb_P_I_I = new System.Windows.Forms.TextBox();
-            this.tb_P_I_P = new System.Windows.Forms.TextBox();
-            this.tb_Y_R_D = new System.Windows.Forms.TextBox();
-            this.tb_Y_R_I = new System.Windows.Forms.TextBox();
-            this.tb_Y_R_P = new System.Windows.Forms.TextBox();
-            this.label43 = new System.Windows.Forms.Label();
-            this.label45 = new System.Windows.Forms.Label();
-            this.tb_Y_A_D = new System.Windows.Forms.TextBox();
-            this.tb_Y_A_I = new System.Windows.Forms.TextBox();
-            this.tb_Y_A_P = new System.Windows.Forms.TextBox();
-            this.tb_FC_Y_R_D = new System.Windows.Forms.TextBox();
-            this.tb_FC_Y_R_I = new System.Windows.Forms.TextBox();
-            this.tb_FC_Y_R_P = new System.Windows.Forms.TextBox();
-            this.label46 = new System.Windows.Forms.Label();
-            this.label47 = new System.Windows.Forms.Label();
-            this.tb_FC_Y_A_D = new System.Windows.Forms.TextBox();
-            this.tb_FC_Y_A_I = new System.Windows.Forms.TextBox();
-            this.tb_FC_Y_A_P = new System.Windows.Forms.TextBox();
-            this.tb_FC_P_O_D = new System.Windows.Forms.TextBox();
-            this.tb_FC_P_O_I = new System.Windows.Forms.TextBox();
-            this.tb_FC_P_O_P = new System.Windows.Forms.TextBox();
-            this.label48 = new System.Windows.Forms.Label();
-            this.label49 = new System.Windows.Forms.Label();
-            this.tb_FC_P_I_D = new System.Windows.Forms.TextBox();
-            this.tb_FC_P_I_I = new System.Windows.Forms.TextBox();
-            this.tb_FC_P_I_P = new System.Windows.Forms.TextBox();
-            this.tb_FC_R_O_D = new System.Windows.Forms.TextBox();
-            this.tb_FC_R_O_I = new System.Windows.Forms.TextBox();
-            this.tb_FC_R_O_P = new System.Windows.Forms.TextBox();
-            this.label50 = new System.Windows.Forms.Label();
-            this.label51 = new System.Windows.Forms.Label();
-            this.label52 = new System.Windows.Forms.Label();
-            this.tb_FC_R_I_D = new System.Windows.Forms.TextBox();
-            this.label53 = new System.Windows.Forms.Label();
-            this.tb_FC_R_I_I = new System.Windows.Forms.TextBox();
-            this.label54 = new System.Windows.Forms.Label();
-            this.tb_FC_R_I_P = new System.Windows.Forms.TextBox();
-            this.button2 = new System.Windows.Forms.Button();
-            this.bt_pid_save = new System.Windows.Forms.Button();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -237,6 +240,9 @@
             this.groupBox1.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox6.SuspendLayout();
+            this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
             this.SuspendLayout();
             // 
             // OpenClose
@@ -984,7 +990,7 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.bt_pid_save);
-            this.groupBox1.Controls.Add(this.button2);
+            this.groupBox1.Controls.Add(this.bt_pid_copy);
             this.groupBox1.Controls.Add(this.tb_FC_Y_R_D);
             this.groupBox1.Controls.Add(this.tb_FC_Y_R_I);
             this.groupBox1.Controls.Add(this.tb_FC_Y_R_P);
@@ -1044,533 +1050,32 @@
             this.groupBox1.Controls.Add(this.tb_R_I_I);
             this.groupBox1.Controls.Add(this.label41);
             this.groupBox1.Controls.Add(this.tb_R_I_P);
-            this.groupBox1.Location = new System.Drawing.Point(369, 306);
+            this.groupBox1.Location = new System.Drawing.Point(11, 209);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(699, 260);
             this.groupBox1.TabIndex = 84;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "PID상수";
             // 
-            // bt_pid_recive
-            // 
-            this.bt_pid_recive.Location = new System.Drawing.Point(502, 228);
-            this.bt_pid_recive.Name = "bt_pid_recive";
-            this.bt_pid_recive.Size = new System.Drawing.Size(115, 23);
-            this.bt_pid_recive.TabIndex = 53;
-            this.bt_pid_recive.Text = "데이터 가져오기";
-            this.bt_pid_recive.UseVisualStyleBackColor = true;
-            this.bt_pid_recive.Click += new System.EventHandler(this.bt_pid_recive_Click);
-            // 
-            // bt_pid_send
-            // 
-            this.bt_pid_send.Location = new System.Drawing.Point(92, 229);
-            this.bt_pid_send.Name = "bt_pid_send";
-            this.bt_pid_send.Size = new System.Drawing.Size(102, 23);
-            this.bt_pid_send.TabIndex = 52;
-            this.bt_pid_send.Text = "데이터 보내기";
-            this.bt_pid_send.UseVisualStyleBackColor = true;
-            this.bt_pid_send.Click += new System.EventHandler(this.bt_pid_send_Click);
-            // 
-            // label39
-            // 
-            this.label39.AutoSize = true;
-            this.label39.Font = new System.Drawing.Font("굴림", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.label39.Location = new System.Drawing.Point(277, 18);
-            this.label39.Name = "label39";
-            this.label39.Size = new System.Drawing.Size(17, 14);
-            this.label39.TabIndex = 51;
-            this.label39.Text = "D";
-            // 
-            // tb_R_I_D
-            // 
-            this.tb_R_I_D.Location = new System.Drawing.Point(260, 42);
-            this.tb_R_I_D.Name = "tb_R_I_D";
-            this.tb_R_I_D.Size = new System.Drawing.Size(45, 21);
-            this.tb_R_I_D.TabIndex = 50;
-            // 
-            // label40
-            // 
-            this.label40.AutoSize = true;
-            this.label40.Font = new System.Drawing.Font("굴림", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.label40.Location = new System.Drawing.Point(205, 18);
-            this.label40.Name = "label40";
-            this.label40.Size = new System.Drawing.Size(10, 14);
-            this.label40.TabIndex = 49;
-            this.label40.Text = "I";
-            // 
-            // tb_R_I_I
-            // 
-            this.tb_R_I_I.Location = new System.Drawing.Point(189, 42);
-            this.tb_R_I_I.Name = "tb_R_I_I";
-            this.tb_R_I_I.Size = new System.Drawing.Size(45, 21);
-            this.tb_R_I_I.TabIndex = 48;
-            // 
-            // label41
-            // 
-            this.label41.AutoSize = true;
-            this.label41.Font = new System.Drawing.Font("굴림", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.label41.Location = new System.Drawing.Point(133, 18);
-            this.label41.Name = "label41";
-            this.label41.Size = new System.Drawing.Size(17, 14);
-            this.label41.TabIndex = 47;
-            this.label41.Text = "P";
-            // 
-            // tb_R_I_P
-            // 
-            this.tb_R_I_P.Location = new System.Drawing.Point(118, 42);
-            this.tb_R_I_P.Name = "tb_R_I_P";
-            this.tb_R_I_P.Size = new System.Drawing.Size(45, 21);
-            this.tb_R_I_P.TabIndex = 46;
-            // 
-            // rx_timer_blink
-            // 
-            this.rx_timer_blink.Enabled = true;
-            this.rx_timer_blink.Tick += new System.EventHandler(this.Rx_timer_blink_Tick);
-            // 
-            // timer_status
-            // 
-            this.timer_status.Enabled = true;
-            this.timer_status.Tick += new System.EventHandler(this.timer_status_Tick);
-            // 
-            // flight_timer
-            // 
-            this.flight_timer.Enabled = true;
-            this.flight_timer.Interval = 1000;
-            this.flight_timer.Tick += new System.EventHandler(this.flight_timer_Tick);
-            // 
-            // groupBox5
-            // 
-            this.groupBox5.Controls.Add(this.lb_motor3);
-            this.groupBox5.Controls.Add(this.lb_motor2);
-            this.groupBox5.Controls.Add(this.lb_motor1);
-            this.groupBox5.Controls.Add(this.lb_motor0);
-            this.groupBox5.Controls.Add(this.label28);
-            this.groupBox5.Controls.Add(this.label23);
-            this.groupBox5.Controls.Add(this.label19);
-            this.groupBox5.Controls.Add(this.label16);
-            this.groupBox5.Location = new System.Drawing.Point(369, 110);
-            this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(335, 177);
-            this.groupBox5.TabIndex = 85;
-            this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "MOTOR";
-            // 
-            // lb_motor3
-            // 
-            this.lb_motor3.AutoSize = true;
-            this.lb_motor3.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_motor3.Location = new System.Drawing.Point(208, 117);
-            this.lb_motor3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lb_motor3.Name = "lb_motor3";
-            this.lb_motor3.Size = new System.Drawing.Size(16, 21);
-            this.lb_motor3.TabIndex = 95;
-            this.lb_motor3.Text = "-";
-            // 
-            // lb_motor2
-            // 
-            this.lb_motor2.AutoSize = true;
-            this.lb_motor2.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_motor2.Location = new System.Drawing.Point(208, 38);
-            this.lb_motor2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lb_motor2.Name = "lb_motor2";
-            this.lb_motor2.Size = new System.Drawing.Size(16, 21);
-            this.lb_motor2.TabIndex = 94;
-            this.lb_motor2.Text = "-";
-            // 
-            // lb_motor1
-            // 
-            this.lb_motor1.AutoSize = true;
-            this.lb_motor1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_motor1.Location = new System.Drawing.Point(48, 117);
-            this.lb_motor1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lb_motor1.Name = "lb_motor1";
-            this.lb_motor1.Size = new System.Drawing.Size(16, 21);
-            this.lb_motor1.TabIndex = 93;
-            this.lb_motor1.Text = "-";
-            // 
-            // lb_motor0
-            // 
-            this.lb_motor0.AutoSize = true;
-            this.lb_motor0.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_motor0.Location = new System.Drawing.Point(48, 38);
-            this.lb_motor0.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lb_motor0.Name = "lb_motor0";
-            this.lb_motor0.Size = new System.Drawing.Size(16, 21);
-            this.lb_motor0.TabIndex = 92;
-            this.lb_motor0.Text = "-";
-            // 
-            // label28
-            // 
-            this.label28.AutoSize = true;
-            this.label28.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label28.Location = new System.Drawing.Point(174, 140);
-            this.label28.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(83, 21);
-            this.label28.TabIndex = 91;
-            this.label28.Text = "MOTOR[3]";
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label23.Location = new System.Drawing.Point(19, 139);
-            this.label23.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(83, 21);
-            this.label23.TabIndex = 90;
-            this.label23.Text = "MOTOR[1]";
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label19.Location = new System.Drawing.Point(174, 65);
-            this.label19.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(83, 21);
-            this.label19.TabIndex = 89;
-            this.label19.Text = "MOTOR[2]";
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label16.Location = new System.Drawing.Point(19, 65);
-            this.label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(83, 21);
-            this.label16.TabIndex = 88;
-            this.label16.Text = "MOTOR[0]";
-            // 
-            // groupBox6
-            // 
-            this.groupBox6.Controls.Add(this.label21);
-            this.groupBox6.Controls.Add(this.lb_debug3);
-            this.groupBox6.Controls.Add(this.label17);
-            this.groupBox6.Controls.Add(this.lb_debug2);
-            this.groupBox6.Controls.Add(this.label14);
-            this.groupBox6.Controls.Add(this.lb_debug1);
-            this.groupBox6.Controls.Add(this.label12);
-            this.groupBox6.Controls.Add(this.lb_debug0);
-            this.groupBox6.Location = new System.Drawing.Point(733, 110);
-            this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(335, 177);
-            this.groupBox6.TabIndex = 86;
-            this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "DEBUG";
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label21.Location = new System.Drawing.Point(7, 128);
-            this.label21.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(79, 21);
-            this.label21.TabIndex = 93;
-            this.label21.Text = "DEBUG[3]";
-            // 
-            // lb_debug3
-            // 
-            this.lb_debug3.AutoSize = true;
-            this.lb_debug3.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_debug3.Location = new System.Drawing.Point(115, 128);
-            this.lb_debug3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lb_debug3.Name = "lb_debug3";
-            this.lb_debug3.Size = new System.Drawing.Size(16, 21);
-            this.lb_debug3.TabIndex = 92;
-            this.lb_debug3.Text = "-";
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label17.Location = new System.Drawing.Point(7, 96);
-            this.label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(79, 21);
-            this.label17.TabIndex = 91;
-            this.label17.Text = "DEBUG[2]";
-            // 
-            // lb_debug2
-            // 
-            this.lb_debug2.AutoSize = true;
-            this.lb_debug2.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_debug2.Location = new System.Drawing.Point(115, 96);
-            this.lb_debug2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lb_debug2.Name = "lb_debug2";
-            this.lb_debug2.Size = new System.Drawing.Size(16, 21);
-            this.lb_debug2.TabIndex = 90;
-            this.lb_debug2.Text = "-";
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(7, 61);
-            this.label14.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(79, 21);
-            this.label14.TabIndex = 89;
-            this.label14.Text = "DEBUG[1]";
-            // 
-            // lb_debug1
-            // 
-            this.lb_debug1.AutoSize = true;
-            this.lb_debug1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_debug1.Location = new System.Drawing.Point(115, 61);
-            this.lb_debug1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lb_debug1.Name = "lb_debug1";
-            this.lb_debug1.Size = new System.Drawing.Size(16, 21);
-            this.lb_debug1.TabIndex = 88;
-            this.lb_debug1.Text = "-";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(7, 28);
-            this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(79, 21);
-            this.label12.TabIndex = 87;
-            this.label12.Text = "DEBUG[0]";
-            // 
-            // contextMenuStrip1
-            // 
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
-            // 
-            // gMapControl1
-            // 
-            this.gMapControl1.Bearing = 0F;
-            this.gMapControl1.CanDragMap = true;
-            this.gMapControl1.EmptyTileColor = System.Drawing.Color.Navy;
-            this.gMapControl1.GrayScaleMode = false;
-            this.gMapControl1.HelperLineOption = GMap.NET.WindowsForms.HelperLineOptions.DontShow;
-            this.gMapControl1.LevelsKeepInMemory = 5;
-            this.gMapControl1.Location = new System.Drawing.Point(369, 573);
-            this.gMapControl1.MarkersEnabled = true;
-            this.gMapControl1.MaxZoom = 2;
-            this.gMapControl1.MinZoom = 2;
-            this.gMapControl1.MouseWheelZoomEnabled = true;
-            this.gMapControl1.MouseWheelZoomType = GMap.NET.MouseWheelZoomType.MousePositionAndCenter;
-            this.gMapControl1.Name = "gMapControl1";
-            this.gMapControl1.NegativeMode = false;
-            this.gMapControl1.PolygonsEnabled = true;
-            this.gMapControl1.RetryLoadTile = 0;
-            this.gMapControl1.RoutesEnabled = true;
-            this.gMapControl1.ScaleMode = GMap.NET.WindowsForms.ScaleModes.Integer;
-            this.gMapControl1.SelectedAreaFillColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(65)))), ((int)(((byte)(105)))), ((int)(((byte)(225)))));
-            this.gMapControl1.ShowTileGridLines = false;
-            this.gMapControl1.Size = new System.Drawing.Size(322, 76);
-            this.gMapControl1.TabIndex = 87;
-            this.gMapControl1.Zoom = 0D;
-            // 
-            // label29
-            // 
-            this.label29.AutoSize = true;
-            this.label29.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label29.Location = new System.Drawing.Point(7, 61);
-            this.label29.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(48, 21);
-            this.label29.TabIndex = 96;
-            this.label29.Text = "ROLL";
-            // 
-            // label30
-            // 
-            this.label30.AutoSize = true;
-            this.label30.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label30.Location = new System.Drawing.Point(7, 123);
-            this.label30.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(55, 21);
-            this.label30.TabIndex = 97;
-            this.label30.Text = "PITCH";
-            // 
-            // label31
-            // 
-            this.label31.AutoSize = true;
-            this.label31.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label31.Location = new System.Drawing.Point(7, 184);
-            this.label31.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(45, 21);
-            this.label31.TabIndex = 98;
-            this.label31.Text = "YAW";
-            // 
-            // label32
-            // 
-            this.label32.AutoSize = true;
-            this.label32.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label32.Location = new System.Drawing.Point(65, 45);
-            this.label32.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(37, 17);
-            this.label32.TabIndex = 99;
-            this.label32.Text = "Inner";
-            // 
-            // label33
-            // 
-            this.label33.AutoSize = true;
-            this.label33.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label33.Location = new System.Drawing.Point(65, 69);
-            this.label33.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(41, 17);
-            this.label33.TabIndex = 100;
-            this.label33.Text = "Outer";
-            // 
-            // tb_R_O_D
-            // 
-            this.tb_R_O_D.Location = new System.Drawing.Point(260, 66);
-            this.tb_R_O_D.Name = "tb_R_O_D";
-            this.tb_R_O_D.Size = new System.Drawing.Size(45, 21);
-            this.tb_R_O_D.TabIndex = 103;
-            // 
-            // tb_R_O_I
-            // 
-            this.tb_R_O_I.Location = new System.Drawing.Point(189, 66);
-            this.tb_R_O_I.Name = "tb_R_O_I";
-            this.tb_R_O_I.Size = new System.Drawing.Size(45, 21);
-            this.tb_R_O_I.TabIndex = 102;
-            // 
-            // tb_R_O_P
-            // 
-            this.tb_R_O_P.Location = new System.Drawing.Point(118, 66);
-            this.tb_R_O_P.Name = "tb_R_O_P";
-            this.tb_R_O_P.Size = new System.Drawing.Size(45, 21);
-            this.tb_R_O_P.TabIndex = 101;
-            // 
-            // tb_P_O_D
-            // 
-            this.tb_P_O_D.Location = new System.Drawing.Point(258, 130);
-            this.tb_P_O_D.Name = "tb_P_O_D";
-            this.tb_P_O_D.Size = new System.Drawing.Size(45, 21);
-            this.tb_P_O_D.TabIndex = 111;
-            // 
-            // tb_P_O_I
-            // 
-            this.tb_P_O_I.Location = new System.Drawing.Point(187, 130);
-            this.tb_P_O_I.Name = "tb_P_O_I";
-            this.tb_P_O_I.Size = new System.Drawing.Size(45, 21);
-            this.tb_P_O_I.TabIndex = 110;
-            // 
-            // tb_P_O_P
-            // 
-            this.tb_P_O_P.Location = new System.Drawing.Point(116, 130);
-            this.tb_P_O_P.Name = "tb_P_O_P";
-            this.tb_P_O_P.Size = new System.Drawing.Size(45, 21);
-            this.tb_P_O_P.TabIndex = 109;
-            // 
-            // label34
-            // 
-            this.label34.AutoSize = true;
-            this.label34.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label34.Location = new System.Drawing.Point(63, 133);
-            this.label34.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(41, 17);
-            this.label34.TabIndex = 108;
-            this.label34.Text = "Outer";
-            // 
-            // label35
-            // 
-            this.label35.AutoSize = true;
-            this.label35.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label35.Location = new System.Drawing.Point(63, 109);
-            this.label35.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(37, 17);
-            this.label35.TabIndex = 107;
-            this.label35.Text = "Inner";
-            // 
-            // tb_P_I_D
-            // 
-            this.tb_P_I_D.Location = new System.Drawing.Point(258, 106);
-            this.tb_P_I_D.Name = "tb_P_I_D";
-            this.tb_P_I_D.Size = new System.Drawing.Size(45, 21);
-            this.tb_P_I_D.TabIndex = 106;
-            // 
-            // tb_P_I_I
-            // 
-            this.tb_P_I_I.Location = new System.Drawing.Point(187, 106);
-            this.tb_P_I_I.Name = "tb_P_I_I";
-            this.tb_P_I_I.Size = new System.Drawing.Size(45, 21);
-            this.tb_P_I_I.TabIndex = 105;
-            // 
-            // tb_P_I_P
-            // 
-            this.tb_P_I_P.Location = new System.Drawing.Point(116, 106);
-            this.tb_P_I_P.Name = "tb_P_I_P";
-            this.tb_P_I_P.Size = new System.Drawing.Size(45, 21);
-            this.tb_P_I_P.TabIndex = 104;
-            // 
-            // tb_Y_R_D
-            // 
-            this.tb_Y_R_D.Location = new System.Drawing.Point(258, 197);
-            this.tb_Y_R_D.Name = "tb_Y_R_D";
-            this.tb_Y_R_D.Size = new System.Drawing.Size(45, 21);
-            this.tb_Y_R_D.TabIndex = 119;
-            // 
-            // tb_Y_R_I
-            // 
-            this.tb_Y_R_I.Location = new System.Drawing.Point(187, 197);
-            this.tb_Y_R_I.Name = "tb_Y_R_I";
-            this.tb_Y_R_I.Size = new System.Drawing.Size(45, 21);
-            this.tb_Y_R_I.TabIndex = 118;
-            // 
-            // tb_Y_R_P
-            // 
-            this.tb_Y_R_P.Location = new System.Drawing.Point(116, 197);
-            this.tb_Y_R_P.Name = "tb_Y_R_P";
-            this.tb_Y_R_P.Size = new System.Drawing.Size(45, 21);
-            this.tb_Y_R_P.TabIndex = 117;
-            // 
-            // label43
-            // 
-            this.label43.AutoSize = true;
-            this.label43.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label43.Location = new System.Drawing.Point(63, 200);
-            this.label43.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label43.Name = "label43";
-            this.label43.Size = new System.Drawing.Size(34, 17);
-            this.label43.TabIndex = 116;
-            this.label43.Text = "Rate";
-            // 
-            // label45
-            // 
-            this.label45.AutoSize = true;
-            this.label45.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label45.Location = new System.Drawing.Point(63, 176);
-            this.label45.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label45.Name = "label45";
-            this.label45.Size = new System.Drawing.Size(41, 17);
-            this.label45.TabIndex = 115;
-            this.label45.Text = "Angle";
-            // 
-            // tb_Y_A_D
-            // 
-            this.tb_Y_A_D.Location = new System.Drawing.Point(258, 173);
-            this.tb_Y_A_D.Name = "tb_Y_A_D";
-            this.tb_Y_A_D.Size = new System.Drawing.Size(45, 21);
-            this.tb_Y_A_D.TabIndex = 114;
-            // 
-            // tb_Y_A_I
-            // 
-            this.tb_Y_A_I.Location = new System.Drawing.Point(187, 173);
-            this.tb_Y_A_I.Name = "tb_Y_A_I";
-            this.tb_Y_A_I.Size = new System.Drawing.Size(45, 21);
-            this.tb_Y_A_I.TabIndex = 113;
-            // 
-            // tb_Y_A_P
-            // 
-            this.tb_Y_A_P.Location = new System.Drawing.Point(116, 173);
-            this.tb_Y_A_P.Name = "tb_Y_A_P";
-            this.tb_Y_A_P.Size = new System.Drawing.Size(45, 21);
-            this.tb_Y_A_P.TabIndex = 112;
+            // bt_pid_save
+            // 
+            this.bt_pid_save.Location = new System.Drawing.Point(220, 230);
+            this.bt_pid_save.Name = "bt_pid_save";
+            this.bt_pid_save.Size = new System.Drawing.Size(102, 23);
+            this.bt_pid_save.TabIndex = 148;
+            this.bt_pid_save.Text = "데이터 저장하기";
+            this.bt_pid_save.UseVisualStyleBackColor = true;
+            this.bt_pid_save.Click += new System.EventHandler(this.bt_pid_save_Click);
+            // 
+            // bt_pid_copy
+            // 
+            this.bt_pid_copy.Location = new System.Drawing.Point(323, 106);
+            this.bt_pid_copy.Name = "bt_pid_copy";
+            this.bt_pid_copy.Size = new System.Drawing.Size(81, 41);
+            this.bt_pid_copy.TabIndex = 147;
+            this.bt_pid_copy.Text = "←Copy←";
+            this.bt_pid_copy.UseVisualStyleBackColor = true;
+            this.bt_pid_copy.Click += new System.EventHandler(this.bt_pid_copy_Click);
             // 
             // tb_FC_Y_R_D
             // 
@@ -1794,35 +1299,568 @@
             this.tb_FC_R_I_P.Size = new System.Drawing.Size(45, 21);
             this.tb_FC_R_I_P.TabIndex = 120;
             // 
-            // button2
+            // tb_Y_R_D
             // 
-            this.button2.Location = new System.Drawing.Point(323, 106);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(81, 41);
-            this.button2.TabIndex = 147;
-            this.button2.Text = "←Copy←";
-            this.button2.UseVisualStyleBackColor = true;
+            this.tb_Y_R_D.Location = new System.Drawing.Point(258, 197);
+            this.tb_Y_R_D.Name = "tb_Y_R_D";
+            this.tb_Y_R_D.Size = new System.Drawing.Size(45, 21);
+            this.tb_Y_R_D.TabIndex = 119;
             // 
-            // bt_pid_save
+            // tb_Y_R_I
             // 
-            this.bt_pid_save.Location = new System.Drawing.Point(220, 230);
-            this.bt_pid_save.Name = "bt_pid_save";
-            this.bt_pid_save.Size = new System.Drawing.Size(102, 23);
-            this.bt_pid_save.TabIndex = 148;
-            this.bt_pid_save.Text = "데이터 저장하기";
-            this.bt_pid_save.UseVisualStyleBackColor = true;
-            this.bt_pid_save.Click += new System.EventHandler(this.bt_pid_save_Click);
+            this.tb_Y_R_I.Location = new System.Drawing.Point(187, 197);
+            this.tb_Y_R_I.Name = "tb_Y_R_I";
+            this.tb_Y_R_I.Size = new System.Drawing.Size(45, 21);
+            this.tb_Y_R_I.TabIndex = 118;
+            // 
+            // tb_Y_R_P
+            // 
+            this.tb_Y_R_P.Location = new System.Drawing.Point(116, 197);
+            this.tb_Y_R_P.Name = "tb_Y_R_P";
+            this.tb_Y_R_P.Size = new System.Drawing.Size(45, 21);
+            this.tb_Y_R_P.TabIndex = 117;
+            // 
+            // label43
+            // 
+            this.label43.AutoSize = true;
+            this.label43.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label43.Location = new System.Drawing.Point(63, 200);
+            this.label43.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label43.Name = "label43";
+            this.label43.Size = new System.Drawing.Size(34, 17);
+            this.label43.TabIndex = 116;
+            this.label43.Text = "Rate";
+            // 
+            // label45
+            // 
+            this.label45.AutoSize = true;
+            this.label45.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label45.Location = new System.Drawing.Point(63, 176);
+            this.label45.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label45.Name = "label45";
+            this.label45.Size = new System.Drawing.Size(41, 17);
+            this.label45.TabIndex = 115;
+            this.label45.Text = "Angle";
+            // 
+            // tb_Y_A_D
+            // 
+            this.tb_Y_A_D.Location = new System.Drawing.Point(258, 173);
+            this.tb_Y_A_D.Name = "tb_Y_A_D";
+            this.tb_Y_A_D.Size = new System.Drawing.Size(45, 21);
+            this.tb_Y_A_D.TabIndex = 114;
+            // 
+            // tb_Y_A_I
+            // 
+            this.tb_Y_A_I.Location = new System.Drawing.Point(187, 173);
+            this.tb_Y_A_I.Name = "tb_Y_A_I";
+            this.tb_Y_A_I.Size = new System.Drawing.Size(45, 21);
+            this.tb_Y_A_I.TabIndex = 113;
+            // 
+            // tb_Y_A_P
+            // 
+            this.tb_Y_A_P.Location = new System.Drawing.Point(116, 173);
+            this.tb_Y_A_P.Name = "tb_Y_A_P";
+            this.tb_Y_A_P.Size = new System.Drawing.Size(45, 21);
+            this.tb_Y_A_P.TabIndex = 112;
+            // 
+            // tb_P_O_D
+            // 
+            this.tb_P_O_D.Location = new System.Drawing.Point(258, 130);
+            this.tb_P_O_D.Name = "tb_P_O_D";
+            this.tb_P_O_D.Size = new System.Drawing.Size(45, 21);
+            this.tb_P_O_D.TabIndex = 111;
+            // 
+            // tb_P_O_I
+            // 
+            this.tb_P_O_I.Location = new System.Drawing.Point(187, 130);
+            this.tb_P_O_I.Name = "tb_P_O_I";
+            this.tb_P_O_I.Size = new System.Drawing.Size(45, 21);
+            this.tb_P_O_I.TabIndex = 110;
+            // 
+            // tb_P_O_P
+            // 
+            this.tb_P_O_P.Location = new System.Drawing.Point(116, 130);
+            this.tb_P_O_P.Name = "tb_P_O_P";
+            this.tb_P_O_P.Size = new System.Drawing.Size(45, 21);
+            this.tb_P_O_P.TabIndex = 109;
+            // 
+            // label34
+            // 
+            this.label34.AutoSize = true;
+            this.label34.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label34.Location = new System.Drawing.Point(63, 133);
+            this.label34.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(41, 17);
+            this.label34.TabIndex = 108;
+            this.label34.Text = "Outer";
+            // 
+            // label35
+            // 
+            this.label35.AutoSize = true;
+            this.label35.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label35.Location = new System.Drawing.Point(63, 109);
+            this.label35.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label35.Name = "label35";
+            this.label35.Size = new System.Drawing.Size(37, 17);
+            this.label35.TabIndex = 107;
+            this.label35.Text = "Inner";
+            // 
+            // tb_P_I_D
+            // 
+            this.tb_P_I_D.Location = new System.Drawing.Point(258, 106);
+            this.tb_P_I_D.Name = "tb_P_I_D";
+            this.tb_P_I_D.Size = new System.Drawing.Size(45, 21);
+            this.tb_P_I_D.TabIndex = 106;
+            // 
+            // tb_P_I_I
+            // 
+            this.tb_P_I_I.Location = new System.Drawing.Point(187, 106);
+            this.tb_P_I_I.Name = "tb_P_I_I";
+            this.tb_P_I_I.Size = new System.Drawing.Size(45, 21);
+            this.tb_P_I_I.TabIndex = 105;
+            // 
+            // tb_P_I_P
+            // 
+            this.tb_P_I_P.Location = new System.Drawing.Point(116, 106);
+            this.tb_P_I_P.Name = "tb_P_I_P";
+            this.tb_P_I_P.Size = new System.Drawing.Size(45, 21);
+            this.tb_P_I_P.TabIndex = 104;
+            // 
+            // tb_R_O_D
+            // 
+            this.tb_R_O_D.Location = new System.Drawing.Point(260, 66);
+            this.tb_R_O_D.Name = "tb_R_O_D";
+            this.tb_R_O_D.Size = new System.Drawing.Size(45, 21);
+            this.tb_R_O_D.TabIndex = 103;
+            // 
+            // tb_R_O_I
+            // 
+            this.tb_R_O_I.Location = new System.Drawing.Point(189, 66);
+            this.tb_R_O_I.Name = "tb_R_O_I";
+            this.tb_R_O_I.Size = new System.Drawing.Size(45, 21);
+            this.tb_R_O_I.TabIndex = 102;
+            // 
+            // tb_R_O_P
+            // 
+            this.tb_R_O_P.Location = new System.Drawing.Point(118, 66);
+            this.tb_R_O_P.Name = "tb_R_O_P";
+            this.tb_R_O_P.Size = new System.Drawing.Size(45, 21);
+            this.tb_R_O_P.TabIndex = 101;
+            // 
+            // label33
+            // 
+            this.label33.AutoSize = true;
+            this.label33.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label33.Location = new System.Drawing.Point(65, 69);
+            this.label33.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(41, 17);
+            this.label33.TabIndex = 100;
+            this.label33.Text = "Outer";
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label32.Location = new System.Drawing.Point(65, 45);
+            this.label32.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(37, 17);
+            this.label32.TabIndex = 99;
+            this.label32.Text = "Inner";
+            // 
+            // label31
+            // 
+            this.label31.AutoSize = true;
+            this.label31.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label31.Location = new System.Drawing.Point(7, 184);
+            this.label31.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(45, 21);
+            this.label31.TabIndex = 98;
+            this.label31.Text = "YAW";
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label30.Location = new System.Drawing.Point(7, 123);
+            this.label30.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(55, 21);
+            this.label30.TabIndex = 97;
+            this.label30.Text = "PITCH";
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label29.Location = new System.Drawing.Point(7, 61);
+            this.label29.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(48, 21);
+            this.label29.TabIndex = 96;
+            this.label29.Text = "ROLL";
+            // 
+            // bt_pid_recive
+            // 
+            this.bt_pid_recive.Location = new System.Drawing.Point(502, 228);
+            this.bt_pid_recive.Name = "bt_pid_recive";
+            this.bt_pid_recive.Size = new System.Drawing.Size(115, 23);
+            this.bt_pid_recive.TabIndex = 53;
+            this.bt_pid_recive.Text = "데이터 가져오기";
+            this.bt_pid_recive.UseVisualStyleBackColor = true;
+            this.bt_pid_recive.Click += new System.EventHandler(this.bt_pid_recive_Click);
+            // 
+            // bt_pid_send
+            // 
+            this.bt_pid_send.Location = new System.Drawing.Point(92, 229);
+            this.bt_pid_send.Name = "bt_pid_send";
+            this.bt_pid_send.Size = new System.Drawing.Size(102, 23);
+            this.bt_pid_send.TabIndex = 52;
+            this.bt_pid_send.Text = "데이터 보내기";
+            this.bt_pid_send.UseVisualStyleBackColor = true;
+            this.bt_pid_send.Click += new System.EventHandler(this.bt_pid_send_Click);
+            // 
+            // label39
+            // 
+            this.label39.AutoSize = true;
+            this.label39.Font = new System.Drawing.Font("굴림", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label39.Location = new System.Drawing.Point(277, 18);
+            this.label39.Name = "label39";
+            this.label39.Size = new System.Drawing.Size(17, 14);
+            this.label39.TabIndex = 51;
+            this.label39.Text = "D";
+            // 
+            // tb_R_I_D
+            // 
+            this.tb_R_I_D.Location = new System.Drawing.Point(260, 42);
+            this.tb_R_I_D.Name = "tb_R_I_D";
+            this.tb_R_I_D.Size = new System.Drawing.Size(45, 21);
+            this.tb_R_I_D.TabIndex = 50;
+            // 
+            // label40
+            // 
+            this.label40.AutoSize = true;
+            this.label40.Font = new System.Drawing.Font("굴림", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label40.Location = new System.Drawing.Point(205, 18);
+            this.label40.Name = "label40";
+            this.label40.Size = new System.Drawing.Size(10, 14);
+            this.label40.TabIndex = 49;
+            this.label40.Text = "I";
+            // 
+            // tb_R_I_I
+            // 
+            this.tb_R_I_I.Location = new System.Drawing.Point(189, 42);
+            this.tb_R_I_I.Name = "tb_R_I_I";
+            this.tb_R_I_I.Size = new System.Drawing.Size(45, 21);
+            this.tb_R_I_I.TabIndex = 48;
+            // 
+            // label41
+            // 
+            this.label41.AutoSize = true;
+            this.label41.Font = new System.Drawing.Font("굴림", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label41.Location = new System.Drawing.Point(133, 18);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(17, 14);
+            this.label41.TabIndex = 47;
+            this.label41.Text = "P";
+            // 
+            // tb_R_I_P
+            // 
+            this.tb_R_I_P.Location = new System.Drawing.Point(118, 42);
+            this.tb_R_I_P.Name = "tb_R_I_P";
+            this.tb_R_I_P.Size = new System.Drawing.Size(45, 21);
+            this.tb_R_I_P.TabIndex = 46;
+            // 
+            // rx_timer_blink
+            // 
+            this.rx_timer_blink.Enabled = true;
+            this.rx_timer_blink.Tick += new System.EventHandler(this.Rx_timer_blink_Tick);
+            // 
+            // timer_status
+            // 
+            this.timer_status.Enabled = true;
+            this.timer_status.Tick += new System.EventHandler(this.timer_status_Tick);
+            // 
+            // flight_timer
+            // 
+            this.flight_timer.Enabled = true;
+            this.flight_timer.Interval = 1000;
+            this.flight_timer.Tick += new System.EventHandler(this.flight_timer_Tick);
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.lb_motor3);
+            this.groupBox5.Controls.Add(this.lb_motor2);
+            this.groupBox5.Controls.Add(this.lb_motor1);
+            this.groupBox5.Controls.Add(this.lb_motor0);
+            this.groupBox5.Controls.Add(this.label28);
+            this.groupBox5.Controls.Add(this.label23);
+            this.groupBox5.Controls.Add(this.label19);
+            this.groupBox5.Controls.Add(this.label16);
+            this.groupBox5.Location = new System.Drawing.Point(11, 22);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(335, 177);
+            this.groupBox5.TabIndex = 85;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "MOTOR";
+            // 
+            // lb_motor3
+            // 
+            this.lb_motor3.AutoSize = true;
+            this.lb_motor3.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_motor3.Location = new System.Drawing.Point(208, 117);
+            this.lb_motor3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_motor3.Name = "lb_motor3";
+            this.lb_motor3.Size = new System.Drawing.Size(16, 21);
+            this.lb_motor3.TabIndex = 95;
+            this.lb_motor3.Text = "-";
+            // 
+            // lb_motor2
+            // 
+            this.lb_motor2.AutoSize = true;
+            this.lb_motor2.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_motor2.Location = new System.Drawing.Point(208, 38);
+            this.lb_motor2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_motor2.Name = "lb_motor2";
+            this.lb_motor2.Size = new System.Drawing.Size(16, 21);
+            this.lb_motor2.TabIndex = 94;
+            this.lb_motor2.Text = "-";
+            // 
+            // lb_motor1
+            // 
+            this.lb_motor1.AutoSize = true;
+            this.lb_motor1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_motor1.Location = new System.Drawing.Point(48, 117);
+            this.lb_motor1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_motor1.Name = "lb_motor1";
+            this.lb_motor1.Size = new System.Drawing.Size(16, 21);
+            this.lb_motor1.TabIndex = 93;
+            this.lb_motor1.Text = "-";
+            // 
+            // lb_motor0
+            // 
+            this.lb_motor0.AutoSize = true;
+            this.lb_motor0.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_motor0.Location = new System.Drawing.Point(48, 38);
+            this.lb_motor0.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_motor0.Name = "lb_motor0";
+            this.lb_motor0.Size = new System.Drawing.Size(16, 21);
+            this.lb_motor0.TabIndex = 92;
+            this.lb_motor0.Text = "-";
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label28.Location = new System.Drawing.Point(174, 140);
+            this.label28.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(83, 21);
+            this.label28.TabIndex = 91;
+            this.label28.Text = "MOTOR[3]";
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label23.Location = new System.Drawing.Point(19, 139);
+            this.label23.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(83, 21);
+            this.label23.TabIndex = 90;
+            this.label23.Text = "MOTOR[1]";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label19.Location = new System.Drawing.Point(174, 65);
+            this.label19.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(83, 21);
+            this.label19.TabIndex = 89;
+            this.label19.Text = "MOTOR[2]";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label16.Location = new System.Drawing.Point(19, 65);
+            this.label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(83, 21);
+            this.label16.TabIndex = 88;
+            this.label16.Text = "MOTOR[0]";
+            // 
+            // groupBox6
+            // 
+            this.groupBox6.Controls.Add(this.label21);
+            this.groupBox6.Controls.Add(this.lb_debug3);
+            this.groupBox6.Controls.Add(this.label17);
+            this.groupBox6.Controls.Add(this.lb_debug2);
+            this.groupBox6.Controls.Add(this.label14);
+            this.groupBox6.Controls.Add(this.lb_debug1);
+            this.groupBox6.Controls.Add(this.label12);
+            this.groupBox6.Controls.Add(this.lb_debug0);
+            this.groupBox6.Location = new System.Drawing.Point(366, 26);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(335, 177);
+            this.groupBox6.TabIndex = 86;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "DEBUG";
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label21.Location = new System.Drawing.Point(7, 128);
+            this.label21.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(79, 21);
+            this.label21.TabIndex = 93;
+            this.label21.Text = "DEBUG[3]";
+            // 
+            // lb_debug3
+            // 
+            this.lb_debug3.AutoSize = true;
+            this.lb_debug3.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_debug3.Location = new System.Drawing.Point(115, 128);
+            this.lb_debug3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_debug3.Name = "lb_debug3";
+            this.lb_debug3.Size = new System.Drawing.Size(16, 21);
+            this.lb_debug3.TabIndex = 92;
+            this.lb_debug3.Text = "-";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label17.Location = new System.Drawing.Point(7, 96);
+            this.label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(79, 21);
+            this.label17.TabIndex = 91;
+            this.label17.Text = "DEBUG[2]";
+            // 
+            // lb_debug2
+            // 
+            this.lb_debug2.AutoSize = true;
+            this.lb_debug2.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_debug2.Location = new System.Drawing.Point(115, 96);
+            this.lb_debug2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_debug2.Name = "lb_debug2";
+            this.lb_debug2.Size = new System.Drawing.Size(16, 21);
+            this.lb_debug2.TabIndex = 90;
+            this.lb_debug2.Text = "-";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.Location = new System.Drawing.Point(7, 61);
+            this.label14.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(79, 21);
+            this.label14.TabIndex = 89;
+            this.label14.Text = "DEBUG[1]";
+            // 
+            // lb_debug1
+            // 
+            this.lb_debug1.AutoSize = true;
+            this.lb_debug1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_debug1.Location = new System.Drawing.Point(115, 61);
+            this.lb_debug1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_debug1.Name = "lb_debug1";
+            this.lb_debug1.Size = new System.Drawing.Size(16, 21);
+            this.lb_debug1.TabIndex = 88;
+            this.lb_debug1.Text = "-";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label12.Location = new System.Drawing.Point(7, 28);
+            this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(79, 21);
+            this.label12.TabIndex = 87;
+            this.label12.Text = "DEBUG[0]";
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Location = new System.Drawing.Point(351, 91);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(733, 492);
+            this.tabControl1.TabIndex = 88;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.groupBox5);
+            this.tabPage1.Controls.Add(this.groupBox6);
+            this.tabPage1.Controls.Add(this.groupBox1);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(725, 466);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "PID 및 디버그";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.gMapControl1);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(725, 466);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "MAP";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // gMapControl1
+            // 
+            this.gMapControl1.Bearing = 0F;
+            this.gMapControl1.CanDragMap = true;
+            this.gMapControl1.EmptyTileColor = System.Drawing.Color.Navy;
+            this.gMapControl1.GrayScaleMode = false;
+            this.gMapControl1.HelperLineOption = GMap.NET.WindowsForms.HelperLineOptions.DontShow;
+            this.gMapControl1.LevelsKeepInMemory = 5;
+            this.gMapControl1.Location = new System.Drawing.Point(6, 6);
+            this.gMapControl1.MarkersEnabled = true;
+            this.gMapControl1.MaxZoom = 2;
+            this.gMapControl1.MinZoom = 2;
+            this.gMapControl1.MouseWheelZoomEnabled = true;
+            this.gMapControl1.MouseWheelZoomType = GMap.NET.MouseWheelZoomType.MousePositionAndCenter;
+            this.gMapControl1.Name = "gMapControl1";
+            this.gMapControl1.NegativeMode = false;
+            this.gMapControl1.PolygonsEnabled = true;
+            this.gMapControl1.RetryLoadTile = 0;
+            this.gMapControl1.RoutesEnabled = true;
+            this.gMapControl1.ScaleMode = GMap.NET.WindowsForms.ScaleModes.Integer;
+            this.gMapControl1.SelectedAreaFillColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(65)))), ((int)(((byte)(105)))), ((int)(((byte)(225)))));
+            this.gMapControl1.ShowTileGridLines = false;
+            this.gMapControl1.Size = new System.Drawing.Size(713, 454);
+            this.gMapControl1.TabIndex = 88;
+            this.gMapControl1.Zoom = 0D;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1184, 661);
-            this.Controls.Add(this.gMapControl1);
-            this.Controls.Add(this.groupBox6);
-            this.Controls.Add(this.groupBox5);
+            this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.panel2);
-            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel1);
@@ -1860,6 +1898,9 @@
             this.groupBox5.PerformLayout();
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1962,13 +2003,12 @@
         private System.Windows.Forms.Label lb_motor3;
         private System.Windows.Forms.Label lb_motor2;
         private System.Windows.Forms.Label lb_motor1;
-        private GMap.NET.WindowsForms.GMapControl gMapControl1;
         private System.Windows.Forms.Label label33;
         private System.Windows.Forms.Label label32;
         private System.Windows.Forms.Label label31;
         private System.Windows.Forms.Label label30;
         private System.Windows.Forms.Label label29;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button bt_pid_copy;
         private System.Windows.Forms.TextBox tb_FC_Y_R_D;
         private System.Windows.Forms.TextBox tb_FC_Y_R_I;
         private System.Windows.Forms.TextBox tb_FC_Y_R_P;
@@ -2016,6 +2056,10 @@
         private System.Windows.Forms.TextBox tb_R_O_I;
         private System.Windows.Forms.TextBox tb_R_O_P;
         private System.Windows.Forms.Button bt_pid_save;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabPage2;
+        private GMap.NET.WindowsForms.GMapControl gMapControl1;
     }
 }
 
