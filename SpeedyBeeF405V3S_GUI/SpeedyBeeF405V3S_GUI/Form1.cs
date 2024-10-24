@@ -357,7 +357,7 @@ namespace SpeedyBeeF405V3S_GUI
 
         private void bt_pid_send_Click(object sender, EventArgs e)
         {
-            byte[] buff = new byte[100];
+            byte[] buff = new byte[76];
             float float_buff;
             byte[] tmp = new byte[4];
             try
@@ -481,17 +481,13 @@ namespace SpeedyBeeF405V3S_GUI
                 buff[74] = tmp[3];
 
                 buff[75] = 0xff;
-            }
-            catch { }
 
-            for (int i = 0; i < 75; i++)
-            {
-                buff[75] -= buff[i];
-            }
+                for (int i = 0; i < 75; i++)
+                {
+                    buff[75] -= buff[i];
+                }
 
-            try
-            {
-                serialPort.Write(buff, 0, 76);
+                serialPort.Write(Encoding.UTF8.GetString(buff));
             }
             catch { }
         }

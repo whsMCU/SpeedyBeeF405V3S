@@ -400,6 +400,32 @@ void gcsMain(void)
         uartWriteDMA(_DEF_UART1, &telemetry_tx_buf[0], 60);
       break;
 
+      case 0x30:
+        *(float*)&roll.in.kp = *(float*)&telemetry_tx_buf[3];
+        *(float*)&roll.in.ki = *(float*)&telemetry_tx_buf[7];
+        *(float*)&roll.in.kd = *(float*)&telemetry_tx_buf[11];
+
+        *(float*)&roll.out.kp = *(float*)&telemetry_tx_buf[15];
+        *(float*)&roll.out.ki = *(float*)&telemetry_tx_buf[19];
+        *(float*)&roll.out.kd = *(float*)&telemetry_tx_buf[23];
+
+
+        *(float*)&pitch.in.kp = *(float*)&telemetry_tx_buf[27];
+        *(float*)&pitch.in.ki = *(float*)&telemetry_tx_buf[31];
+        *(float*)&pitch.in.kd = *(float*)&telemetry_tx_buf[35];
+
+        *(float*)&pitch.out.kp = *(float*)&telemetry_tx_buf[39];
+        *(float*)&pitch.out.ki = *(float*)&telemetry_tx_buf[43];
+        *(float*)&pitch.out.kd = *(float*)&telemetry_tx_buf[47];
+
+        *(float*)&yaw_heading.kp = *(float*)&telemetry_tx_buf[51];
+        *(float*)&yaw_heading.ki = *(float*)&telemetry_tx_buf[55];
+        *(float*)&yaw_heading.kd = *(float*)&telemetry_tx_buf[59];
+
+        *(float*)&yaw_rate.kp = *(float*)&telemetry_tx_buf[63];
+        *(float*)&yaw_rate.ki = *(float*)&telemetry_tx_buf[67];
+        *(float*)&yaw_rate.kd = *(float*)&telemetry_tx_buf[71];
+      break;
       }
     }
   }

@@ -154,7 +154,7 @@ namespace Ball_Ballancer_CS.Class
                         if (gcsData == gcsData_e.GCS_PID_recive)
                         {
                             byte chksum = 0xff;
-                            for (ii = 0; ii < 59; ii++) chksum = (byte)(chksum - buff_pass[ii]);
+                            for (ii = 0; ii < 75; ii++) chksum = (byte)(chksum - buff_pass[ii]);
                             if (chksum == buff_pass[cnt])
                             {
                                 recived_data_flag = true;
@@ -163,7 +163,7 @@ namespace Ball_Ballancer_CS.Class
                         else if (gcsData == gcsData_e.GCS_Tlemetry)
                         {
                             byte chksum = 0xff;
-                            for (ii = 0; ii < 75; ii++) chksum = (byte)(chksum - buff_pass[ii]);
+                            for (ii = 0; ii < 59; ii++) chksum = (byte)(chksum - buff_pass[ii]);
                             if (chksum == buff_pass[cnt])
                             {
                                 recived_data_flag = true;
