@@ -334,99 +334,97 @@ void gcsMain(void)
     unsigned char chksum = 0xff;
     for(int i=0;i<19;i++) chksum = chksum - telemetry_rx_buf[i];
 
-    if(chksum == telemetry_rx_buf[19])
+    //LL_TIM_CC_EnableChannel(TIM3, LL_TIM_CHANNEL_CH4);
+    //TIM3->PSC = 1000;
+    //HAL_Delay(10);
+    //LL_TIM_CC_DisableChannel(TIM3, LL_TIM_CHANNEL_CH4);
+    switch(telemetry_rx_buf[2])
     {
-      //LL_TIM_CC_EnableChannel(TIM3, LL_TIM_CHANNEL_CH4);
-      //TIM3->PSC = 1000;
-      //HAL_Delay(10);
-      //LL_TIM_CC_DisableChannel(TIM3, LL_TIM_CHANNEL_CH4);
-      switch(telemetry_rx_buf[2])
+    case 0x00:
+      if(!ARMING_FLAG(ARMED))
       {
-      case 0x00:
-        if(!ARMING_FLAG(ARMED))
-        {
-          writeSDCard(PID_Roll_in);
-          writeSDCard(PID_Roll_out);
-          writeSDCard(PID_pitch_in);
-          writeSDCard(PID_pitch_out);
-          writeSDCard(PID_yaw_heading);
-          writeSDCard(PID_yaw_rate);
-        }
-        break;
-
-      case 0x10:
-        if(!ARMING_FLAG(ARMED))
-        {
-          telemetry_tx_buf[0] = 0x46;
-          telemetry_tx_buf[1] = 0x43;
-
-          telemetry_tx_buf[2] = 0x20;
-
-          *(float*)&telemetry_tx_buf[3] = roll.in.kp;
-          *(float*)&telemetry_tx_buf[7] = roll.in.ki;
-          *(float*)&telemetry_tx_buf[11] = roll.in.kd;
-
-          *(float*)&telemetry_tx_buf[15] = roll.out.kp;
-          *(float*)&telemetry_tx_buf[19] = roll.out.ki;
-          *(float*)&telemetry_tx_buf[23] = roll.out.kd;
-
-
-          *(float*)&telemetry_tx_buf[27] = pitch.in.kp;
-          *(float*)&telemetry_tx_buf[31] = pitch.in.ki;
-          *(float*)&telemetry_tx_buf[35] = pitch.in.kd;
-
-          *(float*)&telemetry_tx_buf[39] = pitch.out.kp;
-          *(float*)&telemetry_tx_buf[43] = pitch.out.ki;
-          *(float*)&telemetry_tx_buf[47] = pitch.out.kd;
-
-          *(float*)&telemetry_tx_buf[51] = yaw_heading.kp;
-          *(float*)&telemetry_tx_buf[55] = yaw_heading.ki;
-          *(float*)&telemetry_tx_buf[59] = yaw_heading.kd;
-
-          *(float*)&telemetry_tx_buf[63] = yaw_rate.kp;
-          *(float*)&telemetry_tx_buf[67] = yaw_rate.ki;
-          *(float*)&telemetry_tx_buf[71] = yaw_rate.kd;
-
-          telemetry_tx_buf[75] = 0xff;
-
-          for(int i=0;i<75;i++) telemetry_tx_buf[75] = telemetry_tx_buf[75] - telemetry_tx_buf[i];
-
-          uartWriteDMA(_DEF_UART1, &telemetry_tx_buf[0], 76);
-        }
-        break;
-
-      case 0x20:
-        Encode_Msg_AHRS(&telemetry_tx_buf[0]);
-        uartWriteDMA(_DEF_UART1, &telemetry_tx_buf[0], 60);
-      break;
-
-      case 0x30:
-        *(float*)&roll.in.kp = *(float*)&telemetry_tx_buf[3];
-        *(float*)&roll.in.ki = *(float*)&telemetry_tx_buf[7];
-        *(float*)&roll.in.kd = *(float*)&telemetry_tx_buf[11];
-
-        *(float*)&roll.out.kp = *(float*)&telemetry_tx_buf[15];
-        *(float*)&roll.out.ki = *(float*)&telemetry_tx_buf[19];
-        *(float*)&roll.out.kd = *(float*)&telemetry_tx_buf[23];
-
-
-        *(float*)&pitch.in.kp = *(float*)&telemetry_tx_buf[27];
-        *(float*)&pitch.in.ki = *(float*)&telemetry_tx_buf[31];
-        *(float*)&pitch.in.kd = *(float*)&telemetry_tx_buf[35];
-
-        *(float*)&pitch.out.kp = *(float*)&telemetry_tx_buf[39];
-        *(float*)&pitch.out.ki = *(float*)&telemetry_tx_buf[43];
-        *(float*)&pitch.out.kd = *(float*)&telemetry_tx_buf[47];
-
-        *(float*)&yaw_heading.kp = *(float*)&telemetry_tx_buf[51];
-        *(float*)&yaw_heading.ki = *(float*)&telemetry_tx_buf[55];
-        *(float*)&yaw_heading.kd = *(float*)&telemetry_tx_buf[59];
-
-        *(float*)&yaw_rate.kp = *(float*)&telemetry_tx_buf[63];
-        *(float*)&yaw_rate.ki = *(float*)&telemetry_tx_buf[67];
-        *(float*)&yaw_rate.kd = *(float*)&telemetry_tx_buf[71];
-      break;
+        writeSDCard(PID_Roll_in);
+        writeSDCard(PID_Roll_out);
+        writeSDCard(PID_pitch_in);
+        writeSDCard(PID_pitch_out);
+        writeSDCard(PID_yaw_heading);
+        writeSDCard(PID_yaw_rate);
       }
+      break;
+
+    case 0x10:
+      if(!ARMING_FLAG(ARMED))
+      {
+        uint32_t dT = micros();
+        telemetry_tx_buf[0] = 0x46;
+        telemetry_tx_buf[1] = 0x43;
+
+        telemetry_tx_buf[2] = 0x20;
+
+        *(float*)&telemetry_tx_buf[3] = roll.in.kp;
+        *(float*)&telemetry_tx_buf[7] = roll.in.ki;
+        *(float*)&telemetry_tx_buf[11] = roll.in.kd;
+
+        *(float*)&telemetry_tx_buf[15] = roll.out.kp;
+        *(float*)&telemetry_tx_buf[19] = roll.out.ki;
+        *(float*)&telemetry_tx_buf[23] = roll.out.kd;
+
+
+        *(float*)&telemetry_tx_buf[27] = pitch.in.kp;
+        *(float*)&telemetry_tx_buf[31] = pitch.in.ki;
+        *(float*)&telemetry_tx_buf[35] = pitch.in.kd;
+
+        *(float*)&telemetry_tx_buf[39] = pitch.out.kp;
+        *(float*)&telemetry_tx_buf[43] = pitch.out.ki;
+        *(float*)&telemetry_tx_buf[47] = pitch.out.kd;
+
+        *(float*)&telemetry_tx_buf[51] = yaw_heading.kp;
+        *(float*)&telemetry_tx_buf[55] = yaw_heading.ki;
+        *(float*)&telemetry_tx_buf[59] = yaw_heading.kd;
+
+        *(float*)&telemetry_tx_buf[63] = yaw_rate.kp;
+        *(float*)&telemetry_tx_buf[67] = yaw_rate.ki;
+        *(float*)&telemetry_tx_buf[71] = yaw_rate.kd;
+
+        telemetry_tx_buf[75] = 0xff;
+
+        for(int i=0;i<75;i++) telemetry_tx_buf[75] = telemetry_tx_buf[75] - telemetry_tx_buf[i];
+
+        uartWriteDMA(_DEF_UART1, &telemetry_tx_buf[0], 76);
+        debug[1] = micros() - dT;
+      }
+      break;
+
+    case 0x20:
+      Encode_Msg_AHRS(&telemetry_tx_buf[0]);
+      uartWriteDMA(_DEF_UART1, &telemetry_tx_buf[0], 60);
+      break;
+
+    case 0x30:
+      roll.in.kp = *(float*)&telemetry_rx_buf[3];
+      roll.in.ki = *(float*)&telemetry_rx_buf[7];
+      roll.in.kd = *(float*)&telemetry_rx_buf[11];
+
+      roll.out.kp = *(float*)&telemetry_rx_buf[15];
+      roll.out.ki = *(float*)&telemetry_rx_buf[19];
+      roll.out.kd = *(float*)&telemetry_rx_buf[23];
+
+      pitch.in.kp = *(float*)&telemetry_rx_buf[27];
+      pitch.in.ki = *(float*)&telemetry_rx_buf[31];
+      pitch.in.kd = *(float*)&telemetry_rx_buf[35];
+
+      pitch.out.kp = *(float*)&telemetry_rx_buf[39];
+      pitch.out.ki = *(float*)&telemetry_rx_buf[43];
+      pitch.out.kd = *(float*)&telemetry_rx_buf[47];
+
+      yaw_heading.kp = *(float*)&telemetry_rx_buf[51];
+      yaw_heading.ki = *(float*)&telemetry_rx_buf[55];
+      yaw_heading.kd = *(float*)&telemetry_rx_buf[59];
+
+      yaw_rate.kp = *(float*)&telemetry_rx_buf[63];
+      yaw_rate.ki = *(float*)&telemetry_rx_buf[67];
+      yaw_rate.kd = *(float*)&telemetry_rx_buf[71];
+      break;
     }
   }
 }

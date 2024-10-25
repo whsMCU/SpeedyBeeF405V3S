@@ -195,7 +195,7 @@ namespace Ball_Ballancer_CS.Class
                 data[5] = BitConverter.ToInt16(buff_pass, 11)/100;
                 data[6] = BitConverter.ToInt16(buff_pass, 13)/100;
                 data[7] = (BitConverter.ToInt16(buff_pass, 15)/10);
-                data[8] = (BitConverter.ToInt16(buff_pass, 17)/10)-1000;
+                data[8] = ((BitConverter.ToInt16(buff_pass, 17)/10)-1000)/10;
                 data[9] = BitConverter.ToInt32(buff_pass, 19);
                 data[10] = BitConverter.ToInt32(buff_pass, 23);
                 data[11] = BitConverter.ToInt16(buff_pass, 27);
