@@ -978,7 +978,7 @@
             // 
             this.lb_debug0.AutoSize = true;
             this.lb_debug0.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_debug0.Location = new System.Drawing.Point(115, 28);
+            this.lb_debug0.Location = new System.Drawing.Point(144, 28);
             this.lb_debug0.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_debug0.Name = "lb_debug0";
             this.lb_debug0.Size = new System.Drawing.Size(16, 21);
@@ -1725,7 +1725,7 @@
             // 
             this.lb_debug3.AutoSize = true;
             this.lb_debug3.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_debug3.Location = new System.Drawing.Point(115, 128);
+            this.lb_debug3.Location = new System.Drawing.Point(144, 128);
             this.lb_debug3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_debug3.Name = "lb_debug3";
             this.lb_debug3.Size = new System.Drawing.Size(16, 21);
@@ -1747,7 +1747,7 @@
             // 
             this.lb_debug2.AutoSize = true;
             this.lb_debug2.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_debug2.Location = new System.Drawing.Point(115, 96);
+            this.lb_debug2.Location = new System.Drawing.Point(144, 96);
             this.lb_debug2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_debug2.Name = "lb_debug2";
             this.lb_debug2.Size = new System.Drawing.Size(16, 21);
@@ -1769,7 +1769,7 @@
             // 
             this.lb_debug1.AutoSize = true;
             this.lb_debug1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_debug1.Location = new System.Drawing.Point(115, 61);
+            this.lb_debug1.Location = new System.Drawing.Point(144, 61);
             this.lb_debug1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_debug1.Name = "lb_debug1";
             this.lb_debug1.Size = new System.Drawing.Size(16, 21);

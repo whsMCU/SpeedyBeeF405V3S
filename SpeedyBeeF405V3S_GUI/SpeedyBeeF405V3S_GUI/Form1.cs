@@ -247,7 +247,8 @@ namespace SpeedyBeeF405V3S_GUI
                     buff[19] -= buff[i];
                 }
 
-                serialPort.Write(Encoding.UTF8.GetString(buff));
+                //serialPort.Write(Encoding.UTF8.GetString(buff));
+                serialPort.Write(buff, 0, 20);
             }
             catch { Console.WriteLine("Telemetry Data Requset Error"); }
             if(pid_recive_flag == true)
@@ -281,7 +282,8 @@ namespace SpeedyBeeF405V3S_GUI
                         buff[19] -= buff[i];
                     }
 
-                    serialPort.Write(Encoding.UTF8.GetString(buff));
+                    //serialPort.Write(Encoding.UTF8.GetString(buff));
+                    serialPort.Write(buff, 0, 20);
                     Console.WriteLine("PID값 수신명령 전송 완료");
                 }
                 catch { Console.WriteLine("PID Data Requset Error"); }
@@ -316,7 +318,8 @@ namespace SpeedyBeeF405V3S_GUI
                     {
                         buff[19] -= buff[i];
                     }
-                    serialPort.Write(Encoding.UTF8.GetString(buff));
+                    //serialPort.Write(Encoding.UTF8.GetString(buff));
+                    serialPort.Write(buff, 0, 20);
                     Console.WriteLine("PID값 저장명령 전송 완료");
                 }
                 catch { Console.WriteLine("PID Save Requset Error"); }
@@ -510,6 +513,10 @@ namespace SpeedyBeeF405V3S_GUI
                 pictureBox1.Visible = false;
                 pictureBox2.Visible = true;
             }
+
+            if (error == 0) textBox3.Text = "No error";
+            //if (error == 1) textBox3.Text = "Battery LOW";
+            //if (error == 2) textBox3.Text = "Program loop time";
 
             if (battery_bar_level > 124) battery_bar_level = 124;
             if (battery_bar_level < 85) battery_bar_level = 85;

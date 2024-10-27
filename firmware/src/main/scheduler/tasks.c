@@ -98,7 +98,7 @@ static void ledUpdate(uint32_t currentTimeUs)
     }
 }
 
-uint8_t telemetry_tx_buf[60];
+uint8_t telemetry_tx_buf[80];
 uint32_t debug1;
 
 static void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf)
@@ -343,12 +343,13 @@ void gcsMain(void)
     case 0x00:
       if(!ARMING_FLAG(ARMED))
       {
-        writeSDCard(PID_Roll_in);
-        writeSDCard(PID_Roll_out);
-        writeSDCard(PID_pitch_in);
-        writeSDCard(PID_pitch_out);
-        writeSDCard(PID_yaw_heading);
-        writeSDCard(PID_yaw_rate);
+        bool status = false;
+        status = writeSDCard(PID_Roll_in);
+        status = writeSDCard(PID_Roll_out);
+        status = writeSDCard(PID_pitch_in);
+        status = writeSDCard(PID_pitch_out);
+        status = writeSDCard(PID_yaw_heading);
+        status = writeSDCard(PID_yaw_rate);
       }
       break;
 
@@ -360,6 +361,8 @@ void gcsMain(void)
         telemetry_tx_buf[1] = 0x43;
 
         telemetry_tx_buf[2] = 0x20;
+
+        //memcpy(&telemetry_tx_buf[3], &roll.in.kp, 4);
 
         *(float*)&telemetry_tx_buf[3] = roll.in.kp;
         *(float*)&telemetry_tx_buf[7] = roll.in.ki;
