@@ -145,8 +145,8 @@ static void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf)
   telemetry_tx_buf[27] = (unsigned short)(getBatteryAverageCellVoltage());
   telemetry_tx_buf[28] = ((unsigned short)(getBatteryAverageCellVoltage()))>>8;
 
-  telemetry_tx_buf[29] = 0x00;//iBus.SwA == 1000 ? 0 : 1;
-  telemetry_tx_buf[30] = 0x00;//iBus.SwC == 1000 ? 0 : iBus.SwC == 1500 ? 1 : 2;
+  telemetry_tx_buf[29] = flightModeFlags;
+  telemetry_tx_buf[30] = flightModeFlags>>8;
 
   telemetry_tx_buf[31] = rxRuntimeState.failsafe_flag;
   telemetry_tx_buf[32] = 0x00;

@@ -224,6 +224,7 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.label55 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -790,6 +791,7 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.label55);
             this.panel2.Controls.Add(this.lb_fail);
             this.panel2.Controls.Add(this.lb_armed);
             this.panel2.Controls.Add(this.pictureBox6);
@@ -1825,6 +1827,16 @@
             this.tabPage2.Text = "MAP";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // label55
+            // 
+            this.label55.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label55.Location = new System.Drawing.Point(4, 212);
+            this.label55.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label55.Name = "label55";
+            this.label55.Size = new System.Drawing.Size(64, 19);
+            this.label55.TabIndex = 86;
+            this.label55.Text = "-";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -2029,6 +2041,7 @@
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.Label label55;
     }
 }
 

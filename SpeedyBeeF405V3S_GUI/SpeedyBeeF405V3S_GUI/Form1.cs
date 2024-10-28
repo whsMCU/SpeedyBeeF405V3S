@@ -8,6 +8,7 @@ using System.Collections;
 using System.Drawing;
 using System.IO.Ports;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Timers;
 using System.Windows.Forms;
@@ -28,6 +29,7 @@ namespace SpeedyBeeF405V3S_GUI
         bool pid_recive_flag = false;
         bool pid_send_flag = false;
         bool pid_save_flag = false;
+        UInt16 flightModeFlags;
 
         public GMapOverlay MarkerOverlay = new GMapOverlay("markers");
 
@@ -164,19 +166,23 @@ namespace SpeedyBeeF405V3S_GUI
                                 lb_long.Text = passed_data[10].ToString();
                                 lb_bat.Text = passed_data[11].ToString();
                                 battery_bar_level = (int)passed_data[11];
-                                lb_fail.Text = passed_data[12].ToString();
-                                lb_armed.Text = passed_data[13].ToString();
-                                start = (byte)passed_data[13];
 
-                                lb_motor0.Text = passed_data[14].ToString();
-                                lb_motor1.Text = passed_data[15].ToString();
-                                lb_motor2.Text = passed_data[16].ToString();
-                                lb_motor3.Text = passed_data[17].ToString();
+                                label55.Text = passed_data[12].ToString();
+                                flightModeFlags = (UInt16)passed_data[12];
 
-                                lb_debug0.Text = passed_data[18].ToString();
-                                lb_debug1.Text = passed_data[19].ToString();
-                                lb_debug2.Text = passed_data[20].ToString();
-                                lb_debug3.Text = passed_data[21].ToString();
+                                lb_fail.Text = passed_data[13].ToString();
+                                lb_armed.Text = passed_data[14].ToString();
+                                start = (byte)passed_data[14];
+
+                                lb_motor0.Text = passed_data[15].ToString();
+                                lb_motor1.Text = passed_data[16].ToString();
+                                lb_motor2.Text = passed_data[17].ToString();
+                                lb_motor3.Text = passed_data[18].ToString();
+
+                                lb_debug0.Text = passed_data[19].ToString();
+                                lb_debug1.Text = passed_data[20].ToString();
+                                lb_debug2.Text = passed_data[21].ToString();
+                                lb_debug3.Text = passed_data[22].ToString();
                             }
                             else if (passed_data[0] == 1)
                             {
@@ -501,6 +507,22 @@ namespace SpeedyBeeF405V3S_GUI
             }
         }
 
+        enum flightModeFlags_e
+        {
+            ANGLE_MODE = (1 << 0),
+            HORIZON_MODE = (1 << 1),
+            MAG_MODE = (1 << 2),
+            BARO_MODE = (1 << 3),
+            //    GPS_HOME_MODE   = (1 << 4),
+            //    GPS_HOLD_MODE   = (1 << 5),
+            HEADFREE_MODE = (1 << 6),
+            //    UNUSED_MODE     = (1 << 7), // old autotune
+            PASSTHRU_MODE = (1 << 8),
+            //    RANGEFINDER_MODE= (1 << 9),
+            FAILSAFE_MODE = (1 << 10),
+            GPS_RESCUE_MODE = (1 << 11)
+        }
+
         private void timer_status_Tick(object sender, EventArgs e)
         {
             if (start == 0)
@@ -513,6 +535,9 @@ namespace SpeedyBeeF405V3S_GUI
                 pictureBox1.Visible = false;
                 pictureBox2.Visible = true;
             }
+
+            if ((flightModeFlags & (UInt16)flightModeFlags_e.ANGLE_MODE) == 1) textBox2.Text = "ANGLE_MODE";
+            if ((flightModeFlags & (UInt16)flightModeFlags_e.HEADFREE_MODE) == 1) textBox2.Text = "HEADFREE_MODE";
 
             if (error == 0) textBox3.Text = "No error";
             //if (error == 1) textBox3.Text = "Battery LOW";
