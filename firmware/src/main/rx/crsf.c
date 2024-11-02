@@ -35,6 +35,8 @@
 
 //#include "config/config.h"
 
+#include "flight/failsafe.h"
+
 #include "rx/rx.h"
 #include "rx/crsf.h"
 
@@ -476,7 +478,8 @@ static uint8_t crsfFrameStatus(rxRuntimeState_t *rxRuntimeState)
 #endif
     if (crsfFrameDone) {
         crsfFrameDone = false;
-
+        DISABLE_FAILSAFE(FAILSAFE_RX_LOSS_DETECTED);
+        rxRuntimeState->RxCount++;
         // unpack the RC channels
         if (crsfChannelDataFrame.frame.type == CRSF_FRAMETYPE_RC_CHANNELS_PACKED) {
             // use ordinary RC frame structure (0x16)

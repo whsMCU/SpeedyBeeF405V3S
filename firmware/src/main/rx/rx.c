@@ -43,7 +43,7 @@
 #include "fc/stats.h"
 #include "fc/runtime_config.h"
 
-//#include "flight/failsafe.h"
+#include "flight/failsafe.h"
 #include "flight/imu.h"
 #include "flight/pid.h"
 
@@ -609,11 +609,11 @@ void processRxModes(uint32_t currentTimeUs)
 
 	if(rcData[SD] == 2000)
 	{
-		rxRuntimeState.failsafe_flag = 1;
+		ENABLE_FAILSAFE(FAILSAFE_RX_SWITCH);
 	}
 	else
 	{
-		rxRuntimeState.failsafe_flag = 0;
+		DISABLE_FAILSAFE(FAILSAFE_RX_SWITCH);
 	}
 	ENABLE_FLIGHT_MODE(ANGLE_MODE);
 

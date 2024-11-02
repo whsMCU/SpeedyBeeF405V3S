@@ -35,6 +35,7 @@
 //#include "fc/rc_controls.h"
 
 //#include "flight/mixer.h"
+#include "flight/failsafe.h"
 
 //#include "io/beeper.h"
 
@@ -156,14 +157,18 @@ static void updateBatteryBeeperAlert(void)
     switch (getBatteryState()) {
         case BATTERY_WARNING:
             //beeper(BEEPER_BAT_LOW);
+            ENABLE_FAILSAFE(FAILSAFE_BATTERY_LOW);
 
             break;
         case BATTERY_CRITICAL:
             //beeper(BEEPER_BAT_CRIT_LOW);
+            ENABLE_FAILSAFE(FAILSAFE_BATTERY_LOW);
 
             break;
         case BATTERY_OK:
         case BATTERY_NOT_PRESENT:
+            DISABLE_FAILSAFE(FAILSAFE_BATTERY_LOW);
+            break;
         case BATTERY_INIT:
             break;
     }

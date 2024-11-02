@@ -29,7 +29,6 @@ namespace SpeedyBeeF405V3S_GUI
         bool pid_recive_flag = false;
         bool pid_send_flag = false;
         bool pid_save_flag = false;
-        UInt16 flightModeFlags;
 
         public GMapOverlay MarkerOverlay = new GMapOverlay("markers");
 
@@ -164,13 +163,15 @@ namespace SpeedyBeeF405V3S_GUI
                                 lb_rc_throttle.Text = passed_data[8].ToString();
                                 lb_lat.Text = passed_data[9].ToString();
                                 lb_long.Text = passed_data[10].ToString();
-                                lb_bat.Text = passed_data[11].ToString();
-                                battery_bar_level = (int)passed_data[11];
+                                lb_bat.Text = ((passed_data[11]*4)/100).ToString();
+                                battery_bar_level = (int)(passed_data[11]*4)/10;
 
                                 label55.Text = passed_data[12].ToString();
-                                flightModeFlags = (UInt16)passed_data[12];
+                                flight_mode = (UInt16)passed_data[12];
 
                                 lb_fail.Text = passed_data[13].ToString();
+                                error = (UInt16)passed_data[13];
+
                                 lb_armed.Text = passed_data[14].ToString();
                                 start = (byte)passed_data[14];
 
@@ -507,22 +508,6 @@ namespace SpeedyBeeF405V3S_GUI
             }
         }
 
-        enum flightModeFlags_e
-        {
-            ANGLE_MODE = (1 << 0),
-            HORIZON_MODE = (1 << 1),
-            MAG_MODE = (1 << 2),
-            BARO_MODE = (1 << 3),
-            //    GPS_HOME_MODE   = (1 << 4),
-            //    GPS_HOLD_MODE   = (1 << 5),
-            HEADFREE_MODE = (1 << 6),
-            //    UNUSED_MODE     = (1 << 7), // old autotune
-            PASSTHRU_MODE = (1 << 8),
-            //    RANGEFINDER_MODE= (1 << 9),
-            FAILSAFE_MODE = (1 << 10),
-            GPS_RESCUE_MODE = (1 << 11)
-        }
-
         private void timer_status_Tick(object sender, EventArgs e)
         {
             if (start == 0)
@@ -536,17 +521,19 @@ namespace SpeedyBeeF405V3S_GUI
                 pictureBox2.Visible = true;
             }
 
-            if ((flightModeFlags & (UInt16)flightModeFlags_e.ANGLE_MODE) == 1) textBox2.Text = "ANGLE_MODE";
-            if ((flightModeFlags & (UInt16)flightModeFlags_e.HEADFREE_MODE) == 1) textBox2.Text = "HEADFREE_MODE";
+            if (flight_mode == 1) textBox2.Text = "ANGLE_MODE";
+            if (flight_mode == 65) textBox2.Text = "HEADFREE_MODE";
 
             if (error == 0) textBox3.Text = "No error";
-            //if (error == 1) textBox3.Text = "Battery LOW";
+            if (error == 2) textBox3.Text = "RX_LOSS_DETECTED";
+            if (error == 4) textBox3.Text = "RX_SWITCH";
+            if (error == 8) textBox3.Text = "Battery LOW";
             //if (error == 2) textBox3.Text = "Program loop time";
 
-            if (battery_bar_level > 124) battery_bar_level = 124;
-            if (battery_bar_level < 85) battery_bar_level = 85;
-            if (battery_bar_level > 108) panel5.BackColor = Color.Lime;
-            else if (battery_bar_level > 100) panel5.BackColor = Color.Yellow;
+            if (battery_bar_level > 164) battery_bar_level = 124;
+            if (battery_bar_level < 110) battery_bar_level = 85;
+            if (battery_bar_level > 142) panel5.BackColor = Color.Lime;
+            else if (battery_bar_level > 132) panel5.BackColor = Color.Yellow;
             else panel5.BackColor = Color.Red;
 
             panel6.Size = new Size(34, 134 - ((battery_bar_level - 80) * 3));

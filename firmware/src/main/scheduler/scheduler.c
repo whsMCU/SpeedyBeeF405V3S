@@ -34,6 +34,8 @@
 #include "rx/rx.h"
 #include "rx/crsf.h"
 
+#include "flight/failsafe.h"
+
 #include "sensors/gyro_init.h"
 #include "sensors/gyro.h"
 
@@ -143,6 +145,12 @@ void taskSystemLoad(uint32_t currentTimeUs)
     } else {
         //schedulerIgnoreTaskExecTime();
     }
+
+    if(rxRuntimeState.RxCount == 0)
+    {
+      ENABLE_FAILSAFE(FAILSAFE_RX_LOSS_DETECTED);
+    }
+    rxRuntimeState.RxCount = 0;
 }
 
 void rescheduleTask(taskId_e taskId, int32_t newPeriodUs)

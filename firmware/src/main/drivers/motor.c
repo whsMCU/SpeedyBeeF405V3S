@@ -28,6 +28,8 @@
 
 #include "common/maths.h"
 
+#include "flight/failsafe.h"
+
 #include "fc/runtime_config.h"
 
 #include "drivers/motor.h"
@@ -71,7 +73,7 @@ void motorWriteAll(void)
 {
   if(ARMING_FLAG(ARMED))
   {
-	if(rxRuntimeState.failsafe_flag == 0)
+	if(failsafeFlags == 0)
 	{
 	  if(rcData[THROTTLE] > 1030)
 	  {

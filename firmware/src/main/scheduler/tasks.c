@@ -33,6 +33,7 @@
 
 #include "flight/imu.h"
 #include "flight/position.h"
+#include "flight/failsafe.h"
 
 
 #include "drivers/accgyro/accgyro.h"
@@ -148,7 +149,7 @@ static void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf)
   telemetry_tx_buf[29] = flightModeFlags;
   telemetry_tx_buf[30] = flightModeFlags>>8;
 
-  telemetry_tx_buf[31] = rxRuntimeState.failsafe_flag;
+  telemetry_tx_buf[31] = failsafeFlags;
   telemetry_tx_buf[32] = 0x00;
 
   telemetry_tx_buf[33] = ARMING_FLAG(ARMED);
@@ -214,7 +215,7 @@ void Encode_Msg_GPS(unsigned char* telemetry_tx_buf)
   telemetry_tx_buf[13] = 0x00;//iBus.SwA == 1000 ? 0 : 1;
   telemetry_tx_buf[14] = 0x00;//iBus.SwC == 1000 ? 0 : iBus.SwC == 1500 ? 1 : 2;
 
-  telemetry_tx_buf[15] = rxRuntimeState.failsafe_flag;
+  telemetry_tx_buf[15] = failsafeFlags;
 
   telemetry_tx_buf[16] = 0x00;
   telemetry_tx_buf[17] = 0x00;
