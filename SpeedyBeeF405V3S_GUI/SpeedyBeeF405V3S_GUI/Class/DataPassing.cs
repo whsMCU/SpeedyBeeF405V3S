@@ -140,7 +140,7 @@ namespace Ball_Ballancer_CS.Class
                         break;
                     case gcsState_e.GCS_PAYLOAD:
                         buff_pass[cnt++] = buff[i];
-                        if (gcsData == gcsData_e.GCS_Tlemetry && cnt == 59)
+                        if (gcsData == gcsData_e.GCS_Tlemetry && cnt == 71)
                         {
                             gcsState = gcsState_e.GCS_CHECKSUM;
                         }
@@ -163,7 +163,7 @@ namespace Ball_Ballancer_CS.Class
                         else if (gcsData == gcsData_e.GCS_Tlemetry)
                         {
                             byte chksum = 0xff;
-                            for (ii = 0; ii < 59; ii++) chksum = (byte)(chksum - buff_pass[ii]);
+                            for (ii = 0; ii < 71; ii++) chksum = (byte)(chksum - buff_pass[ii]);
                             if (chksum == buff_pass[cnt])
                             {
                                 recived_data_flag = true;
@@ -210,6 +210,10 @@ namespace Ball_Ballancer_CS.Class
                 data[20] = BitConverter.ToUInt32(buff_pass, 47);
                 data[21] = BitConverter.ToUInt32(buff_pass, 51);
                 data[22] = BitConverter.ToUInt32(buff_pass, 55);
+
+                data[23] = BitConverter.ToSingle(buff_pass, 59);
+                data[24] = BitConverter.ToSingle(buff_pass, 63);
+                data[25] = BitConverter.ToSingle(buff_pass, 67);
             }
             else if (buff_pass[2] == 0x20) // PID Data 수신
             {

@@ -187,9 +187,13 @@ static void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf)
   telemetry_tx_buf[57] = debug[3]>>16;
   telemetry_tx_buf[58] = debug[3]>>24;
 
-  telemetry_tx_buf[59] = 0xff;
+  *(float*)&telemetry_tx_buf[59] = bmi270.gyroADCf[X];
+  *(float*)&telemetry_tx_buf[63] = bmi270.gyroADCf[Y];
+  *(float*)&telemetry_tx_buf[67] = bmi270.gyroADCf[Z];
 
-  for(int i=0;i<59;i++) telemetry_tx_buf[59] = telemetry_tx_buf[59] - telemetry_tx_buf[i];
+  telemetry_tx_buf[71] = 0xff;
+
+  for(int i=0;i<71;i++) telemetry_tx_buf[71] = telemetry_tx_buf[71] - telemetry_tx_buf[i];
 }
 
 void Encode_Msg_GPS(unsigned char* telemetry_tx_buf)
@@ -401,7 +405,7 @@ void gcsMain(void)
 
     case 0x20:
       Encode_Msg_AHRS(&telemetry_tx_buf[0]);
-      uartWriteDMA(_DEF_UART1, &telemetry_tx_buf[0], 60);
+      uartWriteDMA(_DEF_UART1, &telemetry_tx_buf[0], 72);
       break;
 
     case 0x30:

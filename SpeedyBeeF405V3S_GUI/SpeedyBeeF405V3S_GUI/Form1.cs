@@ -184,6 +184,10 @@ namespace SpeedyBeeF405V3S_GUI
                                 lb_debug1.Text = passed_data[20].ToString();
                                 lb_debug2.Text = passed_data[21].ToString();
                                 lb_debug3.Text = passed_data[22].ToString();
+
+                                lb_gyro_X.Text = passed_data[23].ToString();
+                                lb_gyro_Y.Text = passed_data[24].ToString();
+                                lb_gyro_Z.Text = passed_data[25].ToString();
                             }
                             else if (passed_data[0] == 1)
                             {
