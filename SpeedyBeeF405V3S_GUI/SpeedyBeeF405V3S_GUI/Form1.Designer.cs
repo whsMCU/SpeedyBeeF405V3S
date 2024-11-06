@@ -96,6 +96,12 @@
             this.label25 = new System.Windows.Forms.Label();
             this.label26 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.lb_gyro_Z = new System.Windows.Forms.Label();
+            this.lb_gyro_Y = new System.Windows.Forms.Label();
+            this.lb_gyro_X = new System.Windows.Forms.Label();
+            this.label60 = new System.Windows.Forms.Label();
+            this.label59 = new System.Windows.Forms.Label();
+            this.label58 = new System.Windows.Forms.Label();
             this.label37 = new System.Windows.Forms.Label();
             this.label38 = new System.Windows.Forms.Label();
             this.label22 = new System.Windows.Forms.Label();
@@ -228,12 +234,8 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.label58 = new System.Windows.Forms.Label();
-            this.label59 = new System.Windows.Forms.Label();
-            this.label60 = new System.Windows.Forms.Label();
-            this.lb_gyro_X = new System.Windows.Forms.Label();
-            this.lb_gyro_Y = new System.Windows.Forms.Label();
-            this.lb_gyro_Z = new System.Windows.Forms.Label();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.zedGraphControl1 = new ZedGraph.ZedGraphControl();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -251,6 +253,7 @@
             this.groupBox6.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.tabPage3.SuspendLayout();
             this.SuspendLayout();
             // 
             // OpenClose
@@ -543,6 +546,72 @@
             this.groupBox4.TabIndex = 65;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Telemetry data";
+            // 
+            // lb_gyro_Z
+            // 
+            this.lb_gyro_Z.AutoSize = true;
+            this.lb_gyro_Z.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_gyro_Z.Location = new System.Drawing.Point(242, 81);
+            this.lb_gyro_Z.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_gyro_Z.Name = "lb_gyro_Z";
+            this.lb_gyro_Z.Size = new System.Drawing.Size(16, 21);
+            this.lb_gyro_Z.TabIndex = 58;
+            this.lb_gyro_Z.Text = "-";
+            // 
+            // lb_gyro_Y
+            // 
+            this.lb_gyro_Y.AutoSize = true;
+            this.lb_gyro_Y.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_gyro_Y.Location = new System.Drawing.Point(242, 50);
+            this.lb_gyro_Y.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_gyro_Y.Name = "lb_gyro_Y";
+            this.lb_gyro_Y.Size = new System.Drawing.Size(16, 21);
+            this.lb_gyro_Y.TabIndex = 57;
+            this.lb_gyro_Y.Text = "-";
+            // 
+            // lb_gyro_X
+            // 
+            this.lb_gyro_X.AutoSize = true;
+            this.lb_gyro_X.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_gyro_X.Location = new System.Drawing.Point(242, 24);
+            this.lb_gyro_X.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_gyro_X.Name = "lb_gyro_X";
+            this.lb_gyro_X.Size = new System.Drawing.Size(16, 21);
+            this.lb_gyro_X.TabIndex = 56;
+            this.lb_gyro_X.Text = "-";
+            // 
+            // label60
+            // 
+            this.label60.AutoSize = true;
+            this.label60.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label60.Location = new System.Drawing.Point(164, 81);
+            this.label60.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label60.Name = "label60";
+            this.label60.Size = new System.Drawing.Size(63, 21);
+            this.label60.TabIndex = 55;
+            this.label60.Text = "Gyro[Z]";
+            // 
+            // label59
+            // 
+            this.label59.AutoSize = true;
+            this.label59.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label59.Location = new System.Drawing.Point(164, 50);
+            this.label59.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label59.Name = "label59";
+            this.label59.Size = new System.Drawing.Size(63, 21);
+            this.label59.TabIndex = 54;
+            this.label59.Text = "Gyro[Y]";
+            // 
+            // label58
+            // 
+            this.label58.AutoSize = true;
+            this.label58.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label58.Location = new System.Drawing.Point(164, 23);
+            this.label58.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label58.Name = "label58";
+            this.label58.Size = new System.Drawing.Size(63, 21);
+            this.label58.TabIndex = 53;
+            this.label58.Text = "Gyro[X]";
             // 
             // label37
             // 
@@ -1846,6 +1915,7 @@
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Location = new System.Drawing.Point(351, 91);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -1887,71 +1957,32 @@
             this.textBox1.TabIndex = 89;
             this.textBox1.Text = "-";
             // 
-            // label58
+            // tabPage3
             // 
-            this.label58.AutoSize = true;
-            this.label58.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label58.Location = new System.Drawing.Point(164, 23);
-            this.label58.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label58.Name = "label58";
-            this.label58.Size = new System.Drawing.Size(63, 21);
-            this.label58.TabIndex = 53;
-            this.label58.Text = "Gyro[X]";
+            this.tabPage3.Controls.Add(this.zedGraphControl1);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(725, 482);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "그래프";
+            this.tabPage3.UseVisualStyleBackColor = true;
             // 
-            // label59
+            // zedGraphControl1
             // 
-            this.label59.AutoSize = true;
-            this.label59.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label59.Location = new System.Drawing.Point(164, 50);
-            this.label59.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label59.Name = "label59";
-            this.label59.Size = new System.Drawing.Size(63, 21);
-            this.label59.TabIndex = 54;
-            this.label59.Text = "Gyro[Y]";
-            // 
-            // label60
-            // 
-            this.label60.AutoSize = true;
-            this.label60.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label60.Location = new System.Drawing.Point(164, 81);
-            this.label60.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label60.Name = "label60";
-            this.label60.Size = new System.Drawing.Size(63, 21);
-            this.label60.TabIndex = 55;
-            this.label60.Text = "Gyro[Z]";
-            // 
-            // lb_gyro_X
-            // 
-            this.lb_gyro_X.AutoSize = true;
-            this.lb_gyro_X.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_gyro_X.Location = new System.Drawing.Point(242, 24);
-            this.lb_gyro_X.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lb_gyro_X.Name = "lb_gyro_X";
-            this.lb_gyro_X.Size = new System.Drawing.Size(16, 21);
-            this.lb_gyro_X.TabIndex = 56;
-            this.lb_gyro_X.Text = "-";
-            // 
-            // lb_gyro_Y
-            // 
-            this.lb_gyro_Y.AutoSize = true;
-            this.lb_gyro_Y.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_gyro_Y.Location = new System.Drawing.Point(242, 50);
-            this.lb_gyro_Y.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lb_gyro_Y.Name = "lb_gyro_Y";
-            this.lb_gyro_Y.Size = new System.Drawing.Size(16, 21);
-            this.lb_gyro_Y.TabIndex = 57;
-            this.lb_gyro_Y.Text = "-";
-            // 
-            // lb_gyro_Z
-            // 
-            this.lb_gyro_Z.AutoSize = true;
-            this.lb_gyro_Z.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_gyro_Z.Location = new System.Drawing.Point(242, 81);
-            this.lb_gyro_Z.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lb_gyro_Z.Name = "lb_gyro_Z";
-            this.lb_gyro_Z.Size = new System.Drawing.Size(16, 21);
-            this.lb_gyro_Z.TabIndex = 58;
-            this.lb_gyro_Z.Text = "-";
+            this.zedGraphControl1.Location = new System.Drawing.Point(7, 6);
+            this.zedGraphControl1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.zedGraphControl1.Name = "zedGraphControl1";
+            this.zedGraphControl1.ScrollGrace = 0D;
+            this.zedGraphControl1.ScrollMaxX = 0D;
+            this.zedGraphControl1.ScrollMaxY = 0D;
+            this.zedGraphControl1.ScrollMaxY2 = 0D;
+            this.zedGraphControl1.ScrollMinX = 0D;
+            this.zedGraphControl1.ScrollMinY = 0D;
+            this.zedGraphControl1.ScrollMinY2 = 0D;
+            this.zedGraphControl1.Size = new System.Drawing.Size(711, 417);
+            this.zedGraphControl1.TabIndex = 0;
+            this.zedGraphControl1.UseExtendedPrintDialog = true;
             // 
             // Form1
             // 
@@ -2000,6 +2031,7 @@
             this.groupBox6.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.tabPage3.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2168,6 +2200,8 @@
         private System.Windows.Forms.Label label60;
         private System.Windows.Forms.Label label59;
         private System.Windows.Forms.Label label58;
+        private System.Windows.Forms.TabPage tabPage3;
+        private ZedGraph.ZedGraphControl zedGraphControl1;
     }
 }
 

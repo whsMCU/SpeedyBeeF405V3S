@@ -9,9 +9,12 @@ using System.Drawing;
 using System.IO.Ports;
 using System.Linq;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Timers;
 using System.Windows.Forms;
+using ZedGraph;
+using static GMap.NET.Entity.OpenStreetMapGraphHopperGeocodeEntity;
 
 namespace SpeedyBeeF405V3S_GUI
 {
@@ -32,6 +35,9 @@ namespace SpeedyBeeF405V3S_GUI
 
         public GMapOverlay MarkerOverlay = new GMapOverlay("markers");
 
+        GraphPane _myPane;
+        PointPairList _points;
+
         public Form1()
         {
             InitializeComponent();
@@ -48,6 +54,61 @@ namespace SpeedyBeeF405V3S_GUI
             //gMapControl1.MaxZoom = 19;
             //gMapControl1.Zoom = 14;
             //AddMarker(p, "test");
+
+            InitGraph();
+        }
+
+        public void InitGraph()
+        {
+            _myPane = zedGraphControl1.GraphPane;
+            _myPane.Title.Text = "Trend";
+            _myPane.Title.FontSpec.Size = 15;
+            _myPane.Title.FontSpec.IsBold = true;
+            //X축 설정
+            _myPane.XAxis.Title.FontSpec.Size = 12;
+            _myPane.XAxis.Title.Text = "X Axis";
+            //실시간으로 Scale 변경 자동으로 하도록
+            _myPane.XAxis.Scale.MinAuto = true;
+            _myPane.XAxis.Scale.MaxAuto = true;
+            _myPane.XAxis.Scale.MajorStepAuto = true;
+            _myPane.XAxis.MajorGrid.IsVisible = true;
+            _myPane.XAxis.MinorGrid.IsVisible = false;
+            _myPane.XAxis.MajorTic.Color = Color.Black;
+            //Y축 설정
+            _myPane.YAxis.Title.FontSpec.Size = 12;
+            _myPane.YAxis.Title.Text = "Y Axis";
+            //실시간으로 Scale 변경 자동으로 하도록
+            _myPane.YAxis.Scale.MinAuto = true;
+            _myPane.YAxis.Scale.MaxAuto = true;
+            _myPane.YAxis.Scale.MajorStepAuto = true;
+            _myPane.YAxis.MajorGrid.IsVisible = true;
+            _myPane.YAxis.MinorGrid.IsVisible = false;
+            _myPane.YAxis.MajorTic.Color = Color.Black;
+            //그래프 Chart 색, Border 색/굵기 설정
+            _myPane.Fill = new Fill(Color.FromArgb(255, 238, 238, 238));
+            _myPane.Chart.Fill = new Fill(Color.LightGray, Color.LightGray, 180.0f);
+            _myPane.Chart.Border.Color = Color.Black;
+            _myPane.Chart.Border.Width = 2;
+            //Point 리스트를 그래프 Curve 리스트에 추가
+            _points = new PointPairList();
+            _myPane.CurveList.Clear();
+            LineItem curve = _myPane.AddCurve("Sqrt(X)", _points, Color.Green, SymbolType.None); //라인 범례 이름 Sqrt(X)
+            //LineItem curve = _myPane.AddCurve("", _points, Color.Green, SymbolType.None); //라인 범례 없음
+            curve.Line.Width = 2;
+            _points.Clear();
+            zedGraphControl1.AxisChange();
+            zedGraphControl1.Invalidate();
+            zedGraphControl1.Refresh();
+
+            for (int i = 0; i < 100; i++)
+            {
+                //그래프 포인트 추가
+                _points.Add(i, Math.Sqrt(i));
+                //실시간으로 그래프 반영하여 보여주기
+                zedGraphControl1.AxisChange();
+                zedGraphControl1.Invalidate();
+                zedGraphControl1.Refresh();
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)  //폼이 로드되면
