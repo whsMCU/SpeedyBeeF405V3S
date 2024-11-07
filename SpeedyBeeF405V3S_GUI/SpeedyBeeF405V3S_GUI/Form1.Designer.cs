@@ -234,17 +234,17 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.cb_autoscale = new System.Windows.Forms.CheckBox();
+            this.rb_none = new System.Windows.Forms.RadioButton();
+            this.rb_yaw_setpoint = new System.Windows.Forms.RadioButton();
+            this.rb_pitch_setpoint = new System.Windows.Forms.RadioButton();
+            this.rb_roll_setpoint = new System.Windows.Forms.RadioButton();
+            this.rb_roll_pitch = new System.Windows.Forms.RadioButton();
+            this.rb_yaw = new System.Windows.Forms.RadioButton();
+            this.rb_pitch = new System.Windows.Forms.RadioButton();
+            this.rb_roll = new System.Windows.Forms.RadioButton();
             this.zedGraphControl1 = new ZedGraph.ZedGraphControl();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.rb_roll = new System.Windows.Forms.RadioButton();
-            this.rb_pitch = new System.Windows.Forms.RadioButton();
-            this.rb_yaw = new System.Windows.Forms.RadioButton();
-            this.rb_roll_pitch = new System.Windows.Forms.RadioButton();
-            this.rb_roll_setpoint = new System.Windows.Forms.RadioButton();
-            this.rb_pitch_setpoint = new System.Windows.Forms.RadioButton();
-            this.rb_yaw_setpoint = new System.Windows.Forms.RadioButton();
-            this.rb_none = new System.Windows.Forms.RadioButton();
-            this.cb_autoscale = new System.Windows.Forms.CheckBox();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -1974,6 +1974,112 @@
             this.tabPage3.Text = "그래프";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // cb_autoscale
+            // 
+            this.cb_autoscale.AutoSize = true;
+            this.cb_autoscale.Location = new System.Drawing.Point(359, 453);
+            this.cb_autoscale.Name = "cb_autoscale";
+            this.cb_autoscale.Size = new System.Drawing.Size(85, 16);
+            this.cb_autoscale.TabIndex = 8;
+            this.cb_autoscale.Text = "Auto Scale";
+            this.cb_autoscale.UseVisualStyleBackColor = true;
+            // 
+            // rb_none
+            // 
+            this.rb_none.AutoSize = true;
+            this.rb_none.Location = new System.Drawing.Point(359, 400);
+            this.rb_none.Name = "rb_none";
+            this.rb_none.Size = new System.Drawing.Size(53, 16);
+            this.rb_none.TabIndex = 7;
+            this.rb_none.TabStop = true;
+            this.rb_none.Text = "None";
+            this.rb_none.UseVisualStyleBackColor = true;
+            this.rb_none.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rb_none_MouseDown);
+            // 
+            // rb_yaw_setpoint
+            // 
+            this.rb_yaw_setpoint.AutoSize = true;
+            this.rb_yaw_setpoint.Location = new System.Drawing.Point(206, 444);
+            this.rb_yaw_setpoint.Name = "rb_yaw_setpoint";
+            this.rb_yaw_setpoint.Size = new System.Drawing.Size(107, 16);
+            this.rb_yaw_setpoint.TabIndex = 6;
+            this.rb_yaw_setpoint.TabStop = true;
+            this.rb_yaw_setpoint.Text = "Yaw / Setpoint";
+            this.rb_yaw_setpoint.UseVisualStyleBackColor = true;
+            this.rb_yaw_setpoint.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rb_yaw_setpoint_MouseDown);
+            // 
+            // rb_pitch_setpoint
+            // 
+            this.rb_pitch_setpoint.AutoSize = true;
+            this.rb_pitch_setpoint.Location = new System.Drawing.Point(206, 422);
+            this.rb_pitch_setpoint.Name = "rb_pitch_setpoint";
+            this.rb_pitch_setpoint.Size = new System.Drawing.Size(110, 16);
+            this.rb_pitch_setpoint.TabIndex = 5;
+            this.rb_pitch_setpoint.TabStop = true;
+            this.rb_pitch_setpoint.Text = "Pitch / Setpoint";
+            this.rb_pitch_setpoint.UseVisualStyleBackColor = true;
+            this.rb_pitch_setpoint.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rb_pitch_setpoint_MouseDown);
+            // 
+            // rb_roll_setpoint
+            // 
+            this.rb_roll_setpoint.AutoSize = true;
+            this.rb_roll_setpoint.Location = new System.Drawing.Point(206, 400);
+            this.rb_roll_setpoint.Name = "rb_roll_setpoint";
+            this.rb_roll_setpoint.Size = new System.Drawing.Size(103, 16);
+            this.rb_roll_setpoint.TabIndex = 4;
+            this.rb_roll_setpoint.TabStop = true;
+            this.rb_roll_setpoint.Text = "Roll / Setpoint";
+            this.rb_roll_setpoint.UseVisualStyleBackColor = true;
+            this.rb_roll_setpoint.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rb_roll_setpoint_MouseDown);
+            // 
+            // rb_roll_pitch
+            // 
+            this.rb_roll_pitch.AutoSize = true;
+            this.rb_roll_pitch.Location = new System.Drawing.Point(95, 400);
+            this.rb_roll_pitch.Name = "rb_roll_pitch";
+            this.rb_roll_pitch.Size = new System.Drawing.Size(86, 16);
+            this.rb_roll_pitch.TabIndex = 3;
+            this.rb_roll_pitch.TabStop = true;
+            this.rb_roll_pitch.Text = "Roll / Pitch";
+            this.rb_roll_pitch.UseVisualStyleBackColor = true;
+            this.rb_roll_pitch.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rb_roll_pitch_MouseDown);
+            // 
+            // rb_yaw
+            // 
+            this.rb_yaw.AutoSize = true;
+            this.rb_yaw.Location = new System.Drawing.Point(13, 444);
+            this.rb_yaw.Name = "rb_yaw";
+            this.rb_yaw.Size = new System.Drawing.Size(48, 16);
+            this.rb_yaw.TabIndex = 2;
+            this.rb_yaw.TabStop = true;
+            this.rb_yaw.Text = "Yaw";
+            this.rb_yaw.UseVisualStyleBackColor = true;
+            this.rb_yaw.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rb_yaw_MouseDown);
+            // 
+            // rb_pitch
+            // 
+            this.rb_pitch.AutoSize = true;
+            this.rb_pitch.Location = new System.Drawing.Point(13, 422);
+            this.rb_pitch.Name = "rb_pitch";
+            this.rb_pitch.Size = new System.Drawing.Size(51, 16);
+            this.rb_pitch.TabIndex = 1;
+            this.rb_pitch.TabStop = true;
+            this.rb_pitch.Text = "Pitch";
+            this.rb_pitch.UseVisualStyleBackColor = true;
+            this.rb_pitch.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rb_pitch_MouseDown);
+            // 
+            // rb_roll
+            // 
+            this.rb_roll.AutoSize = true;
+            this.rb_roll.Location = new System.Drawing.Point(13, 400);
+            this.rb_roll.Name = "rb_roll";
+            this.rb_roll.Size = new System.Drawing.Size(44, 16);
+            this.rb_roll.TabIndex = 0;
+            this.rb_roll.TabStop = true;
+            this.rb_roll.Text = "Roll";
+            this.rb_roll.UseVisualStyleBackColor = true;
+            this.rb_roll.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rb_roll_MouseDown);
+            // 
             // zedGraphControl1
             // 
             this.zedGraphControl1.Location = new System.Drawing.Point(7, 6);
@@ -2001,104 +2107,6 @@
             this.textBox1.Size = new System.Drawing.Size(327, 22);
             this.textBox1.TabIndex = 89;
             this.textBox1.Text = "-";
-            // 
-            // rb_roll
-            // 
-            this.rb_roll.AutoSize = true;
-            this.rb_roll.Location = new System.Drawing.Point(13, 400);
-            this.rb_roll.Name = "rb_roll";
-            this.rb_roll.Size = new System.Drawing.Size(44, 16);
-            this.rb_roll.TabIndex = 0;
-            this.rb_roll.TabStop = true;
-            this.rb_roll.Text = "Roll";
-            this.rb_roll.UseVisualStyleBackColor = true;
-            // 
-            // rb_pitch
-            // 
-            this.rb_pitch.AutoSize = true;
-            this.rb_pitch.Location = new System.Drawing.Point(13, 422);
-            this.rb_pitch.Name = "rb_pitch";
-            this.rb_pitch.Size = new System.Drawing.Size(51, 16);
-            this.rb_pitch.TabIndex = 1;
-            this.rb_pitch.TabStop = true;
-            this.rb_pitch.Text = "Pitch";
-            this.rb_pitch.UseVisualStyleBackColor = true;
-            // 
-            // rb_yaw
-            // 
-            this.rb_yaw.AutoSize = true;
-            this.rb_yaw.Location = new System.Drawing.Point(13, 444);
-            this.rb_yaw.Name = "rb_yaw";
-            this.rb_yaw.Size = new System.Drawing.Size(48, 16);
-            this.rb_yaw.TabIndex = 2;
-            this.rb_yaw.TabStop = true;
-            this.rb_yaw.Text = "Yaw";
-            this.rb_yaw.UseVisualStyleBackColor = true;
-            // 
-            // rb_roll_pitch
-            // 
-            this.rb_roll_pitch.AutoSize = true;
-            this.rb_roll_pitch.Location = new System.Drawing.Point(95, 400);
-            this.rb_roll_pitch.Name = "rb_roll_pitch";
-            this.rb_roll_pitch.Size = new System.Drawing.Size(86, 16);
-            this.rb_roll_pitch.TabIndex = 3;
-            this.rb_roll_pitch.TabStop = true;
-            this.rb_roll_pitch.Text = "Roll / Pitch";
-            this.rb_roll_pitch.UseVisualStyleBackColor = true;
-            // 
-            // rb_roll_setpoint
-            // 
-            this.rb_roll_setpoint.AutoSize = true;
-            this.rb_roll_setpoint.Location = new System.Drawing.Point(206, 400);
-            this.rb_roll_setpoint.Name = "rb_roll_setpoint";
-            this.rb_roll_setpoint.Size = new System.Drawing.Size(103, 16);
-            this.rb_roll_setpoint.TabIndex = 4;
-            this.rb_roll_setpoint.TabStop = true;
-            this.rb_roll_setpoint.Text = "Roll / Setpoint";
-            this.rb_roll_setpoint.UseVisualStyleBackColor = true;
-            // 
-            // rb_pitch_setpoint
-            // 
-            this.rb_pitch_setpoint.AutoSize = true;
-            this.rb_pitch_setpoint.Location = new System.Drawing.Point(206, 422);
-            this.rb_pitch_setpoint.Name = "rb_pitch_setpoint";
-            this.rb_pitch_setpoint.Size = new System.Drawing.Size(110, 16);
-            this.rb_pitch_setpoint.TabIndex = 5;
-            this.rb_pitch_setpoint.TabStop = true;
-            this.rb_pitch_setpoint.Text = "Pitch / Setpoint";
-            this.rb_pitch_setpoint.UseVisualStyleBackColor = true;
-            // 
-            // rb_yaw_setpoint
-            // 
-            this.rb_yaw_setpoint.AutoSize = true;
-            this.rb_yaw_setpoint.Location = new System.Drawing.Point(206, 444);
-            this.rb_yaw_setpoint.Name = "rb_yaw_setpoint";
-            this.rb_yaw_setpoint.Size = new System.Drawing.Size(107, 16);
-            this.rb_yaw_setpoint.TabIndex = 6;
-            this.rb_yaw_setpoint.TabStop = true;
-            this.rb_yaw_setpoint.Text = "Yaw / Setpoint";
-            this.rb_yaw_setpoint.UseVisualStyleBackColor = true;
-            // 
-            // rb_none
-            // 
-            this.rb_none.AutoSize = true;
-            this.rb_none.Location = new System.Drawing.Point(359, 400);
-            this.rb_none.Name = "rb_none";
-            this.rb_none.Size = new System.Drawing.Size(53, 16);
-            this.rb_none.TabIndex = 7;
-            this.rb_none.TabStop = true;
-            this.rb_none.Text = "None";
-            this.rb_none.UseVisualStyleBackColor = true;
-            // 
-            // cb_autoscale
-            // 
-            this.cb_autoscale.AutoSize = true;
-            this.cb_autoscale.Location = new System.Drawing.Point(359, 453);
-            this.cb_autoscale.Name = "cb_autoscale";
-            this.cb_autoscale.Size = new System.Drawing.Size(85, 16);
-            this.cb_autoscale.TabIndex = 8;
-            this.cb_autoscale.Text = "Auto Scale";
-            this.cb_autoscale.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 

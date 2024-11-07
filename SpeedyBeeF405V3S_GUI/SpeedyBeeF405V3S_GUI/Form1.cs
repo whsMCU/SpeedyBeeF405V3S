@@ -35,7 +35,6 @@ namespace SpeedyBeeF405V3S_GUI
 
         UInt32 time_count = 0;
         GraphPane _myPane;
-        PointPairList _points;
         PointPairList _roll_angle_points = new PointPairList();
         LineItem _roll_angle_curve;
         PointPairList _pitch_angle_points = new PointPairList();
@@ -115,24 +114,22 @@ namespace SpeedyBeeF405V3S_GUI
             _myPane.YAxis.Title.FontSpec.Size = 12;
             _myPane.YAxis.Title.Text = "Y Axis";
             //실시간으로 Scale 변경 자동으로 하도록
-            _myPane.YAxis.Scale.MinAuto = true;
-            _myPane.YAxis.Scale.MaxAuto = true;
+            _myPane.YAxis.Scale.Min = -50;
+            _myPane.YAxis.Scale.Max = 50;
+            //_myPane.YAxis.Scale.MinAuto = true;
+            //_myPane.YAxis.Scale.MaxAuto = true;
             _myPane.YAxis.Scale.MajorStepAuto = true;
             _myPane.YAxis.MajorGrid.IsVisible = true;
             _myPane.YAxis.MinorGrid.IsVisible = false;
             _myPane.YAxis.MajorTic.Color = Color.Black;
+
             //그래프 Chart 색, Border 색/굵기 설정
             _myPane.Fill = new Fill(Color.FromArgb(255, 238, 238, 238));
             _myPane.Chart.Fill = new Fill(Color.LightGray, Color.LightGray, 180.0f);
             _myPane.Chart.Border.Color = Color.Black;
             _myPane.Chart.Border.Width = 2;
             //Point 리스트를 그래프 Curve 리스트에 추가
-            _points = new PointPairList();
             _myPane.CurveList.Clear();
-            LineItem curve = _myPane.AddCurve("Sqrt(X)", _points, Color.Green, SymbolType.None); //라인 범례 이름 Sqrt(X)
-            //LineItem curve = _myPane.AddCurve("", _points, Color.Green, SymbolType.None); //라인 범례 없음
-            curve.Line.Width = 2;
-            _points.Clear();
 
             _roll_angle_curve = _myPane.AddCurve("ROLL", _roll_angle_points, Color.Green, SymbolType.None);
             _roll_angle_curve.Line.Width = 2;
@@ -149,19 +146,6 @@ namespace SpeedyBeeF405V3S_GUI
             zedGraphControl1.AxisChange();
             zedGraphControl1.Invalidate();
             zedGraphControl1.Refresh();
-
-            for (int i = 0; i < 100; i++)
-            {
-                //그래프 포인트 추가
-                _points.Add(i, Math.Sqrt(i));
-                _roll_angle_points.Add(i, Math.Sqrt(i+1));
-                _pitch_angle_points.Add(i, Math.Sqrt(i+2));
-                _yaw_angle_points.Add(i, Math.Sqrt(i+3));
-                //실시간으로 그래프 반영하여 보여주기
-                zedGraphControl1.AxisChange();
-                zedGraphControl1.Invalidate();
-                zedGraphControl1.Refresh();
-            }
         }
 
         private void Form1_Load(object sender, EventArgs e)  //폼이 로드되면
@@ -275,9 +259,18 @@ namespace SpeedyBeeF405V3S_GUI
                                 lb_pitch.Text = passed_data[2].ToString();
                                 lb_heading.Text = passed_data[3].ToString();
 
-                                _roll_angle_points.Add(time_count, passed_data[1]);
-                                _pitch_angle_points.Add(time_count, passed_data[2]);
-                                _yaw_angle_points.Add(time_count, passed_data[3]);
+                                if(rb_roll.Checked == true)
+                                {
+                                    _roll_angle_points.Add(time_count, passed_data[1]);
+                                }
+                                if (rb_pitch.Checked == true)
+                                {
+                                    _pitch_angle_points.Add(time_count, passed_data[2]);
+                                }
+                                if (rb_yaw.Checked == true)
+                                {
+                                    _yaw_angle_points.Add(time_count, passed_data[3]);
+                                }
 
                                 lb_altitude.Text = passed_data[4].ToString();
                                 lb_rc_roll.Text = passed_data[5].ToString();
@@ -725,6 +718,54 @@ namespace SpeedyBeeF405V3S_GUI
             tb_Y_R_P.Text = tb_FC_Y_R_P.Text;
             tb_Y_R_I.Text = tb_FC_Y_R_I.Text;
             tb_Y_R_D.Text = tb_FC_Y_R_D.Text;
+        }
+
+        private void rb_yaw_MouseDown(object sender, MouseEventArgs e)
+        {
+            _myPane.YAxis.Scale.Min = 0;
+            _myPane.YAxis.Scale.Max = 360;
+        }
+
+        private void rb_roll_MouseDown(object sender, MouseEventArgs e)
+        {
+            _myPane.YAxis.Scale.Min = -45;
+            _myPane.YAxis.Scale.Max = 45;
+        }
+
+        private void rb_pitch_MouseDown(object sender, MouseEventArgs e)
+        {
+            _myPane.YAxis.Scale.Min = -45;
+            _myPane.YAxis.Scale.Max = 45;
+        }
+
+        private void rb_roll_pitch_MouseDown(object sender, MouseEventArgs e)
+        {
+            _myPane.YAxis.Scale.Min = -45;
+            _myPane.YAxis.Scale.Max = 45;
+        }
+
+        private void rb_roll_setpoint_MouseDown(object sender, MouseEventArgs e)
+        {
+            _myPane.YAxis.Scale.Min = -45;
+            _myPane.YAxis.Scale.Max = 45;
+        }
+
+        private void rb_pitch_setpoint_MouseDown(object sender, MouseEventArgs e)
+        {
+            _myPane.YAxis.Scale.Min = -45;
+            _myPane.YAxis.Scale.Max = 45;
+        }
+
+        private void rb_yaw_setpoint_MouseDown(object sender, MouseEventArgs e)
+        {
+            _myPane.YAxis.Scale.Min = -45;
+            _myPane.YAxis.Scale.Max = 45;
+        }
+
+        private void rb_none_MouseDown(object sender, MouseEventArgs e)
+        {
+            _myPane.YAxis.Scale.Min = -45;
+            _myPane.YAxis.Scale.Max = 45;
         }
     }
 }
