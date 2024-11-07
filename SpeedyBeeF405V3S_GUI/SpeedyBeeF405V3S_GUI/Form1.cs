@@ -27,16 +27,53 @@ namespace SpeedyBeeF405V3S_GUI
 
         private ArrayList al;
 
-        float[] pb_point = new float[2];
-
-        bool pid_recive_flag = false;
+            bool pid_recive_flag = false;
         bool pid_send_flag = false;
         bool pid_save_flag = false;
 
         public GMapOverlay MarkerOverlay = new GMapOverlay("markers");
 
+        UInt32 time_count = 0;
         GraphPane _myPane;
         PointPairList _points;
+        PointPairList _roll_angle_points = new PointPairList();
+        LineItem _roll_angle_curve;
+        PointPairList _pitch_angle_points = new PointPairList();
+        LineItem _pitch_angle_curve;
+        PointPairList _yaw_angle_points = new PointPairList();
+        LineItem _yaw_angle_curve;
+        //PointPairList _rc_roll_points = new PointPairList();
+        //LineItem _roll_angle_curve;
+        //PointPairList _rc_pitch_points = new PointPairList();
+        //LineItem _roll_angle_curve;
+        //PointPairList _rc_yaw_points = new PointPairList();
+        //LineItem _roll_angle_curve;
+        //PointPairList _rc_thro_points = new PointPairList();
+        //LineItem _roll_angle_curve;
+        //PointPairList _altitude_points = new PointPairList();
+        //LineItem _roll_angle_curve;
+        //PointPairList _gyro_x_points = new PointPairList();
+        //LineItem _roll_angle_curve;
+        //PointPairList _gyro_y_points = new PointPairList();
+        //LineItem _roll_angle_curve;
+        //PointPairList _gyro_z_points = new PointPairList();
+        //LineItem _roll_angle_curve;
+        //PointPairList _motor_0_points = new PointPairList();
+        //LineItem _roll_angle_curve;
+        //PointPairList _motor_1_points = new PointPairList();
+        //LineItem _roll_angle_curve;
+        //PointPairList _motor_2_points = new PointPairList();
+        //LineItem _roll_angle_curve;
+        //PointPairList _motor_3_points = new PointPairList();
+        //LineItem _roll_angle_curve;
+        //PointPairList _debug_0_points = new PointPairList();
+        //LineItem _roll_angle_curve;
+        //PointPairList _debug_1_points = new PointPairList();
+        //LineItem _roll_angle_curve;
+        //PointPairList _debug_2_points = new PointPairList();
+        //LineItem _roll_angle_curve;
+        //PointPairList _debug_3_points = new PointPairList();
+        //LineItem _roll_angle_curve;
 
         public Form1()
         {
@@ -96,6 +133,19 @@ namespace SpeedyBeeF405V3S_GUI
             //LineItem curve = _myPane.AddCurve("", _points, Color.Green, SymbolType.None); //라인 범례 없음
             curve.Line.Width = 2;
             _points.Clear();
+
+            _roll_angle_curve = _myPane.AddCurve("ROLL", _roll_angle_points, Color.Green, SymbolType.None);
+            _roll_angle_curve.Line.Width = 2;
+            _roll_angle_points.Clear();
+
+            _pitch_angle_curve = _myPane.AddCurve("PITCH", _pitch_angle_points, Color.Red, SymbolType.None);
+            _pitch_angle_curve.Line.Width = 2;
+            _pitch_angle_points.Clear();
+
+            _yaw_angle_curve = _myPane.AddCurve("YAW", _yaw_angle_points, Color.Blue, SymbolType.None);
+            _yaw_angle_curve.Line.Width = 2;
+            _yaw_angle_points.Clear();
+
             zedGraphControl1.AxisChange();
             zedGraphControl1.Invalidate();
             zedGraphControl1.Refresh();
@@ -104,6 +154,9 @@ namespace SpeedyBeeF405V3S_GUI
             {
                 //그래프 포인트 추가
                 _points.Add(i, Math.Sqrt(i));
+                _roll_angle_points.Add(i, Math.Sqrt(i+1));
+                _pitch_angle_points.Add(i, Math.Sqrt(i+2));
+                _yaw_angle_points.Add(i, Math.Sqrt(i+3));
                 //실시간으로 그래프 반영하여 보여주기
                 zedGraphControl1.AxisChange();
                 zedGraphControl1.Invalidate();
@@ -198,6 +251,7 @@ namespace SpeedyBeeF405V3S_GUI
         {
             //int ReceiveData = serialPort1.ReadByte();  //시리얼 버터에 수신된 데이타를 ReceiveData 읽어오기
             //richTextBox_received.Text = richTextBox_received.Text + string.Format("{0:X2}", ReceiveData);  //int 형식을 string형식으로 변환하여 출력
+ 
             try
             {
                 if (received_data == 0) received_data = 1;
@@ -214,9 +268,17 @@ namespace SpeedyBeeF405V3S_GUI
                         {
                             if (passed_data[0] == 0)
                             {
+                                DateTime date_time = DateTime.Now;
+                                int ms = date_time.Millisecond;
+                                time_count++;
                                 lb_roll.Text = passed_data[1].ToString();
                                 lb_pitch.Text = passed_data[2].ToString();
                                 lb_heading.Text = passed_data[3].ToString();
+
+                                _roll_angle_points.Add(time_count, passed_data[1]);
+                                _pitch_angle_points.Add(time_count, passed_data[2]);
+                                _yaw_angle_points.Add(time_count, passed_data[3]);
+
                                 lb_altitude.Text = passed_data[4].ToString();
                                 lb_rc_roll.Text = passed_data[5].ToString();
                                 lb_rc_pitch.Text = passed_data[6].ToString();
@@ -249,6 +311,16 @@ namespace SpeedyBeeF405V3S_GUI
                                 lb_gyro_X.Text = passed_data[23].ToString();
                                 lb_gyro_Y.Text = passed_data[24].ToString();
                                 lb_gyro_Z.Text = passed_data[25].ToString();
+
+                                if(rb_roll.Checked == true || rb_pitch.Checked == true ||
+                                   rb_yaw.Checked == true || rb_roll_pitch.Checked == true ||
+                                   rb_roll_setpoint.Checked == true || rb_pitch_setpoint.Checked == true ||
+                                   rb_yaw_setpoint.Checked == true)
+                                {
+                                    zedGraphControl1.AxisChange();
+                                    zedGraphControl1.Invalidate();
+                                    zedGraphControl1.Refresh();
+                                }
                             }
                             else if (passed_data[0] == 1)
                             {
