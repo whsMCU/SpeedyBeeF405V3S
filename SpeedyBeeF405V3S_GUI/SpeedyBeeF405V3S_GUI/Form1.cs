@@ -104,8 +104,10 @@ namespace SpeedyBeeF405V3S_GUI
             _myPane.XAxis.Title.FontSpec.Size = 12;
             _myPane.XAxis.Title.Text = "X Axis";
             //실시간으로 Scale 변경 자동으로 하도록
-            _myPane.XAxis.Scale.MinAuto = true;
-            _myPane.XAxis.Scale.MaxAuto = true;
+            _myPane.XAxis.Scale.Min = 0;
+            _myPane.XAxis.Scale.Max = 300;
+            //_myPane.XAxis.Scale.MinAuto = true;
+            //_myPane.XAxis.Scale.MaxAuto = true;
             _myPane.XAxis.Scale.MajorStepAuto = true;
             _myPane.XAxis.MajorGrid.IsVisible = true;
             _myPane.XAxis.MinorGrid.IsVisible = false;
@@ -131,17 +133,6 @@ namespace SpeedyBeeF405V3S_GUI
             //Point 리스트를 그래프 Curve 리스트에 추가
             _myPane.CurveList.Clear();
 
-            _roll_angle_curve = _myPane.AddCurve("ROLL", _roll_angle_points, Color.Green, SymbolType.None);
-            _roll_angle_curve.Line.Width = 2;
-            _roll_angle_points.Clear();
-
-            _pitch_angle_curve = _myPane.AddCurve("PITCH", _pitch_angle_points, Color.Red, SymbolType.None);
-            _pitch_angle_curve.Line.Width = 2;
-            _pitch_angle_points.Clear();
-
-            _yaw_angle_curve = _myPane.AddCurve("YAW", _yaw_angle_points, Color.Blue, SymbolType.None);
-            _yaw_angle_curve.Line.Width = 2;
-            _yaw_angle_points.Clear();
 
             zedGraphControl1.AxisChange();
             zedGraphControl1.Invalidate();
@@ -262,14 +253,20 @@ namespace SpeedyBeeF405V3S_GUI
                                 if(rb_roll.Checked == true)
                                 {
                                     _roll_angle_points.Add(time_count, passed_data[1]);
+                                    _myPane.XAxis.Scale.Min = time_count;
+                                    _myPane.XAxis.Scale.Max = 300 + time_count;
                                 }
                                 if (rb_pitch.Checked == true)
                                 {
                                     _pitch_angle_points.Add(time_count, passed_data[2]);
+                                    _myPane.XAxis.Scale.Min = time_count;
+                                    _myPane.XAxis.Scale.Max = 300 + time_count;
                                 }
                                 if (rb_yaw.Checked == true)
                                 {
                                     _yaw_angle_points.Add(time_count, passed_data[3]);
+                                    _myPane.XAxis.Scale.Min = time_count;
+                                    _myPane.XAxis.Scale.Max = 300 + time_count;
                                 }
 
                                 lb_altitude.Text = passed_data[4].ToString();
@@ -722,26 +719,66 @@ namespace SpeedyBeeF405V3S_GUI
 
         private void rb_yaw_MouseDown(object sender, MouseEventArgs e)
         {
+            zedGraphControl1.GraphPane.CurveList.Clear();
+
             _myPane.YAxis.Scale.Min = 0;
             _myPane.YAxis.Scale.Max = 360;
+            _yaw_angle_curve = _myPane.AddCurve("YAW", _yaw_angle_points, Color.Blue, SymbolType.None);
+            _yaw_angle_curve.Line.Width = 2;
+            _yaw_angle_points.Clear();
+
+            zedGraphControl1.AxisChange();
+            zedGraphControl1.Invalidate();
+            zedGraphControl1.Refresh();
         }
 
         private void rb_roll_MouseDown(object sender, MouseEventArgs e)
         {
+            zedGraphControl1.GraphPane.CurveList.Clear();
+
             _myPane.YAxis.Scale.Min = -45;
             _myPane.YAxis.Scale.Max = 45;
+            _roll_angle_curve = _myPane.AddCurve("ROLL", _roll_angle_points, Color.Green, SymbolType.None);
+            _roll_angle_curve.Line.Width = 2;
+            _roll_angle_points.Clear();
+
+            zedGraphControl1.AxisChange();
+            zedGraphControl1.Invalidate();
+            zedGraphControl1.Refresh();
         }
 
         private void rb_pitch_MouseDown(object sender, MouseEventArgs e)
         {
+            zedGraphControl1.GraphPane.CurveList.Clear();
+
             _myPane.YAxis.Scale.Min = -45;
             _myPane.YAxis.Scale.Max = 45;
+            _pitch_angle_curve = _myPane.AddCurve("PITCH", _pitch_angle_points, Color.Red, SymbolType.None);
+            _pitch_angle_curve.Line.Width = 2;
+            _pitch_angle_points.Clear();
+
+            zedGraphControl1.AxisChange();
+            zedGraphControl1.Invalidate();
+            zedGraphControl1.Refresh();
         }
 
         private void rb_roll_pitch_MouseDown(object sender, MouseEventArgs e)
         {
+            zedGraphControl1.GraphPane.CurveList.Clear();
+
             _myPane.YAxis.Scale.Min = -45;
             _myPane.YAxis.Scale.Max = 45;
+            _roll_angle_curve = _myPane.AddCurve("ROLL", _roll_angle_points, Color.Green, SymbolType.None);
+            _roll_angle_curve.Line.Width = 2;
+            _roll_angle_points.Clear();
+
+            _pitch_angle_curve = _myPane.AddCurve("PITCH", _pitch_angle_points, Color.Red, SymbolType.None);
+            _pitch_angle_curve.Line.Width = 2;
+            _pitch_angle_points.Clear();
+
+            zedGraphControl1.AxisChange();
+            zedGraphControl1.Invalidate();
+            zedGraphControl1.Refresh();
         }
 
         private void rb_roll_setpoint_MouseDown(object sender, MouseEventArgs e)
@@ -764,8 +801,14 @@ namespace SpeedyBeeF405V3S_GUI
 
         private void rb_none_MouseDown(object sender, MouseEventArgs e)
         {
+            zedGraphControl1.GraphPane.CurveList.Clear();
+
             _myPane.YAxis.Scale.Min = -45;
             _myPane.YAxis.Scale.Max = 45;
+
+            zedGraphControl1.AxisChange();
+            zedGraphControl1.Invalidate();
+            zedGraphControl1.Refresh();
         }
     }
 }
