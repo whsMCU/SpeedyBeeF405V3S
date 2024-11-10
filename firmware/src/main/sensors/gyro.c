@@ -182,6 +182,10 @@ static void gyroUpdateSensor()
 
 void taskGyroUpdate(timeUs_t currentTimeUs)
 {
+  static timeUs_t previousIMUUpdateTime;
+  const timeDelta_t deltaT = currentTimeUs - previousIMUUpdateTime;
+  previousIMUUpdateTime = currentTimeUs;
+  debug[3] = deltaT;
 	UNUSED(currentTimeUs);
 	gyroUpdateSensor();
 	bmi270.gyroADC[X] = bmi270.gyroADC[X] * bmi270.scale;
@@ -305,6 +309,10 @@ void performAcclerationCalibration(rollAndPitchTrims_t *rollAndPitchTrims)
 
 void taskAccUpdate(timeUs_t currentTimeUs)
 {
+  static timeUs_t previousIMUUpdateTime;
+  const timeDelta_t deltaT = currentTimeUs - previousIMUUpdateTime;
+  previousIMUUpdateTime = currentTimeUs;
+  debug[2] = deltaT;
 	UNUSED(currentTimeUs);
 	if (!bmi270SpiAccRead(&bmi270)) {
 			return;
