@@ -233,7 +233,11 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.gMapControl1 = new GMap.NET.WindowsForms.GMapControl();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.rb_motor = new System.Windows.Forms.RadioButton();
+            this.rb_gyro = new System.Windows.Forms.RadioButton();
+            this.rb_altitude = new System.Windows.Forms.RadioButton();
             this.cb_autoscale = new System.Windows.Forms.CheckBox();
             this.rb_none = new System.Windows.Forms.RadioButton();
             this.rb_yaw_setpoint = new System.Windows.Forms.RadioButton();
@@ -245,9 +249,6 @@
             this.rb_roll = new System.Windows.Forms.RadioButton();
             this.zedGraphControl1 = new ZedGraph.ZedGraphControl();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.rb_altitude = new System.Windows.Forms.RadioButton();
-            this.rb_gyro = new System.Windows.Forms.RadioButton();
-            this.rb_motor = new System.Windows.Forms.RadioButton();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -265,6 +266,7 @@
             this.groupBox6.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -1949,6 +1951,7 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.gMapControl1);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -1956,6 +1959,33 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "MAP";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // gMapControl1
+            // 
+            this.gMapControl1.Bearing = 0F;
+            this.gMapControl1.CanDragMap = true;
+            this.gMapControl1.EmptyTileColor = System.Drawing.Color.Navy;
+            this.gMapControl1.GrayScaleMode = false;
+            this.gMapControl1.HelperLineOption = GMap.NET.WindowsForms.HelperLineOptions.DontShow;
+            this.gMapControl1.LevelsKeepInMemory = 5;
+            this.gMapControl1.Location = new System.Drawing.Point(7, 7);
+            this.gMapControl1.MarkersEnabled = true;
+            this.gMapControl1.MaxZoom = 2;
+            this.gMapControl1.MinZoom = 2;
+            this.gMapControl1.MouseWheelZoomEnabled = true;
+            this.gMapControl1.MouseWheelZoomType = GMap.NET.MouseWheelZoomType.MousePositionAndCenter;
+            this.gMapControl1.Name = "gMapControl1";
+            this.gMapControl1.NegativeMode = false;
+            this.gMapControl1.PolygonsEnabled = true;
+            this.gMapControl1.RetryLoadTile = 0;
+            this.gMapControl1.RoutesEnabled = true;
+            this.gMapControl1.ScaleMode = GMap.NET.WindowsForms.ScaleModes.Integer;
+            this.gMapControl1.SelectedAreaFillColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(65)))), ((int)(((byte)(105)))), ((int)(((byte)(225)))));
+            this.gMapControl1.ShowTileGridLines = false;
+            this.gMapControl1.Size = new System.Drawing.Size(712, 346);
+            this.gMapControl1.TabIndex = 0;
+            this.gMapControl1.Zoom = 0D;
+            this.gMapControl1.OnMapClick += new GMap.NET.WindowsForms.MapClick(this.gMapControl1_OnMapClick);
             // 
             // tabPage3
             // 
@@ -1979,6 +2009,39 @@
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "그래프";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // rb_motor
+            // 
+            this.rb_motor.AutoSize = true;
+            this.rb_motor.Location = new System.Drawing.Point(362, 444);
+            this.rb_motor.Name = "rb_motor";
+            this.rb_motor.Size = new System.Drawing.Size(55, 16);
+            this.rb_motor.TabIndex = 11;
+            this.rb_motor.Text = "Motor";
+            this.rb_motor.UseVisualStyleBackColor = true;
+            this.rb_motor.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rb_motor_MouseDown);
+            // 
+            // rb_gyro
+            // 
+            this.rb_gyro.AutoSize = true;
+            this.rb_gyro.Location = new System.Drawing.Point(362, 422);
+            this.rb_gyro.Name = "rb_gyro";
+            this.rb_gyro.Size = new System.Drawing.Size(50, 16);
+            this.rb_gyro.TabIndex = 10;
+            this.rb_gyro.Text = "Gyro";
+            this.rb_gyro.UseVisualStyleBackColor = true;
+            this.rb_gyro.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rb_gyro_MouseDown);
+            // 
+            // rb_altitude
+            // 
+            this.rb_altitude.AutoSize = true;
+            this.rb_altitude.Location = new System.Drawing.Point(362, 400);
+            this.rb_altitude.Name = "rb_altitude";
+            this.rb_altitude.Size = new System.Drawing.Size(64, 16);
+            this.rb_altitude.TabIndex = 9;
+            this.rb_altitude.Text = "Altitude";
+            this.rb_altitude.UseVisualStyleBackColor = true;
+            this.rb_altitude.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rb_altitude_MouseDown);
             // 
             // cb_autoscale
             // 
@@ -2108,39 +2171,6 @@
             this.textBox1.TabIndex = 89;
             this.textBox1.Text = "-";
             // 
-            // rb_altitude
-            // 
-            this.rb_altitude.AutoSize = true;
-            this.rb_altitude.Location = new System.Drawing.Point(362, 400);
-            this.rb_altitude.Name = "rb_altitude";
-            this.rb_altitude.Size = new System.Drawing.Size(64, 16);
-            this.rb_altitude.TabIndex = 9;
-            this.rb_altitude.Text = "Altitude";
-            this.rb_altitude.UseVisualStyleBackColor = true;
-            this.rb_altitude.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rb_altitude_MouseDown);
-            // 
-            // rb_gyro
-            // 
-            this.rb_gyro.AutoSize = true;
-            this.rb_gyro.Location = new System.Drawing.Point(362, 422);
-            this.rb_gyro.Name = "rb_gyro";
-            this.rb_gyro.Size = new System.Drawing.Size(50, 16);
-            this.rb_gyro.TabIndex = 10;
-            this.rb_gyro.Text = "Gyro";
-            this.rb_gyro.UseVisualStyleBackColor = true;
-            this.rb_gyro.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rb_gyro_MouseDown);
-            // 
-            // rb_motor
-            // 
-            this.rb_motor.AutoSize = true;
-            this.rb_motor.Location = new System.Drawing.Point(362, 444);
-            this.rb_motor.Name = "rb_motor";
-            this.rb_motor.Size = new System.Drawing.Size(55, 16);
-            this.rb_motor.TabIndex = 11;
-            this.rb_motor.Text = "Motor";
-            this.rb_motor.UseVisualStyleBackColor = true;
-            this.rb_motor.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rb_motor_MouseDown);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -2188,6 +2218,7 @@
             this.groupBox6.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
             this.ResumeLayout(false);
@@ -2372,6 +2403,7 @@
         private System.Windows.Forms.RadioButton rb_motor;
         private System.Windows.Forms.RadioButton rb_gyro;
         private System.Windows.Forms.RadioButton rb_altitude;
+        private GMap.NET.WindowsForms.GMapControl gMapControl1;
     }
 }
 

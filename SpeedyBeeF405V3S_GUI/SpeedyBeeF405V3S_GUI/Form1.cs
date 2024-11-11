@@ -82,16 +82,39 @@ namespace SpeedyBeeF405V3S_GUI
             received_data = 2;
             textBox10.Text = (zoom - 14).ToString();
 
-            //PointLatLng p = new PointLatLng(37.497872, 127.0275142);
-            //gMapControl1.Overlays.Add(MarkerOverlay);
-            //gMapControl1.MapProvider = GMapProviders.GoogleMap;
-            //gMapControl1.Position = p;
-            //gMapControl1.MinZoom = 5;
-            //gMapControl1.MaxZoom = 19;
-            //gMapControl1.Zoom = 14;
-            //AddMarker(p, "test");
-
+            InitGmap();
             InitGraph();
+        }
+
+        public void InitGmap()
+        {
+            gMapControl1.MapProvider = GMapProviders.GoogleMap;
+            PointLatLng p = new PointLatLng(37.497872, 127.0275142);
+            gMapControl1.Position = p;
+            gMapControl1.MinZoom = 5;
+            gMapControl1.MaxZoom = 19;
+            gMapControl1.Zoom = 14;
+            gMapControl1.CanDragMap = true;
+            gMapControl1.DragButton = MouseButtons.Left;
+        }
+
+        private void gMapControl1_OnMapClick(PointLatLng pointClick, MouseEventArgs e)
+        {
+            // 클릭한 위치의 위도, 경도 가져오기
+            PointLatLng point = gMapControl1.FromLocalToLatLng(e.X, e.Y);
+
+            // 클릭한 위치에 마커 추가
+            GMarkerGoogle marker = new GMarkerGoogle(point, GMarkerGoogleType.green);
+            marker.ToolTipText = $"위도: {point.Lat}, 경도: {point.Lng}";
+            marker.ToolTipMode = MarkerTooltipMode.Always;
+
+            // 마커를 GMapControl의 Overlay에 추가
+            GMapOverlay markersOverlay = new GMapOverlay("markers");
+            markersOverlay.Markers.Add(marker);
+            gMapControl1.Overlays.Add(markersOverlay);
+
+            // 지도 새로고침
+            gMapControl1.Refresh();
         }
 
         public void InitGraph()
@@ -146,18 +169,18 @@ namespace SpeedyBeeF405V3S_GUI
             }
             catch { }
         }
-        //public void AddMarker(PointLatLng p, string text)
-        //{
-        //    GMarkerGoogle gMarker = new GMarkerGoogle(p, GMarkerGoogleType.blue_dot);
-        //    gMarker.ToolTipMode = MarkerTooltipMode.OnMouseOver;
-        //    gMarker.ToolTipText = text;
-        //    gMarker.ToolTip.TextPadding = new Size(10, 10);
-        //    gMarker.ToolTip.Fill = new SolidBrush(Color.DimGray);
-        //    gMarker.ToolTip.Foreground = new SolidBrush(Color.White);
-        //    gMarker.ToolTip.Offset = new Point(10, -30);
-        //    gMarker.ToolTip.Stroke = new Pen(Color.Transparent, .0f);
-        //    MarkerOverlay.Markers.Add(gMarker);
-        //}
+        public void AddMarker(PointLatLng p, string text)
+        {
+            GMarkerGoogle gMarker = new GMarkerGoogle(p, GMarkerGoogleType.blue_dot);
+            gMarker.ToolTipMode = MarkerTooltipMode.OnMouseOver;
+            gMarker.ToolTipText = text;
+            gMarker.ToolTip.TextPadding = new Size(10, 10);
+            gMarker.ToolTip.Fill = new SolidBrush(Color.DimGray);
+            gMarker.ToolTip.Foreground = new SolidBrush(Color.White);
+            //gMarker.ToolTip.Offset = new Point(10, -30);
+            gMarker.ToolTip.Stroke = new Pen(Color.Transparent, .0f);
+            MarkerOverlay.Markers.Add(gMarker);
+        }
 
         private void OpenClose_Click(object sender, EventArgs e)  //통신 연결하기 버튼
         {
