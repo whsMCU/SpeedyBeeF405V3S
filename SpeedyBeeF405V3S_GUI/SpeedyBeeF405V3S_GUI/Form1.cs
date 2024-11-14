@@ -118,6 +118,8 @@ namespace SpeedyBeeF405V3S_GUI
 
                 // 지도 새로고침
                 gMapControl1.Refresh();
+                gMapControl1.Zoom = 14;
+                gMapControl1.Zoom = 15;
             }
         }
 
