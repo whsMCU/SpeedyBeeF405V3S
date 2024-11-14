@@ -15,6 +15,7 @@ using System.Timers;
 using System.Windows.Forms;
 using ZedGraph;
 using static GMap.NET.Entity.OpenStreetMapGraphHopperGeocodeEntity;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SpeedyBeeF405V3S_GUI
 {
@@ -31,9 +32,10 @@ namespace SpeedyBeeF405V3S_GUI
         bool pid_send_flag = false;
         bool pid_save_flag = false;
 
-        public GMapOverlay MarkerOverlay = new GMapOverlay("markers");
 
-        GMapOverlay markers = new GMapOverlay("markers");
+
+        GMapMarker marker;
+        GMapOverlay markersOverlay;
 
         UInt32 time_count = 0;
         GraphPane _myPane;
@@ -107,19 +109,37 @@ namespace SpeedyBeeF405V3S_GUI
                 PointLatLng point = gMapControl1.FromLocalToLatLng(e.X, e.Y);
 
                 // 클릭한 위치에 마커 추가
-                GMapMarker marker = new GMarkerGoogle(point, GMarkerGoogleType.green);
+                marker = new GMarkerGoogle(point, GMarkerGoogleType.red);
                 marker.ToolTipText = $"위도: {point.Lat}, 경도: {point.Lng}";
+                //marker.ToolTipMode = MarkerTooltipMode.OnMouseOver;
                 marker.ToolTipMode = MarkerTooltipMode.Always;
+                marker.ToolTip.TextPadding = new Size(10, 10);
+                marker.ToolTip.Fill = new SolidBrush(Color.DimGray);
+                marker.ToolTip.Foreground = new SolidBrush(Color.White);
+                //gMarker.ToolTip.Offset = new Point(10, -30);
+                marker.ToolTip.Stroke = new Pen(Color.Transparent, .0f);
 
                 // 마커를 GMapControl의 Overlay에 추가
-                GMapOverlay markersOverlay = new GMapOverlay("markers");
+                markersOverlay = new GMapOverlay("markers");
                 markersOverlay.Markers.Add(marker);
                 gMapControl1.Overlays.Add(markersOverlay);
 
                 // 지도 새로고침
                 gMapControl1.Refresh();
-                gMapControl1.Zoom = 14;
-                gMapControl1.Zoom = 15;
+                gMapControl1.Zoom++;
+                gMapControl1.Zoom--;
+            }
+        }
+        public void RemoveMarker(GMapMarker gMarker)
+        {
+            markersOverlay.Markers.Remove(gMarker);
+        }
+
+        private void gMapControl1_OnMarkerClick(GMapMarker item, MouseEventArgs e)
+        {
+            if(e.Button == MouseButtons.Right)
+            {
+                RemoveMarker(item);
             }
         }
 
@@ -185,7 +205,7 @@ namespace SpeedyBeeF405V3S_GUI
             gMarker.ToolTip.Foreground = new SolidBrush(Color.White);
             //gMarker.ToolTip.Offset = new Point(10, -30);
             gMarker.ToolTip.Stroke = new Pen(Color.Transparent, .0f);
-            MarkerOverlay.Markers.Add(gMarker);
+            markersOverlay.Markers.Add(gMarker);
         }
 
         private void OpenClose_Click(object sender, EventArgs e)  //통신 연결하기 버튼
@@ -751,6 +771,8 @@ namespace SpeedyBeeF405V3S_GUI
             else panel5.BackColor = Color.Red;
 
             panel6.Size = new Size(34, 134 - ((battery_bar_level - 80) * 3));
+
+            textBox10.Text = gMapControl1.Zoom.ToString();
         }
 
         private void flight_timer_Tick(object sender, EventArgs e)
@@ -988,6 +1010,16 @@ namespace SpeedyBeeF405V3S_GUI
             zedGraphControl1.AxisChange();
             zedGraphControl1.Invalidate();
             zedGraphControl1.Refresh();
+        }
+
+        private void bt_zoom_p_Click(object sender, EventArgs e)
+        {
+            gMapControl1.Zoom++;
+        }
+
+        private void bt_zoom_m_Click(object sender, EventArgs e)
+        {
+            gMapControl1.Zoom--;
         }
     }
 }

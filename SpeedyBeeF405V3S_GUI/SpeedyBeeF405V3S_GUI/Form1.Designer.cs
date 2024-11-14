@@ -142,8 +142,8 @@
             this.panel6 = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
             this.textBox10 = new System.Windows.Forms.TextBox();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.bt_zoom_p = new System.Windows.Forms.Button();
+            this.bt_zoom_m = new System.Windows.Forms.Button();
             this.label10 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.lb_debug0 = new System.Windows.Forms.Label();
@@ -902,8 +902,8 @@
             this.panel2.Controls.Add(this.lb_bat);
             this.panel2.Controls.Add(this.panel7);
             this.panel2.Controls.Add(this.textBox10);
-            this.panel2.Controls.Add(this.button4);
-            this.panel2.Controls.Add(this.button1);
+            this.panel2.Controls.Add(this.bt_zoom_p);
+            this.panel2.Controls.Add(this.bt_zoom_m);
             this.panel2.Controls.Add(this.label10);
             this.panel2.Controls.Add(this.label15);
             this.panel2.Location = new System.Drawing.Point(1088, 23);
@@ -1065,27 +1065,29 @@
             this.textBox10.TabIndex = 33;
             this.textBox10.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // button4
+            // bt_zoom_p
             // 
-            this.button4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button4.Location = new System.Drawing.Point(12, 128);
-            this.button4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(50, 18);
-            this.button4.TabIndex = 32;
-            this.button4.Text = "+";
-            this.button4.UseVisualStyleBackColor = true;
+            this.bt_zoom_p.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_zoom_p.Location = new System.Drawing.Point(12, 128);
+            this.bt_zoom_p.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.bt_zoom_p.Name = "bt_zoom_p";
+            this.bt_zoom_p.Size = new System.Drawing.Size(50, 18);
+            this.bt_zoom_p.TabIndex = 32;
+            this.bt_zoom_p.Text = "+";
+            this.bt_zoom_p.UseVisualStyleBackColor = true;
+            this.bt_zoom_p.Click += new System.EventHandler(this.bt_zoom_p_Click);
             // 
-            // button1
+            // bt_zoom_m
             // 
-            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(12, 176);
-            this.button1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(50, 18);
-            this.button1.TabIndex = 31;
-            this.button1.Text = "-";
-            this.button1.UseVisualStyleBackColor = true;
+            this.bt_zoom_m.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_zoom_m.Location = new System.Drawing.Point(12, 176);
+            this.bt_zoom_m.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.bt_zoom_m.Name = "bt_zoom_m";
+            this.bt_zoom_m.Size = new System.Drawing.Size(50, 18);
+            this.bt_zoom_m.TabIndex = 31;
+            this.bt_zoom_m.Text = "-";
+            this.bt_zoom_m.UseVisualStyleBackColor = true;
+            this.bt_zoom_m.Click += new System.EventHandler(this.bt_zoom_m_Click);
             // 
             // label10
             // 
@@ -1985,6 +1987,7 @@
             this.gMapControl1.Size = new System.Drawing.Size(712, 463);
             this.gMapControl1.TabIndex = 0;
             this.gMapControl1.Zoom = 0D;
+            this.gMapControl1.OnMarkerClick += new GMap.NET.WindowsForms.MarkerClick(this.gMapControl1_OnMarkerClick);
             this.gMapControl1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.gMapControl1_MouseClick);
             // 
             // tabPage3
@@ -2276,8 +2279,8 @@
         private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.Panel panel5;
         private System.Windows.Forms.TextBox textBox10;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button bt_zoom_p;
+        private System.Windows.Forms.Button bt_zoom_m;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label36;
