@@ -5,6 +5,7 @@ using GMap.NET.WindowsForms;
 using GMap.NET.WindowsForms.Markers;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO.Ports;
 using System.Linq;
@@ -28,14 +29,13 @@ namespace SpeedyBeeF405V3S_GUI
 
         private ArrayList al;
 
-            bool pid_recive_flag = false;
+        bool pid_recive_flag = false;
         bool pid_send_flag = false;
         bool pid_save_flag = false;
 
-
-
-        GMapMarker marker;
-        GMapOverlay markersOverlay;
+        List<PointLatLng> map_points = new List<PointLatLng>();
+        GMarkerGoogle marker;
+        GMapOverlay markersOverlay = new GMapOverlay("markers");
 
         UInt32 time_count = 0;
         GraphPane _myPane;
@@ -69,14 +69,14 @@ namespace SpeedyBeeF405V3S_GUI
         LineItem _motor_2_curve;
         PointPairList _motor_3_points = new PointPairList();
         LineItem _motor_3_curve;
-        //PointPairList _debug_0_points = new PointPairList();
-        //LineItem _roll_angle_curve;
-        //PointPairList _debug_1_points = new PointPairList();
-        //LineItem _roll_angle_curve;
-        //PointPairList _debug_2_points = new PointPairList();
-        //LineItem _roll_angle_curve;
-        //PointPairList _debug_3_points = new PointPairList();
-        //LineItem _roll_angle_curve;
+        PointPairList _debug_0_points = new PointPairList();
+        LineItem _debug_0_curve;
+        PointPairList _debug_1_points = new PointPairList();
+        LineItem _debug_1_curve;
+        PointPairList _debug_2_points = new PointPairList();
+        LineItem _debug_2_curve;
+        PointPairList _debug_3_points = new PointPairList();
+        LineItem _debug_3_curve;
 
         public Form1()
         {
@@ -111,8 +111,8 @@ namespace SpeedyBeeF405V3S_GUI
                 // 클릭한 위치에 마커 추가
                 marker = new GMarkerGoogle(point, GMarkerGoogleType.red);
                 marker.ToolTipText = $"위도: {point.Lat}, 경도: {point.Lng}";
-                //marker.ToolTipMode = MarkerTooltipMode.OnMouseOver;
-                marker.ToolTipMode = MarkerTooltipMode.Always;
+                //marker.ToolTipMode = MarkerTooltipMode.Always;
+                marker.ToolTipMode = MarkerTooltipMode.OnMouseOver;
                 marker.ToolTip.TextPadding = new Size(10, 10);
                 marker.ToolTip.Fill = new SolidBrush(Color.DimGray);
                 marker.ToolTip.Foreground = new SolidBrush(Color.White);
@@ -120,9 +120,15 @@ namespace SpeedyBeeF405V3S_GUI
                 marker.ToolTip.Stroke = new Pen(Color.Transparent, .0f);
 
                 // 마커를 GMapControl의 Overlay에 추가
-                markersOverlay = new GMapOverlay("markers");
                 markersOverlay.Markers.Add(marker);
                 gMapControl1.Overlays.Add(markersOverlay);
+
+                map_points.Add(point);
+                GMapRoute route = new GMapRoute(map_points, "route");
+                route.Stroke = new Pen(Color.Red, 2);
+                markersOverlay.Routes.Add(route);
+                gMapControl1.Overlays.Add(markersOverlay);
+                lb_route_distance.Text = route.Distance.ToString();
 
                 // 지도 새로고침
                 gMapControl1.Refresh();
@@ -133,6 +139,12 @@ namespace SpeedyBeeF405V3S_GUI
         public void RemoveMarker(GMapMarker gMarker)
         {
             markersOverlay.Markers.Remove(gMarker);
+
+        }
+
+        public void RemoveRoute(GMapRoute gRoute)
+        {
+            markersOverlay.Routes.Remove(gRoute);
         }
 
         private void gMapControl1_OnMarkerClick(GMapMarker item, MouseEventArgs e)
@@ -140,6 +152,15 @@ namespace SpeedyBeeF405V3S_GUI
             if(e.Button == MouseButtons.Right)
             {
                 RemoveMarker(item);
+            }
+        }
+
+
+        private void gMapControl1_OnRouteClick(GMapRoute item, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                RemoveRoute(item);
             }
         }
 

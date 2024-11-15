@@ -249,6 +249,9 @@
             this.rb_roll = new System.Windows.Forms.RadioButton();
             this.zedGraphControl1 = new ZedGraph.ZedGraphControl();
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label61 = new System.Windows.Forms.Label();
+            this.lb_route_distance = new System.Windows.Forms.Label();
+            this.label62 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -1953,6 +1956,9 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.label62);
+            this.tabPage2.Controls.Add(this.lb_route_distance);
+            this.tabPage2.Controls.Add(this.label61);
             this.tabPage2.Controls.Add(this.gMapControl1);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
@@ -1984,10 +1990,11 @@
             this.gMapControl1.ScaleMode = GMap.NET.WindowsForms.ScaleModes.Integer;
             this.gMapControl1.SelectedAreaFillColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(65)))), ((int)(((byte)(105)))), ((int)(((byte)(225)))));
             this.gMapControl1.ShowTileGridLines = false;
-            this.gMapControl1.Size = new System.Drawing.Size(712, 463);
+            this.gMapControl1.Size = new System.Drawing.Size(712, 409);
             this.gMapControl1.TabIndex = 0;
             this.gMapControl1.Zoom = 0D;
             this.gMapControl1.OnMarkerClick += new GMap.NET.WindowsForms.MarkerClick(this.gMapControl1_OnMarkerClick);
+            this.gMapControl1.OnRouteClick += new GMap.NET.WindowsForms.RouteClick(this.gMapControl1_OnRouteClick);
             this.gMapControl1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.gMapControl1_MouseClick);
             // 
             // tabPage3
@@ -2174,6 +2181,39 @@
             this.textBox1.TabIndex = 89;
             this.textBox1.Text = "-";
             // 
+            // label61
+            // 
+            this.label61.AutoSize = true;
+            this.label61.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label61.Location = new System.Drawing.Point(7, 426);
+            this.label61.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label61.Name = "label61";
+            this.label61.Size = new System.Drawing.Size(117, 21);
+            this.label61.TabIndex = 57;
+            this.label61.Text = "Route_Distance";
+            // 
+            // lb_route_distance
+            // 
+            this.lb_route_distance.AutoSize = true;
+            this.lb_route_distance.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_route_distance.Location = new System.Drawing.Point(132, 426);
+            this.lb_route_distance.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_route_distance.Name = "lb_route_distance";
+            this.lb_route_distance.Size = new System.Drawing.Size(16, 21);
+            this.lb_route_distance.TabIndex = 58;
+            this.lb_route_distance.Text = "-";
+            // 
+            // label62
+            // 
+            this.label62.AutoSize = true;
+            this.label62.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label62.Location = new System.Drawing.Point(178, 426);
+            this.label62.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label62.Name = "label62";
+            this.label62.Size = new System.Drawing.Size(33, 21);
+            this.label62.TabIndex = 59;
+            this.label62.Text = "Km";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -2222,6 +2262,7 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
+            this.tabPage2.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
             this.ResumeLayout(false);
@@ -2407,6 +2448,9 @@
         private System.Windows.Forms.RadioButton rb_gyro;
         private System.Windows.Forms.RadioButton rb_altitude;
         private GMap.NET.WindowsForms.GMapControl gMapControl1;
+        private System.Windows.Forms.Label lb_route_distance;
+        private System.Windows.Forms.Label label61;
+        private System.Windows.Forms.Label label62;
     }
 }
 
