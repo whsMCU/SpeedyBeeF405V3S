@@ -233,6 +233,9 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.label62 = new System.Windows.Forms.Label();
+            this.lb_route_distance = new System.Windows.Forms.Label();
+            this.label61 = new System.Windows.Forms.Label();
             this.gMapControl1 = new GMap.NET.WindowsForms.GMapControl();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.rb_motor = new System.Windows.Forms.RadioButton();
@@ -249,9 +252,6 @@
             this.rb_roll = new System.Windows.Forms.RadioButton();
             this.zedGraphControl1 = new ZedGraph.ZedGraphControl();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.label61 = new System.Windows.Forms.Label();
-            this.lb_route_distance = new System.Windows.Forms.Label();
-            this.label62 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -1116,7 +1116,7 @@
             // 
             this.lb_debug0.AutoSize = true;
             this.lb_debug0.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_debug0.Location = new System.Drawing.Point(159, 28);
+            this.lb_debug0.Location = new System.Drawing.Point(186, 28);
             this.lb_debug0.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_debug0.Name = "lb_debug0";
             this.lb_debug0.Size = new System.Drawing.Size(16, 21);
@@ -1863,7 +1863,7 @@
             // 
             this.lb_debug3.AutoSize = true;
             this.lb_debug3.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_debug3.Location = new System.Drawing.Point(159, 128);
+            this.lb_debug3.Location = new System.Drawing.Point(186, 128);
             this.lb_debug3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_debug3.Name = "lb_debug3";
             this.lb_debug3.Size = new System.Drawing.Size(16, 21);
@@ -1885,7 +1885,7 @@
             // 
             this.lb_debug2.AutoSize = true;
             this.lb_debug2.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_debug2.Location = new System.Drawing.Point(159, 96);
+            this.lb_debug2.Location = new System.Drawing.Point(186, 96);
             this.lb_debug2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_debug2.Name = "lb_debug2";
             this.lb_debug2.Size = new System.Drawing.Size(16, 21);
@@ -1907,7 +1907,7 @@
             // 
             this.lb_debug1.AutoSize = true;
             this.lb_debug1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_debug1.Location = new System.Drawing.Point(159, 61);
+            this.lb_debug1.Location = new System.Drawing.Point(186, 61);
             this.lb_debug1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_debug1.Name = "lb_debug1";
             this.lb_debug1.Size = new System.Drawing.Size(16, 21);
@@ -1967,6 +1967,39 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "MAP";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // label62
+            // 
+            this.label62.AutoSize = true;
+            this.label62.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label62.Location = new System.Drawing.Point(178, 426);
+            this.label62.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label62.Name = "label62";
+            this.label62.Size = new System.Drawing.Size(33, 21);
+            this.label62.TabIndex = 59;
+            this.label62.Text = "Km";
+            // 
+            // lb_route_distance
+            // 
+            this.lb_route_distance.AutoSize = true;
+            this.lb_route_distance.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_route_distance.Location = new System.Drawing.Point(132, 426);
+            this.lb_route_distance.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_route_distance.Name = "lb_route_distance";
+            this.lb_route_distance.Size = new System.Drawing.Size(16, 21);
+            this.lb_route_distance.TabIndex = 58;
+            this.lb_route_distance.Text = "-";
+            // 
+            // label61
+            // 
+            this.label61.AutoSize = true;
+            this.label61.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label61.Location = new System.Drawing.Point(7, 426);
+            this.label61.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label61.Name = "label61";
+            this.label61.Size = new System.Drawing.Size(117, 21);
+            this.label61.TabIndex = 57;
+            this.label61.Text = "Route_Distance";
             // 
             // gMapControl1
             // 
@@ -2180,39 +2213,6 @@
             this.textBox1.Size = new System.Drawing.Size(327, 22);
             this.textBox1.TabIndex = 89;
             this.textBox1.Text = "-";
-            // 
-            // label61
-            // 
-            this.label61.AutoSize = true;
-            this.label61.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label61.Location = new System.Drawing.Point(7, 426);
-            this.label61.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label61.Name = "label61";
-            this.label61.Size = new System.Drawing.Size(117, 21);
-            this.label61.TabIndex = 57;
-            this.label61.Text = "Route_Distance";
-            // 
-            // lb_route_distance
-            // 
-            this.lb_route_distance.AutoSize = true;
-            this.lb_route_distance.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_route_distance.Location = new System.Drawing.Point(132, 426);
-            this.lb_route_distance.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lb_route_distance.Name = "lb_route_distance";
-            this.lb_route_distance.Size = new System.Drawing.Size(16, 21);
-            this.lb_route_distance.TabIndex = 58;
-            this.lb_route_distance.Text = "-";
-            // 
-            // label62
-            // 
-            this.label62.AutoSize = true;
-            this.label62.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label62.Location = new System.Drawing.Point(178, 426);
-            this.label62.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label62.Name = "label62";
-            this.label62.Size = new System.Drawing.Size(33, 21);
-            this.label62.TabIndex = 59;
-            this.label62.Text = "Km";
             // 
             // Form1
             // 

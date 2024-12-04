@@ -20,8 +20,6 @@
 
 #include <stdint.h>
 
-#include "hw.h"
-
 #include "build/debug.h"
 
 int16_t debug[DEBUG16_VALUE_COUNT];

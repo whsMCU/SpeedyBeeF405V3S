@@ -22,6 +22,8 @@
  * https://cafe.naver.com/mhiveacademy
 */
 
+#include "build/debug.h"
+
 #include "pid.h"
 #include "sensors/gyro.h"
 #include "flight/imu.h"
@@ -40,8 +42,6 @@ PIDSingle yaw_rate;
 #define OUTER_DERIV_FILT_ENABLE 1
 #define INNER_DERIV_FILT_ENABLE 1
 
-float tmp_DT;
-
 void Double_Roll_Pitch_PID_Calculation(PIDDouble* axis, float set_point_angle, float angle/*BNO080 Rotation Angle*/, float rate/*ICM-20602 Angular Rate*/, float DT)
 {
 	/*********** Double PID Outer Begin (Roll and Pitch Angular Position Control) *************/
@@ -53,7 +53,9 @@ void Double_Roll_Pitch_PID_Calculation(PIDDouble* axis, float set_point_angle, f
 
 	axis->out.error_sum = axis->out.error_sum + axis->out.error * DT;	//Define summation of outer loop
 #define OUT_ERR_SUM_MAX 500
-	if(fabsf(axis->out.error_sum) > OUT_ERR_SUM_MAX) axis->out.error_sum = OUT_ERR_SUM_MAX;
+#define OUT_I_ERR_MIN -OUT_ERR_SUM_MAX
+	if(axis->out.error_sum > OUT_ERR_SUM_MAX) axis->out.error_sum = OUT_ERR_SUM_MAX;
+  else if(axis->out.error_sum < OUT_I_ERR_MIN) axis->out.error_sum = OUT_I_ERR_MIN;
 	axis->out.i_result = axis->out.error_sum * axis->out.ki;			//Calculate I result of outer loop
 
 	axis->out.error_deriv = -rate;										//Define derivative of outer loop (rate = ICM-20602 Angular Rate)
@@ -77,7 +79,9 @@ void Double_Roll_Pitch_PID_Calculation(PIDDouble* axis, float set_point_angle, f
 
 	axis->in.error_sum = axis->in.error_sum + axis->in.error * DT;	//Define summation of inner loop
 	#define IN_ERR_SUM_MAX 500
+#define IN_I_ERR_MIN -IN_ERR_SUM_MAX
 	if(fabsf(axis->in.error_sum) > IN_ERR_SUM_MAX) axis->in.error_sum = IN_ERR_SUM_MAX;
+  else if(axis->in.error_sum < IN_I_ERR_MIN) axis->in.error_sum = IN_I_ERR_MIN;
 	axis->in.i_result = axis->in.error_sum * axis->in.ki;							//Calculate I result of inner loop
 
 	axis->in.error_deriv = -(axis->in.meas_value - axis->in.meas_value_prev) / DT;	//Define derivative of inner loop
@@ -164,11 +168,11 @@ void pidInit(void)
 
 	pitch.in.kp = 10;
 	pitch.in.ki = 3;
-	pitch.in.kd = 1.5;
+	pitch.in.kd = 2.5;
 
 	pitch.out.kp = 40;
 	pitch.out.ki = 0;
-	pitch.out.kd = 2.5;
+	pitch.out.kd = 3;
 
 	yaw_heading.kp = 100;
 	yaw_heading.ki = 0;
@@ -191,9 +195,9 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 
   static timeUs_t previousUpdateTimeUs;
   float dT = (float)US2S(currentTimeUs - previousUpdateTimeUs);
+  debug[3] = currentTimeUs - previousUpdateTimeUs;
   previousUpdateTimeUs = currentTimeUs;
 
-  tmp_DT = dT;
 
   Double_Roll_Pitch_PID_Calculation(&pitch, rcCommand[PITCH], imu_pitch, bmi270.gyroADCf[Y], dT);
   Double_Roll_Pitch_PID_Calculation(&roll, rcCommand[ROLL], imu_roll, bmi270.gyroADCf[X], dT);

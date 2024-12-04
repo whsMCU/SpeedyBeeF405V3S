@@ -182,10 +182,9 @@ static void gyroUpdateSensor()
 
 void taskGyroUpdate(timeUs_t currentTimeUs)
 {
-  static timeUs_t previousIMUUpdateTime;
-  const timeDelta_t deltaT = currentTimeUs - previousIMUUpdateTime;
-  previousIMUUpdateTime = currentTimeUs;
-  debug[3] = deltaT;
+//  static timeUs_t previousIMUUpdateTime;
+//  const timeDelta_t deltaT = currentTimeUs - previousIMUUpdateTime;
+//  previousIMUUpdateTime = currentTimeUs;
 	UNUSED(currentTimeUs);
 	gyroUpdateSensor();
 	bmi270.gyroADC[X] = bmi270.gyroADC[X] * bmi270.scale;
