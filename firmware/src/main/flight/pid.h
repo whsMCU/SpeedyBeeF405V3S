@@ -36,6 +36,24 @@
      uint16_t F;
  } pidf_t;
 
+// PID 구조체 정의
+typedef struct _PID{
+   float kp;     // 비례 게인
+   float ki;     // 적분 게인
+   float kd;     // 미분 게인
+   float error;
+   float prev_error; // 이전 오차값
+   float integral;   // 적분 값
+   float derivative;
+   float result;
+} PID;
+
+typedef struct _DoublePID
+{
+  PID in;
+  PID out;
+}DoublePID;
+
 typedef struct _PIDSingle
 {
 	float kp;
@@ -68,6 +86,9 @@ extern PIDDouble roll;
 extern PIDDouble pitch;
 extern PIDSingle yaw_heading;
 extern PIDSingle yaw_rate;
+
+extern DoublePID _ROLL;
+extern DoublePID _PITCH;
 
 
 void Double_Roll_Pitch_PID_Calculation(PIDDouble* axis, float set_point_angle, float angle, float rate, float DT);
