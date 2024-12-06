@@ -40,7 +40,7 @@ static bool write_ini_roll_in(const char * ini_name)
   }
 
   /* set key/value pair */
-  sprintf(str, "%.1f", roll.in.kp);
+  sprintf(str, "%.1f", _ROLL.in.kp);
   ret = iniparser_set(dictionary, "pid:roll.in.kp", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
@@ -48,7 +48,7 @@ static bool write_ini_roll_in(const char * ini_name)
       goto free_dict;
   }
 
-  sprintf(str, "%.1f", roll.in.ki);
+  sprintf(str, "%.1f", _ROLL.in.ki);
   ret = iniparser_set(dictionary, "pid:roll.in.ki", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
@@ -56,7 +56,7 @@ static bool write_ini_roll_in(const char * ini_name)
       goto free_dict;
   }
 
-  sprintf(str, "%.1f", roll.in.kd);
+  sprintf(str, "%.1f", _ROLL.in.kd);
   ret = iniparser_set(dictionary, "pid:roll.in.kd", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
@@ -101,7 +101,7 @@ static bool write_ini_roll_out(const char * ini_name)
   }
 
   /* set key/value pair */
-  sprintf(str, "%.1f", roll.out.kp);
+  sprintf(str, "%.1f", _ROLL.out.kp);
   ret = iniparser_set(dictionary, "pid:roll.out.kp", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
@@ -109,7 +109,7 @@ static bool write_ini_roll_out(const char * ini_name)
       goto free_dict;
   }
 
-  sprintf(str, "%.1f", roll.out.ki);
+  sprintf(str, "%.1f", _ROLL.out.ki);
   ret = iniparser_set(dictionary, "pid:roll.out.ki", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
@@ -117,7 +117,7 @@ static bool write_ini_roll_out(const char * ini_name)
       goto free_dict;
   }
 
-  sprintf(str, "%.1f", roll.out.kd);
+  sprintf(str, "%.1f", _ROLL.out.kd);
   ret = iniparser_set(dictionary, "pid:roll.out.kd", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
@@ -162,7 +162,7 @@ static bool write_ini_pitch_in(const char * ini_name)
   }
 
   /* set key/value pair */
-  sprintf(str, "%.1f", pitch.in.kp);
+  sprintf(str, "%.1f", _PITCH.in.kp);
   ret = iniparser_set(dictionary, "pid:pitch.in.kp", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
@@ -170,7 +170,7 @@ static bool write_ini_pitch_in(const char * ini_name)
       goto free_dict;
   }
 
-  sprintf(str, "%.1f", pitch.in.ki);
+  sprintf(str, "%.1f", _PITCH.in.ki);
   ret = iniparser_set(dictionary, "pid:pitch.in.ki", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
@@ -178,7 +178,7 @@ static bool write_ini_pitch_in(const char * ini_name)
       goto free_dict;
   }
 
-  sprintf(str, "%.1f", pitch.in.kd);
+  sprintf(str, "%.1f", _PITCH.in.kd);
   ret = iniparser_set(dictionary, "pid:pitch.in.kd", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
@@ -223,7 +223,7 @@ static bool write_ini_pitch_out(const char * ini_name)
   }
 
   /* set key/value pair */
-  sprintf(str, "%.1f", pitch.out.kp);
+  sprintf(str, "%.1f", _PITCH.out.kp);
   ret = iniparser_set(dictionary, "pid:pitch.out.kp", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
@@ -231,7 +231,7 @@ static bool write_ini_pitch_out(const char * ini_name)
       goto free_dict;
   }
 
-  sprintf(str, "%.1f", pitch.out.ki);
+  sprintf(str, "%.1f", _PITCH.out.ki);
   ret = iniparser_set(dictionary, "pid:pitch.out.ki", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
@@ -239,7 +239,7 @@ static bool write_ini_pitch_out(const char * ini_name)
       goto free_dict;
   }
 
-  sprintf(str, "%.1f", pitch.out.kd);
+  sprintf(str, "%.1f", _PITCH.out.kd);
   ret = iniparser_set(dictionary, "pid:pitch.out.kd", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
@@ -284,7 +284,7 @@ static bool write_ini_yaw_heading(const char * ini_name)
   }
 
   /* set key/value pair */
-  sprintf(str, "%.1f", yaw_heading.kp);
+  sprintf(str, "%.1f", _YAW_Heading.kp);
   ret = iniparser_set(dictionary, "pid:yaw_heading.kp", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
@@ -292,7 +292,7 @@ static bool write_ini_yaw_heading(const char * ini_name)
       goto free_dict;
   }
 
-  sprintf(str, "%.1f", yaw_heading.ki);
+  sprintf(str, "%.1f", _YAW_Heading.ki);
   ret = iniparser_set(dictionary, "pid:yaw_heading.ki", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
@@ -300,7 +300,7 @@ static bool write_ini_yaw_heading(const char * ini_name)
       goto free_dict;
   }
 
-  sprintf(str, "%.1f", yaw_heading.kd);
+  sprintf(str, "%.1f", _YAW_Heading.kd);
   ret = iniparser_set(dictionary, "pid:yaw_heading.kd", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
@@ -345,7 +345,7 @@ static bool write_ini_yaw_rate(const char * ini_name)
   }
 
   /* set key/value pair */
-  sprintf(str, "%.1f", yaw_rate.kp);
+  sprintf(str, "%.1f", _YAW_Rate.kp);
   ret = iniparser_set(dictionary, "pid:yaw_rate.kp", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
@@ -353,7 +353,7 @@ static bool write_ini_yaw_rate(const char * ini_name)
       goto free_dict;
   }
 
-  sprintf(str, "%.1f", yaw_rate.ki);
+  sprintf(str, "%.1f", _YAW_Rate.ki);
   ret = iniparser_set(dictionary, "pid:yaw_rate.ki", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
@@ -361,7 +361,7 @@ static bool write_ini_yaw_rate(const char * ini_name)
       goto free_dict;
   }
 
-  sprintf(str, "%.1f", yaw_rate.kd);
+  sprintf(str, "%.1f", _YAW_Rate.kd);
   ret = iniparser_set(dictionary, "pid:yaw_rate.kd", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
@@ -471,46 +471,46 @@ static bool parse_ini(const char * ini_name)
   bmi270.accelerationTrims.values.yaw = i;
 
   d = iniparser_getdouble(ini, "pid:roll.in.kp", 0.0);
-  roll.in.kp = d;
+  _ROLL.in.kp = d;
   d = iniparser_getdouble(ini, "pid:roll.in.ki", 0.0);
-  roll.in.ki = d;
+  _ROLL.in.ki = d;
   d = iniparser_getdouble(ini, "pid:roll.in.kd", 0.0);
-  roll.in.kd = d;
+  _ROLL.in.kd = d;
 
   d = iniparser_getdouble(ini, "pid:roll.out.kp", 0.0);
-  roll.out.kp = d;
+  _ROLL.out.kp = d;
   d = iniparser_getdouble(ini, "pid:roll.out.ki", 0.0);
-  roll.out.ki = d;
+  _ROLL.out.ki = d;
   d = iniparser_getdouble(ini, "pid:roll.out.kd", 0.0);
-  roll.out.kd = d;
+  _ROLL.out.kd = d;
 
   d = iniparser_getdouble(ini, "pid:pitch.in.kp", 0.0);
-  pitch.in.kp = d;
+  _PITCH.in.kp = d;
   d = iniparser_getdouble(ini, "pid:pitch.in.ki", 0.0);
-  pitch.in.ki = d;
+  _PITCH.in.ki = d;
   d = iniparser_getdouble(ini, "pid:pitch.in.kd", 0.0);
-  pitch.in.kd = d;
+  _PITCH.in.kd = d;
 
   d = iniparser_getdouble(ini, "pid:pitch.out.kp", 0.0);
-  pitch.out.kp = d;
+  _PITCH.out.kp = d;
   d = iniparser_getdouble(ini, "pid:pitch.out.ki", 0.0);
-  pitch.out.ki = d;
+  _PITCH.out.ki = d;
   d = iniparser_getdouble(ini, "pid:pitch.out.kd", 0.0);
-  pitch.out.kd = d;
+  _PITCH.out.kd = d;
 
   d = iniparser_getdouble(ini, "pid:yaw_heading.kp", 0.0);
-  yaw_heading.kp = d;
+  _YAW_Heading.kp = d;
   d = iniparser_getdouble(ini, "pid:yaw_heading.ki", 0.0);
-  yaw_heading.ki = d;
+  _YAW_Heading.ki = d;
   d = iniparser_getdouble(ini, "pid:yaw_heading.kd", 0.0);
-  yaw_heading.kd = d;
+  _YAW_Heading.kd = d;
 
   d = iniparser_getdouble(ini, "pid:yaw_rate.kp", 0.0);
-  yaw_rate.kp = d;
+  _YAW_Rate.kp = d;
   d = iniparser_getdouble(ini, "pid:yaw_rate.ki", 0.0);
-  yaw_rate.ki = d;
+  _YAW_Rate.ki = d;
   d = iniparser_getdouble(ini, "pid:yaw_rate.kd", 0.0);
-  yaw_rate.kd = d;
+  _YAW_Rate.kd = d;
 
   return true;
 }

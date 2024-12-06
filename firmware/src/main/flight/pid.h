@@ -29,13 +29,6 @@
 #include "common/time.h"
 #include "common/axis.h"
 
- typedef struct pidf_s {
-     uint8_t P;
-     uint8_t I;
-     uint8_t D;
-     uint16_t F;
- } pidf_t;
-
 // PID 구조체 정의
 typedef struct _PID{
    float kp;     // 비례 게인
@@ -54,47 +47,13 @@ typedef struct _DoublePID
   PID out;
 }DoublePID;
 
-typedef struct _PIDSingle
-{
-	float kp;
-	float ki;
-	float kd;
-	
-	float reference;
-	float meas_value;
-	float meas_value_prev;
-	float error;
-	float error_sum;
-	float error_deriv;
-	float error_deriv_filt;
-	
-	float p_result;
-	float i_result;
-	float d_result;
-	
-	float pid_result;
-}PIDSingle;
-
-typedef struct _PIDDouble
-{
-	PIDSingle in;
-	PIDSingle out;
-}PIDDouble;
-
-
-extern PIDDouble roll;
-extern PIDDouble pitch;
-extern PIDSingle yaw_heading;
-extern PIDSingle yaw_rate;
-
 extern DoublePID _ROLL;
 extern DoublePID _PITCH;
+extern PID _YAW_Heading;
+extern PID _YAW_Rate;
 
 
-void Double_Roll_Pitch_PID_Calculation(PIDDouble* axis, float set_point_angle, float angle, float rate, float DT);
-void Single_Yaw_Rate_PID_Calculation(PIDSingle* axis, float set_point, float value, float DT);
-void Single_Yaw_Heading_PID_Calculation(PIDSingle* axis, float set_point, float angle, float rate, float DT);
-void Reset_PID_Integrator(PIDSingle* axis);
+void PID_Calculation(PID* axis, float set_point, float measured, float dt);
 void Reset_All_PID_Integrator(void);
 
 void pidInit(void);

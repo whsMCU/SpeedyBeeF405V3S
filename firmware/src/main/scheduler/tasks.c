@@ -369,30 +369,30 @@ void gcsMain(void)
 
         //memcpy(&telemetry_tx_buf[3], &roll.in.kp, 4);
 
-        *(float*)&telemetry_tx_buf[3] = roll.in.kp;
-        *(float*)&telemetry_tx_buf[7] = roll.in.ki;
-        *(float*)&telemetry_tx_buf[11] = roll.in.kd;
+        *(float*)&telemetry_tx_buf[3] = _ROLL.in.kp;
+        *(float*)&telemetry_tx_buf[7] = _ROLL.in.ki;
+        *(float*)&telemetry_tx_buf[11] = _ROLL.in.kd;
 
-        *(float*)&telemetry_tx_buf[15] = roll.out.kp;
-        *(float*)&telemetry_tx_buf[19] = roll.out.ki;
-        *(float*)&telemetry_tx_buf[23] = roll.out.kd;
+        *(float*)&telemetry_tx_buf[15] = _ROLL.out.kp;
+        *(float*)&telemetry_tx_buf[19] = _ROLL.out.ki;
+        *(float*)&telemetry_tx_buf[23] = _ROLL.out.kd;
 
 
-        *(float*)&telemetry_tx_buf[27] = pitch.in.kp;
-        *(float*)&telemetry_tx_buf[31] = pitch.in.ki;
-        *(float*)&telemetry_tx_buf[35] = pitch.in.kd;
+        *(float*)&telemetry_tx_buf[27] = _PITCH.in.kp;
+        *(float*)&telemetry_tx_buf[31] = _PITCH.in.ki;
+        *(float*)&telemetry_tx_buf[35] = _PITCH.in.kd;
 
-        *(float*)&telemetry_tx_buf[39] = pitch.out.kp;
-        *(float*)&telemetry_tx_buf[43] = pitch.out.ki;
-        *(float*)&telemetry_tx_buf[47] = pitch.out.kd;
+        *(float*)&telemetry_tx_buf[39] = _PITCH.out.kp;
+        *(float*)&telemetry_tx_buf[43] = _PITCH.out.ki;
+        *(float*)&telemetry_tx_buf[47] = _PITCH.out.kd;
 
-        *(float*)&telemetry_tx_buf[51] = yaw_heading.kp;
-        *(float*)&telemetry_tx_buf[55] = yaw_heading.ki;
-        *(float*)&telemetry_tx_buf[59] = yaw_heading.kd;
+        *(float*)&telemetry_tx_buf[51] = _YAW_Heading.kp;
+        *(float*)&telemetry_tx_buf[55] = _YAW_Heading.ki;
+        *(float*)&telemetry_tx_buf[59] = _YAW_Heading.kd;
 
-        *(float*)&telemetry_tx_buf[63] = yaw_rate.kp;
-        *(float*)&telemetry_tx_buf[67] = yaw_rate.ki;
-        *(float*)&telemetry_tx_buf[71] = yaw_rate.kd;
+        *(float*)&telemetry_tx_buf[63] = _YAW_Rate.kp;
+        *(float*)&telemetry_tx_buf[67] = _YAW_Rate.ki;
+        *(float*)&telemetry_tx_buf[71] = _YAW_Rate.kd;
 
         telemetry_tx_buf[75] = 0xff;
 
@@ -409,29 +409,29 @@ void gcsMain(void)
       break;
 
     case 0x30:
-      roll.in.kp = *(float*)&telemetry_rx_buf[3];
-      roll.in.ki = *(float*)&telemetry_rx_buf[7];
-      roll.in.kd = *(float*)&telemetry_rx_buf[11];
+      _ROLL.in.kp = *(float*)&telemetry_rx_buf[3];
+      _ROLL.in.ki = *(float*)&telemetry_rx_buf[7];
+      _ROLL.in.kd = *(float*)&telemetry_rx_buf[11];
 
-      roll.out.kp = *(float*)&telemetry_rx_buf[15];
-      roll.out.ki = *(float*)&telemetry_rx_buf[19];
-      roll.out.kd = *(float*)&telemetry_rx_buf[23];
+      _ROLL.out.kp = *(float*)&telemetry_rx_buf[15];
+      _ROLL.out.ki = *(float*)&telemetry_rx_buf[19];
+      _ROLL.out.kd = *(float*)&telemetry_rx_buf[23];
 
-      pitch.in.kp = *(float*)&telemetry_rx_buf[27];
-      pitch.in.ki = *(float*)&telemetry_rx_buf[31];
-      pitch.in.kd = *(float*)&telemetry_rx_buf[35];
+      _PITCH.in.kp = *(float*)&telemetry_rx_buf[27];
+      _PITCH.in.ki = *(float*)&telemetry_rx_buf[31];
+      _PITCH.in.kd = *(float*)&telemetry_rx_buf[35];
 
-      pitch.out.kp = *(float*)&telemetry_rx_buf[39];
-      pitch.out.ki = *(float*)&telemetry_rx_buf[43];
-      pitch.out.kd = *(float*)&telemetry_rx_buf[47];
+      _PITCH.out.kp = *(float*)&telemetry_rx_buf[39];
+      _PITCH.out.ki = *(float*)&telemetry_rx_buf[43];
+      _PITCH.out.kd = *(float*)&telemetry_rx_buf[47];
 
-      yaw_heading.kp = *(float*)&telemetry_rx_buf[51];
-      yaw_heading.ki = *(float*)&telemetry_rx_buf[55];
-      yaw_heading.kd = *(float*)&telemetry_rx_buf[59];
+      _YAW_Heading.kp = *(float*)&telemetry_rx_buf[51];
+      _YAW_Heading.ki = *(float*)&telemetry_rx_buf[55];
+      _YAW_Heading.kd = *(float*)&telemetry_rx_buf[59];
 
-      yaw_rate.kp = *(float*)&telemetry_rx_buf[63];
-      yaw_rate.ki = *(float*)&telemetry_rx_buf[67];
-      yaw_rate.kd = *(float*)&telemetry_rx_buf[71];
+      _YAW_Rate.kp = *(float*)&telemetry_rx_buf[63];
+      _YAW_Rate.ki = *(float*)&telemetry_rx_buf[67];
+      _YAW_Rate.kd = *(float*)&telemetry_rx_buf[71];
       break;
     }
   }
