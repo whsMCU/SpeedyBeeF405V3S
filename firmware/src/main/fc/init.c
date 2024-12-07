@@ -124,11 +124,11 @@ static void Param_Config_Init(void);
 void init(void)
 {
   Param_Config_Init();
-  bool existing = loadFromSDCard();
-  if(existing)
-  {
-    readSDCard();
-  }
+//  bool existing = loadFromSDCard();
+//  if(existing)
+//  {
+//    readSDCard();
+//  }
 
   activeAdjustmentRangeReset();
 

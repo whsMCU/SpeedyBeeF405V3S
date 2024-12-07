@@ -42,28 +42,28 @@ PID _YAW_Rate;
 void pidInit(void)
 {
   _ROLL.in.kp = 10;
-  _ROLL.in.ki = 3;
-  _ROLL.in.kd = 2;
+  _ROLL.in.ki = 0;
+  _ROLL.in.kd = 0;
 
-  _ROLL.out.kp = 40;
-  _ROLL.out.ki = 1;
+  _ROLL.out.kp = 10;
+  _ROLL.out.ki = 0;
   _ROLL.out.kd = 0;
 
   _PITCH.in.kp = 10;
-  _PITCH.in.ki = 3;
-  _PITCH.in.kd = 2;
+  _PITCH.in.ki = 0;
+  _PITCH.in.kd = 0;
 
-  _PITCH.out.kp = 40;
-  _PITCH.out.ki = 1;
+  _PITCH.out.kp = 10;
+  _PITCH.out.ki = 0;
   _PITCH.out.kd = 0;
 
   _YAW_Heading.kp = 10;
-  _YAW_Heading.ki = 1;
-  _YAW_Heading.kd = 1;
+  _YAW_Heading.ki = 0;
+  _YAW_Heading.kd = 0;
 
   _YAW_Rate.kp = 10;
-  _YAW_Rate.ki = 1;
-  _YAW_Rate.kd = 1;
+  _YAW_Rate.ki = 0;
+  _YAW_Rate.kd = 0;
 }
 
 #define ERROR_SUM_MAX 500
@@ -77,7 +77,11 @@ void PID_Calculation(PID* axis, float set_point, float measured, float dt)
   axis->derivative = (axis->error - axis->prev_error) / dt;
   axis->prev_error = axis->error;
 
-  axis->result = (axis->kp * axis->error) + (axis->ki * axis->integral) + (axis->kd * axis->derivative);
+  axis->result_p = axis->kp * axis->error;
+  axis->result_i = axis->ki * axis->integral;
+  axis->result_d = axis->kd * axis->derivative;
+
+  axis->result = axis->result_p + axis->result_i + axis->result_d;
 }
 
 void Reset_All_PID_Integrator(void)

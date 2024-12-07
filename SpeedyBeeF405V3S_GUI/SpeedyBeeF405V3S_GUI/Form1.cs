@@ -946,8 +946,8 @@ namespace SpeedyBeeF405V3S_GUI
         private void rb_yaw_setpoint_MouseDown(object sender, MouseEventArgs e)
         {
             _myPane.CurveList.Clear();
-            _myPane.YAxis.Scale.Min = -10;
-            _myPane.YAxis.Scale.Max = 370;
+            _myPane.YAxis.Scale.Min = -500;
+            _myPane.YAxis.Scale.Max = 500;
 
             _yaw_angle_curve = _myPane.AddCurve("YAW_Angle", _yaw_angle_points, Color.Blue, SymbolType.None);
             _yaw_angle_curve.Line.Width = 2;

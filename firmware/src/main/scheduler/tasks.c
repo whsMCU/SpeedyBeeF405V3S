@@ -59,6 +59,7 @@
 #include "sensors/rangefinder.h"
 
 #include "rx/rx.h"
+#include "fc/rc_controls.h"
 
 #include "msp/fc_msp.h"
 #include "msp/msp_serial.h"
@@ -121,14 +122,14 @@ static void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf)
   telemetry_tx_buf[9] = (short)(getEstimatedAltitudeCm()*10);
   telemetry_tx_buf[10] = ((short)(getEstimatedAltitudeCm()*10))>>8;
 
-  telemetry_tx_buf[11] = (short)((rcData[ROLL]-1500)*0.1f*100);
-  telemetry_tx_buf[12] = ((short)((rcData[ROLL]-1500)*0.1f*100))>>8;
+  telemetry_tx_buf[11] = (short)(rcCommand[ROLL]*100);
+  telemetry_tx_buf[12] = (short)(rcCommand[ROLL]*100)>>8;
 
-  telemetry_tx_buf[13] = (short)((rcData[PITCH]-1500)*0.1f*100);
-  telemetry_tx_buf[14] = ((short)((rcData[PITCH]-1500)*0.1f*100))>>8;
+  telemetry_tx_buf[13] = (short)(rcCommand[PITCH]*100);
+  telemetry_tx_buf[14] = (short)(rcCommand[PITCH]*100)>>8;
 
-  telemetry_tx_buf[15] = (unsigned short)((rcData[YAW]-1000)*0.36f*10);
-  telemetry_tx_buf[16] = ((unsigned short)((rcData[YAW]-1000)*0.36f*10))>>8;
+  telemetry_tx_buf[15] = (short)(rcCommand[YAW]*10);
+  telemetry_tx_buf[16] = (short)(rcCommand[YAW]*10)>>8;
 
   telemetry_tx_buf[17] = (unsigned short)(rcData[THROTTLE]*10);
   telemetry_tx_buf[18] = ((unsigned short)(rcData[THROTTLE]*10))>>8;
@@ -155,17 +156,17 @@ static void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf)
   telemetry_tx_buf[33] = ARMING_FLAG(ARMED);
   telemetry_tx_buf[34] = 0x00;
 
-  telemetry_tx_buf[35] = motor.motor[L_F];
-  telemetry_tx_buf[36] = motor.motor[L_F]>>8;
+  telemetry_tx_buf[35] = motor.motor[R_R];
+  telemetry_tx_buf[36] = motor.motor[R_R]>>8;
 
-  telemetry_tx_buf[37] = motor.motor[L_R];
-  telemetry_tx_buf[38] = motor.motor[L_R]>>8;
+  telemetry_tx_buf[37] = motor.motor[R_F];
+  telemetry_tx_buf[38] = motor.motor[R_F]>>8;
 
-  telemetry_tx_buf[39] = motor.motor[R_F];
-  telemetry_tx_buf[40] = motor.motor[R_F]>>8;
+  telemetry_tx_buf[39] = motor.motor[L_R];
+  telemetry_tx_buf[40] = motor.motor[L_R]>>8;
 
-  telemetry_tx_buf[41] = motor.motor[R_R];
-  telemetry_tx_buf[42] = motor.motor[R_R]>>8;
+  telemetry_tx_buf[41] = motor.motor[L_F];
+  telemetry_tx_buf[42] = motor.motor[L_F]>>8;
 
   telemetry_tx_buf[43] = debug[0];
   telemetry_tx_buf[44] = debug[0]>>8;
