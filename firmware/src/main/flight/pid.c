@@ -44,36 +44,41 @@ void pidInit(void)
   _ROLL.in.kp = 10;
   _ROLL.in.ki = 0;
   _ROLL.in.kd = 0;
+  _ROLL.in.integral_windup = 500;
 
   _ROLL.out.kp = 10;
   _ROLL.out.ki = 0;
   _ROLL.out.kd = 0;
+  _ROLL.out.integral_windup = 500;
 
   _PITCH.in.kp = 10;
   _PITCH.in.ki = 0;
   _PITCH.in.kd = 0;
+  _PITCH.in.integral_windup = 500;
 
   _PITCH.out.kp = 10;
   _PITCH.out.ki = 0;
   _PITCH.out.kd = 0;
+  _PITCH.out.integral_windup = 500;
 
   _YAW_Heading.kp = 10;
   _YAW_Heading.ki = 0;
   _YAW_Heading.kd = 0;
+  _YAW_Heading.integral_windup = 500;
+
 
   _YAW_Rate.kp = 10;
   _YAW_Rate.ki = 0;
   _YAW_Rate.kd = 0;
+  _YAW_Rate.integral_windup = 500;
 }
-
-#define ERROR_SUM_MAX 500
 
 void PID_Calculation(PID* axis, float set_point, float measured, float dt)
 {
   axis->error = set_point - measured;
   axis->integral += axis->error * dt;
-  if(axis->integral > ERROR_SUM_MAX) axis->integral = ERROR_SUM_MAX;
-  else if(axis->integral < -ERROR_SUM_MAX) axis->integral = -ERROR_SUM_MAX;
+  if(axis->integral > axis->integral_windup) axis->integral = axis->integral_windup;
+  else if(axis->integral < -axis->integral_windup) axis->integral = -axis->integral_windup;
   axis->derivative = (axis->error - axis->prev_error) / dt;
   axis->prev_error = axis->error;
 
