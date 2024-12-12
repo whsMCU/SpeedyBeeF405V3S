@@ -451,7 +451,7 @@ static void imuCalculateEstimatedAttitude(timeUs_t currentTimeUs)
 
     const timeDelta_t deltaT = currentTimeUs - previousIMUUpdateTime;
     previousIMUUpdateTime = currentTimeUs;
-    debug[0] = deltaT;
+    //debug[0] = deltaT;
 
 #ifdef USE_MAG
     if (compassIsHealthy()) {

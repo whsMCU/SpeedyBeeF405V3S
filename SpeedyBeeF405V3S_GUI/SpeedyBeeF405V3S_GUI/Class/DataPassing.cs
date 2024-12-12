@@ -206,10 +206,10 @@ namespace Ball_Ballancer_CS.Class
                 data[16] = BitConverter.ToUInt16(buff_pass, 37);
                 data[17] = BitConverter.ToUInt16(buff_pass, 39);
                 data[18] = BitConverter.ToUInt16(buff_pass, 41);
-                data[19] = BitConverter.ToUInt32(buff_pass, 43);
-                data[20] = BitConverter.ToUInt32(buff_pass, 47);
-                data[21] = BitConverter.ToUInt32(buff_pass, 51);
-                data[22] = BitConverter.ToUInt32(buff_pass, 55);
+                data[19] = BitConverter.ToInt32(buff_pass, 43);
+                data[20] = BitConverter.ToInt32(buff_pass, 47);
+                data[21] = BitConverter.ToInt32(buff_pass, 51);
+                data[22] = BitConverter.ToInt32(buff_pass, 55);
 
                 data[23] = BitConverter.ToSingle(buff_pass, 59);
                 data[24] = BitConverter.ToSingle(buff_pass, 63);

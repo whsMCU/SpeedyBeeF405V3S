@@ -350,7 +350,7 @@ void crsfDataReceive(uint16_t c, void *data)
 #endif
     const uint32_t currentTimeUs = micros();
 #ifdef DEBUG_CRSF_PACKETS
-    debug[2] = currentTimeUs - crsfFrameStartAtUs;
+    //debug[2] = currentTimeUs - crsfFrameStartAtUs;
 #endif
     if (cmpTimeUs(currentTimeUs, crsfFrameStartAtUs) > CRSF_TIME_NEEDED_PER_FRAME_US) {
         // We've received a character after max time needed to complete a frame,

@@ -308,10 +308,10 @@ void performAcclerationCalibration(rollAndPitchTrims_t *rollAndPitchTrims)
 
 void taskAccUpdate(timeUs_t currentTimeUs)
 {
-  static timeUs_t previousIMUUpdateTime;
-  const timeDelta_t deltaT = currentTimeUs - previousIMUUpdateTime;
-  previousIMUUpdateTime = currentTimeUs;
-  debug[2] = deltaT;
+  //static timeUs_t previousIMUUpdateTime;
+  //const timeDelta_t deltaT = currentTimeUs - previousIMUUpdateTime;
+  //previousIMUUpdateTime = currentTimeUs;
+  //debug[2] = deltaT;
 	UNUSED(currentTimeUs);
 	if (!bmi270SpiAccRead(&bmi270)) {
 			return;
