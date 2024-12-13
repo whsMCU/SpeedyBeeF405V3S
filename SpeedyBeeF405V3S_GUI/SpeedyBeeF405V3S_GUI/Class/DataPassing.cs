@@ -51,7 +51,7 @@ namespace Ball_Ballancer_CS.Class
         int cnt = 0;
         byte checksum = 0xff;
 
-        float[] data = new float[30];
+        float[] data = new float[50];
 
         public DataPassing()
         {
@@ -140,7 +140,7 @@ namespace Ball_Ballancer_CS.Class
                         break;
                     case gcsState_e.GCS_PAYLOAD:
                         buff_pass[cnt++] = buff[i];
-                        if (gcsData == gcsData_e.GCS_Tlemetry && cnt == 71)
+                        if (gcsData == gcsData_e.GCS_Tlemetry && cnt == 83)
                         {
                             gcsState = gcsState_e.GCS_CHECKSUM;
                         }
@@ -163,7 +163,7 @@ namespace Ball_Ballancer_CS.Class
                         else if (gcsData == gcsData_e.GCS_Tlemetry)
                         {
                             byte chksum = 0xff;
-                            for (ii = 0; ii < 71; ii++) chksum = (byte)(chksum - buff_pass[ii]);
+                            for (ii = 0; ii < 83; ii++) chksum = (byte)(chksum - buff_pass[ii]);
                             if (chksum == buff_pass[cnt])
                             {
                                 recived_data_flag = true;
@@ -214,6 +214,14 @@ namespace Ball_Ballancer_CS.Class
                 data[23] = BitConverter.ToSingle(buff_pass, 59);
                 data[24] = BitConverter.ToSingle(buff_pass, 63);
                 data[25] = BitConverter.ToSingle(buff_pass, 67);
+
+                data[26] = BitConverter.ToInt16(buff_pass, 71);
+                data[27] = BitConverter.ToInt16(buff_pass, 73);
+                data[28] = BitConverter.ToInt16(buff_pass, 75);
+
+                data[29] = BitConverter.ToInt16(buff_pass, 77);
+                data[30] = BitConverter.ToInt16(buff_pass, 79);
+                data[31] = BitConverter.ToInt16(buff_pass, 81);
             }
             else if (buff_pass[2] == 0x20) // PID Data 수신
             {

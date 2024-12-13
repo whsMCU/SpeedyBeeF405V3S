@@ -192,9 +192,27 @@ static void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf)
   *(float*)&telemetry_tx_buf[63] = bmi270.gyroADCf[Y];
   *(float*)&telemetry_tx_buf[67] = bmi270.gyroADCf[Z];
 
-  telemetry_tx_buf[71] = 0xff;
+  telemetry_tx_buf[71] = bmi270.accelerationTrims.raw[X];
+  telemetry_tx_buf[72] = bmi270.accelerationTrims.raw[X]>>8;
 
-  for(int i=0;i<71;i++) telemetry_tx_buf[71] = telemetry_tx_buf[71] - telemetry_tx_buf[i];
+  telemetry_tx_buf[73] = bmi270.accelerationTrims.raw[Y];
+  telemetry_tx_buf[74] = bmi270.accelerationTrims.raw[Y]>>8;
+
+  telemetry_tx_buf[75] = bmi270.accelerationTrims.raw[Z];
+  telemetry_tx_buf[76] = bmi270.accelerationTrims.raw[Z]>>8;
+
+  telemetry_tx_buf[77] = mag.magADC[X];
+  telemetry_tx_buf[78] = mag.magADC[X]>>8;
+
+  telemetry_tx_buf[79] = mag.magADC[Y];
+  telemetry_tx_buf[80] = mag.magADC[Y]>>8;
+
+  telemetry_tx_buf[81] = mag.magADC[Z];
+  telemetry_tx_buf[82] = mag.magADC[Z]>>8;
+
+  telemetry_tx_buf[83] = 0xff;
+
+  for(int i=0;i<83;i++) telemetry_tx_buf[83] = telemetry_tx_buf[83] - telemetry_tx_buf[i];
 }
 
 void Encode_Msg_GPS(unsigned char* telemetry_tx_buf)
@@ -433,6 +451,22 @@ void gcsMain(void)
       _YAW_Rate.kp = *(float*)&telemetry_rx_buf[63];
       _YAW_Rate.ki = *(float*)&telemetry_rx_buf[67];
       _YAW_Rate.kd = *(float*)&telemetry_rx_buf[71];
+      break;
+
+    case 0x40:
+      if(!ARMING_FLAG(ARMED))
+      {
+        #ifdef USE_MAG
+          compassStartCalibration();
+        #endif
+      }
+      break;
+
+    case 0x50:
+      if(!ARMING_FLAG(ARMED))
+      {
+        accStartCalibration();
+      }
       break;
     }
   }

@@ -251,7 +251,26 @@
             this.rb_pitch = new System.Windows.Forms.RadioButton();
             this.rb_roll = new System.Windows.Forms.RadioButton();
             this.zedGraphControl1 = new ZedGraph.ZedGraphControl();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.label71 = new System.Windows.Forms.Label();
+            this.label70 = new System.Windows.Forms.Label();
+            this.lb_magZero_Z = new System.Windows.Forms.Label();
+            this.lb_magZero_Y = new System.Windows.Forms.Label();
+            this.lb_magZero_X = new System.Windows.Forms.Label();
+            this.label78 = new System.Windows.Forms.Label();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.label64 = new System.Windows.Forms.Label();
+            this.lb_accTrim_Y = new System.Windows.Forms.Label();
+            this.lb_accTrim_Z = new System.Windows.Forms.Label();
+            this.lb_accTrim_X = new System.Windows.Forms.Label();
+            this.bt_mag_cal = new System.Windows.Forms.Button();
+            this.bt_acc_cal = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label63 = new System.Windows.Forms.Label();
+            this.label65 = new System.Windows.Forms.Label();
+            this.label66 = new System.Windows.Forms.Label();
+            this.lb_magcal_remain_time = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -271,6 +290,9 @@
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
+            this.tabPage4.SuspendLayout();
+            this.groupBox8.SuspendLayout();
+            this.groupBox7.SuspendLayout();
             this.SuspendLayout();
             // 
             // OpenClose
@@ -1935,6 +1957,7 @@
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
+            this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Location = new System.Drawing.Point(351, 91);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -2202,17 +2225,237 @@
             this.zedGraphControl1.TabIndex = 0;
             this.zedGraphControl1.UseExtendedPrintDialog = true;
             // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.groupBox8);
+            this.tabPage4.Controls.Add(this.groupBox7);
+            this.tabPage4.Controls.Add(this.bt_mag_cal);
+            this.tabPage4.Controls.Add(this.bt_acc_cal);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(725, 482);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "캘리브레이션";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // groupBox8
+            // 
+            this.groupBox8.Controls.Add(this.lb_magcal_remain_time);
+            this.groupBox8.Controls.Add(this.label66);
+            this.groupBox8.Controls.Add(this.label71);
+            this.groupBox8.Controls.Add(this.label70);
+            this.groupBox8.Controls.Add(this.lb_magZero_Z);
+            this.groupBox8.Controls.Add(this.lb_magZero_Y);
+            this.groupBox8.Controls.Add(this.lb_magZero_X);
+            this.groupBox8.Controls.Add(this.label78);
+            this.groupBox8.Location = new System.Drawing.Point(361, 12);
+            this.groupBox8.Name = "groupBox8";
+            this.groupBox8.Size = new System.Drawing.Size(335, 177);
+            this.groupBox8.TabIndex = 153;
+            this.groupBox8.TabStop = false;
+            this.groupBox8.Text = "지자계";
+            // 
+            // label71
+            // 
+            this.label71.AutoSize = true;
+            this.label71.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.label71.Location = new System.Drawing.Point(249, 72);
+            this.label71.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label71.Name = "label71";
+            this.label71.Size = new System.Drawing.Size(64, 21);
+            this.label71.TabIndex = 97;
+            this.label71.Text = "MAG[Z]";
+            // 
+            // label70
+            // 
+            this.label70.AutoSize = true;
+            this.label70.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.label70.Location = new System.Drawing.Point(128, 72);
+            this.label70.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label70.Name = "label70";
+            this.label70.Size = new System.Drawing.Size(64, 21);
+            this.label70.TabIndex = 96;
+            this.label70.Text = "MAG[Y]";
+            // 
+            // lb_magZero_Z
+            // 
+            this.lb_magZero_Z.AutoSize = true;
+            this.lb_magZero_Z.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_magZero_Z.Location = new System.Drawing.Point(273, 42);
+            this.lb_magZero_Z.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_magZero_Z.Name = "lb_magZero_Z";
+            this.lb_magZero_Z.Size = new System.Drawing.Size(16, 21);
+            this.lb_magZero_Z.TabIndex = 95;
+            this.lb_magZero_Z.Text = "-";
+            // 
+            // lb_magZero_Y
+            // 
+            this.lb_magZero_Y.AutoSize = true;
+            this.lb_magZero_Y.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_magZero_Y.Location = new System.Drawing.Point(152, 38);
+            this.lb_magZero_Y.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_magZero_Y.Name = "lb_magZero_Y";
+            this.lb_magZero_Y.Size = new System.Drawing.Size(16, 21);
+            this.lb_magZero_Y.TabIndex = 94;
+            this.lb_magZero_Y.Text = "-";
+            // 
+            // lb_magZero_X
+            // 
+            this.lb_magZero_X.AutoSize = true;
+            this.lb_magZero_X.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_magZero_X.Location = new System.Drawing.Point(48, 38);
+            this.lb_magZero_X.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_magZero_X.Name = "lb_magZero_X";
+            this.lb_magZero_X.Size = new System.Drawing.Size(16, 21);
+            this.lb_magZero_X.TabIndex = 92;
+            this.lb_magZero_X.Text = "-";
+            // 
+            // label78
+            // 
+            this.label78.AutoSize = true;
+            this.label78.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.label78.Location = new System.Drawing.Point(29, 72);
+            this.label78.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label78.Name = "label78";
+            this.label78.Size = new System.Drawing.Size(64, 21);
+            this.label78.TabIndex = 88;
+            this.label78.Text = "MAG[X]";
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Controls.Add(this.label65);
+            this.groupBox7.Controls.Add(this.label63);
+            this.groupBox7.Controls.Add(this.label64);
+            this.groupBox7.Controls.Add(this.lb_accTrim_Y);
+            this.groupBox7.Controls.Add(this.lb_accTrim_Z);
+            this.groupBox7.Controls.Add(this.lb_accTrim_X);
+            this.groupBox7.Location = new System.Drawing.Point(6, 12);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(335, 177);
+            this.groupBox7.TabIndex = 152;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "가속도계";
+            // 
+            // label64
+            // 
+            this.label64.AutoSize = true;
+            this.label64.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.label64.Location = new System.Drawing.Point(19, 65);
+            this.label64.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label64.Name = "label64";
+            this.label64.Size = new System.Drawing.Size(60, 21);
+            this.label64.TabIndex = 95;
+            this.label64.Text = "Trim[X]";
+            // 
+            // lb_accTrim_Y
+            // 
+            this.lb_accTrim_Y.AutoSize = true;
+            this.lb_accTrim_Y.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_accTrim_Y.Location = new System.Drawing.Point(159, 38);
+            this.lb_accTrim_Y.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_accTrim_Y.Name = "lb_accTrim_Y";
+            this.lb_accTrim_Y.Size = new System.Drawing.Size(16, 21);
+            this.lb_accTrim_Y.TabIndex = 94;
+            this.lb_accTrim_Y.Text = "-";
+            // 
+            // lb_accTrim_Z
+            // 
+            this.lb_accTrim_Z.AutoSize = true;
+            this.lb_accTrim_Z.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_accTrim_Z.Location = new System.Drawing.Point(276, 38);
+            this.lb_accTrim_Z.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_accTrim_Z.Name = "lb_accTrim_Z";
+            this.lb_accTrim_Z.Size = new System.Drawing.Size(16, 21);
+            this.lb_accTrim_Z.TabIndex = 93;
+            this.lb_accTrim_Z.Text = "-";
+            // 
+            // lb_accTrim_X
+            // 
+            this.lb_accTrim_X.AutoSize = true;
+            this.lb_accTrim_X.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_accTrim_X.Location = new System.Drawing.Point(40, 38);
+            this.lb_accTrim_X.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_accTrim_X.Name = "lb_accTrim_X";
+            this.lb_accTrim_X.Size = new System.Drawing.Size(16, 21);
+            this.lb_accTrim_X.TabIndex = 92;
+            this.lb_accTrim_X.Text = "-";
+            // 
+            // bt_mag_cal
+            // 
+            this.bt_mag_cal.Location = new System.Drawing.Point(450, 205);
+            this.bt_mag_cal.Name = "bt_mag_cal";
+            this.bt_mag_cal.Size = new System.Drawing.Size(133, 23);
+            this.bt_mag_cal.TabIndex = 149;
+            this.bt_mag_cal.Text = "지자계 캘리브레이션";
+            this.bt_mag_cal.UseVisualStyleBackColor = true;
+            this.bt_mag_cal.Click += new System.EventHandler(this.bt_mag_cal_Click);
+            // 
+            // bt_acc_cal
+            // 
+            this.bt_acc_cal.Location = new System.Drawing.Point(81, 205);
+            this.bt_acc_cal.Name = "bt_acc_cal";
+            this.bt_acc_cal.Size = new System.Drawing.Size(133, 23);
+            this.bt_acc_cal.TabIndex = 150;
+            this.bt_acc_cal.Text = "가속도 캘리브레이션";
+            this.bt_acc_cal.UseVisualStyleBackColor = true;
+            this.bt_acc_cal.Click += new System.EventHandler(this.bt_acc_cal_Click);
+            // 
             // textBox1
             // 
             this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(13, 588);
+            this.textBox1.Location = new System.Drawing.Point(13, 605);
             this.textBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
             this.textBox1.Size = new System.Drawing.Size(327, 22);
             this.textBox1.TabIndex = 89;
             this.textBox1.Text = "-";
+            // 
+            // label63
+            // 
+            this.label63.AutoSize = true;
+            this.label63.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.label63.Location = new System.Drawing.Point(135, 65);
+            this.label63.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label63.Name = "label63";
+            this.label63.Size = new System.Drawing.Size(60, 21);
+            this.label63.TabIndex = 96;
+            this.label63.Text = "Trim[Y]";
+            // 
+            // label65
+            // 
+            this.label65.AutoSize = true;
+            this.label65.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.label65.Location = new System.Drawing.Point(258, 65);
+            this.label65.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label65.Name = "label65";
+            this.label65.Size = new System.Drawing.Size(60, 21);
+            this.label65.TabIndex = 97;
+            this.label65.Text = "Trim[Z]";
+            // 
+            // label66
+            // 
+            this.label66.AutoSize = true;
+            this.label66.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.label66.Location = new System.Drawing.Point(7, 125);
+            this.label66.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label66.Name = "label66";
+            this.label66.Size = new System.Drawing.Size(185, 21);
+            this.label66.TabIndex = 98;
+            this.label66.Text = "캘리브레이션 남은 시간 :";
+            // 
+            // lb_magcal_remain_time
+            // 
+            this.lb_magcal_remain_time.AutoSize = true;
+            this.lb_magcal_remain_time.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_magcal_remain_time.Location = new System.Drawing.Point(231, 125);
+            this.lb_magcal_remain_time.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_magcal_remain_time.Name = "lb_magcal_remain_time";
+            this.lb_magcal_remain_time.Size = new System.Drawing.Size(16, 21);
+            this.lb_magcal_remain_time.TabIndex = 99;
+            this.lb_magcal_remain_time.Text = "-";
             // 
             // Form1
             // 
@@ -2265,6 +2508,11 @@
             this.tabPage2.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
+            this.tabPage4.ResumeLayout(false);
+            this.groupBox8.ResumeLayout(false);
+            this.groupBox8.PerformLayout();
+            this.groupBox7.ResumeLayout(false);
+            this.groupBox7.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2451,6 +2699,25 @@
         private System.Windows.Forms.Label lb_route_distance;
         private System.Windows.Forms.Label label61;
         private System.Windows.Forms.Label label62;
+        private System.Windows.Forms.Button bt_mag_cal;
+        private System.Windows.Forms.Button bt_acc_cal;
+        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.GroupBox groupBox8;
+        private System.Windows.Forms.Label lb_magZero_Z;
+        private System.Windows.Forms.Label lb_magZero_Y;
+        private System.Windows.Forms.Label lb_magZero_X;
+        private System.Windows.Forms.Label label78;
+        private System.Windows.Forms.GroupBox groupBox7;
+        private System.Windows.Forms.Label lb_accTrim_Y;
+        private System.Windows.Forms.Label lb_accTrim_Z;
+        private System.Windows.Forms.Label lb_accTrim_X;
+        private System.Windows.Forms.Label label64;
+        private System.Windows.Forms.Label label71;
+        private System.Windows.Forms.Label label70;
+        private System.Windows.Forms.Label label65;
+        private System.Windows.Forms.Label label63;
+        private System.Windows.Forms.Label lb_magcal_remain_time;
+        private System.Windows.Forms.Label label66;
     }
 }
 

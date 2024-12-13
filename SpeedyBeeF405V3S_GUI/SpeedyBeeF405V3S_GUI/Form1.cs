@@ -32,6 +32,10 @@ namespace SpeedyBeeF405V3S_GUI
         bool pid_recive_flag = false;
         bool pid_send_flag = false;
         bool pid_save_flag = false;
+        bool acc_cal_flag = false;
+        bool mag_cal_flag = false;
+        bool mag_cal_remain_time_flag = false;
+        int mag_cal_remain_time = 0;
 
         List<PointLatLng> map_points = new List<PointLatLng>();
         GMarkerGoogle marker;
@@ -429,7 +433,15 @@ namespace SpeedyBeeF405V3S_GUI
                                 lb_gyro_Y.Text = passed_data[24].ToString();
                                 lb_gyro_Z.Text = passed_data[25].ToString();
 
-                                if(rb_roll.Checked == true || rb_pitch.Checked == true ||
+                                lb_accTrim_X.Text = passed_data[26].ToString();
+                                lb_accTrim_Y.Text = passed_data[27].ToString();
+                                lb_accTrim_Z.Text = passed_data[28].ToString();
+
+                                lb_magZero_X.Text = passed_data[29].ToString();
+                                lb_magZero_Y.Text = passed_data[30].ToString();
+                                lb_magZero_Z.Text = passed_data[31].ToString();
+
+                                if (rb_roll.Checked == true || rb_pitch.Checked == true ||
                                    rb_yaw.Checked == true || rb_roll_pitch.Checked == true ||
                                    rb_roll_setpoint.Checked == true || rb_pitch_setpoint.Checked == true ||
                                    rb_yaw_setpoint.Checked == true || rb_altitude.Checked == true ||
@@ -725,6 +737,78 @@ namespace SpeedyBeeF405V3S_GUI
                 }
                 catch { Console.WriteLine("PID Data Send Error"); }
             }
+
+            if (acc_cal_flag == true)
+            {
+                acc_cal_flag = false;
+                try
+                {
+                    buff[0] = 0x47;
+                    buff[1] = 0x53;
+                    buff[2] = 0x40;
+                    buff[3] = 0;
+                    buff[4] = 0;
+                    buff[5] = 0;
+                    buff[6] = 0;
+                    buff[7] = 0;
+                    buff[8] = 0;
+                    buff[9] = 0;
+                    buff[10] = 0;
+                    buff[11] = 0;
+                    buff[12] = 0;
+                    buff[13] = 0;
+                    buff[14] = 0;
+                    buff[15] = 0;
+                    buff[16] = 0;
+                    buff[17] = 0;
+                    buff[18] = 0;
+                    buff[19] = 0xff;
+
+                    for (int i = 0; i < 19; i++)
+                    {
+                        buff[19] -= buff[i];
+                    }
+                    serialPort.Write(buff, 0, 20);
+                    Console.WriteLine("가속도센서 캘리브레이션 명령 전송 완료");
+                }
+                catch { Console.WriteLine("ACC Calibration Requset Error"); }
+            }
+
+            if (mag_cal_flag == true)
+            {
+                mag_cal_flag = false;
+                try
+                {
+                    buff[0] = 0x47;
+                    buff[1] = 0x53;
+                    buff[2] = 0x50;
+                    buff[3] = 0;
+                    buff[4] = 0;
+                    buff[5] = 0;
+                    buff[6] = 0;
+                    buff[7] = 0;
+                    buff[8] = 0;
+                    buff[9] = 0;
+                    buff[10] = 0;
+                    buff[11] = 0;
+                    buff[12] = 0;
+                    buff[13] = 0;
+                    buff[14] = 0;
+                    buff[15] = 0;
+                    buff[16] = 0;
+                    buff[17] = 0;
+                    buff[18] = 0;
+                    buff[19] = 0xff;
+
+                    for (int i = 0; i < 19; i++)
+                    {
+                        buff[19] -= buff[i];
+                    }
+                    serialPort.Write(buff, 0, 20);
+                    Console.WriteLine("지자계 캘리브레이션 명령 전송 완료");
+                }
+                catch { Console.WriteLine("MAG Calibration Requset Error"); }
+            }
         }
 
         private void indicator_on()
@@ -803,6 +887,17 @@ namespace SpeedyBeeF405V3S_GUI
                 flight_timer_seconds++;
                 label36.Text = ("00:" + (flight_timer_seconds / 60).ToString("00.") + ":" + (flight_timer_seconds % 60).ToString("00."));
             }
+
+            if(mag_cal_remain_time_flag == true)
+            {
+                lb_magcal_remain_time.Text = mag_cal_remain_time.ToString();
+                mag_cal_remain_time--;
+                if(mag_cal_remain_time < 0)
+                {
+                    mag_cal_remain_time_flag = false;
+                    lb_magcal_remain_time.Text = "완료";
+                }
+            }
         }
 
         private void bt_pid_recive_Click(object sender, EventArgs e)
@@ -818,6 +913,18 @@ namespace SpeedyBeeF405V3S_GUI
         private void bt_pid_save_Click(object sender, EventArgs e)
         {
             pid_save_flag = true;
+        }
+
+        private void bt_acc_cal_Click(object sender, EventArgs e)
+        {
+            acc_cal_flag = true;
+        }
+
+        private void bt_mag_cal_Click(object sender, EventArgs e)
+        {
+            mag_cal_flag = true;
+            mag_cal_remain_time_flag = true;
+            mag_cal_remain_time = 31;
         }
 
         private void bt_pid_copy_Click(object sender, EventArgs e)
