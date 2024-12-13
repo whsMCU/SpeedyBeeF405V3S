@@ -47,7 +47,7 @@ namespace Ball_Ballancer_CS.Class
 
         List<byte> recvData = new List<byte>();
         byte[] buff = new byte[1024];
-        byte[] buff_pass = new byte[100];
+        byte[] buff_pass = new byte[150];
         int cnt = 0;
         byte checksum = 0xff;
 
@@ -140,7 +140,7 @@ namespace Ball_Ballancer_CS.Class
                         break;
                     case gcsState_e.GCS_PAYLOAD:
                         buff_pass[cnt++] = buff[i];
-                        if (gcsData == gcsData_e.GCS_Tlemetry && cnt == 83)
+                        if (gcsData == gcsData_e.GCS_Tlemetry && cnt == 115)
                         {
                             gcsState = gcsState_e.GCS_CHECKSUM;
                         }
@@ -163,7 +163,7 @@ namespace Ball_Ballancer_CS.Class
                         else if (gcsData == gcsData_e.GCS_Tlemetry)
                         {
                             byte chksum = 0xff;
-                            for (ii = 0; ii < 83; ii++) chksum = (byte)(chksum - buff_pass[ii]);
+                            for (ii = 0; ii < 115; ii++) chksum = (byte)(chksum - buff_pass[ii]);
                             if (chksum == buff_pass[cnt])
                             {
                                 recived_data_flag = true;
@@ -222,6 +222,17 @@ namespace Ball_Ballancer_CS.Class
                 data[29] = BitConverter.ToInt16(buff_pass, 77);
                 data[30] = BitConverter.ToInt16(buff_pass, 79);
                 data[31] = BitConverter.ToInt16(buff_pass, 81);
+
+                data[32] = BitConverter.ToSingle(buff_pass, 83);
+                data[33] = BitConverter.ToSingle(buff_pass, 87);
+                data[34] = BitConverter.ToSingle(buff_pass, 91);
+
+                data[35] = BitConverter.ToSingle(buff_pass, 95);
+                data[36] = BitConverter.ToSingle(buff_pass, 99);
+                data[37] = BitConverter.ToSingle(buff_pass, 103);
+                data[38] = BitConverter.ToSingle(buff_pass, 107);
+
+                data[39] = BitConverter.ToInt32(buff_pass, 111);
             }
             else if (buff_pass[2] == 0x20) // PID Data 수신
             {

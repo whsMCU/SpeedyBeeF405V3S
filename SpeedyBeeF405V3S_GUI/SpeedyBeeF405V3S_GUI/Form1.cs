@@ -441,6 +441,17 @@ namespace SpeedyBeeF405V3S_GUI
                                 lb_magZero_Y.Text = passed_data[30].ToString();
                                 lb_magZero_Z.Text = passed_data[31].ToString();
 
+                                lb_mag_X.Text = passed_data[32].ToString();
+                                lb_mag_Y.Text = passed_data[33].ToString();
+                                lb_mag_Z.Text = passed_data[34].ToString();
+
+                                lb_flowrate_X.Text = passed_data[35].ToString();
+                                lb_flowrate_Y.Text = passed_data[36].ToString();
+                                lb_bodyrate_X.Text = passed_data[37].ToString();
+                                lb_bodyrate_Y.Text = passed_data[38].ToString();
+
+                                lb_rangefinder.Text = passed_data[39].ToString();
+
                                 if (rb_roll.Checked == true || rb_pitch.Checked == true ||
                                    rb_yaw.Checked == true || rb_roll_pitch.Checked == true ||
                                    rb_roll_setpoint.Checked == true || rb_pitch_setpoint.Checked == true ||
@@ -525,6 +536,7 @@ namespace SpeedyBeeF405V3S_GUI
                 serialPort.Write(buff, 0, 20);
             }
             catch { Console.WriteLine("Telemetry Data Requset Error"); }
+
             if(pid_recive_flag == true)
             {
                 pid_recive_flag = false;

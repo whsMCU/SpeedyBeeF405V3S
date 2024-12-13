@@ -80,6 +80,7 @@ bool compassDetect(magDev_t *magDev, sensor_align_e *alignment)
       *alignment = MAG_QMC5883;//MAG_QMC5883L_ALIGN;
 
       magHardware = MAG_QMC5883;
+      sensorsSet(SENSOR_MAG);
     }
 
     if (magHardware == MAG_NONE) {
