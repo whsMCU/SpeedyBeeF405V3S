@@ -26,6 +26,7 @@
 #include "hw.h"
 
 #include "build/build_config.h"
+#include "build/debug.h"
 
 #include "common/axis.h"
 #include "common/color.h"
@@ -123,6 +124,7 @@ static void Param_Config_Init(void);
 
 void init(void)
 {
+  debugMode = DEBUG_FLOW_RAW;
   Param_Config_Init();
 //  bool existing = loadFromSDCard();
 //  if(existing)

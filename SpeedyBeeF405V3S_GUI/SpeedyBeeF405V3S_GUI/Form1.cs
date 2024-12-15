@@ -400,6 +400,16 @@ namespace SpeedyBeeF405V3S_GUI
                                     _myPane.XAxis.Scale.Max = 300 + time_count;
                                 }
 
+                                if (rb_debug.Checked == true)
+                                {
+                                    _debug_0_points.Add(time_count + 150, passed_data[19]);
+                                    _debug_1_points.Add(time_count + 150, passed_data[20]);
+                                    _debug_2_points.Add(time_count + 150, passed_data[21]);
+                                    _debug_3_points.Add(time_count + 150, passed_data[22]);
+                                    _myPane.XAxis.Scale.Min = time_count;
+                                    _myPane.XAxis.Scale.Max = 300 + time_count;
+                                }
+
                                 lb_altitude.Text = passed_data[4].ToString();
                                 lb_rc_roll.Text = passed_data[5].ToString();
                                 lb_rc_pitch.Text = passed_data[6].ToString();
@@ -456,7 +466,8 @@ namespace SpeedyBeeF405V3S_GUI
                                    rb_yaw.Checked == true || rb_roll_pitch.Checked == true ||
                                    rb_roll_setpoint.Checked == true || rb_pitch_setpoint.Checked == true ||
                                    rb_yaw_setpoint.Checked == true || rb_altitude.Checked == true ||
-                                   rb_gyro.Checked == true || rb_motor.Checked == true)
+                                   rb_gyro.Checked == true || rb_motor.Checked == true ||
+                                   rb_debug.Checked == true)
                                 {
                                     zedGraphControl1.AxisChange();
                                     zedGraphControl1.Invalidate();
@@ -1146,6 +1157,30 @@ namespace SpeedyBeeF405V3S_GUI
             _motor_3_curve = _myPane.AddCurve("MOTOR[3]", _motor_3_points, Color.Brown, SymbolType.None);
             _motor_3_curve.Line.Width = 2;
             _motor_3_points.Clear();
+
+            zedGraphControl1.AxisChange();
+            zedGraphControl1.Invalidate();
+            zedGraphControl1.Refresh();
+        }
+
+        private void rb_debug_MouseDown(object sender, MouseEventArgs e)
+        {
+            _myPane.CurveList.Clear();
+            _myPane.YAxis.Scale.Min = -150;
+            _myPane.YAxis.Scale.Max = 150;
+
+            _debug_0_curve = _myPane.AddCurve("DEBUG_[0]", _debug_0_points, Color.Blue, SymbolType.None);
+            _debug_0_curve.Line.Width = 2;
+            _debug_0_curve.Clear();
+            _debug_1_curve = _myPane.AddCurve("DEBUG_[1]", _debug_1_points, Color.Red, SymbolType.None);
+            _debug_1_curve.Line.Width = 2;
+            _debug_1_curve.Clear();
+            _debug_2_curve = _myPane.AddCurve("DEBUG_[2]", _debug_2_points, Color.Green, SymbolType.None);
+            _debug_2_curve.Line.Width = 2;
+            _debug_2_curve.Clear();
+            _debug_3_curve = _myPane.AddCurve("DEBUG_[3]", _debug_3_points, Color.Black, SymbolType.None);
+            _debug_3_curve.Line.Width = 2;
+            _debug_3_curve.Clear();
 
             zedGraphControl1.AxisChange();
             zedGraphControl1.Invalidate();

@@ -184,14 +184,14 @@ void opflowUpdate(timeUs_t currentTimeUs)
 //            applySensorAlignment(opflow.dev.rawData.flowRateRaw, opflow.dev.rawData.flowRateRaw, opticalFlowConfig.opflow_align);
 
             // Calculate flow rate and accumulated body rate
-            opflow.flowRate[X] = opflow.dev.rawData.flowRateRaw[X] * integralToRateScaler;
+            opflow.flowRate[X] = -opflow.dev.rawData.flowRateRaw[X] * integralToRateScaler;
             opflow.flowRate[Y] = opflow.dev.rawData.flowRateRaw[Y] * integralToRateScaler;
 
             // Only update DEBUG_FLOW_RAW if flow is good
-//            DEBUG_SET(DEBUG_FLOW_RAW, 0, (opflow.flowRate[X]));
-//            DEBUG_SET(DEBUG_FLOW_RAW, 1, (opflow.flowRate[Y]));
-//            DEBUG_SET(DEBUG_FLOW_RAW, 2, (opflow.bodyRate[X]));
-//            DEBUG_SET(DEBUG_FLOW_RAW, 3, (opflow.bodyRate[Y]));
+            DEBUG_SET(DEBUG_FLOW_RAW, 0, (opflow.flowRate[X])); // right +
+            DEBUG_SET(DEBUG_FLOW_RAW, 1, (opflow.flowRate[Y])); // front -
+            DEBUG_SET(DEBUG_FLOW_RAW, 2, (opflow.bodyRate[X]));
+            DEBUG_SET(DEBUG_FLOW_RAW, 3, (opflow.bodyRate[Y]));
         }
 
         // Process calibration

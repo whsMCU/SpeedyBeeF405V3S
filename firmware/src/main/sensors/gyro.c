@@ -42,6 +42,7 @@
 
 #include "sensors/gyro.h"
 #include "sensors/gyro_init.h"
+#include "sensors/opflow.h"
 
 #include "drivers/accgyro/accgyro_spi_bmi270.h"
 
@@ -201,6 +202,16 @@ void taskGyroUpdate(timeUs_t currentTimeUs)
   		bmi270.gyroPrevious[axis] = bmi270.gyroADCf[axis];
   }
   bmi270.gyro_accumulatedMeasurementCount++;
+#ifdef USE_OPFLOW
+
+  // getTaskDeltaTime() returns delta time frozen at the moment of entering the scheduler. currentTime is frozen at the very same point.
+  // To make busy-waiting timeout work we need to account for time spent within busy-waiting loop
+  const timeDelta_t currentDeltaTime = getTaskDeltaTimeUs(TASK_SELF);
+
+    if (sensors(SENSOR_OPFLOW)) {
+        opflowGyroUpdateCallback(currentDeltaTime);
+    }
+#endif
 }
 
 bool gyroGetAccumulationAverage(float *accumulationAverage)

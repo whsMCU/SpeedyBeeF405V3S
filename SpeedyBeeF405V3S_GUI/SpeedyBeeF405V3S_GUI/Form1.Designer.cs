@@ -96,6 +96,9 @@
             this.label25 = new System.Windows.Forms.Label();
             this.label26 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label75 = new System.Windows.Forms.Label();
+            this.label82 = new System.Windows.Forms.Label();
+            this.lb_rangefinder = new System.Windows.Forms.Label();
             this.lb_gyro_Z = new System.Windows.Forms.Label();
             this.lb_gyro_Y = new System.Windows.Forms.Label();
             this.lb_gyro_X = new System.Windows.Forms.Label();
@@ -252,6 +255,15 @@
             this.rb_roll = new System.Windows.Forms.RadioButton();
             this.zedGraphControl1 = new ZedGraph.ZedGraphControl();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.groupBox9 = new System.Windows.Forms.GroupBox();
+            this.label69 = new System.Windows.Forms.Label();
+            this.label76 = new System.Windows.Forms.Label();
+            this.lb_bodyrate_Y = new System.Windows.Forms.Label();
+            this.lb_bodyrate_X = new System.Windows.Forms.Label();
+            this.label72 = new System.Windows.Forms.Label();
+            this.label73 = new System.Windows.Forms.Label();
+            this.lb_flowrate_Y = new System.Windows.Forms.Label();
+            this.lb_flowrate_X = new System.Windows.Forms.Label();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.label67 = new System.Windows.Forms.Label();
             this.label68 = new System.Windows.Forms.Label();
@@ -277,18 +289,7 @@
             this.bt_mag_cal = new System.Windows.Forms.Button();
             this.bt_acc_cal = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.label72 = new System.Windows.Forms.Label();
-            this.label73 = new System.Windows.Forms.Label();
-            this.lb_flowrate_Y = new System.Windows.Forms.Label();
-            this.lb_flowrate_X = new System.Windows.Forms.Label();
-            this.label69 = new System.Windows.Forms.Label();
-            this.label76 = new System.Windows.Forms.Label();
-            this.lb_bodyrate_Y = new System.Windows.Forms.Label();
-            this.lb_bodyrate_X = new System.Windows.Forms.Label();
-            this.lb_rangefinder = new System.Windows.Forms.Label();
-            this.label82 = new System.Windows.Forms.Label();
-            this.label75 = new System.Windows.Forms.Label();
+            this.rb_debug = new System.Windows.Forms.RadioButton();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -309,9 +310,9 @@
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage4.SuspendLayout();
+            this.groupBox9.SuspendLayout();
             this.groupBox8.SuspendLayout();
             this.groupBox7.SuspendLayout();
-            this.groupBox9.SuspendLayout();
             this.SuspendLayout();
             // 
             // OpenClose
@@ -607,6 +608,38 @@
             this.groupBox4.TabIndex = 65;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Telemetry data";
+            // 
+            // label75
+            // 
+            this.label75.AutoSize = true;
+            this.label75.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.label75.Location = new System.Drawing.Point(293, 119);
+            this.label75.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label75.Name = "label75";
+            this.label75.Size = new System.Drawing.Size(31, 21);
+            this.label75.TabIndex = 96;
+            this.label75.Text = "cm";
+            // 
+            // label82
+            // 
+            this.label82.AutoSize = true;
+            this.label82.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label82.Location = new System.Drawing.Point(145, 119);
+            this.label82.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label82.Name = "label82";
+            this.label82.Size = new System.Drawing.Size(98, 21);
+            this.label82.TabIndex = 60;
+            this.label82.Text = "RangeFinder";
+            // 
+            // lb_rangefinder
+            // 
+            this.lb_rangefinder.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_rangefinder.Location = new System.Drawing.Point(251, 120);
+            this.lb_rangefinder.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_rangefinder.Name = "lb_rangefinder";
+            this.lb_rangefinder.Size = new System.Drawing.Size(45, 20);
+            this.lb_rangefinder.TabIndex = 59;
+            this.lb_rangefinder.Text = "-";
             // 
             // lb_gyro_Z
             // 
@@ -2077,6 +2110,7 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.rb_debug);
             this.tabPage3.Controls.Add(this.rb_motor);
             this.tabPage3.Controls.Add(this.rb_gyro);
             this.tabPage3.Controls.Add(this.rb_altitude);
@@ -2144,7 +2178,7 @@
             // rb_none
             // 
             this.rb_none.AutoSize = true;
-            this.rb_none.Location = new System.Drawing.Point(466, 400);
+            this.rb_none.Location = new System.Drawing.Point(561, 400);
             this.rb_none.Name = "rb_none";
             this.rb_none.Size = new System.Drawing.Size(53, 16);
             this.rb_none.TabIndex = 7;
@@ -2261,6 +2295,111 @@
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "캘리브레이션";
             this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // groupBox9
+            // 
+            this.groupBox9.Controls.Add(this.label69);
+            this.groupBox9.Controls.Add(this.label76);
+            this.groupBox9.Controls.Add(this.lb_bodyrate_Y);
+            this.groupBox9.Controls.Add(this.lb_bodyrate_X);
+            this.groupBox9.Controls.Add(this.label72);
+            this.groupBox9.Controls.Add(this.label73);
+            this.groupBox9.Controls.Add(this.lb_flowrate_Y);
+            this.groupBox9.Controls.Add(this.lb_flowrate_X);
+            this.groupBox9.Location = new System.Drawing.Point(6, 259);
+            this.groupBox9.Name = "groupBox9";
+            this.groupBox9.Size = new System.Drawing.Size(335, 177);
+            this.groupBox9.TabIndex = 154;
+            this.groupBox9.TabStop = false;
+            this.groupBox9.Text = "옵티컬플로우";
+            // 
+            // label69
+            // 
+            this.label69.AutoSize = true;
+            this.label69.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.label69.Location = new System.Drawing.Point(174, 134);
+            this.label69.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label69.Name = "label69";
+            this.label69.Size = new System.Drawing.Size(95, 21);
+            this.label69.TabIndex = 100;
+            this.label69.Text = "BodyRate[X]";
+            // 
+            // label76
+            // 
+            this.label76.AutoSize = true;
+            this.label76.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.label76.Location = new System.Drawing.Point(56, 134);
+            this.label76.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label76.Name = "label76";
+            this.label76.Size = new System.Drawing.Size(95, 21);
+            this.label76.TabIndex = 99;
+            this.label76.Text = "BodyRate[X]";
+            // 
+            // lb_bodyrate_Y
+            // 
+            this.lb_bodyrate_Y.AutoSize = true;
+            this.lb_bodyrate_Y.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_bodyrate_Y.Location = new System.Drawing.Point(211, 107);
+            this.lb_bodyrate_Y.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_bodyrate_Y.Name = "lb_bodyrate_Y";
+            this.lb_bodyrate_Y.Size = new System.Drawing.Size(16, 21);
+            this.lb_bodyrate_Y.TabIndex = 98;
+            this.lb_bodyrate_Y.Text = "-";
+            // 
+            // lb_bodyrate_X
+            // 
+            this.lb_bodyrate_X.AutoSize = true;
+            this.lb_bodyrate_X.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_bodyrate_X.Location = new System.Drawing.Point(92, 107);
+            this.lb_bodyrate_X.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_bodyrate_X.Name = "lb_bodyrate_X";
+            this.lb_bodyrate_X.Size = new System.Drawing.Size(16, 21);
+            this.lb_bodyrate_X.TabIndex = 97;
+            this.lb_bodyrate_X.Text = "-";
+            // 
+            // label72
+            // 
+            this.label72.AutoSize = true;
+            this.label72.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.label72.Location = new System.Drawing.Point(178, 60);
+            this.label72.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label72.Name = "label72";
+            this.label72.Size = new System.Drawing.Size(93, 21);
+            this.label72.TabIndex = 96;
+            this.label72.Text = "FlowRate[Y]";
+            // 
+            // label73
+            // 
+            this.label73.AutoSize = true;
+            this.label73.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.label73.Location = new System.Drawing.Point(58, 60);
+            this.label73.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label73.Name = "label73";
+            this.label73.Size = new System.Drawing.Size(93, 21);
+            this.label73.TabIndex = 95;
+            this.label73.Text = "FlowRate[X]";
+            // 
+            // lb_flowrate_Y
+            // 
+            this.lb_flowrate_Y.AutoSize = true;
+            this.lb_flowrate_Y.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_flowrate_Y.Location = new System.Drawing.Point(211, 33);
+            this.lb_flowrate_Y.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_flowrate_Y.Name = "lb_flowrate_Y";
+            this.lb_flowrate_Y.Size = new System.Drawing.Size(16, 21);
+            this.lb_flowrate_Y.TabIndex = 94;
+            this.lb_flowrate_Y.Text = "-";
+            // 
+            // lb_flowrate_X
+            // 
+            this.lb_flowrate_X.AutoSize = true;
+            this.lb_flowrate_X.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_flowrate_X.Location = new System.Drawing.Point(92, 33);
+            this.lb_flowrate_X.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_flowrate_X.Name = "lb_flowrate_X";
+            this.lb_flowrate_X.Size = new System.Drawing.Size(16, 21);
+            this.lb_flowrate_X.TabIndex = 92;
+            this.lb_flowrate_X.Text = "-";
             // 
             // groupBox8
             // 
@@ -2552,142 +2691,16 @@
             this.textBox1.TabIndex = 89;
             this.textBox1.Text = "-";
             // 
-            // groupBox9
+            // rb_debug
             // 
-            this.groupBox9.Controls.Add(this.label69);
-            this.groupBox9.Controls.Add(this.label76);
-            this.groupBox9.Controls.Add(this.lb_bodyrate_Y);
-            this.groupBox9.Controls.Add(this.lb_bodyrate_X);
-            this.groupBox9.Controls.Add(this.label72);
-            this.groupBox9.Controls.Add(this.label73);
-            this.groupBox9.Controls.Add(this.lb_flowrate_Y);
-            this.groupBox9.Controls.Add(this.lb_flowrate_X);
-            this.groupBox9.Location = new System.Drawing.Point(6, 259);
-            this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(335, 177);
-            this.groupBox9.TabIndex = 154;
-            this.groupBox9.TabStop = false;
-            this.groupBox9.Text = "옵티컬플로우";
-            // 
-            // label72
-            // 
-            this.label72.AutoSize = true;
-            this.label72.Font = new System.Drawing.Font("Segoe UI", 12F);
-            this.label72.Location = new System.Drawing.Point(178, 60);
-            this.label72.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label72.Name = "label72";
-            this.label72.Size = new System.Drawing.Size(93, 21);
-            this.label72.TabIndex = 96;
-            this.label72.Text = "FlowRate[Y]";
-            // 
-            // label73
-            // 
-            this.label73.AutoSize = true;
-            this.label73.Font = new System.Drawing.Font("Segoe UI", 12F);
-            this.label73.Location = new System.Drawing.Point(58, 60);
-            this.label73.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label73.Name = "label73";
-            this.label73.Size = new System.Drawing.Size(93, 21);
-            this.label73.TabIndex = 95;
-            this.label73.Text = "FlowRate[X]";
-            // 
-            // lb_flowrate_Y
-            // 
-            this.lb_flowrate_Y.AutoSize = true;
-            this.lb_flowrate_Y.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_flowrate_Y.Location = new System.Drawing.Point(211, 33);
-            this.lb_flowrate_Y.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lb_flowrate_Y.Name = "lb_flowrate_Y";
-            this.lb_flowrate_Y.Size = new System.Drawing.Size(16, 21);
-            this.lb_flowrate_Y.TabIndex = 94;
-            this.lb_flowrate_Y.Text = "-";
-            // 
-            // lb_flowrate_X
-            // 
-            this.lb_flowrate_X.AutoSize = true;
-            this.lb_flowrate_X.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_flowrate_X.Location = new System.Drawing.Point(92, 33);
-            this.lb_flowrate_X.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lb_flowrate_X.Name = "lb_flowrate_X";
-            this.lb_flowrate_X.Size = new System.Drawing.Size(16, 21);
-            this.lb_flowrate_X.TabIndex = 92;
-            this.lb_flowrate_X.Text = "-";
-            // 
-            // label69
-            // 
-            this.label69.AutoSize = true;
-            this.label69.Font = new System.Drawing.Font("Segoe UI", 12F);
-            this.label69.Location = new System.Drawing.Point(174, 134);
-            this.label69.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label69.Name = "label69";
-            this.label69.Size = new System.Drawing.Size(95, 21);
-            this.label69.TabIndex = 100;
-            this.label69.Text = "BodyRate[X]";
-            // 
-            // label76
-            // 
-            this.label76.AutoSize = true;
-            this.label76.Font = new System.Drawing.Font("Segoe UI", 12F);
-            this.label76.Location = new System.Drawing.Point(56, 134);
-            this.label76.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label76.Name = "label76";
-            this.label76.Size = new System.Drawing.Size(95, 21);
-            this.label76.TabIndex = 99;
-            this.label76.Text = "BodyRate[X]";
-            // 
-            // lb_bodyrate_Y
-            // 
-            this.lb_bodyrate_Y.AutoSize = true;
-            this.lb_bodyrate_Y.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_bodyrate_Y.Location = new System.Drawing.Point(211, 107);
-            this.lb_bodyrate_Y.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lb_bodyrate_Y.Name = "lb_bodyrate_Y";
-            this.lb_bodyrate_Y.Size = new System.Drawing.Size(16, 21);
-            this.lb_bodyrate_Y.TabIndex = 98;
-            this.lb_bodyrate_Y.Text = "-";
-            // 
-            // lb_bodyrate_X
-            // 
-            this.lb_bodyrate_X.AutoSize = true;
-            this.lb_bodyrate_X.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_bodyrate_X.Location = new System.Drawing.Point(92, 107);
-            this.lb_bodyrate_X.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lb_bodyrate_X.Name = "lb_bodyrate_X";
-            this.lb_bodyrate_X.Size = new System.Drawing.Size(16, 21);
-            this.lb_bodyrate_X.TabIndex = 97;
-            this.lb_bodyrate_X.Text = "-";
-            // 
-            // lb_rangefinder
-            // 
-            this.lb_rangefinder.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_rangefinder.Location = new System.Drawing.Point(251, 120);
-            this.lb_rangefinder.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lb_rangefinder.Name = "lb_rangefinder";
-            this.lb_rangefinder.Size = new System.Drawing.Size(45, 20);
-            this.lb_rangefinder.TabIndex = 59;
-            this.lb_rangefinder.Text = "-";
-            // 
-            // label82
-            // 
-            this.label82.AutoSize = true;
-            this.label82.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label82.Location = new System.Drawing.Point(145, 119);
-            this.label82.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label82.Name = "label82";
-            this.label82.Size = new System.Drawing.Size(98, 21);
-            this.label82.TabIndex = 60;
-            this.label82.Text = "RangeFinder";
-            // 
-            // label75
-            // 
-            this.label75.AutoSize = true;
-            this.label75.Font = new System.Drawing.Font("Segoe UI", 12F);
-            this.label75.Location = new System.Drawing.Point(293, 119);
-            this.label75.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label75.Name = "label75";
-            this.label75.Size = new System.Drawing.Size(31, 21);
-            this.label75.TabIndex = 96;
-            this.label75.Text = "cm";
+            this.rb_debug.AutoSize = true;
+            this.rb_debug.Location = new System.Drawing.Point(466, 400);
+            this.rb_debug.Name = "rb_debug";
+            this.rb_debug.Size = new System.Drawing.Size(59, 16);
+            this.rb_debug.TabIndex = 12;
+            this.rb_debug.Text = "Debug";
+            this.rb_debug.UseVisualStyleBackColor = true;
+            this.rb_debug.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rb_debug_MouseDown);
             // 
             // Form1
             // 
@@ -2741,12 +2754,12 @@
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
             this.tabPage4.ResumeLayout(false);
+            this.groupBox9.ResumeLayout(false);
+            this.groupBox9.PerformLayout();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
-            this.groupBox9.ResumeLayout(false);
-            this.groupBox9.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2970,6 +2983,7 @@
         private System.Windows.Forms.Label lb_flowrate_Y;
         private System.Windows.Forms.Label lb_flowrate_X;
         private System.Windows.Forms.Label label75;
+        private System.Windows.Forms.RadioButton rb_debug;
     }
 }
 
