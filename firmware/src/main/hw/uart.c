@@ -782,6 +782,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
   	    /* UART Over-Run interrupt occurred -----------------------------------------*/
   	    if ((__HAL_UART_GET_FLAG(huart, UART_FLAG_ORE) != RESET)) {
   	    	__HAL_UART_CLEAR_FLAG(huart, UART_FLAG_ORE);
+  	    	__HAL_UART_CLEAR_OREFLAG(huart);
   	    }
         /* Disable the UART Error Interrupt: (Frame error, noise error, overrun error) */
         CLEAR_BIT(huart->Instance->CR3, USART_CR3_EIE);
