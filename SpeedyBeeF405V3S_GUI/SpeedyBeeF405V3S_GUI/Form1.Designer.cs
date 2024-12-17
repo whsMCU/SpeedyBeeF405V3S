@@ -241,6 +241,7 @@
             this.label61 = new System.Windows.Forms.Label();
             this.gMapControl1 = new GMap.NET.WindowsForms.GMapControl();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.rb_debug = new System.Windows.Forms.RadioButton();
             this.rb_motor = new System.Windows.Forms.RadioButton();
             this.rb_gyro = new System.Windows.Forms.RadioButton();
             this.rb_altitude = new System.Windows.Forms.RadioButton();
@@ -289,7 +290,8 @@
             this.bt_mag_cal = new System.Windows.Forms.Button();
             this.bt_acc_cal = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.rb_debug = new System.Windows.Forms.RadioButton();
+            this.tb_rx_error = new System.Windows.Forms.TextBox();
+            this.label77 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -877,6 +879,8 @@
             // 
             // panel4
             // 
+            this.panel4.Controls.Add(this.label77);
+            this.panel4.Controls.Add(this.tb_rx_error);
             this.panel4.Controls.Add(this.label1);
             this.panel4.Controls.Add(this.label3);
             this.panel4.Controls.Add(this.textBox2);
@@ -884,7 +888,7 @@
             this.panel4.Location = new System.Drawing.Point(13, 506);
             this.panel4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(327, 60);
+            this.panel4.Size = new System.Drawing.Size(327, 89);
             this.panel4.TabIndex = 73;
             // 
             // label1
@@ -902,7 +906,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(4, 28);
+            this.label3.Location = new System.Drawing.Point(4, 35);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(45, 21);
@@ -929,7 +933,7 @@
             this.textBox3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox3.Name = "textBox3";
             this.textBox3.ReadOnly = true;
-            this.textBox3.Size = new System.Drawing.Size(386, 22);
+            this.textBox3.Size = new System.Drawing.Size(46, 22);
             this.textBox3.TabIndex = 12;
             this.textBox3.Text = "-";
             // 
@@ -2132,6 +2136,17 @@
             this.tabPage3.Text = "그래프";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // rb_debug
+            // 
+            this.rb_debug.AutoSize = true;
+            this.rb_debug.Location = new System.Drawing.Point(466, 400);
+            this.rb_debug.Name = "rb_debug";
+            this.rb_debug.Size = new System.Drawing.Size(59, 16);
+            this.rb_debug.TabIndex = 12;
+            this.rb_debug.Text = "Debug";
+            this.rb_debug.UseVisualStyleBackColor = true;
+            this.rb_debug.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rb_debug_MouseDown);
+            // 
             // rb_motor
             // 
             this.rb_motor.AutoSize = true;
@@ -2691,16 +2706,28 @@
             this.textBox1.TabIndex = 89;
             this.textBox1.Text = "-";
             // 
-            // rb_debug
+            // tb_rx_error
             // 
-            this.rb_debug.AutoSize = true;
-            this.rb_debug.Location = new System.Drawing.Point(466, 400);
-            this.rb_debug.Name = "rb_debug";
-            this.rb_debug.Size = new System.Drawing.Size(59, 16);
-            this.rb_debug.TabIndex = 12;
-            this.rb_debug.Text = "Debug";
-            this.rb_debug.UseVisualStyleBackColor = true;
-            this.rb_debug.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rb_debug_MouseDown);
+            this.tb_rx_error.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.tb_rx_error.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tb_rx_error.Location = new System.Drawing.Point(118, 54);
+            this.tb_rx_error.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tb_rx_error.Name = "tb_rx_error";
+            this.tb_rx_error.ReadOnly = true;
+            this.tb_rx_error.Size = new System.Drawing.Size(46, 22);
+            this.tb_rx_error.TabIndex = 13;
+            this.tb_rx_error.Text = "-";
+            // 
+            // label77
+            // 
+            this.label77.AutoSize = true;
+            this.label77.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label77.Location = new System.Drawing.Point(4, 56);
+            this.label77.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label77.Name = "label77";
+            this.label77.Size = new System.Drawing.Size(71, 21);
+            this.label77.TabIndex = 14;
+            this.label77.Text = "RX_Error";
             // 
             // Form1
             // 
@@ -2984,6 +3011,8 @@
         private System.Windows.Forms.Label lb_flowrate_X;
         private System.Windows.Forms.Label label75;
         private System.Windows.Forms.RadioButton rb_debug;
+        private System.Windows.Forms.Label label77;
+        public System.Windows.Forms.TextBox tb_rx_error;
     }
 }
 

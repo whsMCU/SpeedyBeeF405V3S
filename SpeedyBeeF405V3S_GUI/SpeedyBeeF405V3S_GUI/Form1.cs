@@ -462,6 +462,8 @@ namespace SpeedyBeeF405V3S_GUI
 
                                 lb_rangefinder.Text = passed_data[39].ToString();
 
+                                tb_rx_error.Text = passed_data[40].ToString();
+
                                 if (rb_roll.Checked == true || rb_pitch.Checked == true ||
                                    rb_yaw.Checked == true || rb_roll_pitch.Checked == true ||
                                    rb_roll_setpoint.Checked == true || rb_pitch_setpoint.Checked == true ||
