@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class\DataPassing.cs" />
+    <Compile Include="Class\Msp_Protocal.cs" />
     <Compile Include="Class\UTF8.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
