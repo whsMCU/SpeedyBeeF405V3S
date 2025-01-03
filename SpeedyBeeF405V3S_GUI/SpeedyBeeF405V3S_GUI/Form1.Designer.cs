@@ -122,6 +122,8 @@
             this.label24 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.label77 = new System.Windows.Forms.Label();
+            this.tb_rx_error = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.textBox2 = new System.Windows.Forms.TextBox();
@@ -290,8 +292,6 @@
             this.bt_mag_cal = new System.Windows.Forms.Button();
             this.bt_acc_cal = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.tb_rx_error = new System.Windows.Forms.TextBox();
-            this.label77 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -645,36 +645,36 @@
             // 
             // lb_gyro_Z
             // 
-            this.lb_gyro_Z.AutoSize = true;
             this.lb_gyro_Z.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lb_gyro_Z.Location = new System.Drawing.Point(242, 81);
             this.lb_gyro_Z.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_gyro_Z.Name = "lb_gyro_Z";
-            this.lb_gyro_Z.Size = new System.Drawing.Size(16, 21);
+            this.lb_gyro_Z.Size = new System.Drawing.Size(57, 21);
             this.lb_gyro_Z.TabIndex = 58;
             this.lb_gyro_Z.Text = "-";
+            this.lb_gyro_Z.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // lb_gyro_Y
             // 
-            this.lb_gyro_Y.AutoSize = true;
             this.lb_gyro_Y.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lb_gyro_Y.Location = new System.Drawing.Point(242, 50);
             this.lb_gyro_Y.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_gyro_Y.Name = "lb_gyro_Y";
-            this.lb_gyro_Y.Size = new System.Drawing.Size(16, 21);
+            this.lb_gyro_Y.Size = new System.Drawing.Size(57, 21);
             this.lb_gyro_Y.TabIndex = 57;
             this.lb_gyro_Y.Text = "-";
+            this.lb_gyro_Y.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // lb_gyro_X
             // 
-            this.lb_gyro_X.AutoSize = true;
             this.lb_gyro_X.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lb_gyro_X.Location = new System.Drawing.Point(242, 24);
             this.lb_gyro_X.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_gyro_X.Name = "lb_gyro_X";
-            this.lb_gyro_X.Size = new System.Drawing.Size(16, 21);
+            this.lb_gyro_X.Size = new System.Drawing.Size(57, 21);
             this.lb_gyro_X.TabIndex = 56;
             this.lb_gyro_X.Text = "-";
+            this.lb_gyro_X.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // label60
             // 
@@ -891,6 +891,29 @@
             this.panel4.Size = new System.Drawing.Size(327, 89);
             this.panel4.TabIndex = 73;
             // 
+            // label77
+            // 
+            this.label77.AutoSize = true;
+            this.label77.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label77.Location = new System.Drawing.Point(4, 56);
+            this.label77.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label77.Name = "label77";
+            this.label77.Size = new System.Drawing.Size(71, 21);
+            this.label77.TabIndex = 14;
+            this.label77.Text = "RX_Error";
+            // 
+            // tb_rx_error
+            // 
+            this.tb_rx_error.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.tb_rx_error.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tb_rx_error.Location = new System.Drawing.Point(118, 54);
+            this.tb_rx_error.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tb_rx_error.Name = "tb_rx_error";
+            this.tb_rx_error.ReadOnly = true;
+            this.tb_rx_error.Size = new System.Drawing.Size(46, 22);
+            this.tb_rx_error.TabIndex = 13;
+            this.tb_rx_error.Text = "-";
+            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -933,7 +956,7 @@
             this.textBox3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox3.Name = "textBox3";
             this.textBox3.ReadOnly = true;
-            this.textBox3.Size = new System.Drawing.Size(46, 22);
+            this.textBox3.Size = new System.Drawing.Size(96, 22);
             this.textBox3.TabIndex = 12;
             this.textBox3.Text = "-";
             // 
@@ -941,7 +964,7 @@
             // 
             this.panel3.Controls.Add(this.label36);
             this.panel3.Controls.Add(this.textBox11);
-            this.panel3.Location = new System.Drawing.Point(351, 23);
+            this.panel3.Location = new System.Drawing.Point(351, 3);
             this.panel3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(738, 56);
@@ -990,10 +1013,10 @@
             this.panel2.Controls.Add(this.bt_zoom_m);
             this.panel2.Controls.Add(this.label10);
             this.panel2.Controls.Add(this.label15);
-            this.panel2.Location = new System.Drawing.Point(1088, 23);
+            this.panel2.Location = new System.Drawing.Point(1087, 3);
             this.panel2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(71, 560);
+            this.panel2.Size = new System.Drawing.Size(71, 596);
             this.panel2.TabIndex = 84;
             // 
             // label57
@@ -2017,10 +2040,10 @@
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Controls.Add(this.tabPage4);
-            this.tabControl1.Location = new System.Drawing.Point(351, 91);
+            this.tabControl1.Location = new System.Drawing.Point(351, 65);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(733, 508);
+            this.tabControl1.Size = new System.Drawing.Size(733, 534);
             this.tabControl1.TabIndex = 88;
             // 
             // tabPage1
@@ -2031,7 +2054,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(725, 482);
+            this.tabPage1.Size = new System.Drawing.Size(725, 508);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "PID 및 디버그";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -2045,7 +2068,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(725, 482);
+            this.tabPage2.Size = new System.Drawing.Size(725, 508);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "MAP";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -2131,7 +2154,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(725, 482);
+            this.tabPage3.Size = new System.Drawing.Size(725, 508);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "그래프";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -2306,7 +2329,7 @@
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(725, 482);
+            this.tabPage4.Size = new System.Drawing.Size(725, 508);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "캘리브레이션";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -2705,29 +2728,6 @@
             this.textBox1.Size = new System.Drawing.Size(327, 22);
             this.textBox1.TabIndex = 89;
             this.textBox1.Text = "-";
-            // 
-            // tb_rx_error
-            // 
-            this.tb_rx_error.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.tb_rx_error.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_rx_error.Location = new System.Drawing.Point(118, 54);
-            this.tb_rx_error.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.tb_rx_error.Name = "tb_rx_error";
-            this.tb_rx_error.ReadOnly = true;
-            this.tb_rx_error.Size = new System.Drawing.Size(46, 22);
-            this.tb_rx_error.TabIndex = 13;
-            this.tb_rx_error.Text = "-";
-            // 
-            // label77
-            // 
-            this.label77.AutoSize = true;
-            this.label77.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label77.Location = new System.Drawing.Point(4, 56);
-            this.label77.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label77.Name = "label77";
-            this.label77.Size = new System.Drawing.Size(71, 21);
-            this.label77.TabIndex = 14;
-            this.label77.Text = "RX_Error";
             // 
             // Form1
             // 

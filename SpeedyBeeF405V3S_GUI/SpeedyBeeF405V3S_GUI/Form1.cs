@@ -1,4 +1,5 @@
 ﻿using Ball_Ballancer_CS.Class;
+using SpeedyBeeF405V3S_GUI.Class;
 using GMap.NET;
 using GMap.NET.MapProviders;
 using GMap.NET.WindowsForms;
@@ -26,6 +27,7 @@ namespace SpeedyBeeF405V3S_GUI
         float[] passed_data = new float[30];
         UTF8 UTF8 = new UTF8();
         DataPassing data = new DataPassing();
+        Msp_Protocol protocol = new Msp_Protocol();
 
         private ArrayList al;
 
@@ -439,9 +441,9 @@ namespace SpeedyBeeF405V3S_GUI
                                 lb_debug2.Text = passed_data[21].ToString();
                                 lb_debug3.Text = passed_data[22].ToString();
 
-                                lb_gyro_X.Text = passed_data[23].ToString();
-                                lb_gyro_Y.Text = passed_data[24].ToString();
-                                lb_gyro_Z.Text = passed_data[25].ToString();
+                                lb_gyro_X.Text = passed_data[23].ToString("0.00");
+                                lb_gyro_Y.Text = passed_data[24].ToString("0.00");
+                                lb_gyro_Z.Text = passed_data[25].ToString("0.00");
 
                                 lb_accTrim_X.Text = passed_data[26].ToString();
                                 lb_accTrim_Y.Text = passed_data[27].ToString();

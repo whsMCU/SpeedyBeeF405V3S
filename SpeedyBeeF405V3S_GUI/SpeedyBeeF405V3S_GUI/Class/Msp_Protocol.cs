@@ -7,7 +7,7 @@ using ZedGraph;
 
 namespace SpeedyBeeF405V3S_GUI.Class
 {
-    public class Msp_Protocal
+    public class Msp_Protocol
     {
         public const byte
             TELEMERY_PID_SAVE = 56,
@@ -112,7 +112,7 @@ namespace SpeedyBeeF405V3S_GUI.Class
                      mot = new int[4];
         public int RCThro = 3, RCRoll = 0, RCPitch = 1, RCYaw = 2, RCAUX1 = 4, RCAUX2 = 5, RCAUX3 = 6, RCAUX4 = 7;
 
-        public Msp_Protocal() { }
+        public Msp_Protocol() { }
 
         public List<Byte> requestMSP(int msp)
         {
