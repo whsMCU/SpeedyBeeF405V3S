@@ -1,40 +1,58 @@
-package com.example.mcu_drone
+package com.gogumac.bluetoothchat.ui
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
-import com.example.mcu_drone.bluetooth.BluetoothService
+import androidx.navigation.toRoute
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import com.gogumac.bluetoothchat.R
+import com.gogumac.bluetoothchat.bluetooth.BluetoothService
+import com.gogumac.bluetoothchat.bluetooth.BluetoothState
+import com.gogumac.bluetoothchat.ui.dialogs.ConnectableDeviceListDialog
+import com.gogumac.bluetoothchat.ui.dialogs.DisconnectAlertDialog
+import com.gogumac.bluetoothchat.ui.dialogs.ErrorDialog
+import com.gogumac.bluetoothchat.ui.dialogs.LoadingDialog
+import com.gogumac.bluetoothchat.ui.dialogs.SelectConnectAcceptDialog
+import com.gogumac.bluetoothchat.ui.theme.BluetoothChatTheme
+import com.gogumac.bluetoothchat.ui.viewmodel.ChatScreenViewModel
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
 
     private lateinit var bluetoothPermissionLauncher: ActivityResultLauncher<Array<String>>
     private lateinit var bluetoothEnableLauncher: ActivityResultLauncher<Intent>
     private lateinit var bluetoothSettingLauncher: ActivityResultLauncher<Intent>
     private lateinit var bluetoothScanLauncher: ActivityResultLauncher<Intent>
 
-
+    @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        enableEdgeToEdge()
-//        setContentView(R.layout.activity_main)
-
-//        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-//            insets
-//        }
 
         val bluetoothManager: BluetoothManager = getSystemService(BluetoothManager::class.java)
         val bluetoothAdapter: BluetoothAdapter? = bluetoothManager.adapter
@@ -66,6 +84,7 @@ class MainActivity : AppCompatActivity() {
         if (bluetoothAdapter == null) {
             Toast.makeText(this, "Device doesn't support Bluetooth", Toast.LENGTH_SHORT).show()
         }
+
         //블루투스 권한 확인
         requestBluetoothConnectPermission()
 
@@ -332,5 +351,4 @@ class MainActivity : AppCompatActivity() {
             Toast.LENGTH_SHORT
         ).show()
     }
-
 }
