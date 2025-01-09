@@ -7,6 +7,10 @@ android {
     namespace = "com.example.mcu_drone"
     compileSdk = 35
 
+    buildFeatures {
+        viewBinding = true
+    }
+
     defaultConfig {
         applicationId = "com.example.mcu_drone"
         minSdk = 34

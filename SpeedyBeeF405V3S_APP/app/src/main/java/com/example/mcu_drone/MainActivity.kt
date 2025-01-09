@@ -1,336 +1,77 @@
 package com.example.mcu_drone
 
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothManager
-import android.content.Intent
-import android.content.pm.PackageManager
+import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothSocket
 import android.os.Bundle
-import android.widget.Toast
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
+import android.os.Handler
+import android.widget.Button
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.navigation.compose.rememberNavController
-import com.example.mcu_drone.bluetooth.BluetoothService
+import java.util.UUID
+
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var bluetoothPermissionLauncher: ActivityResultLauncher<Array<String>>
-    private lateinit var bluetoothEnableLauncher: ActivityResultLauncher<Intent>
-    private lateinit var bluetoothSettingLauncher: ActivityResultLauncher<Intent>
-    private lateinit var bluetoothScanLauncher: ActivityResultLauncher<Intent>
+    var mTvBluetoothStatus: TextView? = null
+    var mTvReceiveData: TextView? = findViewById(R.id.tvReceiveData)
+    var mTvSendData: TextView? = findViewById(R.id.tvSendData)
+    var mBtnBluetoothOn: Button? = findViewById(R.id.btnBluetoothOn)
+    var mBtnBluetoothOff: Button? = findViewById(R.id.btnBluetoothOff)
+    var mBtnConnect: Button? = findViewById(R.id.btnConnect)
+    var mBtnSendData: Button? = findViewById(R.id.btnSendData)
 
+    var mBluetoothAdapter: BluetoothAdapter? = null
+    var mPairedDevices: Set<BluetoothDevice>? = null
+    var mListPairedDevices: List<String>? = null
+
+    var mBluetoothHandler: Handler? = null
+//    var mThreadConnectedBluetooth: ConnectedBluetoothThread? = null
+    var mBluetoothDevice: BluetoothDevice? = null
+    var mBluetoothSocket: BluetoothSocket? = null
+
+    val BT_REQUEST_ENABLE: Int = 1
+    val BT_MESSAGE_READ: Int = 2
+    val BT_CONNECTING_STATUS: Int = 3
+    val BT_UUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        enableEdgeToEdge()
-//        setContentView(R.layout.activity_main)
+        //enableEdgeToEdge()
+        setContentView(R.layout.activity_main)
 
-//        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-//            insets
-//        }
+        mTvBluetoothStatus = findViewById(R.id.tvBluetoothStatus)
+        mTvReceiveData = findViewById(R.id.tvReceiveData)
+        mTvSendData = findViewById(R.id.tvSendData)
+        mBtnBluetoothOn = findViewById(R.id.btnBluetoothOn)
+        mBtnBluetoothOff = findViewById(R.id.btnBluetoothOff)
+        mBtnConnect = findViewById(R.id.btnConnect)
+        mBtnSendData = findViewById(R.id.btnSendData)
 
-        val bluetoothManager: BluetoothManager = getSystemService(BluetoothManager::class.java)
-        val bluetoothAdapter: BluetoothAdapter? = bluetoothManager.adapter
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
-        bluetoothEnableLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == RESULT_OK) {
-                    Toast.makeText(this, "Bluetooth enabled", Toast.LENGTH_SHORT).show()
-                } else if (result.resultCode == RESULT_CANCELED) {
-                    Toast.makeText(this, "bluetooth not enable", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-        bluetoothPermissionLauncher =
-            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
-                val deniedList = result.filter { !it.value }.map { it.key }
-
-                if (deniedList.isNotEmpty()) {
-                    val map = deniedList.groupBy { permission ->
-                        if (shouldShowRequestPermissionRationale(permission)) "DENIED" else "EXPLAINED"
-                    }
-                    map["DENIED"]?.let {
-                        explainBluetoothConnectPermission()
-                    }
-                }
-            }
-
-        //블루투스가 기기에서 지원되는지 확인
-        if (bluetoothAdapter == null) {
-            Toast.makeText(this, "Device doesn't support Bluetooth", Toast.LENGTH_SHORT).show()
+        mBtnBluetoothOn.setOnClickListener {
+            bluetoothOn()
         }
-        //블루투스 권한 확인
-        requestBluetoothConnectPermission()
 
-        val service = BluetoothService(bluetoothAdapter!!, this)
-        enableEdgeToEdge()
-        setContent {
-            val navController = rememberNavController()
-            val discoveredDevice = service.discoveredDevices.collectAsState()
-            val bluetoothState = service.state.collectAsState()
-            val savedBluetoothDevices = service.pairedDeviceList.collectAsState()
-            val chatScreenViewModel = ChatScreenViewModel(service)
+        mBtnBluetoothOff.setOnClickListener {
+            bluetoothOff()
+        }
 
-            if (bluetoothState.value == BluetoothState.STATE_CLOSE_CONNECT) {
-                navController.popBackStack<Connect>(inclusive = false)
-                Toast.makeText(LocalContext.current, R.string.disconnected, Toast.LENGTH_SHORT)
-                    .show()
-            }
-            BluetoothChatTheme {
-                NavHost(
-                    navController = navController,
-                    startDestination = Connect,
-                    modifier = Modifier.safeDrawingPadding()
-                ) {
-                    composable<Connect> {
-                        ConnectScreen(
-                            modifier = Modifier.fillMaxSize(),
-                            deviceList = savedBluetoothDevices.value,
-                            onBluetoothDeviceScanRequest = {
-                                service.startDiscovering(this@MainActivity)
-                            },
-                            onDeviceConnectRequest = { address ->
-                                navController.navigate(DialogConnectLoading(address))
-                            },
-                            onServerSocketOpenRequested = {
-                                navController.navigate(ServerSocketLoading)
-                                CoroutineScope(Dispatchers.Main).launch {
-                                    val res = async {
-                                        service.openServerSocket()
-                                    }.await()
-                                    navController.popBackStack()
-                                    if (res != null) {
-                                        navController.navigate(
-                                            DialogSelectConnectAccept(
-                                                res.name,
-                                                res.address
-                                            )
-                                        )
-                                    } else {
-                                        navController.navigate(Error)
-                                    }
-                                }
-                            },
-                            onSetDiscoverableRequest = {
-                                service.setBluetoothDiscoverable()
-                            }
-                        )
-                    }
-                    composable<Chat> {
-                        ChatScreen(
-                            modifier = Modifier.fillMaxSize(),
-                            viewModel = chatScreenViewModel,
-                            onBackPressed = {
-                                navController.navigate(DisconnectAlertDialog)
-                            })
-                    }
-                    dialog<Error> {
-                        ErrorDialog {
-                            navController.popBackStack()
-                        }
-                    }
-                    dialog<Discovery> {
-                        ConnectableDeviceListDialog(
-                            deviceList = discoveredDevice.value.toList(),
-                            bluetoothDiscoveringState = bluetoothState.value,
-                            onSelectDevice = {
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    service.requestPairing(it.address).collect { state ->
-                                        withContext(Dispatchers.Main) {
-                                            when (state) {
-                                                BluetoothState.STATE_BONDING -> {
-                                                    navController.navigate(DialogPairingLoading)
-                                                }
+        mBtnConnect.setOnClickListener {
+            listPairedDevices()
+        }
 
-                                                BluetoothState.STATE_BONDED -> {
-                                                    Toast.makeText(
-                                                        this@MainActivity,
-                                                        ContextCompat.getString(
-                                                            this@MainActivity,
-                                                            R.string.complete_pairing
-                                                        ),
-                                                        Toast.LENGTH_SHORT
-                                                    ).show()
-                                                    navController.popBackStack<Connect>(inclusive = false)
-                                                }
-
-                                                BluetoothState.STATE_NONE -> {
-                                                    navController.popBackStack()
-                                                    navController.navigate(Error)
-                                                }
-
-                                                else -> {}
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            onDismiss = {
-                                service.finishDiscovering()
-                                navController.popBackStack()
-                            }
-                        )
-                    }
-                    dialog<ServerSocketLoading> {
-                        val toastMsg = stringResource(id = R.string.close_serever_socket_noti)
-                        LoadingDialog(
-                            modifier = Modifier,
-                            onDismissRequest = {
-                                navController.popBackStack()
-                                service.closeServerSocket()
-                                Toast.makeText(this@MainActivity, toastMsg, Toast.LENGTH_SHORT)
-                                    .show()
-                            },
-                            text = stringResource(id = R.string.open_server_socket)
-                        )
-
-                    }
-                    dialog<DialogConnectLoading> { backStackEntry ->
-                        val address = backStackEntry.toRoute<DialogConnectLoading>().deviceAddress
-
-                        val job =
-                            CoroutineScope(Dispatchers.Main).launch(start = CoroutineStart.LAZY) {
-                                val res = async { service.requestConnect(address) }.await()
-                                navController.popBackStack()
-                                if (res) {
-                                    Toast.makeText(
-                                        this@MainActivity,
-                                        ContextCompat.getString(
-                                            this@MainActivity,
-                                            R.string.connected
-                                        ),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    navController.navigate(Chat)
-                                } else {
-                                    navController.navigate(Error)
-                                }
-                            }
-                        LoadingDialog(
-                            modifier = Modifier,
-                            onDismissRequest = {
-                                job.cancel()
-                                navController.popBackStack()
-                            },
-                            text = stringResource(
-                                id = R.string.connecting
-                            )
-                        )
-                        job.start()
-                    }
-
-                    dialog<DialogPairingLoading> {
-                        LoadingDialog(
-                            modifier = Modifier,
-                            onDismissRequest = { },
-                            text = stringResource(
-                                id = R.string.request_paring_alert
-                            )
-                        )
-                    }
-
-                    dialog<DisconnectAlertDialog> {
-                        DisconnectAlertDialog(
-                            onConfirmed = {
-                                val res = service.finishConnect()
-                                if (res) {
-                                    Toast.makeText(
-                                        this@MainActivity,
-                                        ContextCompat.getString(
-                                            this@MainActivity,
-                                            R.string.disconnected
-                                        ),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                } else {
-                                    Toast.makeText(
-                                        this@MainActivity,
-                                        ContextCompat.getString(
-                                            this@MainActivity,
-                                            R.string.error_occurred
-                                        ),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            },
-                            onCanceled = {
-                                navController.popBackStack()
-                            })
-                    }
-
-                    dialog<DialogSelectConnectAccept> { backStackEntry ->
-                        val deviceName =
-                            backStackEntry.toRoute<DialogSelectConnectAccept>().deviceName
-                        val deviceAddress =
-                            backStackEntry.toRoute<DialogSelectConnectAccept>().deviceAddress
-                        SelectConnectAcceptDialog(
-                            deviceName = deviceName,
-                            deviceAddress = deviceAddress,
-                            onConfirmed = {
-                                navController.popBackStack()
-                                service.acceptConnect()
-                                navController.navigate(Chat)
-                            },
-                            onCanceled = {
-                                Toast.makeText(
-                                    this@MainActivity,
-                                    ContextCompat.getString(
-                                        this@MainActivity,
-                                        R.string.reject_connect
-                                    ),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                service.rejectConnect()
-                                navController.popBackStack()
-                            }
-                        )
-                    }
-                }
+        mBtnSendData.setOnClickListener {
+            if(mThreadConnectedBluetooth != null){
+                mThreadConnectedBluetooth.write(mTvSendData.getText().toString())
             }
         }
+
+        https://bugwhale.tistory.com/entry/android-bluetooth-application
     }
 
-    private val bluetoothPermissions = mutableListOf(
-        Manifest.permission.BLUETOOTH,
-        Manifest.permission.BLUETOOTH_ADMIN,
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION
-    ).apply {
-        if (Build.VERSION.SDK_INT >= 31) {
-            add(Manifest.permission.BLUETOOTH_CONNECT)
-            add(Manifest.permission.BLUETOOTH_SCAN)
-        }
-    }
-
-    private fun requestBluetoothConnectPermission() {
-        val notGrantedPermissionList = mutableListOf<String>()
-
-        for (permission in bluetoothPermissions) {
-
-            val result = ContextCompat.checkSelfPermission(this, permission)
-            if (result == PackageManager.PERMISSION_GRANTED) continue
-            notGrantedPermissionList.add(permission)
-            if (shouldShowRequestPermissionRationale(permission)) explainBluetoothConnectPermission()
-
-        }
-        if (notGrantedPermissionList.isNotEmpty()) {
-            bluetoothPermissionLauncher.launch(notGrantedPermissionList.toTypedArray())
-        }
-    }
-
-    private fun explainBluetoothConnectPermission() {
-        Toast.makeText(
-            this,
-            ContextCompat.getString(this, R.string.permission_required),
-            Toast.LENGTH_SHORT
-        ).show()
-    }
 
 }
