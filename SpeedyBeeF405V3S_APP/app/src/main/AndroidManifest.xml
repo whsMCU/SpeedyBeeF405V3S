@@ -4,9 +4,16 @@
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
+    <!-- Android 12~13에서 사용 -->
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
-    <uses-feature android:name="android.software.companion_device_setup"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
+    <!-- Android 14 이상에서 사용 -->
+    <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES" />
+
+    <!-- 위치 권한 (스캔 시 필요할 수 있음) -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
