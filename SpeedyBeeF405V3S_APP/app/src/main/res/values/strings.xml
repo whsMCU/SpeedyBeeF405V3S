@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">MCU_Drone</string>
+
+    <string name="ble_client">BLE클라이언트</string>
+    <string name="ble_server">BLE서버</string>
+    <string name="bt_client">BT클라이언트</string>
+    <string name="bt_server">BT서버</string>
+
+
+    <string name="scan">스캔</string>
+    <string name="read">읽기</string>
+    <string name="setNotify">알람설정</string>
+    <string name="max_byte">최대 바이트</string>
+    <string name="write">송신</string>
+
+    <string name="hint_input_msg">입력메세지</string>
+    <string name="send_text">전송</string>
+    <string name="disconnect">연결해제</string>
+    <string name="send_file">파일전송</string>
 </resources>
