@@ -28,7 +28,7 @@ class BtClient(context: Context) : BtBase(context) {
                 if (isConnected()) sendClose()
             }.onFailure {
                 it.printStackTrace()
-                mListener?.onOperateErrorLog("发送(关闭)失败")
+                mListener?.onOperateErrorLog("보내기(닫기)실패")
             }
             close()
             lastJob?.cancel()
@@ -53,7 +53,7 @@ class BtClient(context: Context) : BtBase(context) {
                 if (isConnected()) sendClose()
             }.onFailure {
                 it.printStackTrace()
-                mListener?.onOperateErrorLog("发送(关闭)失败")
+                mListener?.onOperateErrorLog("보내기(닫기)실패")
             }
             close()
             mJob?.cancel()
