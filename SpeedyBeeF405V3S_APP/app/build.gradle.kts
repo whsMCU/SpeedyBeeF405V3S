@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.mcu_drone"
+    namespace = "com.wang.mcu_drone"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.mcu_drone"
+        applicationId = "com.wang.mcu_drone"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -43,10 +43,9 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.gson)
     implementation(libs.baserecyclerviewadapterhelper4)
+    implementation(libs.gson)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
 }

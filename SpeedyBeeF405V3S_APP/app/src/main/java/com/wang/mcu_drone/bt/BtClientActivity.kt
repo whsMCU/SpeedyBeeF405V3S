@@ -1,4 +1,4 @@
-package com.example.mcu_drone.bt
+package com.wang.mcu_drone.bt
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
@@ -13,13 +13,13 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.mcu_drone.INTENT_STATUS
-import com.example.mcu_drone.R
-import com.example.mcu_drone.databinding.ActivityBtClientBinding
-import com.example.mcu_drone.utils.FileUtil
-import com.example.mcu_drone.utils.checkConnectPermission
-import com.example.mcu_drone.utils.getOrNull
-import com.example.mcu_drone.utils.toast
+import com.wang.mcu_drone.INTENT_STATUS
+import com.wang.mcu_drone.R
+import com.wang.mcu_drone.databinding.ActivityBtClientBinding
+import com.wang.mcu_drone.utils.FileUtil
+import com.wang.mcu_drone.utils.checkConnectPermission
+import com.wang.mcu_drone.utils.getOrNull
+import com.wang.mcu_drone.utils.toast
 import java.text.SimpleDateFormat
 
 class BtClientActivity : AppCompatActivity(), BtBase.BtListener {

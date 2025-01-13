@@ -1,4 +1,4 @@
-package com.example.mcu_drone
+package com.wang.mcu_drone
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
@@ -12,12 +12,12 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.example.mcu_drone.ble.BleClientActivity
-import com.example.mcu_drone.ble.BleServerActivity
-import com.example.mcu_drone.bt.BtClientActivity
-import com.example.mcu_drone.bt.BtServerActivity
-import com.example.mcu_drone.databinding.ActivityMainBinding
-import com.example.mcu_drone.utils.toast
+import com.wang.mcu_drone.ble.BleClientActivity
+import com.wang.mcu_drone.ble.BleServerActivity
+import com.wang.mcu_drone.bt.BtClientActivity
+import com.wang.mcu_drone.bt.BtServerActivity
+import com.wang.mcu_drone.databinding.ActivityMainBinding
+import com.wang.mcu_drone.utils.toast
 
 const val INTENT_STATUS = "status"
 
@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
             if (isSuccess) {
                 checkBle()
             } else {
-                toast("无蓝牙权限...")
+                toast("블루투스 권한 없음...")
             }
         }
         requestActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
                 haveAllCondition = true
             } else {
                 haveAllCondition = false
-                toast("蓝牙未开启...")
+                toast("블루투스가 켜지지 않았습니다...")
             }
         }
     }

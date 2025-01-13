@@ -1,50 +1,53 @@
-package com.example.mcu_drone.bt
+package com.wang.mcu_drone.bt
 
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothServerSocket
+import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.content.Context
-import com.example.mcu_drone.utils.checkConnectPermission
+import com.wang.mcu_drone.utils.checkConnectPermission
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
 /**
- * FileName: BtServer
+ * FileName: BtClient
  * Author: JiaoCan
- * Date: 2024/5/8 13:45
+ * Date: 2024/5/8 13:33
  */
 
-class BtServer(context: Context) : BtBase(context) {
+class BtClient(context: Context) : BtBase(context) {
 
+    private var lastJob: Job? = null
     private var mJob: Job? = null
-    private var mSSocket: BluetoothServerSocket? = null
 
-    fun listen(bleAdapter: BluetoothAdapter) {
-        mJob = CoroutineScope(Dispatchers.Main).launch {
+    fun connect(device: BluetoothDevice) {
+        val newJob = CoroutineScope(Dispatchers.Main).launch {
+            // 마지막 연결 닫기
+            kotlin.runCatching {
+                if (isConnected()) sendClose()
+            }.onFailure {
+                it.printStackTrace()
+                mListener?.onOperateErrorLog("发送(关闭)失败")
+            }
+            close()
+            lastJob?.cancel()
+            var socket: BluetoothSocket? = null
             mContext.checkConnectPermission {
                 kotlin.runCatching {
-                    val sSocket = bleAdapter.listenUsingInsecureRfcommWithServiceRecord("TestBt", SPP_UUID)
-                    mSSocket = sSocket
+                    mListener?.onBtStateChanged(device.address, BtState.CONNECTING)
+                    socket = device.createInsecureRfcommSocketToServiceRecord(SPP_UUID)
                 }.onFailure { error(it) }
             }
-            mListener?.onBtStateChanged("", BtState.CONNECTING)
             kotlin.runCatching {
-                var socket: BluetoothSocket?
-                withContext(Dispatchers.IO) {
-                    socket = mSSocket?.accept()
-                }
-                // 关闭监听, 单次连接单个设备
-                mSSocket?.close()
                 socket?.let { loopRead(it) }
             }.onFailure { error(it) }
         }
+        lastJob = mJob
+        mJob = newJob
     }
 
-    fun closeListen() {
+    fun closeConnect() {
         CoroutineScope(Dispatchers.Main).launch {
             kotlin.runCatching {
                 if (isConnected()) sendClose()
@@ -57,7 +60,7 @@ class BtServer(context: Context) : BtBase(context) {
         }
     }
 
-    fun sendServerMsg(msg: String) {
+    fun sendClientMsg(msg: String) {
         CoroutineScope(Dispatchers.Main).launch {
             kotlin.runCatching {
                 sendMsg(msg)
@@ -68,7 +71,7 @@ class BtServer(context: Context) : BtBase(context) {
         }
     }
 
-    fun sendServerFile(filePath: String) {
+    fun sendClientFile(filePath: String) {
         CoroutineScope(Dispatchers.Main).launch {
             kotlin.runCatching {
                 sendFile(filePath)
@@ -78,5 +81,6 @@ class BtServer(context: Context) : BtBase(context) {
             }
         }
     }
+
 }
 

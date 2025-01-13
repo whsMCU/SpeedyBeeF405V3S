@@ -1,4 +1,4 @@
-package com.example.mcu_drone.utils
+package com.wang.mcu_drone.utils
 
 import android.Manifest
 import android.bluetooth.BluetoothDevice
@@ -9,7 +9,7 @@ import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import com.example.mcu_drone.MyApplication
+import com.wang.mcu_drone.MyApplication
 
 
 /**
@@ -31,14 +31,14 @@ fun Context.checkConnectPermission(func: () -> Unit) {
     if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
         func.invoke()
     } else {
-        Log.e("SDKTEST", "测试: 无连接权限")
+        Log.e("SDKTEST", "테스트: 연결권한없음")
     }
 }
 fun Context.checkAdvertisePermission(func: () -> Unit) {
     if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADVERTISE) == PackageManager.PERMISSION_GRANTED) {
         func.invoke()
     } else {
-        Log.e("SDKTEST", "测试: 无广播权限")
+        Log.e("SDKTEST", "테스트: 방송권한없음")
     }
 }
 

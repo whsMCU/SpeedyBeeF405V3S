@@ -1,4 +1,4 @@
-package com.example.mcu_drone.ble
+package com.wang.mcu_drone.ble
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -13,12 +13,12 @@ import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.mcu_drone.INTENT_STATUS
-import com.example.mcu_drone.R
-import com.example.mcu_drone.databinding.ActivityBleClientBinding
-import com.example.mcu_drone.utils.checkConnectPermission
-import com.example.mcu_drone.utils.getDeviceName
-import com.example.mcu_drone.utils.toast
+import com.wang.mcu_drone.INTENT_STATUS
+import com.wang.mcu_drone.R
+import com.wang.mcu_drone.databinding.ActivityBleClientBinding
+import com.wang.mcu_drone.utils.checkConnectPermission
+import com.wang.mcu_drone.utils.getDeviceName
+import com.wang.mcu_drone.utils.toast
 
 class BleClientActivity : AppCompatActivity() {
 

@@ -1,4 +1,4 @@
-package com.example.mcu_drone.bt
+package com.wang.mcu_drone.bt
 
 import android.bluetooth.BluetoothDevice
 import android.content.Context
@@ -6,9 +6,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.chad.library.adapter4.BaseQuickAdapter
 import com.chad.library.adapter4.viewholder.QuickViewHolder
-import com.example.mcu_drone.R
-import com.example.mcu_drone.utils.getDeviceBond
-import com.example.mcu_drone.utils.getDeviceName
+import com.wang.mcu_drone.R
+import com.wang.mcu_drone.utils.getDeviceBond
+import com.wang.mcu_drone.utils.getDeviceName
 
 
 /**

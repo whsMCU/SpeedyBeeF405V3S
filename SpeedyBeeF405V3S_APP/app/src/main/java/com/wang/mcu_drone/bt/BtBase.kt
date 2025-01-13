@@ -1,11 +1,11 @@
-package com.example.mcu_drone.bt
+package com.wang.mcu_drone.bt
 
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.content.Context
-import com.example.mcu_drone.utils.FileUtil
-import com.example.mcu_drone.utils.checkConnectPermission
-import com.example.mcu_drone.utils.getOrNull
+import com.wang.mcu_drone.utils.FileUtil
+import com.wang.mcu_drone.utils.checkConnectPermission
+import com.wang.mcu_drone.utils.getOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.DataInputStream

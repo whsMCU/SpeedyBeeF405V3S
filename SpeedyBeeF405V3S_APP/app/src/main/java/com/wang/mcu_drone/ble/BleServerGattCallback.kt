@@ -1,4 +1,4 @@
-package com.example.mcu_drone.ble
+package com.wang.mcu_drone.ble
 
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
@@ -9,7 +9,7 @@ import android.bluetooth.BluetoothGattServerCallback
 import android.bluetooth.BluetoothGattService
 import android.bluetooth.BluetoothProfile
 import android.content.Context
-import com.example.mcu_drone.utils.checkConnectPermission
+import com.wang.mcu_drone.utils.checkConnectPermission
 import kotlin.random.Random
 
 

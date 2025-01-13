@@ -1,4 +1,4 @@
-package com.example.mcu_drone
+package com.wang.mcu_drone
 
 import org.junit.Test
 
