@@ -22,9 +22,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4de6984a-e23e-4abd-80d8-0d42771c8887" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/bt/BtClient.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/bt/BtClient.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/ble/BleClientActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/ble/BleClientActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/ble/BleClientGattCallback.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/ble/BleClientGattCallback.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,7 +38,7 @@
   <component name="CodeInsightWorkspaceSettings">
     <option name="optimizeImportsOnTheFly" value="true" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\Users\jjins\.android\avd\Medium_Phone.avd)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=PhysicalDevice, isTemplate=false, identifier=serial=R3CW50KLZZR)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -67,12 +68,13 @@
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/jjins/Documents/Project/SpeedyBeeF405V3S/SpeedyBeeF405V3S_APP/app/src/main/java/com/wang/mcu_drone",
+    "last_opened_file_path": "D:/STM32CubeIDE/SpeedyBeeF405V3S/SpeedyBeeF405V3S_APP",
     "project.structure.last.edited": "Dependencies",
     "project.structure.proportion": "0.17",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "editor.preferences.import"
+    "settings.editor.selected.configurable": "Debugger.ObjectiveC"
   }
 }]]></component>
   <component name="RecentsManager">

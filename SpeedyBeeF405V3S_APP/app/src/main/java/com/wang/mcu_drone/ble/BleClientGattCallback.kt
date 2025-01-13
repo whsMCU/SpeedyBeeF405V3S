@@ -48,12 +48,12 @@ class BleClientGattCallback(context: Context, func: (log: String) -> Unit) : Blu
                 gatt.close()
             }
         }
-        val log = "与[${address}]" + when {
-            isConnected -> "连接成功"
+        val log = "[${address}]와" + when {
+            isConnected -> " 연결성공"
             newState == BluetoothProfile.STATE_DISCONNECTED -> {
-                if (status == 0) "主动断开连接" else "自动断开连接"
+                if (status == 0) "능동적으로 연결 끊기" else "자동으로 연결 끊기"
             }
-            else -> "连接出错, 错误码:$status"
+            else -> "연결오류, 오류코드:$status"
         }
         mFunc.invoke(log)
     }
@@ -61,14 +61,14 @@ class BleClientGattCallback(context: Context, func: (log: String) -> Unit) : Blu
     override fun onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray) {
         super.onCharacteristicChanged(gatt, characteristic, value)
         val charValue = characteristic.value
-        val log = "[${gatt.device.address}]读取数据(十进制)\n${charValue.joinToString(", ")}\nUTF-8:${String(charValue)}"
+        val log = "[${gatt.device.address}]데이터 읽기(10진수)\n${charValue.joinToString(", ")}\nUTF-8:${String(charValue)}"
         mFunc.invoke(log)
     }
 
     override fun onCharacteristicRead(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int) {
         super.onCharacteristicRead(gatt, characteristic, value, status)
         val charValue = characteristic.value
-        val log = "[${gatt.device.address}]读取数据(十进制)\n${charValue.joinToString(", ")}\nUTF-8:${String(charValue)}"
+        val log = "[${gatt.device.address}]데이터 읽기(10진수)\n${charValue.joinToString(", ")}\nUTF-8:${String(charValue)}"
         mFunc.invoke(log)
     }
 
@@ -76,7 +76,7 @@ class BleClientGattCallback(context: Context, func: (log: String) -> Unit) : Blu
         super.onCharacteristicWrite(gatt, characteristic, status)
         if (gatt == null || characteristic == null) return
         val charValue = characteristic.value
-        val log = "[${gatt.device.address}]写入数据(十进制)\n${charValue.joinToString(", ")}\nUTF-8:${String(charValue)}"
+        val log = "[${gatt.device.address}]데이터 쓰기(10진수)\n${charValue.joinToString(", ")}\nUTF-8:${String(charValue)}"
         mFunc.invoke(log)
     }
 

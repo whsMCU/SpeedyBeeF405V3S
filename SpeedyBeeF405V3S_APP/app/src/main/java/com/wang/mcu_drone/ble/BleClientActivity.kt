@@ -75,7 +75,7 @@ class BleClientActivity : AppCompatActivity() {
     }
 
     private fun startScan() {
-        mBleAdapter?: toast("无法使用, 检查权限和蓝牙...")
+        mBleAdapter?: toast("사용할 수 없음, 검사 권한과 블루투스...")
         mBleAdapter?.let {
             checkConnectPermission {
                 mGatt?.disconnect()
@@ -92,7 +92,7 @@ class BleClientActivity : AppCompatActivity() {
         checkConnectPermission {
             closeConnect()
             val address = device.address
-            logPrint("与[${address}]开始连接......")
+            logPrint("[${address}]와 연결시작......")
             mGatt = device.connectGatt(this, false, gattCallback)
         }
     }
@@ -109,7 +109,7 @@ class BleClientActivity : AppCompatActivity() {
             // 向Characteristic的Descriptor属性写入通知开关, 使蓝牙设备主动向手机发送数据
             descriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
             val writeDescriptorResult = gatt.writeDescriptor(descriptor)
-            val log = "与[${gatt.device.address}]设置特征通知: $setNotifyResult, 写入描述: $writeDescriptorResult"
+            val log = "[${gatt.device.address}]와 피처 알림 설정: $setNotifyResult, 설명하다: $writeDescriptorResult"
             logPrint(log)
         }
     }
@@ -123,7 +123,7 @@ class BleClientActivity : AppCompatActivity() {
     private fun write(gatt: BluetoothGatt) {
         val text = binding.input.text.toString()
         if (text.toByteArray().size > 20) {
-            toast("最多只能发送20个字节")
+            toast("최대 20바이트까지만 보낼 수 있습니다.")
             return
         }
         val service = gatt.getService(UUID_SERVICE) ?: return
