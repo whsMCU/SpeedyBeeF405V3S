@@ -10,16 +10,15 @@ import android.bluetooth.le.AdvertiseData
 import android.bluetooth.le.AdvertiseSettings
 import android.bluetooth.le.BluetoothLeAdvertiser
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.ParcelUuid
+import androidx.appcompat.app.AppCompatActivity
 import com.wang.mcu_drone.R
-import com.wang.mcu_drone.ble.BleServerGattCallback
+import com.wang.mcu_drone.databinding.ActivityBleServerBinding
 import com.wang.mcu_drone.utils.checkAdvertisePermission
 import com.wang.mcu_drone.utils.checkConnectPermission
-import com.wang.mcu_drone.databinding.ActivityBleServerBinding
 import java.util.UUID
 
 val UUID_SERVICE = UUID.fromString("10000000-0000-0000-0000-000000000000")

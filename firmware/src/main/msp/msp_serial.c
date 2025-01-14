@@ -55,6 +55,7 @@ void resetMspPort(uint8_t ch, mspPort_t *mspPortToReset)
 void mspSerialAllocatePorts(void)
 {
     resetMspPort(_DEF_UART3, &mspPorts[0]);
+    resetMspPort(_DEF_UART4, &mspPorts[1]);
 }
 
 //void mspSerialReleasePortIfAllocated(serialPort_t *serialPort)
@@ -461,8 +462,9 @@ void mspSerialProcessOnePort(mspPort_t * const mspPort, mspEvaluateNonMspData_e 
         // Process incoming bytes
         while (uartAvailable(mspPort->port)) {
             const uint8_t c = uartRead(mspPort->port);
+            uint8_t temp[1] = {c};
             const bool consumed = mspSerialProcessReceivedData(mspPort, c);
-
+            uartWriteDMA(_DEF_UART1, &temp[0], 1);
             if (!consumed && evaluateNonMspData == MSP_EVALUATE_NON_MSP_DATA) {
                 mspEvaluateNonMspData(mspPort, c);
             }
@@ -503,6 +505,7 @@ void mspSerialInit(void)
     memset(mspPorts, 0, sizeof(mspPorts));
 
     uartOpen(_DEF_UART3, 115200);
+    uartOpen(_DEF_UART4, 115200);
     mspSerialAllocatePorts();
 }
 
