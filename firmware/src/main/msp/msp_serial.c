@@ -462,9 +462,7 @@ void mspSerialProcessOnePort(mspPort_t * const mspPort, mspEvaluateNonMspData_e 
         // Process incoming bytes
         while (uartAvailable(mspPort->port)) {
             const uint8_t c = uartRead(mspPort->port);
-            uint8_t temp[1] = {c};
             const bool consumed = mspSerialProcessReceivedData(mspPort, c);
-            uartWriteDMA(_DEF_UART1, &temp[0], 1);
             if (!consumed && evaluateNonMspData == MSP_EVALUATE_NON_MSP_DATA) {
                 mspEvaluateNonMspData(mspPort, c);
             }

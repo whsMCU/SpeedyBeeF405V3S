@@ -21,10 +21,14 @@ import com.wang.mcu_drone.utils.checkAdvertisePermission
 import com.wang.mcu_drone.utils.checkConnectPermission
 import java.util.UUID
 
-val UUID_SERVICE = UUID.fromString("10000000-0000-0000-0000-000000000000")
-val UUID_CHA_READ_NOTIFY = UUID.fromString("11000000-0000-0000-0000-000000000000")
+//val UUID_SERVICE = UUID.fromString("10000000-0000-0000-0000-000000000000")
+//val UUID_CHA_READ_NOTIFY = UUID.fromString("11000000-0000-0000-0000-000000000000")
 val UUID_DESC_NOTIFY = UUID.fromString("11100000-0000-0000-0000-000000000000")
-val UUID_CAHR_WRITE = UUID.fromString("12000000-0000-0000-0000-000000000000")
+//val UUID_CAHR_WRITE = UUID.fromString("12000000-0000-0000-0000-000000000000")
+
+val UUID_SERVICE = UUID.fromString("0000abf0-0000-1000-8000-00805f9b34fb")
+val UUID_CHA_READ_NOTIFY = UUID.fromString("0000abf2-0000-1000-8000-00805f9b34fb")
+val UUID_CAHR_WRITE = UUID.fromString("0000abf1-0000-1000-8000-00805f9b34fb")
 
 class BleServerActivity : AppCompatActivity() {
 

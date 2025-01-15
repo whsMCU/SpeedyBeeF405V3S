@@ -92,6 +92,7 @@ static void ledUpdate(uint32_t currentTimeUs)
         if(ARMING_FLAG(ARMED))
         {
         	ledOn(ST1);
+        	uint8_t temp[1];
         }
         else
         {

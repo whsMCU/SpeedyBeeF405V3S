@@ -122,7 +122,7 @@ class BleClientActivity : AppCompatActivity() {
 
     private fun write(gatt: BluetoothGatt) {
         val text = binding.input.text.toString()
-        logPrint("[데이터 전송 : [${text}]")
+        logPrint("데이터 전송 : [${text}]")
         if (text.toByteArray().size > 20) {
             toast("최대 20바이트까지만 보낼 수 있습니다.")
             return
