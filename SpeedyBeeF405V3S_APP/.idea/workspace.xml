@@ -5,17 +5,13 @@
       <config />
     </shared>
     <layouts>
-      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_ble_client.xml">
-        <config>
-          <theme>@style/Theme.MCU_Drone</theme>
-        </config>
-      </layout>
-      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_bt_client.xml">
-        <config>
-          <theme>@style/Theme.MCU_Drone</theme>
-        </config>
-      </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml">
+        <config>
+          <state>Landscape</state>
+          <theme>@style/Theme.MCU_Drone</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/item_ble.xml">
         <config>
           <theme>@style/Theme.MCU_Drone</theme>
         </config>
@@ -27,9 +23,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4de6984a-e23e-4abd-80d8-0d42771c8887" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/ble/BleClientActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/ble/BleClientActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/ble/BleServerActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/ble/BleServerActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/MainActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/ble/BleClientActivity.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/ble/BleClientAdapter.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/ble/BleClientGattCallback.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/ble/BleServerActivity.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/ble/BleServerGattCallback.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/bt/BtBase.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/bt/BtClient.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/bt/BtClientActivity.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/bt/BtClientAdapter.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/bt/BtServer.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/bt/BtServerActivity.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_ble_client.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_ble_server.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_bt_client.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_bt_server.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/style.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/style.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,7 +56,7 @@
   <component name="CodeInsightWorkspaceSettings">
     <option name="optimizeImportsOnTheFly" value="true" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=PhysicalDevice, isTemplate=false, identifier=serial=R3CW50KLZZR)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\Users\jjins\.android\avd\Medium_Phone.avd)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -65,7 +79,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Android App.app.executor": "Debug",
+    "Android App.app.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
@@ -92,6 +106,9 @@
       <recent name="C:\Users\jjins\Documents\Project\SpeedyBeeF405V3S\SpeedyBeeF405V3S_APP\app\src\main\res\values" />
       <recent name="C:\Users\jjins\Documents\Project\SpeedyBeeF405V3S\SpeedyBeeF405V3S_APP\app\src\main\res\layout" />
       <recent name="C:\Users\jjins\Documents\Project\SpeedyBeeF405V3S\SpeedyBeeF405V3S_APP\app\src\main\res\drawable" />
+    </key>
+    <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
+      <recent name="com.wang.mcu_drone.bluetooth" />
     </key>
   </component>
   <component name="RunManager">

@@ -1,4 +1,4 @@
-package com.wang.mcu_drone.ble
+package com.wang.mcu_drone.bluetooth
 
 import android.bluetooth.le.ScanResult
 import android.content.Context

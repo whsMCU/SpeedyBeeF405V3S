@@ -37,20 +37,9 @@
         android:theme="@style/Theme.MCU_Drone"
         tools:targetApi="31">
         <activity
-            android:name=".bt.BtServerActivity"
-            android:exported="false" />
-        <activity
-            android:name=".bt.BtClientActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ble.BleServerActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ble.BleClientActivity"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
