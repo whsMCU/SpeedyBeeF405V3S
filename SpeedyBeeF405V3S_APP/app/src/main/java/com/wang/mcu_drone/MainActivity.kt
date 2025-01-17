@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.wang.mcu_drone.bluetooth.BleClientAdapter
 import com.wang.mcu_drone.bluetooth.BleClientGattCallback
 import com.wang.mcu_drone.databinding.ActivityMainBinding
+import com.wang.mcu_drone.protocol.MspProtocol
 import com.wang.mcu_drone.utils.checkConnectPermission
 import com.wang.mcu_drone.utils.getDeviceName
 import com.wang.mcu_drone.utils.toast
@@ -58,6 +59,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var requestActivityResult: ActivityResultLauncher<Intent>
 
     private var haveAllCondition = false
+
+    var MspProtocol = MspProtocol()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
