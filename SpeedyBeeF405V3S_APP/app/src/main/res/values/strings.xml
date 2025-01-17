@@ -17,4 +17,15 @@
     <string name="send_text">전송</string>
     <string name="disconnect">연결해제</string>
     <string name="send_file">파일전송</string>
+
+    <string name="rate">Rate</string>
+    <string name="heading">Heading</string>
+    <string name="outer">Outer</string>
+    <string name="p">P</string>
+    <string name="i">I</string>
+    <string name="d">D</string>
+    <string name="inner">Inner</string>
+    <string name="yaw">YAW</string>
+    <string name="pitch">PITCH</string>
+    <string name="roll">ROLL</string>
 </resources>

@@ -111,6 +111,9 @@ class MainActivity : AppCompatActivity() {
         binding.read.setOnClickListener { mGatt?.let { read(it) } }
         binding.write.setOnClickListener { mGatt?.let { write(it) } }
 
+        binding.buttonRead.setOnClickListener {  }
+        binding.buttonWrite.setOnClickListener {  }
+        binding.buttonSave.setOnClickListener {  }
     }
 
     private fun checkPermission() {
@@ -177,7 +180,7 @@ class MainActivity : AppCompatActivity() {
         checkConnectPermission {
             /// 设置Characteristic通知
             val setNotifyResult = gatt.setCharacteristicNotification(characteristic, true)
-            val descriptor = characteristic.getDescriptor(UUID_DESC_NOTIFY)
+            val descriptor = characteristic.getDescriptor(UUID_DESC_NOTIFY) //UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
             // 服务端不主动发数据, 只通知客户端去读取数据
             // descriptor.value = BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
             // 向Characteristic的Descriptor属性写入通知开关, 使蓝牙设备主动向手机发送数据
