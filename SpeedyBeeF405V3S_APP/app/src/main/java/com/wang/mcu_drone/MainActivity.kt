@@ -53,14 +53,14 @@ class MainActivity : AppCompatActivity() {
             if (notHas) mListAdapter.add(result)
         }
     }
-    private val gattCallback = BleClientGattCallback(this) { logPrint(it) }
+    private val gattCallback = BleClientGattCallback(this, { logPrint(it) }, { serialCom(it)})
 
     private lateinit var requestPermissions: ActivityResultLauncher<Array<String>>
     private lateinit var requestActivityResult: ActivityResultLauncher<Intent>
 
     private var haveAllCondition = false
 
-    var MspProtocol = MspProtocol()
+    var mspProtocol = MspProtocol()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -114,7 +114,10 @@ class MainActivity : AppCompatActivity() {
         binding.read.setOnClickListener { mGatt?.let { read(it) } }
         binding.write.setOnClickListener { mGatt?.let { write(it) } }
 
-        binding.buttonRead.setOnClickListener {  }
+        binding.buttonRead.setOnClickListener {
+            val command: Int = MspProtocol.Command.MSP_SET_PID.value
+            val array: ByteArray = mspProtocol.sendRequestMSP(mspProtocol.requestMSP(command))
+        }
         binding.buttonWrite.setOnClickListener {  }
         binding.buttonSave.setOnClickListener {  }
     }
@@ -230,5 +233,9 @@ class MainActivity : AppCompatActivity() {
             val scrollY = binding.log.measuredHeight - binding.logLayout.height
             binding.logLayout.smoothScrollTo(0, scrollY)
         }
+    }
+
+    private fun serialCom(data: ByteArray){
+        mspProtocol.SerialCom(data)
     }
 }

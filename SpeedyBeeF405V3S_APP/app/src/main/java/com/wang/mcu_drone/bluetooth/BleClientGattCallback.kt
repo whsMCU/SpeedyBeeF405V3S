@@ -14,10 +14,11 @@ import com.wang.mcu_drone.utils.checkConnectPermission
  * Date: 2024/5/7 16:15
  */
 
-class BleClientGattCallback(context: Context, func: (log: String) -> Unit) : BluetoothGattCallback() {
+class BleClientGattCallback(context: Context, func: (log: String) -> Unit, parser: (data: ByteArray) -> Unit) : BluetoothGattCallback() {
 
     private val mContext = context
     private val mFunc = func
+    private val mparser = parser
 
     override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
         super.onServicesDiscovered(gatt, status)
@@ -63,6 +64,7 @@ class BleClientGattCallback(context: Context, func: (log: String) -> Unit) : Blu
         val charValue = characteristic.value
         val log = "[${gatt.device.address}]데이터 읽기(10진수)\n${charValue.joinToString(", ")}\nUTF-8:${String(charValue)}"
         mFunc.invoke(log)
+        mparser.invoke(charValue)
     }
 
     override fun onCharacteristicRead(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int) {

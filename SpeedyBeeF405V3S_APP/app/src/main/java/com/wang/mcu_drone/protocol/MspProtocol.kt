@@ -1,11 +1,10 @@
 package com.wang.mcu_drone.protocol
 
-import android.health.connect.datatypes.units.Temperature
 import java.util.LinkedList
 
 class MspProtocol {
 
-    enum class command(val value:Int){
+    enum class Command(val value: Int){
         TELEMERY_PID_SAVE(56),
         MSP_IDENT(100),
         MSP_STATUS(101),
@@ -34,7 +33,7 @@ class MspProtocol {
         MSP_DEBUG(254)
     }
 
-    enum class parser {
+    enum class Parser {
         IDLE,
         HEADER_START,
         HEADER_M,
@@ -44,7 +43,7 @@ class MspProtocol {
         HEADER_ERR
     }
 
-    var c_state: parser = parser.IDLE
+    var c_state: Parser = Parser.IDLE
 
     var INBUF_SIZE: Int = 256
     var inBuf: ByteArray = ByteArray(1024)
@@ -102,7 +101,7 @@ class MspProtocol {
         return s
     }
 
-    fun requestMSP(msp: Int, payload: Array<Char>?): List<Byte>? {
+    private fun requestMSP(msp: Int, payload: Array<Char>?): List<Byte>? {
         if (msp < 0) {
             return null
         }
@@ -128,29 +127,31 @@ class MspProtocol {
         return (bf)
     }
 
-    fun sendRequestMSP(msp: List<Byte>): ByteArray {
-        val arr = ByteArray(msp.size)
+    fun sendRequestMSP(msp: List<Byte>?): ByteArray {
+        val arr = ByteArray(msp?.size ?: 0)
         var i = 0
-        for (b in msp) {
-            arr[i++] = b
+        msp?.let{
+            for (b in msp) {
+                arr[i++] = b
+            }
         }
         return arr
     }
 
     fun SerialCom(i: ByteArray) {
         for (c in i) {
-            if (c_state == parser.IDLE) {
-                c_state = if ((c == '$'.code.toByte())) parser.HEADER_START else parser.IDLE
+            if (c_state == Parser.IDLE) {
+                c_state = if ((c == '$'.code.toByte())) Parser.HEADER_START else Parser.IDLE
                 //Log.d("msp", "c_state : " + c_state);
-            } else if (c_state == parser.HEADER_START) {
-                c_state = if ((c == 'M'.code.toByte())) parser.HEADER_M else parser.IDLE
+            } else if (c_state == Parser.HEADER_START) {
+                c_state = if ((c == 'M'.code.toByte())) Parser.HEADER_M else Parser.IDLE
                 //Log.d("msp", "c_state : " + c_state);
-            } else if (c_state == parser.HEADER_M) {
-                c_state = if ((c == '>'.code.toByte())) parser.HEADER_ARROW else parser.IDLE
+            } else if (c_state == Parser.HEADER_M) {
+                c_state = if ((c == '>'.code.toByte())) Parser.HEADER_ARROW else Parser.IDLE
                 //Log.d("msp", "c_state : " + c_state);
-            } else if (c_state == parser.HEADER_ARROW) {
+            } else if (c_state == Parser.HEADER_ARROW) {
                 if (c > INBUF_SIZE) {  // now we are expecting the payload size
-                    c_state = parser.IDLE
+                    c_state = Parser.IDLE
                     //Log.d("msp", "c_state : " + c_state);
                     continue
                 }
@@ -159,22 +160,22 @@ class MspProtocol {
                 indRX = 0
                 checksum = 0
                 checksum = (checksum.toInt() xor c.toInt()).toByte()
-                c_state = parser.HEADER_SIZE
+                c_state = Parser.HEADER_SIZE
                 //Log.d("msp", "c_state : " + c_state);
-            } else if (c_state == parser.HEADER_SIZE) {
+            } else if (c_state == Parser.HEADER_SIZE) {
                 cmdMSP = c
                 checksum = (checksum.toInt() xor c.toInt()).toByte()
-                c_state = parser.HEADER_CMD
+                c_state = Parser.HEADER_CMD
                 //Log.d("msp", "cmdMSP : " + cmdMSP);
                 //Log.d("msp", "c_state : " + c_state);
-            } else if (c_state == parser.HEADER_CMD && offset < dataSize) {
+            } else if (c_state == Parser.HEADER_CMD && offset < dataSize) {
                 checksum = (checksum.toInt() xor c.toInt()).toByte()
                 inBuf[offset++] = c
                 //Log.d("msp", "offset : " + offset);
                 //Log.d("msp", "dataSize : " + dataSize);
                 //Log.d("msp", "inBuf : " + inBuf[offset-1]);
                 //Log.d("msp", "checksum : " + checksum);
-            } else if (c_state == parser.HEADER_CMD && offset >= dataSize) {
+            } else if (c_state == Parser.HEADER_CMD && offset >= dataSize) {
                 //Log.d("msp", "-----------------------------");
                 //Log.d("msp", "checksum : " + checksum);
                 //Log.d("msp", "c : " + c);
@@ -185,14 +186,14 @@ class MspProtocol {
                     error_count++
                     //Log.d("error", "Test"+error_count);
                 }
-                c_state = parser.IDLE
+                c_state = Parser.IDLE
             }
         }
     }
 
     private fun evaluateCommand() {
         when (cmdMSP.toInt()) {
-            command.MSP_PID ->
+            Command.MSP_PID.value ->
                 //Log.d("msp_pid", "OK");
                 //Log.d("msp_pid", "OK"+byteP[0]);
             {

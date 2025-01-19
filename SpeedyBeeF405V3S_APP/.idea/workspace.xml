@@ -23,9 +23,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4de6984a-e23e-4abd-80d8-0d42771c8887" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/protocol/MspProtocol.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/MainActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/bluetooth/BleClientGattCallback.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/bluetooth/BleClientGattCallback.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/protocol/MspProtocol.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/protocol/MspProtocol.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
