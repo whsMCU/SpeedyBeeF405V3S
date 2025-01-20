@@ -49,11 +49,11 @@ class MainActivity : AppCompatActivity() {
             super.onScanResult(callbackType, result)
             if (result == null) return
             if (getDeviceName(result.device).isNullOrEmpty()) return
-            val notHas = mListAdapter.items.none { it.device.address == result.device.address}
+            val notHas = mListAdapter.items.none { it.device.address == result.device.address }
             if (notHas) mListAdapter.add(result)
         }
     }
-    private val gattCallback = BleClientGattCallback(this, { logPrint(it) }, { serialCom(it)})
+    private val gattCallback = BleClientGattCallback(this, { logPrint(it) }, { serialCom(it) })
 
     private lateinit var requestPermissions: ActivityResultLauncher<Array<String>>
     private lateinit var requestActivityResult: ActivityResultLauncher<Intent>
@@ -79,25 +79,28 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun initLaunch() {
-        requestPermissions = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
-            val isSuccess = result.none { it.key != android.Manifest.permission.READ_EXTERNAL_STORAGE && !it.value }
-            if (isSuccess) {
-                checkBle()
-            } else {
-                toast("블루투스 권한 없음...")
+        requestPermissions =
+            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
+                val isSuccess =
+                    result.none { it.key != android.Manifest.permission.READ_EXTERNAL_STORAGE && !it.value }
+                if (isSuccess) {
+                    checkBle()
+                } else {
+                    toast("블루투스 권한 없음...")
+                }
             }
-        }
-        requestActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            val bleManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-            val bleAdapter = bleManager.adapter
-            val isEnable = bleAdapter.isEnabled
-            if (isEnable) {
-                haveAllCondition = true
-            } else {
-                haveAllCondition = false
-                toast("블루투스가 켜지지 않았습니다...")
+        requestActivityResult =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                val bleManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+                val bleAdapter = bleManager.adapter
+                val isEnable = bleAdapter.isEnabled
+                if (isEnable) {
+                    haveAllCondition = true
+                } else {
+                    haveAllCondition = false
+                    toast("블루투스가 켜지지 않았습니다...")
+                }
             }
-        }
     }
 
     private fun initView() {
@@ -117,9 +120,16 @@ class MainActivity : AppCompatActivity() {
         binding.buttonRead.setOnClickListener {
             val command: Int = MspProtocol.Command.MSP_SET_PID.value
             val array: ByteArray = mspProtocol.sendRequestMSP(mspProtocol.requestMSP(command))
+            mGatt?.let {
+                val service = it.getService(UUID_SERVICE)
+                val characteristic = service.getCharacteristic(UUID_CAHR_WRITE)
+                characteristic.setValue(array)
+                checkConnectPermission { it.writeCharacteristic(characteristic) }
+            }
+
         }
-        binding.buttonWrite.setOnClickListener {  }
-        binding.buttonSave.setOnClickListener {  }
+        binding.buttonWrite.setOnClickListener { }
+        binding.buttonSave.setOnClickListener { }
     }
 
     private fun checkPermission() {
@@ -139,7 +149,8 @@ class MainActivity : AppCompatActivity() {
         }
         val notGrantedList = arrayListOf<String>()
         permissions.forEach {
-            val isGranted = ActivityCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
+            val isGranted =
+                ActivityCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
             if (!isGranted) notGrantedList.add(it)
         }
         requestPermissions.launch(notGrantedList.toTypedArray())
@@ -158,7 +169,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun startScan() {
-        mBleAdapter?: toast("사용할 수 없음, 검사 권한과 블루투스...")
+        mBleAdapter ?: toast("사용할 수 없음, 검사 권한과 블루투스...")
         mBleAdapter?.let {
             checkConnectPermission {
                 mGatt?.disconnect()
@@ -177,6 +188,7 @@ class MainActivity : AppCompatActivity() {
             val address = device.address
             logPrint("[${address}]와 연결시작......")
             mGatt = device.connectGatt(this, false, gattCallback)
+            mGatt?.let { setNotify(it) }
         }
     }
 
@@ -186,13 +198,15 @@ class MainActivity : AppCompatActivity() {
         checkConnectPermission {
             /// 设置Characteristic通知
             val setNotifyResult = gatt.setCharacteristicNotification(characteristic, true)
-            val descriptor = characteristic.getDescriptor(UUID_DESC_NOTIFY) //UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
+            val descriptor =
+                characteristic.getDescriptor(UUID_DESC_NOTIFY) //UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
             // 服务端不主动发数据, 只通知客户端去读取数据
             // descriptor.value = BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
             // 向Characteristic的Descriptor属性写入通知开关, 使蓝牙设备主动向手机发送数据
             descriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
             val writeDescriptorResult = gatt.writeDescriptor(descriptor)
-            val log = "[${gatt.device.address}]와 피처 알림 설정: $setNotifyResult, 설명하다: $writeDescriptorResult"
+            val log =
+                "[${gatt.device.address}]와 피처 알림 설정: $setNotifyResult, 설명하다: $writeDescriptorResult"
             logPrint(log)
         }
     }
@@ -235,7 +249,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun serialCom(data: ByteArray){
+    private fun serialCom(data: ByteArray) {
         mspProtocol.SerialCom(data)
     }
 }

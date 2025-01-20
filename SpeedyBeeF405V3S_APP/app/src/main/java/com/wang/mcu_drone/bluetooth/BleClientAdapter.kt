@@ -21,7 +21,8 @@ class BleClientAdapter : BaseQuickAdapter<ScanResult, QuickViewHolder>() {
     override fun onBindViewHolder(holder: QuickViewHolder, position: Int, item: ScanResult?) {
         if (item == null) return
         val device = item.device
-        val sb = StringBuilder().appendLine("Name=${context.getDeviceName(device)}, Address=${device.address}, Rssi=${item.rssi}")
+        val sb =
+            StringBuilder().appendLine("Name=${context.getDeviceName(device)}, Address=${device.address}, Rssi=${item.rssi}")
 
         val scanRecord = item.scanRecord
         val sb2 = StringBuilder()
@@ -38,7 +39,11 @@ class BleClientAdapter : BaseQuickAdapter<ScanResult, QuickViewHolder>() {
         holder.getView<TextView>(R.id.content).text = sb
     }
 
-    override fun onCreateViewHolder(context: Context, parent: ViewGroup, viewType: Int): QuickViewHolder {
+    override fun onCreateViewHolder(
+        context: Context,
+        parent: ViewGroup,
+        viewType: Int
+    ): QuickViewHolder {
         return QuickViewHolder(R.layout.item_ble, parent)
     }
 }

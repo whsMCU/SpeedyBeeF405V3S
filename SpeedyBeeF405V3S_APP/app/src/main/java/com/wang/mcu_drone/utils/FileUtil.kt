@@ -31,7 +31,10 @@ object FileUtil {
             val values = ContentValues()
             values.put(MediaStore.Downloads.DISPLAY_NAME, fileName)
             mimeType?.let { values.put(MediaStore.Downloads.MIME_TYPE, it) }
-            values.put(MediaStore.Downloads.RELATIVE_PATH, "${Environment.DIRECTORY_DOWNLOADS}/aitmed")
+            values.put(
+                MediaStore.Downloads.RELATIVE_PATH,
+                "${Environment.DIRECTORY_DOWNLOADS}/aitmed"
+            )
 
             return context.contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
         } else {
@@ -60,7 +63,10 @@ object FileUtil {
                     return Environment.getExternalStorageDirectory().toString() + "/" + split[1]
                 }
             } else if ("com.android.providers.downloads.documents" == uri.authority) {
-                val contentUri = ContentUris.withAppendedId(Uri.parse("content://download/public_downloads"), docId.toLong())
+                val contentUri = ContentUris.withAppendedId(
+                    Uri.parse("content://download/public_downloads"),
+                    docId.toLong()
+                )
                 return getFilePath(contentUri, context, null, null)
             } else if ("com.android.providers.media.documents" == uri.authority) {
                 val split = docId.split(":").toTypedArray()
@@ -71,7 +77,13 @@ object FileUtil {
                     else -> null
                 }
                 val selection = MediaStore.Images.Media._ID + "=?"
-                val selectionArgs = arrayOf(try { split[1] } catch (e: Exception) { "" })
+                val selectionArgs = arrayOf(
+                    try {
+                        split[1]
+                    } catch (e: Exception) {
+                        ""
+                    }
+                )
                 return contentUri?.let { getFilePath(it, context, selection, selectionArgs) }
             }
         } else if ("content".equals(uri.scheme, ignoreCase = true)) {
@@ -99,11 +111,12 @@ object FileUtil {
             cr.query(uri, null, null, null)?.let { cursor ->
                 cursor.moveToFirst()
                 cr.openInputStream(uri)?.let {
-                    val displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                    val displayName =
+                        cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
                     val cache = File(context.externalCacheDir, displayName)
                     val os = FileOutputStream(cache)
                     FileUtils.copy(it, os)
-                    file  = cache
+                    file = cache
 
                     it.close()
                     os.close()
@@ -115,7 +128,12 @@ object FileUtil {
     }
 
     @SuppressLint("Range")
-    fun getFilePath(uri: Uri, context: Context, selection: String?, selectionArgs: Array<String>?): String? {
+    fun getFilePath(
+        uri: Uri,
+        context: Context,
+        selection: String?,
+        selectionArgs: Array<String>?
+    ): String? {
         var path: String? = null
         var cursor: Cursor? = null
         val column = MediaStore.Images.Media.DATA
@@ -162,6 +180,5 @@ object FileUtil {
 //    }
 
 
-    
 }
 

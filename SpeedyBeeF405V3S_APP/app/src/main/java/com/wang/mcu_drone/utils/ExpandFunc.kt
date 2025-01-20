@@ -28,14 +28,23 @@ fun toast(text: String) {
 }
 
 fun Context.checkConnectPermission(func: () -> Unit) {
-    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+    if (ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.BLUETOOTH_CONNECT
+        ) == PackageManager.PERMISSION_GRANTED
+    ) {
         func.invoke()
     } else {
         Log.e("SDKTEST", "테스트: 연결권한없음")
     }
 }
+
 fun Context.checkAdvertisePermission(func: () -> Unit) {
-    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADVERTISE) == PackageManager.PERMISSION_GRANTED) {
+    if (ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.BLUETOOTH_ADVERTISE
+        ) == PackageManager.PERMISSION_GRANTED
+    ) {
         func.invoke()
     } else {
         Log.e("SDKTEST", "테스트: 방송권한없음")
@@ -43,7 +52,11 @@ fun Context.checkAdvertisePermission(func: () -> Unit) {
 }
 
 fun Context.getDeviceName(device: BluetoothDevice): String? {
-    return if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+    return if (ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.BLUETOOTH_CONNECT
+        ) == PackageManager.PERMISSION_GRANTED
+    ) {
         device.name
     } else {
         null
@@ -51,7 +64,11 @@ fun Context.getDeviceName(device: BluetoothDevice): String? {
 }
 
 fun Context.getDeviceBond(device: BluetoothDevice): Int? {
-    return if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+    return if (ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.BLUETOOTH_CONNECT
+        ) == PackageManager.PERMISSION_GRANTED
+    ) {
         device.bondState
     } else {
         null
