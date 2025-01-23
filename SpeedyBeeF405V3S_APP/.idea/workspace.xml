@@ -24,14 +24,6 @@
   <component name="ChangeListManager">
     <list default="true" id="4de6984a-e23e-4abd-80d8-0d42771c8887" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/MainActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/bluetooth/BleClientAdapter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/bluetooth/BleClientAdapter.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/bluetooth/BleClientGattCallback.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/bluetooth/BleClientGattCallback.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/utils/ExpandFunc.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/utils/ExpandFunc.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/utils/FileUtil.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wang/mcu_drone/utils/FileUtil.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/bg_view.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/drawable/bg_view.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/item_ble.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/item_ble.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +36,7 @@
   <component name="CodeInsightWorkspaceSettings">
     <option name="optimizeImportsOnTheFly" value="true" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\Users\jjins\.android\avd\Medium_Phone.avd)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=PhysicalDevice, isTemplate=false, identifier=serial=R3CW50KLZZR)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />

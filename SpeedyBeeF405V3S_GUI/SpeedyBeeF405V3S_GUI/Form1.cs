@@ -37,6 +37,7 @@ namespace SpeedyBeeF405V3S_GUI
         bool acc_cal_flag = false;
         bool mag_cal_flag = false;
         bool mag_cal_remain_time_flag = false;
+        bool RP_Coupling = false;
         int mag_cal_remain_time = 0;
 
         List<PointLatLng> map_points = new List<PointLatLng>();
@@ -1199,6 +1200,196 @@ namespace SpeedyBeeF405V3S_GUI
         private void bt_zoom_m_Click(object sender, EventArgs e)
         {
             gMapControl1.Zoom--;
+        }
+
+        private void cB_RP_Coupling_CheckedChanged(object sender, EventArgs e)
+        {
+            if (RP_Coupling == false)
+            {
+                RP_Coupling = true;
+            }
+            else
+            {
+                RP_Coupling = false;
+            }
+        }
+
+        private void tb_R_I_P_TextChanged(object sender, EventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            string text_temp = textBox.Text;
+            textBox.Text = string.Concat(text_temp.Where(char.IsDigit));
+            textBox.SelectionStart = textBox.Text.Length;
+
+            if (RP_Coupling == true)
+            {
+                string text = tb_R_I_P.Text;
+                tb_P_I_P.Text = text;
+            }
+
+        }
+
+        private void tb_P_I_P_TextChanged(object sender, EventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            string text_temp = textBox.Text;
+            textBox.Text = string.Concat(text_temp.Where(char.IsDigit));
+            textBox.SelectionStart = textBox.Text.Length;
+
+            if (RP_Coupling == true)
+            {
+                string text = tb_P_I_P.Text;
+                tb_R_I_P.Text = text;
+            }
+        }
+
+        private void tb_R_I_I_TextChanged(object sender, EventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            string text_temp = textBox.Text;
+            textBox.Text = string.Concat(text_temp.Where(char.IsDigit));
+            textBox.SelectionStart = textBox.Text.Length;
+
+            if (RP_Coupling == true)
+            {
+                string text = tb_R_I_I.Text;
+                tb_P_I_I.Text = text;
+            }
+        }
+
+        private void tb_P_I_I_TextChanged(object sender, EventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            string text_temp = textBox.Text;
+            textBox.Text = string.Concat(text_temp.Where(char.IsDigit));
+            textBox.SelectionStart = textBox.Text.Length;
+
+            if (RP_Coupling == true)
+            {
+                string text = tb_P_I_I.Text;
+                tb_R_I_I.Text = text;
+            }
+        }
+
+        private void tb_R_I_D_TextChanged(object sender, EventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            string text_temp = textBox.Text;
+            textBox.Text = string.Concat(text_temp.Where(char.IsDigit));
+            textBox.SelectionStart = textBox.Text.Length;
+
+            if (RP_Coupling == true)
+            {
+                string text = tb_R_I_D.Text;
+                tb_P_I_D.Text = text;
+            }
+        }
+
+        private void tb_P_I_D_TextChanged(object sender, EventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            string text_temp = textBox.Text;
+            textBox.Text = string.Concat(text_temp.Where(char.IsDigit));
+            textBox.SelectionStart = textBox.Text.Length;
+
+            if (RP_Coupling == true)
+            {
+                string text = tb_P_I_D.Text;
+                tb_R_I_D.Text = text;
+            }
+        }
+
+        private void tb_R_O_P_TextChanged(object sender, EventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            string text_temp = textBox.Text;
+            textBox.Text = string.Concat(text_temp.Where(char.IsDigit));
+            textBox.SelectionStart = textBox.Text.Length;
+
+            if (RP_Coupling == true)
+            {
+                string text = tb_R_O_P.Text;
+                tb_P_O_P.Text = text;
+            }
+        }
+
+        private void tb_P_O_P_TextChanged(object sender, EventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            string text_temp = textBox.Text;
+            textBox.Text = string.Concat(text_temp.Where(char.IsDigit));
+            textBox.SelectionStart = textBox.Text.Length;
+
+            if (RP_Coupling == true)
+            {
+                string text = tb_P_O_P.Text;
+                tb_R_O_P.Text = text;
+            }
+        }
+
+        private void tb_R_O_I_TextChanged(object sender, EventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            string text_temp = textBox.Text;
+            textBox.Text = string.Concat(text_temp.Where(char.IsDigit));
+            textBox.SelectionStart = textBox.Text.Length;
+
+            if (RP_Coupling == true)
+            {
+                string text = tb_R_O_I.Text;
+                tb_P_O_I.Text = text;
+            }
+        }
+
+        private void tb_P_O_I_TextChanged(object sender, EventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            string text_temp = textBox.Text;
+            textBox.Text = string.Concat(text_temp.Where(char.IsDigit));
+            textBox.SelectionStart = textBox.Text.Length;
+
+            if (RP_Coupling == true)
+            {
+                string text = tb_P_O_I.Text;
+                tb_R_O_I.Text = text;
+            }
+        }
+
+        private void tb_R_O_D_TextChanged(object sender, EventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            string text_temp = textBox.Text;
+            textBox.Text = string.Concat(text_temp.Where(char.IsDigit));
+            textBox.SelectionStart = textBox.Text.Length;
+
+            if (RP_Coupling == true)
+            {
+                string text = tb_R_O_D.Text;
+                tb_P_O_D.Text = text;
+            }
+        }
+
+        private void tb_P_O_D_TextChanged(object sender, EventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            string text_temp = textBox.Text;
+            textBox.Text = string.Concat(text_temp.Where(char.IsDigit));
+            textBox.SelectionStart = textBox.Text.Length;
+
+            if (RP_Coupling == true)
+            {
+                string text = tb_P_O_D.Text;
+                tb_R_O_D.Text = text;
+            }
+        }
+
+        private void bt_ReScan_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                comboBox_port.DataSource = SerialPort.GetPortNames(); //연결 가능한 시리얼포트 이름을 콤보박스에 가져오기 
+            }
+            catch { }
         }
     }
 }

@@ -153,6 +153,7 @@
             this.label15 = new System.Windows.Forms.Label();
             this.lb_debug0 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.cB_RP_Coupling = new System.Windows.Forms.CheckBox();
             this.bt_pid_save = new System.Windows.Forms.Button();
             this.bt_pid_copy = new System.Windows.Forms.Button();
             this.tb_FC_Y_R_D = new System.Windows.Forms.TextBox();
@@ -292,6 +293,7 @@
             this.bt_mag_cal = new System.Windows.Forms.Button();
             this.bt_acc_cal = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.bt_ReScan = new System.Windows.Forms.Button();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -1229,6 +1231,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.cB_RP_Coupling);
             this.groupBox1.Controls.Add(this.bt_pid_save);
             this.groupBox1.Controls.Add(this.bt_pid_copy);
             this.groupBox1.Controls.Add(this.tb_FC_Y_R_D);
@@ -1296,6 +1299,17 @@
             this.groupBox1.TabIndex = 84;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "PID상수";
+            // 
+            // cB_RP_Coupling
+            // 
+            this.cB_RP_Coupling.AutoSize = true;
+            this.cB_RP_Coupling.Location = new System.Drawing.Point(11, 18);
+            this.cB_RP_Coupling.Name = "cB_RP_Coupling";
+            this.cB_RP_Coupling.Size = new System.Drawing.Size(102, 16);
+            this.cB_RP_Coupling.TabIndex = 149;
+            this.cB_RP_Coupling.Text = "R, P Coupling";
+            this.cB_RP_Coupling.UseVisualStyleBackColor = true;
+            this.cB_RP_Coupling.CheckedChanged += new System.EventHandler(this.cB_RP_Coupling_CheckedChanged);
             // 
             // bt_pid_save
             // 
@@ -1609,6 +1623,7 @@
             this.tb_P_O_D.Name = "tb_P_O_D";
             this.tb_P_O_D.Size = new System.Drawing.Size(45, 21);
             this.tb_P_O_D.TabIndex = 111;
+            this.tb_P_O_D.TextChanged += new System.EventHandler(this.tb_P_O_D_TextChanged);
             // 
             // tb_P_O_I
             // 
@@ -1616,6 +1631,7 @@
             this.tb_P_O_I.Name = "tb_P_O_I";
             this.tb_P_O_I.Size = new System.Drawing.Size(45, 21);
             this.tb_P_O_I.TabIndex = 110;
+            this.tb_P_O_I.TextChanged += new System.EventHandler(this.tb_P_O_I_TextChanged);
             // 
             // tb_P_O_P
             // 
@@ -1623,6 +1639,7 @@
             this.tb_P_O_P.Name = "tb_P_O_P";
             this.tb_P_O_P.Size = new System.Drawing.Size(45, 21);
             this.tb_P_O_P.TabIndex = 109;
+            this.tb_P_O_P.TextChanged += new System.EventHandler(this.tb_P_O_P_TextChanged);
             // 
             // label34
             // 
@@ -1652,6 +1669,7 @@
             this.tb_P_I_D.Name = "tb_P_I_D";
             this.tb_P_I_D.Size = new System.Drawing.Size(45, 21);
             this.tb_P_I_D.TabIndex = 106;
+            this.tb_P_I_D.TextChanged += new System.EventHandler(this.tb_P_I_D_TextChanged);
             // 
             // tb_P_I_I
             // 
@@ -1659,6 +1677,7 @@
             this.tb_P_I_I.Name = "tb_P_I_I";
             this.tb_P_I_I.Size = new System.Drawing.Size(45, 21);
             this.tb_P_I_I.TabIndex = 105;
+            this.tb_P_I_I.TextChanged += new System.EventHandler(this.tb_P_I_I_TextChanged);
             // 
             // tb_P_I_P
             // 
@@ -1666,6 +1685,7 @@
             this.tb_P_I_P.Name = "tb_P_I_P";
             this.tb_P_I_P.Size = new System.Drawing.Size(45, 21);
             this.tb_P_I_P.TabIndex = 104;
+            this.tb_P_I_P.TextChanged += new System.EventHandler(this.tb_P_I_P_TextChanged);
             // 
             // tb_R_O_D
             // 
@@ -1673,6 +1693,7 @@
             this.tb_R_O_D.Name = "tb_R_O_D";
             this.tb_R_O_D.Size = new System.Drawing.Size(45, 21);
             this.tb_R_O_D.TabIndex = 103;
+            this.tb_R_O_D.TextChanged += new System.EventHandler(this.tb_R_O_D_TextChanged);
             // 
             // tb_R_O_I
             // 
@@ -1680,6 +1701,7 @@
             this.tb_R_O_I.Name = "tb_R_O_I";
             this.tb_R_O_I.Size = new System.Drawing.Size(45, 21);
             this.tb_R_O_I.TabIndex = 102;
+            this.tb_R_O_I.TextChanged += new System.EventHandler(this.tb_R_O_I_TextChanged);
             // 
             // tb_R_O_P
             // 
@@ -1687,6 +1709,7 @@
             this.tb_R_O_P.Name = "tb_R_O_P";
             this.tb_R_O_P.Size = new System.Drawing.Size(45, 21);
             this.tb_R_O_P.TabIndex = 101;
+            this.tb_R_O_P.TextChanged += new System.EventHandler(this.tb_R_O_P_TextChanged);
             // 
             // label33
             // 
@@ -1779,6 +1802,7 @@
             this.tb_R_I_D.Name = "tb_R_I_D";
             this.tb_R_I_D.Size = new System.Drawing.Size(45, 21);
             this.tb_R_I_D.TabIndex = 50;
+            this.tb_R_I_D.TextChanged += new System.EventHandler(this.tb_R_I_D_TextChanged);
             // 
             // label40
             // 
@@ -1796,6 +1820,7 @@
             this.tb_R_I_I.Name = "tb_R_I_I";
             this.tb_R_I_I.Size = new System.Drawing.Size(45, 21);
             this.tb_R_I_I.TabIndex = 48;
+            this.tb_R_I_I.TextChanged += new System.EventHandler(this.tb_R_I_I_TextChanged);
             // 
             // label41
             // 
@@ -1813,6 +1838,7 @@
             this.tb_R_I_P.Name = "tb_R_I_P";
             this.tb_R_I_P.Size = new System.Drawing.Size(45, 21);
             this.tb_R_I_P.TabIndex = 46;
+            this.tb_R_I_P.TextChanged += new System.EventHandler(this.tb_R_I_P_TextChanged);
             // 
             // rx_timer_blink
             // 
@@ -2729,11 +2755,22 @@
             this.textBox1.TabIndex = 89;
             this.textBox1.Text = "-";
             // 
+            // bt_ReScan
+            // 
+            this.bt_ReScan.Location = new System.Drawing.Point(12, 36);
+            this.bt_ReScan.Name = "bt_ReScan";
+            this.bt_ReScan.Size = new System.Drawing.Size(122, 23);
+            this.bt_ReScan.TabIndex = 90;
+            this.bt_ReScan.Text = "ReScan";
+            this.bt_ReScan.UseVisualStyleBackColor = true;
+            this.bt_ReScan.Click += new System.EventHandler(this.bt_ReScan_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1184, 661);
+            this.Controls.Add(this.bt_ReScan);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.panel2);
@@ -3013,6 +3050,8 @@
         private System.Windows.Forms.RadioButton rb_debug;
         private System.Windows.Forms.Label label77;
         public System.Windows.Forms.TextBox tb_rx_error;
+        private System.Windows.Forms.CheckBox cB_RP_Coupling;
+        private System.Windows.Forms.Button bt_ReScan;
     }
 }
 
