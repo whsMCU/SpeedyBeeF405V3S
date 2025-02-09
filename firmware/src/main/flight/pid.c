@@ -111,11 +111,11 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 
   static timeUs_t previousUpdateTimeUs;
   float dT = (float)US2S(currentTimeUs - previousUpdateTimeUs);
-  //debug[0] = currentTimeUs - previousUpdateTimeUs;
+  debug[0] = currentTimeUs - previousUpdateTimeUs;
   previousUpdateTimeUs = currentTimeUs;
-  //debug[1] = yaw_heading_reference;
-  //debug[2] = rcCommand[YAW];
-  //debug[3] = _ROLL.in.result_p;
+  debug[1] = yaw_heading_reference;
+  debug[2] = rcCommand[YAW];
+  debug[3] = _ROLL.in.result_p;
 
   PID_Calculation(&_ROLL.out, rcCommand[ROLL], imu_roll, dT);
   PID_Calculation(&_ROLL.in, _ROLL.out.result, bmi270.gyroADCf[X], dT);
