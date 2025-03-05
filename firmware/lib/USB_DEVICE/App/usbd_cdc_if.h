@@ -7,7 +7,7 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2023 STMicroelectronics.
+  * Copyright (c) 2025 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -122,6 +122,7 @@ uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
 /**
   * @}
   */
+
 uint32_t cdcAvailable(void);
 uint8_t cdcRead(void);
 uint32_t cdcGetBaud(void);

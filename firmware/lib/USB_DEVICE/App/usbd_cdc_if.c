@@ -7,7 +7,7 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2023 STMicroelectronics.
+  * Copyright (c) 2025 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -341,7 +341,6 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
       pbuf[4] = LineCoding.format;
       pbuf[5] = LineCoding.paritytype;
       pbuf[6] = LineCoding.datatype;
-
     break;
 
     case CDC_SET_CONTROL_LINE_STATE:

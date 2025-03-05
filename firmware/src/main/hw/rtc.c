@@ -19,8 +19,7 @@ bool rtcInit(void)
   bool ret = true;
 
 
-  __HAL_RCC_GPIOC_CLK_ENABLE();
-
+  //__HAL_RCC_GPIOC_CLK_ENABLE();
 
   hrtc.Instance = RTC;
   hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
