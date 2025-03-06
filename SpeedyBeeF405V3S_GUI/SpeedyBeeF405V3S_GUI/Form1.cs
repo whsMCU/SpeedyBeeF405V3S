@@ -37,7 +37,7 @@ namespace SpeedyBeeF405V3S_GUI
         bool acc_cal_flag = false;
         bool mag_cal_flag = false;
         bool mag_cal_remain_time_flag = false;
-        bool RP_Coupling = false;
+        bool RP_Coupling = true;
         int mag_cal_remain_time = 0;
 
         List<PointLatLng> map_points = new List<PointLatLng>();

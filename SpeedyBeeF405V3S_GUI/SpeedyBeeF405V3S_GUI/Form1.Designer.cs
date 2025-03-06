@@ -1303,6 +1303,8 @@
             // cB_RP_Coupling
             // 
             this.cB_RP_Coupling.AutoSize = true;
+            this.cB_RP_Coupling.Checked = true;
+            this.cB_RP_Coupling.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cB_RP_Coupling.Location = new System.Drawing.Point(11, 18);
             this.cB_RP_Coupling.Name = "cB_RP_Coupling";
             this.cB_RP_Coupling.Size = new System.Drawing.Size(102, 16);
