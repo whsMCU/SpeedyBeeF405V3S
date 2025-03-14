@@ -73,30 +73,30 @@ void motorWriteAll(void)
 {
   if(ARMING_FLAG(ARMED))
   {
-	if(failsafeFlags == 0)
-	{
-	  if(rcData[THROTTLE] > 1030)
-	  {
-		  motor.motor[R_R] = RR > 21000 ? 21000 : RR < 11000 ? 11000 : RR;
-		  motor.motor[R_F] = RF > 21000 ? 21000 : RF < 11000 ? 11000 : RF;
-		  motor.motor[L_R] = LR > 21000 ? 21000 : LR < 11000 ? 11000 : LR;
-		  motor.motor[L_F] = LF > 21000 ? 21000 : LF < 11000 ? 11000 : LF;
-	  }
-	  else
-	  {
-	    motor.motor[R_R] = 11000;
-	    motor.motor[R_F] = 11000;
-	    motor.motor[L_R] = 11000;
-	    motor.motor[L_F] = 11000;
-	  }
-	}
-	else
-	{
-	  motor.motor[R_R] = 10500;
-	  motor.motor[R_F] = 10500;
-	  motor.motor[L_R] = 10500;
-	  motor.motor[L_F] = 10500;
-	}
+    if(failsafeFlags == 0)
+    {
+      if(rcData[THROTTLE] > 1030)
+      {
+        motor.motor[R_R] = RR > 21000 ? 21000 : RR < 11000 ? 11000 : RR;
+        motor.motor[R_F] = RF > 21000 ? 21000 : RF < 11000 ? 11000 : RF;
+        motor.motor[L_R] = LR > 21000 ? 21000 : LR < 11000 ? 11000 : LR;
+        motor.motor[L_F] = LF > 21000 ? 21000 : LF < 11000 ? 11000 : LF;
+      }
+      else
+      {
+        motor.motor[R_R] = 11000;
+        motor.motor[R_F] = 11000;
+        motor.motor[L_R] = 11000;
+        motor.motor[L_F] = 11000;
+      }
+    }
+    else
+    {
+      motor.motor[R_R] = 10500;
+      motor.motor[R_F] = 10500;
+      motor.motor[L_R] = 10500;
+      motor.motor[L_F] = 10500;
+    }
   }
   else
   {
