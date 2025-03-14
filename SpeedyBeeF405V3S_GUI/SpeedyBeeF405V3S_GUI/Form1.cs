@@ -1150,16 +1150,16 @@ namespace SpeedyBeeF405V3S_GUI
             _myPane.YAxis.Scale.Min = 10000;
             _myPane.YAxis.Scale.Max = 23000;
 
-            _motor_0_curve = _myPane.AddCurve("MOTOR[0]", _motor_0_points, Color.Blue, SymbolType.None);
+            _motor_0_curve = _myPane.AddCurve("MOTOR[0][RR]", _motor_0_points, Color.Blue, SymbolType.None);
             _motor_0_curve.Line.Width = 2;
             _motor_0_points.Clear();
-            _motor_1_curve = _myPane.AddCurve("MOTOR[1]", _motor_1_points, Color.Red, SymbolType.None);
+            _motor_1_curve = _myPane.AddCurve("MOTOR[1][RF]", _motor_1_points, Color.Red, SymbolType.None);
             _motor_1_curve.Line.Width = 2;
             _motor_1_points.Clear();
-            _motor_2_curve = _myPane.AddCurve("MOTOR[2]", _motor_2_points, Color.Green, SymbolType.None);
+            _motor_2_curve = _myPane.AddCurve("MOTOR[2][LR]", _motor_2_points, Color.Green, SymbolType.None);
             _motor_2_curve.Line.Width = 2;
             _motor_2_points.Clear();
-            _motor_3_curve = _myPane.AddCurve("MOTOR[3]", _motor_3_points, Color.Brown, SymbolType.None);
+            _motor_3_curve = _myPane.AddCurve("MOTOR[3][LF]", _motor_3_points, Color.Brown, SymbolType.None);
             _motor_3_curve.Line.Width = 2;
             _motor_3_points.Clear();
 

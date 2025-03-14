@@ -134,19 +134,19 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 
 	  PID_Calculation(&_YAW_Rate, rcCommand[YAW] * 10.f, -bmi270.gyroADCf[Z], dT);//left -, right +
 
-	  LF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - _PITCH.in.result + _ROLL.in.result - _YAW_Rate.result;
-	  LR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + _PITCH.in.result + _ROLL.in.result + _YAW_Rate.result;
-	  RR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + _PITCH.in.result - _ROLL.in.result - _YAW_Rate.result;
-	  RF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - _PITCH.in.result - _ROLL.in.result + _YAW_Rate.result;
+	  LF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - _PITCH.in.result;// + _ROLL.in.result - _YAW_Rate.result;
+	  LR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + _PITCH.in.result;// + _ROLL.in.result + _YAW_Rate.result;
+	  RR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + _PITCH.in.result;// - _ROLL.in.result - _YAW_Rate.result;
+	  RF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - _PITCH.in.result;// - _ROLL.in.result + _YAW_Rate.result;
   }
   else
   {
 	  PID_Calculation(&_YAW_Heading, yaw_heading_reference, imu_yaw, dT);
 
-	  LF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - _PITCH.in.result + _ROLL.in.result - _YAW_Heading.result;
-	  LR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + _PITCH.in.result + _ROLL.in.result + _YAW_Heading.result;
-	  RR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + _PITCH.in.result - _ROLL.in.result - _YAW_Heading.result;
-	  RF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - _PITCH.in.result - _ROLL.in.result + _YAW_Heading.result;
+	  LF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - _PITCH.in.result;// + _ROLL.in.result - _YAW_Heading.result;
+	  LR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + _PITCH.in.result;// + _ROLL.in.result + _YAW_Heading.result;
+	  RR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + _PITCH.in.result;// - _ROLL.in.result - _YAW_Heading.result;
+	  RF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - _PITCH.in.result;// - _ROLL.in.result + _YAW_Heading.result;
   }
 
   motorWriteAll();
