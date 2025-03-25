@@ -294,6 +294,7 @@
             this.bt_acc_cal = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.bt_ReScan = new System.Windows.Forms.Button();
+            this.cb_record = new System.Windows.Forms.CheckBox();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -993,7 +994,7 @@
             this.textBox11.ReadOnly = true;
             this.textBox11.Size = new System.Drawing.Size(488, 33);
             this.textBox11.TabIndex = 0;
-            this.textBox11.Text = "MCU Drone flight monitor";
+            this.textBox11.Text = "MCU Drone Flight Monitor";
             this.textBox11.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // panel2
@@ -2165,6 +2166,7 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.cb_record);
             this.tabPage3.Controls.Add(this.rb_debug);
             this.tabPage3.Controls.Add(this.rb_motor);
             this.tabPage3.Controls.Add(this.rb_gyro);
@@ -2767,6 +2769,16 @@
             this.bt_ReScan.UseVisualStyleBackColor = true;
             this.bt_ReScan.Click += new System.EventHandler(this.bt_ReScan_Click);
             // 
+            // cb_record
+            // 
+            this.cb_record.AutoSize = true;
+            this.cb_record.Location = new System.Drawing.Point(561, 445);
+            this.cb_record.Name = "cb_record";
+            this.cb_record.Size = new System.Drawing.Size(100, 16);
+            this.cb_record.TabIndex = 13;
+            this.cb_record.Text = "Excel Record";
+            this.cb_record.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -3054,6 +3066,7 @@
         public System.Windows.Forms.TextBox tb_rx_error;
         private System.Windows.Forms.CheckBox cB_RP_Coupling;
         private System.Windows.Forms.Button bt_ReScan;
+        private System.Windows.Forms.CheckBox cb_record;
     }
 }
 

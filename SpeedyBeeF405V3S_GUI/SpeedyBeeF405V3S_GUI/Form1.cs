@@ -18,6 +18,8 @@ using System.Windows.Forms;
 using ZedGraph;
 using static GMap.NET.Entity.OpenStreetMapGraphHopperGeocodeEntity;
 using static System.Net.Mime.MediaTypeNames;
+using OfficeOpenXml;
+using System.IO;
 
 namespace SpeedyBeeF405V3S_GUI
 {
@@ -28,6 +30,10 @@ namespace SpeedyBeeF405V3S_GUI
         UTF8 UTF8 = new UTF8();
         DataPassing data = new DataPassing();
         Msp_Protocol protocol = new Msp_Protocol();
+
+        /// <ExcelDataSave>
+        string filePath = "RealTimeData.xlsx";
+        int row = 2;
 
         private ArrayList al;
 
@@ -95,6 +101,7 @@ namespace SpeedyBeeF405V3S_GUI
 
             InitGmap();
             InitGraph();
+            InitExcel();
         }
 
         public void InitGmap()
@@ -106,6 +113,39 @@ namespace SpeedyBeeF405V3S_GUI
             gMapControl1.MaxZoom = 100;
             gMapControl1.Zoom = 15;
 
+        }
+
+        public void InitExcel()
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+        }
+
+        static void SaveData(string filePath, int row, float[] data)
+        {
+            FileInfo file = new FileInfo(filePath);
+
+            using (ExcelPackage excel = new ExcelPackage(file.Exists ? file : null))
+            {
+                var sheet = excel.Workbook.Worksheets.Count > 0
+                    ? excel.Workbook.Worksheets[0]
+                    : excel.Workbook.Worksheets.Add("실시간 데이터");
+
+                // 헤더 추가 (최초 실행 시)
+                if (row == 2)
+                {
+                    sheet.Cells[1, 1].Value = "시간";
+                    sheet.Cells[1, 2].Value = "RC_PITCH";
+                    sheet.Cells[1, 3].Value = "IMU_PITCH";
+                }
+
+                // 데이터 추가
+                sheet.Cells[row, 1].Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                sheet.Cells[row, 2].Value = data[6]; // RC_PITCH
+                sheet.Cells[row, 3].Value = data[2]; // IMU_PITCH
+
+                // 파일 저장
+                excel.SaveAs(file);
+            }
         }
 
         private void gMapControl1_MouseClick(object sender, MouseEventArgs e)
@@ -367,6 +407,11 @@ namespace SpeedyBeeF405V3S_GUI
                                     _rc_pitch_points.Add(time_count + 150, passed_data[6]);
                                     _myPane.XAxis.Scale.Min = time_count;
                                     _myPane.XAxis.Scale.Max = 300 + time_count;
+                                    if(cb_record.Checked == true)
+                                    {
+                                        SaveData(filePath, row, passed_data);
+                                        row++;
+                                    }
                                 }
 
                                 if (rb_yaw_setpoint.Checked == true)
