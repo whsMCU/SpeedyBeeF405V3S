@@ -902,6 +902,25 @@ namespace SpeedyBeeF405V3S_GUI
             g.FillEllipse(sb, 1, 1, 10, 10);
         }
 
+
+        private void record_indicator_on()
+        {
+            Graphics g = panel8.CreateGraphics();
+            Pen p = new Pen(Color.Red);
+            SolidBrush sb = new SolidBrush(Color.Red);
+            g.DrawEllipse(p, 1, 1, 15, 15);
+            g.FillEllipse(sb, 1, 1, 15, 15);
+        }
+
+        private void record_indicator_off()
+        {
+            Graphics g = panel8.CreateGraphics();
+            Pen p = new Pen(Color.LightGray);
+            SolidBrush sb = new SolidBrush(Color.LightGray);
+            g.DrawEllipse(p, 1, 1, 15, 15);
+            g.FillEllipse(sb, 1, 1, 15, 15);
+        }
+
         private void Rx_timer_blink_Tick(object sender, EventArgs e)
         {
             if (received_data > 0) received_data++;
@@ -955,7 +974,7 @@ namespace SpeedyBeeF405V3S_GUI
 
         private void flight_timer_Tick(object sender, EventArgs e)
         {
-            if(start == 1)
+            if (start == 1)
             {
                 flight_timer_seconds++;
                 label36.Text = ("00:" + (flight_timer_seconds / 60).ToString("00.") + ":" + (flight_timer_seconds % 60).ToString("00."));
@@ -970,6 +989,23 @@ namespace SpeedyBeeF405V3S_GUI
                     mag_cal_remain_time_flag = false;
                     lb_magcal_remain_time.Text = "완료";
                 }
+            }
+
+            if(cb_record.Checked == true)
+            {
+                program_timer_seconds++;
+                if (program_timer_seconds % 2 == 0)
+                {
+                    record_indicator_on();
+                }
+                else
+                {
+                    record_indicator_off();
+                }
+            }
+            else
+            {
+                record_indicator_off();
             }
         }
 

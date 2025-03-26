@@ -52,6 +52,7 @@
         public int[] waypoint_click_lat = new int[10];
         public int[] waypoint_click_lon = new int[10];
         public int flight_timer_seconds;
+        public int program_timer_seconds;
 
         public int new_telemetry_data_to_send;
         public int battery_bar_level;
@@ -244,6 +245,8 @@
             this.label61 = new System.Windows.Forms.Label();
             this.gMapControl1 = new GMap.NET.WindowsForms.GMapControl();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.panel8 = new System.Windows.Forms.Panel();
+            this.cb_record = new System.Windows.Forms.CheckBox();
             this.rb_debug = new System.Windows.Forms.RadioButton();
             this.rb_motor = new System.Windows.Forms.RadioButton();
             this.rb_gyro = new System.Windows.Forms.RadioButton();
@@ -294,7 +297,6 @@
             this.bt_acc_cal = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.bt_ReScan = new System.Windows.Forms.Button();
-            this.cb_record = new System.Windows.Forms.CheckBox();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -2166,6 +2168,7 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.panel8);
             this.tabPage3.Controls.Add(this.cb_record);
             this.tabPage3.Controls.Add(this.rb_debug);
             this.tabPage3.Controls.Add(this.rb_motor);
@@ -2188,6 +2191,24 @@
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "그래프";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // panel8
+            // 
+            this.panel8.Location = new System.Drawing.Point(621, 19);
+            this.panel8.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.panel8.Name = "panel8";
+            this.panel8.Size = new System.Drawing.Size(18, 18);
+            this.panel8.TabIndex = 70;
+            // 
+            // cb_record
+            // 
+            this.cb_record.AutoSize = true;
+            this.cb_record.Location = new System.Drawing.Point(514, 22);
+            this.cb_record.Name = "cb_record";
+            this.cb_record.Size = new System.Drawing.Size(100, 16);
+            this.cb_record.TabIndex = 13;
+            this.cb_record.Text = "Excel Record";
+            this.cb_record.UseVisualStyleBackColor = true;
             // 
             // rb_debug
             // 
@@ -2769,16 +2790,6 @@
             this.bt_ReScan.UseVisualStyleBackColor = true;
             this.bt_ReScan.Click += new System.EventHandler(this.bt_ReScan_Click);
             // 
-            // cb_record
-            // 
-            this.cb_record.AutoSize = true;
-            this.cb_record.Location = new System.Drawing.Point(561, 445);
-            this.cb_record.Name = "cb_record";
-            this.cb_record.Size = new System.Drawing.Size(100, 16);
-            this.cb_record.TabIndex = 13;
-            this.cb_record.Text = "Excel Record";
-            this.cb_record.UseVisualStyleBackColor = true;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -3067,6 +3078,7 @@
         private System.Windows.Forms.CheckBox cB_RP_Coupling;
         private System.Windows.Forms.Button bt_ReScan;
         private System.Windows.Forms.CheckBox cb_record;
+        public System.Windows.Forms.Panel panel8;
     }
 }
 
