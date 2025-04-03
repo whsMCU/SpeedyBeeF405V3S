@@ -139,9 +139,37 @@ namespace SpeedyBeeF405V3S_GUI
                 }
 
                 // 데이터 추가
-                sheet.Cells[row, 1].Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                sheet.Cells[row, 1].Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
                 sheet.Cells[row, 2].Value = data[6]; // RC_PITCH
                 sheet.Cells[row, 3].Value = data[2]; // IMU_PITCH
+
+                // 파일 저장
+                excel.SaveAs(file);
+            }
+        }
+
+        static void Save_PID_Data(string filePath, int row, float data)
+        {
+            FileInfo file = new FileInfo(filePath);
+
+            using (ExcelPackage excel = new ExcelPackage(file.Exists ? file : null))
+            {
+                var sheet = excel.Workbook.Worksheets.Count > 0
+                    ? excel.Workbook.Worksheets[0]
+                    : excel.Workbook.Worksheets.Add("실시간 데이터");
+
+                // 헤더 추가 (최초 실행 시)
+                if (row == 2)
+                {
+                    sheet.Cells[1, 1].Value = "시간";
+                    sheet.Cells[1, 2].Value = "RC_PITCH";
+                    sheet.Cells[1, 3].Value = "IMU_PITCH";
+                }
+
+                // 데이터 추가
+                sheet.Cells[row, 1].Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+                sheet.Cells[row, 2].Value = "Inner_PID";
+                sheet.Cells[row, 3].Value = data;
 
                 // 파일 저장
                 excel.SaveAs(file);
@@ -727,18 +755,38 @@ namespace SpeedyBeeF405V3S_GUI
                     pid_buff[28] = tmp[1];
                     pid_buff[29] = tmp[2];
                     pid_buff[30] = tmp[3];
+
+                    if (cb_record.Checked == true)
+                    {
+                        Save_PID_Data(filePath, row, float_buff);
+                        row++;
+                    }
+
                     float_buff = float.Parse(tb_P_I_I.Text);
                     tmp = BitConverter.GetBytes(float_buff);
                     pid_buff[31] = tmp[0];
                     pid_buff[32] = tmp[1];
                     pid_buff[33] = tmp[2];
                     pid_buff[34] = tmp[3];
+
+                    if (cb_record.Checked == true)
+                    {
+                        Save_PID_Data(filePath, row, float_buff);
+                        row++;
+                    }
+
                     float_buff = float.Parse(tb_P_I_D.Text);
                     tmp = BitConverter.GetBytes(float_buff);
                     pid_buff[35] = tmp[0];
                     pid_buff[36] = tmp[1];
                     pid_buff[37] = tmp[2];
                     pid_buff[38] = tmp[3];
+
+                    if (cb_record.Checked == true)
+                    {
+                        Save_PID_Data(filePath, row, float_buff);
+                        row++;
+                    }
 
                     float_buff = float.Parse(tb_P_O_P.Text);
                     tmp = BitConverter.GetBytes(float_buff);
@@ -807,6 +855,7 @@ namespace SpeedyBeeF405V3S_GUI
                     //serialPort.Write(Encoding.UTF8.GetString(pid_buff));
                     serialPort.Write(pid_buff, 0, 76);
                     Console.WriteLine("PID값 전송 완료");
+
                 }
                 catch { Console.WriteLine("PID Data Send Error"); }
             }
