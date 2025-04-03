@@ -79,7 +79,7 @@ void PID_Calculation(PID* axis, float set_point, float measured, float dt)
   axis->integral += axis->error * dt;
   if(axis->integral > axis->integral_windup) axis->integral = axis->integral_windup;
   else if(axis->integral < -axis->integral_windup) axis->integral = -axis->integral_windup;
-  axis->derivative = (axis->error - axis->prev_error) / dt;
+  axis->derivative = -(axis->error - axis->prev_error) / dt;
   axis->prev_error = axis->error;
 
   axis->result_p = axis->kp * axis->error;
