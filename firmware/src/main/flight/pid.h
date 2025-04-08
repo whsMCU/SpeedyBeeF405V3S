@@ -38,6 +38,7 @@ typedef struct _PID{
    float prev_error; // 이전 오차값
    float integral;   // 적분 값
    float derivative;
+   float derivative_filter;
 
    float integral_windup;
 

@@ -1301,8 +1301,8 @@ namespace SpeedyBeeF405V3S_GUI
         private void rb_debug_MouseDown(object sender, MouseEventArgs e)
         {
             _myPane.CurveList.Clear();
-            _myPane.YAxis.Scale.Min = -150;
-            _myPane.YAxis.Scale.Max = 150;
+            _myPane.YAxis.Scale.MinAuto = true;
+            _myPane.YAxis.Scale.MaxAuto = true;
 
             _debug_0_curve = _myPane.AddCurve("DEBUG_[0]", _debug_0_points, Color.Blue, SymbolType.None);
             _debug_0_curve.Line.Width = 2;
