@@ -88,7 +88,7 @@ void PID_Calculation(PID* axis, float set_point, float measured, float dt)
   axis->result_i = axis->ki * axis->integral;
   axis->result_d = axis->kd * axis->derivative_filter;
 
-  axis->result = axis->result_p + axis->result_i + axis->result_d;
+  axis->result = axis->result_p + axis->result_i - axis->result_d;
 }
 
 void Reset_All_PID_Integrator(void)
@@ -112,10 +112,10 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 	imu_yaw = (float)attitude.values.yaw/10;
 
   static timeUs_t previousUpdateTimeUs;
-  float dT = 0.001f;//(float)US2S(currentTimeUs - previousUpdateTimeUs);
+  float dT = (float)US2S(currentTimeUs - previousUpdateTimeUs);
   debug[0] = currentTimeUs - previousUpdateTimeUs;
   previousUpdateTimeUs = currentTimeUs;
-  debug[1] = bmi270.gyroADCf[Y]*1000;
+  debug[1] = bmi270.gyroADCf[Y];
   debug[2] = _PITCH.in.result_d;
   debug[3] = _PITCH.in.result;
 
