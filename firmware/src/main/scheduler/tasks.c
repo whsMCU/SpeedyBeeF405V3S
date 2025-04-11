@@ -394,6 +394,7 @@ void gcsMain(void)
           status = writeSDCard(PID_pitch_out);
           status = writeSDCard(PID_yaw_heading);
           status = writeSDCard(PID_yaw_rate);
+          status = writeSDCard(ACC_offset);
         }
         break;
 

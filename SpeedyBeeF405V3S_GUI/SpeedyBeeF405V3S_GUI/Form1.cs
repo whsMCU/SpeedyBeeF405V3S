@@ -20,6 +20,7 @@ using static GMap.NET.Entity.OpenStreetMapGraphHopperGeocodeEntity;
 using static System.Net.Mime.MediaTypeNames;
 using OfficeOpenXml;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace SpeedyBeeF405V3S_GUI
 {
@@ -1348,8 +1349,26 @@ namespace SpeedyBeeF405V3S_GUI
         {
             TextBox textBox = sender as TextBox;
             string text_temp = textBox.Text;
-            textBox.Text = string.Concat(text_temp.Where(char.IsDigit));
-            textBox.SelectionStart = textBox.Text.Length;
+
+            // 소수점 숫자만 허용: "", ".", ".5", "0.5", "123", "123.456"
+            string pattern = @"^(\d+)?(\.\d*)?$";
+
+            if (Regex.IsMatch(textBox.Text, pattern))
+            {
+                text_temp = textBox.Text;
+            }
+            else
+            {
+                int cursorPos = textBox.SelectionStart - 1;
+                textBox.TextChanged -= tb_R_I_P_TextChanged; // 이벤트 일시 해제
+                textBox.Text = text_temp;
+                textBox.TextChanged += tb_R_I_P_TextChanged; // 다시 연결
+
+                if (cursorPos >= 0 && cursorPos <= textBox.Text.Length)
+                {
+                    textBox.SelectionStart = cursorPos;
+                }
+            }
 
             if (RP_Coupling == true)
             {
@@ -1363,8 +1382,26 @@ namespace SpeedyBeeF405V3S_GUI
         {
             TextBox textBox = sender as TextBox;
             string text_temp = textBox.Text;
-            textBox.Text = string.Concat(text_temp.Where(char.IsDigit));
-            textBox.SelectionStart = textBox.Text.Length;
+
+            // 소수점 숫자만 허용: "", ".", ".5", "0.5", "123", "123.456"
+            string pattern = @"^(\d+)?(\.\d*)?$";
+
+            if (Regex.IsMatch(textBox.Text, pattern))
+            {
+                text_temp = textBox.Text;
+            }
+            else
+            {
+                int cursorPos = textBox.SelectionStart - 1;
+                textBox.TextChanged -= tb_P_I_P_TextChanged; // 이벤트 일시 해제
+                textBox.Text = text_temp;
+                textBox.TextChanged += tb_P_I_P_TextChanged; // 다시 연결
+
+                if (cursorPos >= 0 && cursorPos <= textBox.Text.Length)
+                {
+                    textBox.SelectionStart = cursorPos;
+                }
+            }
 
             if (RP_Coupling == true)
             {
@@ -1377,8 +1414,26 @@ namespace SpeedyBeeF405V3S_GUI
         {
             TextBox textBox = sender as TextBox;
             string text_temp = textBox.Text;
-            textBox.Text = string.Concat(text_temp.Where(char.IsDigit));
-            textBox.SelectionStart = textBox.Text.Length;
+
+            // 소수점 숫자만 허용: "", ".", ".5", "0.5", "123", "123.456"
+            string pattern = @"^(\d+)?(\.\d*)?$";
+
+            if (Regex.IsMatch(textBox.Text, pattern))
+            {
+                text_temp = textBox.Text;
+            }
+            else
+            {
+                int cursorPos = textBox.SelectionStart - 1;
+                textBox.TextChanged -= tb_R_I_I_TextChanged; // 이벤트 일시 해제
+                textBox.Text = text_temp;
+                textBox.TextChanged += tb_R_I_I_TextChanged; // 다시 연결
+
+                if (cursorPos >= 0 && cursorPos <= textBox.Text.Length)
+                {
+                    textBox.SelectionStart = cursorPos;
+                }
+            }
 
             if (RP_Coupling == true)
             {
@@ -1391,8 +1446,26 @@ namespace SpeedyBeeF405V3S_GUI
         {
             TextBox textBox = sender as TextBox;
             string text_temp = textBox.Text;
-            textBox.Text = string.Concat(text_temp.Where(char.IsDigit));
-            textBox.SelectionStart = textBox.Text.Length;
+
+            // 소수점 숫자만 허용: "", ".", ".5", "0.5", "123", "123.456"
+            string pattern = @"^(\d+)?(\.\d*)?$";
+
+            if (Regex.IsMatch(textBox.Text, pattern))
+            {
+                text_temp = textBox.Text;
+            }
+            else
+            {
+                int cursorPos = textBox.SelectionStart - 1;
+                textBox.TextChanged -= tb_P_I_I_TextChanged; // 이벤트 일시 해제
+                textBox.Text = text_temp;
+                textBox.TextChanged += tb_P_I_I_TextChanged; // 다시 연결
+
+                if (cursorPos >= 0 && cursorPos <= textBox.Text.Length)
+                {
+                    textBox.SelectionStart = cursorPos;
+                }
+            }
 
             if (RP_Coupling == true)
             {
@@ -1405,8 +1478,26 @@ namespace SpeedyBeeF405V3S_GUI
         {
             TextBox textBox = sender as TextBox;
             string text_temp = textBox.Text;
-            textBox.Text = string.Concat(text_temp.Where(char.IsDigit));
-            textBox.SelectionStart = textBox.Text.Length;
+
+            // 소수점 숫자만 허용: "", ".", ".5", "0.5", "123", "123.456"
+            string pattern = @"^(\d+)?(\.\d*)?$";
+
+            if (Regex.IsMatch(textBox.Text, pattern))
+            {
+                text_temp = textBox.Text;
+            }
+            else
+            {
+                int cursorPos = textBox.SelectionStart - 1;
+                textBox.TextChanged -= tb_R_I_D_TextChanged; // 이벤트 일시 해제
+                textBox.Text = text_temp;
+                textBox.TextChanged += tb_R_I_D_TextChanged; // 다시 연결
+
+                if (cursorPos >= 0 && cursorPos <= textBox.Text.Length)
+                {
+                    textBox.SelectionStart = cursorPos;
+                }
+            }
 
             if (RP_Coupling == true)
             {
@@ -1419,8 +1510,26 @@ namespace SpeedyBeeF405V3S_GUI
         {
             TextBox textBox = sender as TextBox;
             string text_temp = textBox.Text;
-            textBox.Text = string.Concat(text_temp.Where(char.IsDigit));
-            textBox.SelectionStart = textBox.Text.Length;
+
+            // 소수점 숫자만 허용: "", ".", ".5", "0.5", "123", "123.456"
+            string pattern = @"^(\d+)?(\.\d*)?$";
+
+            if (Regex.IsMatch(textBox.Text, pattern))
+            {
+                text_temp = textBox.Text;
+            }
+            else
+            {
+                int cursorPos = textBox.SelectionStart - 1;
+                textBox.TextChanged -= tb_P_I_D_TextChanged; // 이벤트 일시 해제
+                textBox.Text = text_temp;
+                textBox.TextChanged += tb_P_I_D_TextChanged; // 다시 연결
+
+                if (cursorPos >= 0 && cursorPos <= textBox.Text.Length)
+                {
+                    textBox.SelectionStart = cursorPos;
+                }
+            }
 
             if (RP_Coupling == true)
             {
@@ -1433,8 +1542,26 @@ namespace SpeedyBeeF405V3S_GUI
         {
             TextBox textBox = sender as TextBox;
             string text_temp = textBox.Text;
-            textBox.Text = string.Concat(text_temp.Where(char.IsDigit));
-            textBox.SelectionStart = textBox.Text.Length;
+
+            // 소수점 숫자만 허용: "", ".", ".5", "0.5", "123", "123.456"
+            string pattern = @"^(\d+)?(\.\d*)?$";
+
+            if (Regex.IsMatch(textBox.Text, pattern))
+            {
+                text_temp = textBox.Text;
+            }
+            else
+            {
+                int cursorPos = textBox.SelectionStart - 1;
+                textBox.TextChanged -= tb_R_O_P_TextChanged; // 이벤트 일시 해제
+                textBox.Text = text_temp;
+                textBox.TextChanged += tb_R_O_P_TextChanged; // 다시 연결
+
+                if (cursorPos >= 0 && cursorPos <= textBox.Text.Length)
+                {
+                    textBox.SelectionStart = cursorPos;
+                }
+            }
 
             if (RP_Coupling == true)
             {
@@ -1447,8 +1574,26 @@ namespace SpeedyBeeF405V3S_GUI
         {
             TextBox textBox = sender as TextBox;
             string text_temp = textBox.Text;
-            textBox.Text = string.Concat(text_temp.Where(char.IsDigit));
-            textBox.SelectionStart = textBox.Text.Length;
+
+            // 소수점 숫자만 허용: "", ".", ".5", "0.5", "123", "123.456"
+            string pattern = @"^(\d+)?(\.\d*)?$";
+
+            if (Regex.IsMatch(textBox.Text, pattern))
+            {
+                text_temp = textBox.Text;
+            }
+            else
+            {
+                int cursorPos = textBox.SelectionStart - 1;
+                textBox.TextChanged -= tb_P_O_P_TextChanged; // 이벤트 일시 해제
+                textBox.Text = text_temp;
+                textBox.TextChanged += tb_R_O_P_TextChanged; // 다시 연결
+
+                if (cursorPos >= 0 && cursorPos <= textBox.Text.Length)
+                {
+                    textBox.SelectionStart = cursorPos;
+                }
+            }
 
             if (RP_Coupling == true)
             {
@@ -1461,8 +1606,26 @@ namespace SpeedyBeeF405V3S_GUI
         {
             TextBox textBox = sender as TextBox;
             string text_temp = textBox.Text;
-            textBox.Text = string.Concat(text_temp.Where(char.IsDigit));
-            textBox.SelectionStart = textBox.Text.Length;
+
+            // 소수점 숫자만 허용: "", ".", ".5", "0.5", "123", "123.456"
+            string pattern = @"^(\d+)?(\.\d*)?$";
+
+            if (Regex.IsMatch(textBox.Text, pattern))
+            {
+                text_temp = textBox.Text;
+            }
+            else
+            {
+                int cursorPos = textBox.SelectionStart - 1;
+                textBox.TextChanged -= tb_R_O_I_TextChanged; // 이벤트 일시 해제
+                textBox.Text = text_temp;
+                textBox.TextChanged += tb_R_O_I_TextChanged; // 다시 연결
+
+                if (cursorPos >= 0 && cursorPos <= textBox.Text.Length)
+                {
+                    textBox.SelectionStart = cursorPos;
+                }
+            }
 
             if (RP_Coupling == true)
             {
@@ -1475,8 +1638,26 @@ namespace SpeedyBeeF405V3S_GUI
         {
             TextBox textBox = sender as TextBox;
             string text_temp = textBox.Text;
-            textBox.Text = string.Concat(text_temp.Where(char.IsDigit));
-            textBox.SelectionStart = textBox.Text.Length;
+
+            // 소수점 숫자만 허용: "", ".", ".5", "0.5", "123", "123.456"
+            string pattern = @"^(\d+)?(\.\d*)?$";
+
+            if (Regex.IsMatch(textBox.Text, pattern))
+            {
+                text_temp = textBox.Text;
+            }
+            else
+            {
+                int cursorPos = textBox.SelectionStart - 1;
+                textBox.TextChanged -= tb_P_O_I_TextChanged; // 이벤트 일시 해제
+                textBox.Text = text_temp;
+                textBox.TextChanged += tb_P_O_I_TextChanged; // 다시 연결
+
+                if (cursorPos >= 0 && cursorPos <= textBox.Text.Length)
+                {
+                    textBox.SelectionStart = cursorPos;
+                }
+            }
 
             if (RP_Coupling == true)
             {
@@ -1489,8 +1670,26 @@ namespace SpeedyBeeF405V3S_GUI
         {
             TextBox textBox = sender as TextBox;
             string text_temp = textBox.Text;
-            textBox.Text = string.Concat(text_temp.Where(char.IsDigit));
-            textBox.SelectionStart = textBox.Text.Length;
+
+            // 소수점 숫자만 허용: "", ".", ".5", "0.5", "123", "123.456"
+            string pattern = @"^(\d+)?(\.\d*)?$";
+
+            if (Regex.IsMatch(textBox.Text, pattern))
+            {
+                text_temp = textBox.Text;
+            }
+            else
+            {
+                int cursorPos = textBox.SelectionStart - 1;
+                textBox.TextChanged -= tb_R_O_D_TextChanged; // 이벤트 일시 해제
+                textBox.Text = text_temp;
+                textBox.TextChanged += tb_R_O_D_TextChanged; // 다시 연결
+
+                if (cursorPos >= 0 && cursorPos <= textBox.Text.Length)
+                {
+                    textBox.SelectionStart = cursorPos;
+                }
+            }
 
             if (RP_Coupling == true)
             {
@@ -1503,8 +1702,26 @@ namespace SpeedyBeeF405V3S_GUI
         {
             TextBox textBox = sender as TextBox;
             string text_temp = textBox.Text;
-            textBox.Text = string.Concat(text_temp.Where(char.IsDigit));
-            textBox.SelectionStart = textBox.Text.Length;
+
+            // 소수점 숫자만 허용: "", ".", ".5", "0.5", "123", "123.456"
+            string pattern = @"^(\d+)?(\.\d*)?$";
+
+            if (Regex.IsMatch(textBox.Text, pattern))
+            {
+                text_temp = textBox.Text;
+            }
+            else
+            {
+                int cursorPos = textBox.SelectionStart - 1;
+                textBox.TextChanged -= tb_P_O_D_TextChanged; // 이벤트 일시 해제
+                textBox.Text = text_temp;
+                textBox.TextChanged += tb_P_O_D_TextChanged; // 다시 연결
+
+                if (cursorPos >= 0 && cursorPos <= textBox.Text.Length)
+                {
+                    textBox.SelectionStart = cursorPos;
+                }
+            }
 
             if (RP_Coupling == true)
             {

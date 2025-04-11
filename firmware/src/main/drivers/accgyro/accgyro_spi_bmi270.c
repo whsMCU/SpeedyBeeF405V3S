@@ -21,6 +21,8 @@
 #include <accgyro_spi_bmi270.h>
 #include "hw.h"
 
+#include "build/debug.h"
+
 #include "common/axis.h"
 
 #include "sensors/gyro_init.h"
@@ -377,6 +379,7 @@ bool bmi270SpiAccRead(imu_t *acc)
 static bool bmi270GyroReadRegister(imu_t *gyro)
 {
     uint16_t *gyroData = (uint16_t *)(gyro->rxBuf+2);
+
     switch (gyro->gyroModeSPI) {
     case GYRO_EXTI_INIT:
     {

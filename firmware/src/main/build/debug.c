@@ -22,7 +22,7 @@
 
 #include "build/debug.h"
 
-int32_t debug[DEBUG16_VALUE_COUNT];
+int16_t debug[DEBUG16_VALUE_COUNT];
 uint8_t debugMode;
 
 // Please ensure that these names are aligned with the enum values defined in 'debug.h' - for OSD be sure the name is unique with 12 chars.

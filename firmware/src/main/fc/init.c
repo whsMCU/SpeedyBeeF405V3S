@@ -222,7 +222,9 @@ void init(void)
 //    motorEnable();
 //#endif
 
+#ifdef USE_OSD
 	osdInit();
+#endif
 
 #ifdef USE_TELEMETRY
     // Telemetry will initialise displayport and register with CMS by itself.
