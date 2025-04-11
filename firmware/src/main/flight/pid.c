@@ -79,7 +79,7 @@ void PID_Calculation(PID* axis, float set_point, float measured, float dt)
   axis->integral += axis->error * dt;
   if(axis->integral > axis->integral_windup) axis->integral = axis->integral_windup;
   else if(axis->integral < -axis->integral_windup) axis->integral = -axis->integral_windup;
-  axis->derivative = (measured - axis->prev_error) / dt;
+  axis->derivative = -(measured - axis->prev_error) / dt;
   axis->prev_error = measured;
 
   axis->derivative_filter = axis->derivative_filter * 0.5f + axis->derivative * 0.5f;
@@ -88,7 +88,7 @@ void PID_Calculation(PID* axis, float set_point, float measured, float dt)
   axis->result_i = axis->ki * axis->integral;
   axis->result_d = axis->kd * axis->derivative_filter;
 
-  axis->result = axis->result_p + axis->result_i - axis->result_d;
+  axis->result = axis->result_p + axis->result_i + axis->result_d;
 }
 
 void Reset_All_PID_Integrator(void)
