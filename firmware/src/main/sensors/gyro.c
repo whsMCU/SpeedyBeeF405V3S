@@ -181,6 +181,21 @@ static void gyroUpdateSensor()
     }
 }
 
+#define GYRO_SAMPLES_MEDIAN 3
+
+static float applyGyrorMedianFilter(float newGyroReading)
+{
+    static float gyroFilterSamples[GYRO_SAMPLES_MEDIAN];
+
+    for(int i = GYRO_SAMPLES_MEDIAN - 1; i>0; i--)
+    {
+      gyroFilterSamples[i] = gyroFilterSamples[i-1];
+    }
+    gyroFilterSamples[0] = newGyroReading;
+
+    return quickMedianFilter3f(gyroFilterSamples);
+}
+
 void taskGyroUpdate(timeUs_t currentTimeUs)
 {
 //  static timeUs_t previousIMUUpdateTime;
@@ -193,7 +208,11 @@ void taskGyroUpdate(timeUs_t currentTimeUs)
 	bmi270.gyroADC[Z] = bmi270.gyroADC[Z] * bmi270.scale;
 
   for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-    bmi270.gyroADCf[axis] = bmi270.lowpass2FilterApplyFn((filter_t *)&bmi270.lowpass2Filter[axis], bmi270.gyroADC[axis]);
+    bmi270.gyroADCf[axis] = applyGyrorMedianFilter(bmi270.gyroADC[axis]);
+  }
+
+  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+    bmi270.gyroADCf[axis] = bmi270.lowpass2FilterApplyFn((filter_t *)&bmi270.lowpass2Filter[axis], bmi270.gyroADCf[axis]);
   }
 
   for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {

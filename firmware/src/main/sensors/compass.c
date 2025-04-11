@@ -33,7 +33,7 @@
 
 //#include "config/config.h"
 
-//#include "fc/runtime_config.h"
+#include "fc/runtime_config.h"
 
 #include "scheduler/scheduler.h"
 
