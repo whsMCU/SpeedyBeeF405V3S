@@ -324,7 +324,7 @@ namespace SpeedyBeeF405V3S_GUI
                         OpenClose.Text = "Close";
                         comboBox_port.Enabled = false;  //COM포트설정 콤보박스 비활성화
 
-                        AHRS_Timer = new System.Timers.Timer(100);
+                        AHRS_Timer = new System.Timers.Timer(50);
                         AHRS_Timer.Elapsed += OnTimedEvent;
                         AHRS_Timer.AutoReset = true;
                         AHRS_Timer.Enabled = true;
@@ -497,7 +497,6 @@ namespace SpeedyBeeF405V3S_GUI
                                 lb_bat.Text = ((passed_data[11]*4)/100).ToString();
                                 battery_bar_level = (int)(passed_data[11]*4)/10;
 
-                                label55.Text = passed_data[12].ToString();
                                 flight_mode = (UInt16)passed_data[12];
 
                                 lb_fail.Text = passed_data[13].ToString();
@@ -540,6 +539,7 @@ namespace SpeedyBeeF405V3S_GUI
                                 lb_rangefinder.Text = passed_data[39].ToString();
 
                                 tb_rx_error.Text = passed_data[40].ToString();
+                                lb_fc_load.Text = passed_data[41].ToString();
 
                                 if (rb_roll.Checked == true || rb_pitch.Checked == true ||
                                    rb_yaw.Checked == true || rb_roll_pitch.Checked == true ||

@@ -162,3 +162,5 @@ void taskSystemLoad(uint32_t currentTimeUs);
 
 task_t *queueFirst(void);
 task_t *queueNext(void);
+
+uint16_t getAverageSystemLoadPercent(void);

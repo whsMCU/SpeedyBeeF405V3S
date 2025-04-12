@@ -135,7 +135,6 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.label57 = new System.Windows.Forms.Label();
             this.label56 = new System.Windows.Forms.Label();
-            this.label55 = new System.Windows.Forms.Label();
             this.lb_fail = new System.Windows.Forms.Label();
             this.lb_armed = new System.Windows.Forms.Label();
             this.pictureBox6 = new System.Windows.Forms.PictureBox();
@@ -297,6 +296,10 @@
             this.bt_acc_cal = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.bt_ReScan = new System.Windows.Forms.Button();
+            this.label79 = new System.Windows.Forms.Label();
+            this.label55 = new System.Windows.Forms.Label();
+            this.lb_fc_load = new System.Windows.Forms.Label();
+            this.label81 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -967,6 +970,9 @@
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.label81);
+            this.panel3.Controls.Add(this.lb_fc_load);
+            this.panel3.Controls.Add(this.label55);
             this.panel3.Controls.Add(this.label36);
             this.panel3.Controls.Add(this.textBox11);
             this.panel3.Location = new System.Drawing.Point(351, 3);
@@ -1001,9 +1007,9 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.label79);
             this.panel2.Controls.Add(this.label57);
             this.panel2.Controls.Add(this.label56);
-            this.panel2.Controls.Add(this.label55);
             this.panel2.Controls.Add(this.lb_fail);
             this.panel2.Controls.Add(this.lb_armed);
             this.panel2.Controls.Add(this.pictureBox6);
@@ -1028,7 +1034,7 @@
             // 
             this.label57.AutoSize = true;
             this.label57.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label57.Location = new System.Drawing.Point(47, 372);
+            this.label57.Location = new System.Drawing.Point(47, 426);
             this.label57.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label57.Name = "label57";
             this.label57.Size = new System.Drawing.Size(20, 21);
@@ -1045,20 +1051,10 @@
             this.label56.TabIndex = 87;
             this.label56.Text = "-";
             // 
-            // label55
-            // 
-            this.label55.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label55.Location = new System.Drawing.Point(4, 212);
-            this.label55.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label55.Name = "label55";
-            this.label55.Size = new System.Drawing.Size(64, 19);
-            this.label55.TabIndex = 86;
-            this.label55.Text = "-";
-            // 
             // lb_fail
             // 
             this.lb_fail.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_fail.Location = new System.Drawing.Point(3, 349);
+            this.lb_fail.Location = new System.Drawing.Point(3, 328);
             this.lb_fail.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_fail.Name = "lb_fail";
             this.lb_fail.Size = new System.Drawing.Size(64, 19);
@@ -1068,10 +1064,10 @@
             // lb_armed
             // 
             this.lb_armed.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_armed.Location = new System.Drawing.Point(4, 328);
+            this.lb_armed.Location = new System.Drawing.Point(17, 62);
             this.lb_armed.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_armed.Name = "lb_armed";
-            this.lb_armed.Size = new System.Drawing.Size(64, 19);
+            this.lb_armed.Size = new System.Drawing.Size(22, 19);
             this.lb_armed.TabIndex = 57;
             this.lb_armed.Text = "-";
             // 
@@ -1131,7 +1127,7 @@
             // lb_bat
             // 
             this.lb_bat.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_bat.Location = new System.Drawing.Point(6, 372);
+            this.lb_bat.Location = new System.Drawing.Point(6, 426);
             this.lb_bat.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_bat.Name = "lb_bat";
             this.lb_bat.Size = new System.Drawing.Size(64, 19);
@@ -1143,7 +1139,7 @@
             this.panel7.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.panel7.Controls.Add(this.panel6);
             this.panel7.Controls.Add(this.panel5);
-            this.panel7.Location = new System.Drawing.Point(17, 416);
+            this.panel7.Location = new System.Drawing.Point(18, 457);
             this.panel7.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.panel7.Name = "panel7";
             this.panel7.Size = new System.Drawing.Size(40, 127);
@@ -1340,6 +1336,7 @@
             // 
             this.tb_FC_Y_R_D.Location = new System.Drawing.Point(617, 193);
             this.tb_FC_Y_R_D.Name = "tb_FC_Y_R_D";
+            this.tb_FC_Y_R_D.ReadOnly = true;
             this.tb_FC_Y_R_D.Size = new System.Drawing.Size(45, 21);
             this.tb_FC_Y_R_D.TabIndex = 146;
             // 
@@ -1347,6 +1344,7 @@
             // 
             this.tb_FC_Y_R_I.Location = new System.Drawing.Point(546, 193);
             this.tb_FC_Y_R_I.Name = "tb_FC_Y_R_I";
+            this.tb_FC_Y_R_I.ReadOnly = true;
             this.tb_FC_Y_R_I.Size = new System.Drawing.Size(45, 21);
             this.tb_FC_Y_R_I.TabIndex = 145;
             // 
@@ -1354,6 +1352,7 @@
             // 
             this.tb_FC_Y_R_P.Location = new System.Drawing.Point(475, 193);
             this.tb_FC_Y_R_P.Name = "tb_FC_Y_R_P";
+            this.tb_FC_Y_R_P.ReadOnly = true;
             this.tb_FC_Y_R_P.Size = new System.Drawing.Size(45, 21);
             this.tb_FC_Y_R_P.TabIndex = 144;
             // 
@@ -1383,6 +1382,7 @@
             // 
             this.tb_FC_Y_A_D.Location = new System.Drawing.Point(617, 169);
             this.tb_FC_Y_A_D.Name = "tb_FC_Y_A_D";
+            this.tb_FC_Y_A_D.ReadOnly = true;
             this.tb_FC_Y_A_D.Size = new System.Drawing.Size(45, 21);
             this.tb_FC_Y_A_D.TabIndex = 141;
             // 
@@ -1390,6 +1390,7 @@
             // 
             this.tb_FC_Y_A_I.Location = new System.Drawing.Point(546, 169);
             this.tb_FC_Y_A_I.Name = "tb_FC_Y_A_I";
+            this.tb_FC_Y_A_I.ReadOnly = true;
             this.tb_FC_Y_A_I.Size = new System.Drawing.Size(45, 21);
             this.tb_FC_Y_A_I.TabIndex = 140;
             // 
@@ -1397,6 +1398,7 @@
             // 
             this.tb_FC_Y_A_P.Location = new System.Drawing.Point(475, 169);
             this.tb_FC_Y_A_P.Name = "tb_FC_Y_A_P";
+            this.tb_FC_Y_A_P.ReadOnly = true;
             this.tb_FC_Y_A_P.Size = new System.Drawing.Size(45, 21);
             this.tb_FC_Y_A_P.TabIndex = 139;
             // 
@@ -1404,6 +1406,7 @@
             // 
             this.tb_FC_P_O_D.Location = new System.Drawing.Point(617, 126);
             this.tb_FC_P_O_D.Name = "tb_FC_P_O_D";
+            this.tb_FC_P_O_D.ReadOnly = true;
             this.tb_FC_P_O_D.Size = new System.Drawing.Size(45, 21);
             this.tb_FC_P_O_D.TabIndex = 138;
             // 
@@ -1411,6 +1414,7 @@
             // 
             this.tb_FC_P_O_I.Location = new System.Drawing.Point(546, 126);
             this.tb_FC_P_O_I.Name = "tb_FC_P_O_I";
+            this.tb_FC_P_O_I.ReadOnly = true;
             this.tb_FC_P_O_I.Size = new System.Drawing.Size(45, 21);
             this.tb_FC_P_O_I.TabIndex = 137;
             // 
@@ -1418,6 +1422,7 @@
             // 
             this.tb_FC_P_O_P.Location = new System.Drawing.Point(475, 126);
             this.tb_FC_P_O_P.Name = "tb_FC_P_O_P";
+            this.tb_FC_P_O_P.ReadOnly = true;
             this.tb_FC_P_O_P.Size = new System.Drawing.Size(45, 21);
             this.tb_FC_P_O_P.TabIndex = 136;
             // 
@@ -1447,6 +1452,7 @@
             // 
             this.tb_FC_P_I_D.Location = new System.Drawing.Point(617, 102);
             this.tb_FC_P_I_D.Name = "tb_FC_P_I_D";
+            this.tb_FC_P_I_D.ReadOnly = true;
             this.tb_FC_P_I_D.Size = new System.Drawing.Size(45, 21);
             this.tb_FC_P_I_D.TabIndex = 133;
             // 
@@ -1454,6 +1460,7 @@
             // 
             this.tb_FC_P_I_I.Location = new System.Drawing.Point(546, 102);
             this.tb_FC_P_I_I.Name = "tb_FC_P_I_I";
+            this.tb_FC_P_I_I.ReadOnly = true;
             this.tb_FC_P_I_I.Size = new System.Drawing.Size(45, 21);
             this.tb_FC_P_I_I.TabIndex = 132;
             // 
@@ -1461,6 +1468,7 @@
             // 
             this.tb_FC_P_I_P.Location = new System.Drawing.Point(475, 102);
             this.tb_FC_P_I_P.Name = "tb_FC_P_I_P";
+            this.tb_FC_P_I_P.ReadOnly = true;
             this.tb_FC_P_I_P.Size = new System.Drawing.Size(45, 21);
             this.tb_FC_P_I_P.TabIndex = 131;
             // 
@@ -1468,6 +1476,7 @@
             // 
             this.tb_FC_R_O_D.Location = new System.Drawing.Point(619, 62);
             this.tb_FC_R_O_D.Name = "tb_FC_R_O_D";
+            this.tb_FC_R_O_D.ReadOnly = true;
             this.tb_FC_R_O_D.Size = new System.Drawing.Size(45, 21);
             this.tb_FC_R_O_D.TabIndex = 130;
             // 
@@ -1475,6 +1484,7 @@
             // 
             this.tb_FC_R_O_I.Location = new System.Drawing.Point(548, 62);
             this.tb_FC_R_O_I.Name = "tb_FC_R_O_I";
+            this.tb_FC_R_O_I.ReadOnly = true;
             this.tb_FC_R_O_I.Size = new System.Drawing.Size(45, 21);
             this.tb_FC_R_O_I.TabIndex = 129;
             // 
@@ -1482,6 +1492,7 @@
             // 
             this.tb_FC_R_O_P.Location = new System.Drawing.Point(477, 62);
             this.tb_FC_R_O_P.Name = "tb_FC_R_O_P";
+            this.tb_FC_R_O_P.ReadOnly = true;
             this.tb_FC_R_O_P.Size = new System.Drawing.Size(45, 21);
             this.tb_FC_R_O_P.TabIndex = 128;
             // 
@@ -1521,6 +1532,7 @@
             // 
             this.tb_FC_R_I_D.Location = new System.Drawing.Point(619, 38);
             this.tb_FC_R_I_D.Name = "tb_FC_R_I_D";
+            this.tb_FC_R_I_D.ReadOnly = true;
             this.tb_FC_R_I_D.Size = new System.Drawing.Size(45, 21);
             this.tb_FC_R_I_D.TabIndex = 124;
             // 
@@ -1538,6 +1550,7 @@
             // 
             this.tb_FC_R_I_I.Location = new System.Drawing.Point(548, 38);
             this.tb_FC_R_I_I.Name = "tb_FC_R_I_I";
+            this.tb_FC_R_I_I.ReadOnly = true;
             this.tb_FC_R_I_I.Size = new System.Drawing.Size(45, 21);
             this.tb_FC_R_I_I.TabIndex = 122;
             // 
@@ -1555,6 +1568,7 @@
             // 
             this.tb_FC_R_I_P.Location = new System.Drawing.Point(477, 38);
             this.tb_FC_R_I_P.Name = "tb_FC_R_I_P";
+            this.tb_FC_R_I_P.ReadOnly = true;
             this.tb_FC_R_I_P.Size = new System.Drawing.Size(45, 21);
             this.tb_FC_R_I_P.TabIndex = 120;
             // 
@@ -2790,6 +2804,45 @@
             this.bt_ReScan.UseVisualStyleBackColor = true;
             this.bt_ReScan.Click += new System.EventHandler(this.bt_ReScan_Click);
             // 
+            // label79
+            // 
+            this.label79.AutoSize = true;
+            this.label79.Location = new System.Drawing.Point(17, 414);
+            this.label79.Name = "label79";
+            this.label79.Size = new System.Drawing.Size(41, 12);
+            this.label79.TabIndex = 90;
+            this.label79.Text = "배터리";
+            // 
+            // label55
+            // 
+            this.label55.AutoSize = true;
+            this.label55.Location = new System.Drawing.Point(601, 13);
+            this.label55.Name = "label55";
+            this.label55.Size = new System.Drawing.Size(61, 12);
+            this.label55.TabIndex = 91;
+            this.label55.Text = "FC 부하 : ";
+            // 
+            // lb_fc_load
+            // 
+            this.lb_fc_load.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_fc_load.Location = new System.Drawing.Point(657, 7);
+            this.lb_fc_load.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_fc_load.Name = "lb_fc_load";
+            this.lb_fc_load.Size = new System.Drawing.Size(36, 19);
+            this.lb_fc_load.TabIndex = 92;
+            this.lb_fc_load.Text = "-";
+            // 
+            // label81
+            // 
+            this.label81.AutoSize = true;
+            this.label81.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label81.Location = new System.Drawing.Point(679, 7);
+            this.label81.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label81.Name = "label81";
+            this.label81.Size = new System.Drawing.Size(23, 21);
+            this.label81.TabIndex = 91;
+            this.label81.Text = "%";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -3007,7 +3060,6 @@
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.Label label55;
         private System.Windows.Forms.Label label56;
         public System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label57;
@@ -3079,6 +3131,10 @@
         private System.Windows.Forms.Button bt_ReScan;
         private System.Windows.Forms.CheckBox cb_record;
         public System.Windows.Forms.Panel panel8;
+        private System.Windows.Forms.Label label79;
+        private System.Windows.Forms.Label label81;
+        private System.Windows.Forms.Label lb_fc_load;
+        private System.Windows.Forms.Label label55;
     }
 }
 

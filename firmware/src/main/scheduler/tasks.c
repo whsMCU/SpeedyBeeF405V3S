@@ -230,9 +230,12 @@ static void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf)
   telemetry_tx_buf[117] = overren_cnt>>16;
   telemetry_tx_buf[118] = overren_cnt>>24;
 
-  telemetry_tx_buf[119] = 0xff;
+  telemetry_tx_buf[119] = getAverageSystemLoadPercent();
+  telemetry_tx_buf[120] = getAverageSystemLoadPercent()>>8;
 
-  for(int i=0;i<119;i++) telemetry_tx_buf[119] = telemetry_tx_buf[119] - telemetry_tx_buf[i];
+  telemetry_tx_buf[121] = 0xff;
+
+  for(int i=0;i<121;i++) telemetry_tx_buf[121] = telemetry_tx_buf[121] - telemetry_tx_buf[i];
 }
 
 void Encode_Msg_GPS(unsigned char* telemetry_tx_buf)
@@ -445,7 +448,7 @@ void gcsMain(void)
 
       case 0x20:
         Encode_Msg_AHRS(&telemetry_tx_buf[0]);
-        uartWriteDMA(_DEF_UART1, &telemetry_tx_buf[0], 120);
+        uartWriteDMA(_DEF_UART1, &telemetry_tx_buf[0], 122);
         break;
 
       case 0x30:
