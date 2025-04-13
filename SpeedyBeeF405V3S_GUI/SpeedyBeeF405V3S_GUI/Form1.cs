@@ -46,6 +46,26 @@ namespace SpeedyBeeF405V3S_GUI
         bool mag_cal_remain_time_flag = false;
         bool RP_Coupling = true;
         int mag_cal_remain_time = 0;
+        bool pid_test_flag = false;
+        int pid_test_time = 0;
+        int pid_test_setting_time_temp = 0;
+        int pid_test_setting_time = 0;
+        int pid_test_setting_deg = 0;
+        int pid_test_setting_throttle = 0;
+
+        enum pidState_e
+        {
+            TEST_IDLE,
+            TEST_Step1,
+            TEST_Step2,
+            TEST_Step3,
+            TEST_Step4,
+            TEST_Step5,
+            TEST_Step6,
+            TEST_Step7,
+            TEST_Step8,
+            TEST_FINISH
+        }
 
         List<PointLatLng> map_points = new List<PointLatLng>();
         GMarkerGoogle marker;
@@ -989,6 +1009,8 @@ namespace SpeedyBeeF405V3S_GUI
             }
         }
 
+        pidState_e pidState = pidState_e.TEST_IDLE;
+
         private void timer_status_Tick(object sender, EventArgs e)
         {
             if (start == 0)
@@ -1020,6 +1042,121 @@ namespace SpeedyBeeF405V3S_GUI
             panel6.Size = new Size(34, 134 - ((battery_bar_level - 80) * 3));
 
             textBox10.Text = gMapControl1.Zoom.ToString();
+
+            if(pid_test_flag == true)
+            {
+                lb_PID_Test_Status.Text = "PID_Control_Testing...";
+                pid_test_time++;
+                lb_tmp.Text = pid_test_time.ToString();
+                lb_tmp1.Text = pid_test_setting_time_temp.ToString();
+                switch (pidState)
+                {
+                    case pidState_e.TEST_IDLE:
+                        tb_PID_ms.Enabled = false;
+                        tb_PID_Deg.Enabled = false;
+                        tb_PID_Throttle.Enabled = false;
+                        pid_test_time = 0;
+
+                        pid_test_setting_time = int.Parse(tb_PID_ms.Text)/10;
+                        pid_test_setting_time_temp = pid_test_setting_time;
+                        pid_test_setting_deg = int.Parse(tb_PID_Deg.Text);
+                        pid_test_setting_throttle = int.Parse(tb_PID_Throttle.Text);
+
+                        pidState = pidState_e.TEST_Step1;
+                        break;
+
+                    case pidState_e.TEST_Step1:
+                        if (pid_test_time >= pid_test_setting_time_temp)
+                        {
+                            pid_test_setting_time_temp += pid_test_setting_time;
+                            lb_PID_Test_Progress.Text = $"Thr : {pid_test_setting_throttle}, Deg : {pid_test_setting_deg}, Step : 1";
+                            pidState = pidState_e.TEST_Step2;
+                        }
+                        break;
+
+                    case pidState_e.TEST_Step2:
+                        if (pid_test_time >= pid_test_setting_time_temp)
+                        {
+                            pid_test_setting_time_temp += pid_test_setting_time;
+                            lb_PID_Test_Progress.Text = $"Thr : {pid_test_setting_throttle}, Deg : 0, Step : 2";
+                            pidState = pidState_e.TEST_Step3;
+                        }
+                        break;
+
+                    case pidState_e.TEST_Step3:
+                        if (pid_test_time >= pid_test_setting_time_temp)
+                        {
+                            pid_test_setting_time_temp += pid_test_setting_time;
+                            lb_PID_Test_Progress.Text = $"Thr : {pid_test_setting_throttle}, Deg : {-pid_test_setting_deg}, Step : 3";
+                            pidState = pidState_e.TEST_Step4;
+                        }
+                        break;
+
+                    case pidState_e.TEST_Step4:
+                        if (pid_test_time >= pid_test_setting_time_temp)
+                        {
+                            pid_test_setting_time_temp += pid_test_setting_time;
+                            lb_PID_Test_Progress.Text = $"Thr : {pid_test_setting_throttle}, Deg : {0}, Step : 4";
+                            pidState = pidState_e.TEST_Step5;
+                        }
+                        break;
+
+                    case pidState_e.TEST_Step5:
+                        if (pid_test_time >= pid_test_setting_time_temp)
+                        {
+                            pid_test_setting_time_temp += pid_test_setting_time/10;
+                            lb_PID_Test_Progress.Text = $"Thr : {pid_test_setting_throttle}, Deg : {pid_test_setting_deg}, Step : 5";
+                            pidState = pidState_e.TEST_Step6;
+                        }
+                        break;
+
+                    case pidState_e.TEST_Step6:
+                        if (pid_test_time >= pid_test_setting_time_temp)
+                        {
+                            pid_test_setting_time_temp += pid_test_setting_time;
+                            lb_PID_Test_Progress.Text = $"Thr : {pid_test_setting_throttle}, Deg : {0}, Step : 6";
+                            pidState = pidState_e.TEST_Step7;
+                        }
+                        break;
+
+                    case pidState_e.TEST_Step7:
+                        if (pid_test_time >= pid_test_setting_time_temp)
+                        {
+                            pid_test_setting_time_temp += pid_test_setting_time/10;
+                            lb_PID_Test_Progress.Text = $"Thr : {pid_test_setting_throttle}, Deg : {-pid_test_setting_deg}, Step : 7";
+                            pidState = pidState_e.TEST_Step8;
+                        }
+                        break;
+
+                    case pidState_e.TEST_Step8:
+                        if (pid_test_time >= pid_test_setting_time_temp)
+                        {
+                            pid_test_setting_time_temp += pid_test_setting_time;
+                            lb_PID_Test_Progress.Text = $"Thr : {pid_test_setting_throttle}, Deg : {0}, Step : 8";
+                            pidState = pidState_e.TEST_FINISH;
+                        }
+                        break;
+
+                    case pidState_e.TEST_FINISH:
+                        lb_PID_Test_Status.Text = "PID_Control_Testing_Finished!";
+                        tb_PID_ms.Enabled = true;
+                        tb_PID_Deg.Enabled = true;
+                        tb_PID_Throttle.Enabled = true;
+                        pid_test_flag = false;
+                        pid_test_time = 0;
+                        pidState = pidState_e.TEST_IDLE;
+                        break;
+
+                    default:
+                        tb_PID_ms.Enabled = true;
+                        tb_PID_Deg.Enabled = true;
+                        tb_PID_Throttle.Enabled = true;
+                        pid_test_flag = false;
+                        pid_test_time = 0;
+                        pidState = pidState_e.TEST_IDLE;
+                        break;
+                }
+            }
         }
 
         private void flight_timer_Tick(object sender, EventArgs e)
@@ -1737,6 +1874,16 @@ namespace SpeedyBeeF405V3S_GUI
                 comboBox_port.DataSource = SerialPort.GetPortNames(); //연결 가능한 시리얼포트 이름을 콤보박스에 가져오기 
             }
             catch { }
+        }
+
+        private void bt_start_pid_test_Click(object sender, EventArgs e)
+        {
+            pid_test_flag = true;
+        }
+
+        private void bt_open_folder_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -130,9 +130,13 @@
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.label81 = new System.Windows.Forms.Label();
+            this.lb_fc_load = new System.Windows.Forms.Label();
+            this.label55 = new System.Windows.Forms.Label();
             this.label36 = new System.Windows.Forms.Label();
             this.textBox11 = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.label79 = new System.Windows.Forms.Label();
             this.label57 = new System.Windows.Forms.Label();
             this.label56 = new System.Windows.Forms.Label();
             this.lb_fail = new System.Windows.Forms.Label();
@@ -296,10 +300,18 @@
             this.bt_acc_cal = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.bt_ReScan = new System.Windows.Forms.Button();
-            this.label79 = new System.Windows.Forms.Label();
-            this.label55 = new System.Windows.Forms.Label();
-            this.lb_fc_load = new System.Windows.Forms.Label();
-            this.label81 = new System.Windows.Forms.Label();
+            this.tb_PID_Throttle = new System.Windows.Forms.TextBox();
+            this.tb_PID_Deg = new System.Windows.Forms.TextBox();
+            this.tb_PID_ms = new System.Windows.Forms.TextBox();
+            this.label80 = new System.Windows.Forms.Label();
+            this.label83 = new System.Windows.Forms.Label();
+            this.label84 = new System.Windows.Forms.Label();
+            this.bt_start_pid_test = new System.Windows.Forms.Button();
+            this.lb_PID_Test_Status = new System.Windows.Forms.Label();
+            this.lb_PID_Test_Progress = new System.Windows.Forms.Label();
+            this.bt_open_folder = new System.Windows.Forms.Button();
+            this.lb_tmp = new System.Windows.Forms.Label();
+            this.lb_tmp1 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -981,6 +993,36 @@
             this.panel3.Size = new System.Drawing.Size(738, 56);
             this.panel3.TabIndex = 72;
             // 
+            // label81
+            // 
+            this.label81.AutoSize = true;
+            this.label81.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label81.Location = new System.Drawing.Point(679, 7);
+            this.label81.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label81.Name = "label81";
+            this.label81.Size = new System.Drawing.Size(23, 21);
+            this.label81.TabIndex = 91;
+            this.label81.Text = "%";
+            // 
+            // lb_fc_load
+            // 
+            this.lb_fc_load.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_fc_load.Location = new System.Drawing.Point(657, 7);
+            this.lb_fc_load.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_fc_load.Name = "lb_fc_load";
+            this.lb_fc_load.Size = new System.Drawing.Size(36, 19);
+            this.lb_fc_load.TabIndex = 92;
+            this.lb_fc_load.Text = "-";
+            // 
+            // label55
+            // 
+            this.label55.AutoSize = true;
+            this.label55.Location = new System.Drawing.Point(601, 13);
+            this.label55.Name = "label55";
+            this.label55.Size = new System.Drawing.Size(61, 12);
+            this.label55.TabIndex = 91;
+            this.label55.Text = "FC 부하 : ";
+            // 
             // label36
             // 
             this.label36.Font = new System.Drawing.Font("Consolas", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -1029,6 +1071,15 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(71, 596);
             this.panel2.TabIndex = 84;
+            // 
+            // label79
+            // 
+            this.label79.AutoSize = true;
+            this.label79.Location = new System.Drawing.Point(17, 414);
+            this.label79.Name = "label79";
+            this.label79.Size = new System.Drawing.Size(41, 12);
+            this.label79.TabIndex = 90;
+            this.label79.Text = "배터리";
             // 
             // label57
             // 
@@ -1867,6 +1918,7 @@
             // timer_status
             // 
             this.timer_status.Enabled = true;
+            this.timer_status.Interval = 10;
             this.timer_status.Tick += new System.EventHandler(this.timer_status_Tick);
             // 
             // flight_timer
@@ -2182,6 +2234,16 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.bt_open_folder);
+            this.tabPage3.Controls.Add(this.lb_PID_Test_Progress);
+            this.tabPage3.Controls.Add(this.lb_PID_Test_Status);
+            this.tabPage3.Controls.Add(this.bt_start_pid_test);
+            this.tabPage3.Controls.Add(this.label84);
+            this.tabPage3.Controls.Add(this.label83);
+            this.tabPage3.Controls.Add(this.label80);
+            this.tabPage3.Controls.Add(this.tb_PID_ms);
+            this.tabPage3.Controls.Add(this.tb_PID_Deg);
+            this.tabPage3.Controls.Add(this.tb_PID_Throttle);
             this.tabPage3.Controls.Add(this.panel8);
             this.tabPage3.Controls.Add(this.cb_record);
             this.tabPage3.Controls.Add(this.rb_debug);
@@ -2227,7 +2289,7 @@
             // rb_debug
             // 
             this.rb_debug.AutoSize = true;
-            this.rb_debug.Location = new System.Drawing.Point(466, 400);
+            this.rb_debug.Location = new System.Drawing.Point(313, 400);
             this.rb_debug.Name = "rb_debug";
             this.rb_debug.Size = new System.Drawing.Size(59, 16);
             this.rb_debug.TabIndex = 12;
@@ -2238,7 +2300,7 @@
             // rb_motor
             // 
             this.rb_motor.AutoSize = true;
-            this.rb_motor.Location = new System.Drawing.Point(362, 444);
+            this.rb_motor.Location = new System.Drawing.Point(237, 444);
             this.rb_motor.Name = "rb_motor";
             this.rb_motor.Size = new System.Drawing.Size(55, 16);
             this.rb_motor.TabIndex = 11;
@@ -2249,7 +2311,7 @@
             // rb_gyro
             // 
             this.rb_gyro.AutoSize = true;
-            this.rb_gyro.Location = new System.Drawing.Point(362, 422);
+            this.rb_gyro.Location = new System.Drawing.Point(237, 422);
             this.rb_gyro.Name = "rb_gyro";
             this.rb_gyro.Size = new System.Drawing.Size(50, 16);
             this.rb_gyro.TabIndex = 10;
@@ -2260,7 +2322,7 @@
             // rb_altitude
             // 
             this.rb_altitude.AutoSize = true;
-            this.rb_altitude.Location = new System.Drawing.Point(362, 400);
+            this.rb_altitude.Location = new System.Drawing.Point(237, 400);
             this.rb_altitude.Name = "rb_altitude";
             this.rb_altitude.Size = new System.Drawing.Size(64, 16);
             this.rb_altitude.TabIndex = 9;
@@ -2271,7 +2333,7 @@
             // cb_autoscale
             // 
             this.cb_autoscale.AutoSize = true;
-            this.cb_autoscale.Location = new System.Drawing.Point(466, 445);
+            this.cb_autoscale.Location = new System.Drawing.Point(313, 445);
             this.cb_autoscale.Name = "cb_autoscale";
             this.cb_autoscale.Size = new System.Drawing.Size(85, 16);
             this.cb_autoscale.TabIndex = 8;
@@ -2281,7 +2343,7 @@
             // rb_none
             // 
             this.rb_none.AutoSize = true;
-            this.rb_none.Location = new System.Drawing.Point(561, 400);
+            this.rb_none.Location = new System.Drawing.Point(313, 422);
             this.rb_none.Name = "rb_none";
             this.rb_none.Size = new System.Drawing.Size(53, 16);
             this.rb_none.TabIndex = 7;
@@ -2292,7 +2354,7 @@
             // rb_yaw_setpoint
             // 
             this.rb_yaw_setpoint.AutoSize = true;
-            this.rb_yaw_setpoint.Location = new System.Drawing.Point(206, 444);
+            this.rb_yaw_setpoint.Location = new System.Drawing.Point(112, 444);
             this.rb_yaw_setpoint.Name = "rb_yaw_setpoint";
             this.rb_yaw_setpoint.Size = new System.Drawing.Size(107, 16);
             this.rb_yaw_setpoint.TabIndex = 6;
@@ -2303,7 +2365,7 @@
             // rb_pitch_setpoint
             // 
             this.rb_pitch_setpoint.AutoSize = true;
-            this.rb_pitch_setpoint.Location = new System.Drawing.Point(206, 422);
+            this.rb_pitch_setpoint.Location = new System.Drawing.Point(112, 422);
             this.rb_pitch_setpoint.Name = "rb_pitch_setpoint";
             this.rb_pitch_setpoint.Size = new System.Drawing.Size(110, 16);
             this.rb_pitch_setpoint.TabIndex = 5;
@@ -2314,7 +2376,7 @@
             // rb_roll_setpoint
             // 
             this.rb_roll_setpoint.AutoSize = true;
-            this.rb_roll_setpoint.Location = new System.Drawing.Point(206, 400);
+            this.rb_roll_setpoint.Location = new System.Drawing.Point(112, 400);
             this.rb_roll_setpoint.Name = "rb_roll_setpoint";
             this.rb_roll_setpoint.Size = new System.Drawing.Size(103, 16);
             this.rb_roll_setpoint.TabIndex = 4;
@@ -2325,7 +2387,7 @@
             // rb_roll_pitch
             // 
             this.rb_roll_pitch.AutoSize = true;
-            this.rb_roll_pitch.Location = new System.Drawing.Point(95, 400);
+            this.rb_roll_pitch.Location = new System.Drawing.Point(13, 466);
             this.rb_roll_pitch.Name = "rb_roll_pitch";
             this.rb_roll_pitch.Size = new System.Drawing.Size(86, 16);
             this.rb_roll_pitch.TabIndex = 3;
@@ -2804,50 +2866,125 @@
             this.bt_ReScan.UseVisualStyleBackColor = true;
             this.bt_ReScan.Click += new System.EventHandler(this.bt_ReScan_Click);
             // 
-            // label79
+            // tb_PID_Throttle
             // 
-            this.label79.AutoSize = true;
-            this.label79.Location = new System.Drawing.Point(17, 414);
-            this.label79.Name = "label79";
-            this.label79.Size = new System.Drawing.Size(41, 12);
-            this.label79.TabIndex = 90;
-            this.label79.Text = "배터리";
+            this.tb_PID_Throttle.Location = new System.Drawing.Point(440, 395);
+            this.tb_PID_Throttle.Name = "tb_PID_Throttle";
+            this.tb_PID_Throttle.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.tb_PID_Throttle.Size = new System.Drawing.Size(42, 21);
+            this.tb_PID_Throttle.TabIndex = 71;
+            this.tb_PID_Throttle.Text = "1300";
             // 
-            // label55
+            // tb_PID_Deg
             // 
-            this.label55.AutoSize = true;
-            this.label55.Location = new System.Drawing.Point(601, 13);
-            this.label55.Name = "label55";
-            this.label55.Size = new System.Drawing.Size(61, 12);
-            this.label55.TabIndex = 91;
-            this.label55.Text = "FC 부하 : ";
+            this.tb_PID_Deg.Location = new System.Drawing.Point(440, 418);
+            this.tb_PID_Deg.Name = "tb_PID_Deg";
+            this.tb_PID_Deg.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.tb_PID_Deg.Size = new System.Drawing.Size(42, 21);
+            this.tb_PID_Deg.TabIndex = 72;
+            this.tb_PID_Deg.Text = "25";
             // 
-            // lb_fc_load
+            // tb_PID_ms
             // 
-            this.lb_fc_load.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_fc_load.Location = new System.Drawing.Point(657, 7);
-            this.lb_fc_load.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lb_fc_load.Name = "lb_fc_load";
-            this.lb_fc_load.Size = new System.Drawing.Size(36, 19);
-            this.lb_fc_load.TabIndex = 92;
-            this.lb_fc_load.Text = "-";
+            this.tb_PID_ms.Location = new System.Drawing.Point(440, 441);
+            this.tb_PID_ms.Name = "tb_PID_ms";
+            this.tb_PID_ms.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.tb_PID_ms.Size = new System.Drawing.Size(42, 21);
+            this.tb_PID_ms.TabIndex = 73;
+            this.tb_PID_ms.Text = "2000";
             // 
-            // label81
+            // label80
             // 
-            this.label81.AutoSize = true;
-            this.label81.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label81.Location = new System.Drawing.Point(679, 7);
-            this.label81.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label81.Name = "label81";
-            this.label81.Size = new System.Drawing.Size(23, 21);
-            this.label81.TabIndex = 91;
-            this.label81.Text = "%";
+            this.label80.AutoSize = true;
+            this.label80.Location = new System.Drawing.Point(485, 400);
+            this.label80.Name = "label80";
+            this.label80.Size = new System.Drawing.Size(47, 12);
+            this.label80.TabIndex = 74;
+            this.label80.Text = "Throttle";
+            // 
+            // label83
+            // 
+            this.label83.AutoSize = true;
+            this.label83.Location = new System.Drawing.Point(485, 422);
+            this.label83.Name = "label83";
+            this.label83.Size = new System.Drawing.Size(27, 12);
+            this.label83.TabIndex = 75;
+            this.label83.Text = "Deg";
+            // 
+            // label84
+            // 
+            this.label84.AutoSize = true;
+            this.label84.Location = new System.Drawing.Point(485, 444);
+            this.label84.Name = "label84";
+            this.label84.Size = new System.Drawing.Size(23, 12);
+            this.label84.TabIndex = 76;
+            this.label84.Text = "ms";
+            // 
+            // bt_start_pid_test
+            // 
+            this.bt_start_pid_test.Location = new System.Drawing.Point(544, 392);
+            this.bt_start_pid_test.Name = "bt_start_pid_test";
+            this.bt_start_pid_test.Size = new System.Drawing.Size(98, 23);
+            this.bt_start_pid_test.TabIndex = 77;
+            this.bt_start_pid_test.Text = "Start PID Test";
+            this.bt_start_pid_test.UseVisualStyleBackColor = true;
+            this.bt_start_pid_test.Click += new System.EventHandler(this.bt_start_pid_test_Click);
+            // 
+            // lb_PID_Test_Status
+            // 
+            this.lb_PID_Test_Status.AutoSize = true;
+            this.lb_PID_Test_Status.Location = new System.Drawing.Point(545, 425);
+            this.lb_PID_Test_Status.Name = "lb_PID_Test_Status";
+            this.lb_PID_Test_Status.Size = new System.Drawing.Size(92, 12);
+            this.lb_PID_Test_Status.TabIndex = 78;
+            this.lb_PID_Test_Status.Text = "PID Test Status";
+            // 
+            // lb_PID_Test_Progress
+            // 
+            this.lb_PID_Test_Progress.AutoSize = true;
+            this.lb_PID_Test_Progress.Location = new System.Drawing.Point(545, 447);
+            this.lb_PID_Test_Progress.Name = "lb_PID_Test_Progress";
+            this.lb_PID_Test_Progress.Size = new System.Drawing.Size(108, 12);
+            this.lb_PID_Test_Progress.TabIndex = 79;
+            this.lb_PID_Test_Progress.Text = "PID Test Progress";
+            // 
+            // bt_open_folder
+            // 
+            this.bt_open_folder.Location = new System.Drawing.Point(547, 479);
+            this.bt_open_folder.Name = "bt_open_folder";
+            this.bt_open_folder.Size = new System.Drawing.Size(95, 23);
+            this.bt_open_folder.TabIndex = 80;
+            this.bt_open_folder.Text = "Open Folder";
+            this.bt_open_folder.UseVisualStyleBackColor = true;
+            this.bt_open_folder.Click += new System.EventHandler(this.bt_open_folder_Click);
+            // 
+            // lb_tmp
+            // 
+            this.lb_tmp.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_tmp.Location = new System.Drawing.Point(689, 620);
+            this.lb_tmp.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_tmp.Name = "lb_tmp";
+            this.lb_tmp.Size = new System.Drawing.Size(64, 19);
+            this.lb_tmp.TabIndex = 91;
+            this.lb_tmp.Text = "-";
+            // 
+            // lb_tmp1
+            // 
+            this.lb_tmp1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_tmp1.Location = new System.Drawing.Point(782, 620);
+            this.lb_tmp1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_tmp1.Name = "lb_tmp1";
+            this.lb_tmp1.Size = new System.Drawing.Size(64, 19);
+            this.lb_tmp1.TabIndex = 92;
+            this.lb_tmp1.Text = "-";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1184, 661);
+            this.Controls.Add(this.lb_tmp1);
+            this.Controls.Add(this.lb_tmp);
             this.Controls.Add(this.bt_ReScan);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.tabControl1);
@@ -3135,6 +3272,18 @@
         private System.Windows.Forms.Label label81;
         private System.Windows.Forms.Label lb_fc_load;
         private System.Windows.Forms.Label label55;
+        private System.Windows.Forms.Button bt_start_pid_test;
+        private System.Windows.Forms.Label label84;
+        private System.Windows.Forms.Label label83;
+        private System.Windows.Forms.Label label80;
+        private System.Windows.Forms.TextBox tb_PID_ms;
+        private System.Windows.Forms.TextBox tb_PID_Deg;
+        private System.Windows.Forms.TextBox tb_PID_Throttle;
+        private System.Windows.Forms.Label lb_PID_Test_Status;
+        private System.Windows.Forms.Button bt_open_folder;
+        private System.Windows.Forms.Label lb_PID_Test_Progress;
+        private System.Windows.Forms.Label lb_tmp;
+        private System.Windows.Forms.Label lb_tmp1;
     }
 }
 
