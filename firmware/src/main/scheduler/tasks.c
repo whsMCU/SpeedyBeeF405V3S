@@ -492,6 +492,15 @@ void gcsMain(void)
           #endif
         }
         break;
+
+      case 0x60:
+        if(!ARMING_FLAG(ARMED))
+        {
+          _PID_Test.pid_test_flag = *(uint8_t*)&telemetry_rx_buf[3];
+          _PID_Test.pid_test_throttle = *(float*)&telemetry_rx_buf[4];
+          _PID_Test.pid_test_deg = *(float*)&telemetry_rx_buf[8];
+        }
+        break;
     }
   }
 }

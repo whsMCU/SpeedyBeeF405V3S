@@ -1,0 +1,5 @@
+DateTime  Pitch   Yaw Alt RollSetPoint    PitchSetPoint   Yaw SetPoint
+DateTime  Pitch   Yaw Alt RollSetPoint    PitchSetPoint   Yaw SetPoint
+DateTime  Pitch   Yaw Alt RollSetPoint    PitchSetPoint   Yaw SetPoint
+DateTime  Pitch   Yaw Alt RollSetPoint    PitchSetPoint   Yaw SetPoint
+DateTime  Pitch   Yaw Alt RollSetPoint    PitchSetPoint   Yaw SetPoint

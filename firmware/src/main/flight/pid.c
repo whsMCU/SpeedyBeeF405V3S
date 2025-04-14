@@ -39,6 +39,8 @@ DoublePID _PITCH;
 PID _YAW_Heading;
 PID _YAW_Rate;
 
+PID_Test _PID_Test;
+
 void pidInit(void)
 {
   _ROLL.in.kp = 10;
@@ -122,7 +124,13 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   PID_Calculation(&_ROLL.out, rcCommand[ROLL], imu_roll, dT);
   PID_Calculation(&_ROLL.in, _ROLL.out.result, bmi270.gyroADCf[X], dT);
 
-  PID_Calculation(&_PITCH.out, rcCommand[PITCH], imu_pitch, dT);
+  if(_PID_Test.pid_test_flag == 1)
+  {
+    PID_Calculation(&_PITCH.out, _PID_Test.pid_test_deg, imu_pitch, dT);
+  }else
+  {
+    PID_Calculation(&_PITCH.out, rcCommand[PITCH], imu_pitch, dT);
+  }
   PID_Calculation(&_PITCH.in, _PITCH.out.result, bmi270.gyroADCf[Y], dT);
 
   if(rcData[THROTTLE] < 1030 || !ARMING_FLAG(ARMED))
@@ -136,19 +144,36 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 
 	  PID_Calculation(&_YAW_Rate, rcCommand[YAW] * 10.f, -bmi270.gyroADCf[Z], dT);//left -, right +
 
-	  LF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - _PITCH.in.result;// + _ROLL.in.result;// - _YAW_Rate.result;
-	  LR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + _PITCH.in.result;// + _ROLL.in.result;// + _YAW_Rate.result;
-	  RR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + _PITCH.in.result;// - _ROLL.in.result;// - _YAW_Rate.result;
-	  RF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - _PITCH.in.result;// - _ROLL.in.result;// + _YAW_Rate.result;
+	  if(_PID_Test.pid_test_flag == 1)
+	  {
+	    LF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result;// + _ROLL.in.result;// - _YAW_Rate.result;
+	    LR = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 + _PITCH.in.result;// + _ROLL.in.result;// + _YAW_Rate.result;
+	    RR = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 + _PITCH.in.result;// - _ROLL.in.result;// - _YAW_Rate.result;
+	    RF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result;// - _ROLL.in.result;// + _YAW_Rate.result;
+	  }else
+	  {
+	    LF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - _PITCH.in.result;// + _ROLL.in.result;// - _YAW_Rate.result;
+	    LR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + _PITCH.in.result;// + _ROLL.in.result;// + _YAW_Rate.result;
+	    RR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + _PITCH.in.result;// - _ROLL.in.result;// - _YAW_Rate.result;
+	    RF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - _PITCH.in.result;// - _ROLL.in.result;// + _YAW_Rate.result;
+	  }
   }
   else
   {
 	  PID_Calculation(&_YAW_Heading, yaw_heading_reference, imu_yaw, dT);
-
-	  LF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - _PITCH.in.result;// + _ROLL.in.result;// - _YAW_Heading.result;
-	  LR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + _PITCH.in.result;// + _ROLL.in.result;// + _YAW_Heading.result;
-	  RR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + _PITCH.in.result;// - _ROLL.in.result;// - _YAW_Heading.result;
-	  RF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - _PITCH.in.result;// - _ROLL.in.result;// + _YAW_Heading.result;
+    if(_PID_Test.pid_test_flag == 1)
+    {
+      LF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result;// + _ROLL.in.result;// - _YAW_Rate.result;
+      LR = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 + _PITCH.in.result;// + _ROLL.in.result;// + _YAW_Rate.result;
+      RR = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 + _PITCH.in.result;// - _ROLL.in.result;// - _YAW_Rate.result;
+      RF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result;// - _ROLL.in.result;// + _YAW_Rate.result;
+    }else
+    {
+      LF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - _PITCH.in.result;// + _ROLL.in.result;// - _YAW_Rate.result;
+      LR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + _PITCH.in.result;// + _ROLL.in.result;// + _YAW_Rate.result;
+      RR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + _PITCH.in.result;// - _ROLL.in.result;// - _YAW_Rate.result;
+      RF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - _PITCH.in.result;// - _ROLL.in.result;// + _YAW_Rate.result;
+    }
   }
 
   motorWriteAll();

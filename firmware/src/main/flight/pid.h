@@ -54,10 +54,17 @@ typedef struct _DoublePID
   PID out;
 }DoublePID;
 
+typedef struct _PID_Test{
+   uint8_t pid_test_flag;
+   float pid_test_throttle;
+   float pid_test_deg;
+} PID_Test;
+
 extern DoublePID _ROLL;
 extern DoublePID _PITCH;
 extern PID _YAW_Heading;
 extern PID _YAW_Rate;
+extern PID_Test _PID_Test;
 
 
 void PID_Calculation(PID* axis, float set_point, float measured, float dt);
