@@ -810,7 +810,8 @@ typedef enum {
     GCS_PID_save,
     GCS_ACC_calibration,
     GCS_MAG_calibration,
-    GCS_PID_Test
+    GCS_PID_Test,
+    GCS_Fast_Tlemetry
 } gcsData_e;
 
 uint8_t uart1_rx_data = 0;
@@ -890,6 +891,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
                 gcsState = GCS_PAYLOAD;
                 gcsData = GCS_PID_Test;
                 break;
+            case 0x70:
+                telemetry_rx_buf[cnt1++] = uart1_rx_data;
+                gcsState = GCS_PAYLOAD;
+                gcsData = GCS_Fast_Tlemetry;
+                break;
             default:
                 gcsState = GCS_IDLE;
                 gcsData = GCS_Tlemetry;
@@ -924,6 +930,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
           gcsState = GCS_CHECKSUM;
         }
         else if(gcsData == GCS_PID_recive && cnt1 == 75)
+        {
+          gcsState = GCS_CHECKSUM;
+        }
+        else if(gcsData == GCS_Fast_Tlemetry && cnt1 == 19)
         {
           gcsState = GCS_CHECKSUM;
         }
@@ -993,7 +1003,15 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
             telemetry_rx_cplt_flag = 1;
           }
         }
-
+        else if(gcsData == GCS_Fast_Tlemetry)
+        {
+          unsigned char chksum = 0xff;
+          for(int i=0;i<19;i++) chksum = chksum - telemetry_rx_buf[i];
+          if(chksum == telemetry_rx_buf[cnt1])
+          {
+            telemetry_rx_cplt_flag = 1;
+          }
+        }
         gcsState = GCS_IDLE;
         cnt1 = 0;
         break;

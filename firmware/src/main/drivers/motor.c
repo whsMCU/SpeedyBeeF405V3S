@@ -29,6 +29,7 @@
 #include "common/maths.h"
 
 #include "flight/failsafe.h"
+#include "flight/pid.h"
 
 #include "fc/runtime_config.h"
 
@@ -75,7 +76,7 @@ void motorWriteAll(void)
   {
     if(failsafeFlags == 0)
     {
-      if(rcData[THROTTLE] > 1030)
+      if(rcData[THROTTLE] > 1030 || _PID_Test.pid_test_flag == 1)
       {
         motor.motor[R_R] = RR > 21000 ? 21000 : RR < 11000 ? 11000 : RR;
         motor.motor[R_F] = RF > 21000 ? 21000 : RF < 11000 ? 11000 : RF;

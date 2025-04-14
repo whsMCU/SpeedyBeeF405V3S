@@ -238,6 +238,57 @@ static void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf)
   for(int i=0;i<121;i++) telemetry_tx_buf[121] = telemetry_tx_buf[121] - telemetry_tx_buf[i];
 }
 
+static void Encode_Msg_Fast_AHRS(unsigned char* telemetry_tx_buf)
+{
+  telemetry_tx_buf[0] = 0x46;
+  telemetry_tx_buf[1] = 0x43;
+
+  telemetry_tx_buf[2] = 0x30;
+
+  telemetry_tx_buf[3] = (short)(attitude.values.roll*10);
+  telemetry_tx_buf[4] = ((short)(attitude.values.roll*10))>>8;
+
+  telemetry_tx_buf[5] = (short)(attitude.values.pitch*10);
+  telemetry_tx_buf[6] = ((short)(attitude.values.pitch*10))>>8;
+
+  telemetry_tx_buf[7] = (short)(attitude.values.yaw*10);
+  telemetry_tx_buf[8] = ((short)(attitude.values.yaw*10))>>8;
+
+  telemetry_tx_buf[9] = (short)(getEstimatedAltitudeCm()*10);
+  telemetry_tx_buf[10] = ((short)(getEstimatedAltitudeCm()*10))>>8;
+
+  telemetry_tx_buf[11] = (short)(rcCommand[ROLL]*100);
+  telemetry_tx_buf[12] = (short)(rcCommand[ROLL]*100)>>8;
+
+  telemetry_tx_buf[13] = (short)(rcCommand[PITCH]*100);
+  telemetry_tx_buf[14] = (short)(rcCommand[PITCH]*100)>>8;
+
+  telemetry_tx_buf[15] = (short)(rcCommand[YAW]*10);
+  telemetry_tx_buf[16] = (short)(rcCommand[YAW]*10)>>8;
+
+  telemetry_tx_buf[17] = (unsigned short)(rcData[THROTTLE]*10);
+  telemetry_tx_buf[18] = ((unsigned short)(rcData[THROTTLE]*10))>>8;
+
+   telemetry_tx_buf[19] = (unsigned short)(getBatteryAverageCellVoltage());
+  telemetry_tx_buf[20] = ((unsigned short)(getBatteryAverageCellVoltage()))>>8;
+
+  telemetry_tx_buf[21] = flightModeFlags;
+  telemetry_tx_buf[22] = flightModeFlags>>8;
+
+  telemetry_tx_buf[23] = failsafeFlags;
+  telemetry_tx_buf[24] = 0x00;
+
+  telemetry_tx_buf[25] = ARMING_FLAG(ARMED);
+  telemetry_tx_buf[26] = 0x00;
+
+  telemetry_tx_buf[27] = getAverageSystemLoadPercent();
+  telemetry_tx_buf[28] = getAverageSystemLoadPercent()>>8;
+
+  telemetry_tx_buf[29] = 0xff;
+
+  for(int i=0;i<29;i++) telemetry_tx_buf[29] = telemetry_tx_buf[29] - telemetry_tx_buf[i];
+}
+
 void Encode_Msg_GPS(unsigned char* telemetry_tx_buf)
 {
   telemetry_tx_buf[0] = 0x46;
@@ -494,12 +545,17 @@ void gcsMain(void)
         break;
 
       case 0x60:
-        if(!ARMING_FLAG(ARMED))
+        if(ARMING_FLAG(ARMED))
         {
           _PID_Test.pid_test_flag = *(uint8_t*)&telemetry_rx_buf[3];
-          _PID_Test.pid_test_throttle = *(float*)&telemetry_rx_buf[4];
-          _PID_Test.pid_test_deg = *(float*)&telemetry_rx_buf[8];
+          _PID_Test.pid_test_throttle = *(int*)&telemetry_rx_buf[4];
+          _PID_Test.pid_test_deg = *(int*)&telemetry_rx_buf[8];
         }
+        break;
+
+      case 0x70:
+        Encode_Msg_Fast_AHRS(&telemetry_tx_buf[0]);
+        uartWriteDMA(_DEF_UART1, &telemetry_tx_buf[0], 30);
         break;
     }
   }

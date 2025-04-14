@@ -82,7 +82,8 @@ namespace Ball_Ballancer_CS.Class
         {
             GCS_Tlemetry,
             GCS_PID_recive,
-            GCS_PID_send
+            GCS_PID_send,
+            GCS_Fast_Tlemetry
         }
 
         gcsState_e gcsState = gcsState_e.GCS_IDLE;
@@ -131,6 +132,11 @@ namespace Ball_Ballancer_CS.Class
                                 gcsState = gcsState_e.GCS_PAYLOAD;
                                 gcsData = gcsData_e.GCS_PID_recive;
                                 break;
+                            case 0x30:
+                                buff_pass[cnt++] = buff[i];
+                                gcsState = gcsState_e.GCS_PAYLOAD;
+                                gcsData = gcsData_e.GCS_Fast_Tlemetry;
+                                break;
                             default:
                                 gcsState = gcsState_e.GCS_IDLE;
                                 gcsData = gcsData_e.GCS_Tlemetry;
@@ -145,6 +151,10 @@ namespace Ball_Ballancer_CS.Class
                             gcsState = gcsState_e.GCS_CHECKSUM;
                         }
                         else if (gcsData == gcsData_e.GCS_PID_recive && cnt == 75)
+                        {
+                            gcsState = gcsState_e.GCS_CHECKSUM;
+                        }
+                        else if (gcsData == gcsData_e.GCS_Fast_Tlemetry && cnt == 29)
                         {
                             gcsState = gcsState_e.GCS_CHECKSUM;
                         }
@@ -164,6 +174,16 @@ namespace Ball_Ballancer_CS.Class
                         {
                             byte chksum = 0xff;
                             for (ii = 0; ii < 121; ii++) chksum = (byte)(chksum - buff_pass[ii]);
+                            if (chksum == buff_pass[cnt])
+                            {
+                                recived_data_flag = true;
+                            }
+                        }
+
+                        else if (gcsData == gcsData_e.GCS_Fast_Tlemetry)
+                        {
+                            byte chksum = 0xff;
+                            for (ii = 0; ii < 29; ii++) chksum = (byte)(chksum - buff_pass[ii]);
                             if (chksum == buff_pass[cnt])
                             {
                                 recived_data_flag = true;
@@ -264,6 +284,30 @@ namespace Ball_Ballancer_CS.Class
                 data[(int)PID_e.Y_R_P] = BitConverter.ToSingle(buff_pass, 63);
                 data[(int)PID_e.Y_R_I] = BitConverter.ToSingle(buff_pass, 67);
                 data[(int)PID_e.Y_R_D] = BitConverter.ToSingle(buff_pass, 71);
+            }
+            else if (buff_pass[2] == 0x30) // FAST Data 수신
+            {
+                data[0] = 2;
+                data[1] = BitConverter.ToInt16(buff_pass, 3) / 100;
+                data[2] = BitConverter.ToInt16(buff_pass, 5) / 100;
+                data[3] = BitConverter.ToUInt16(buff_pass, 7) / 100;
+
+                data[4] = BitConverter.ToInt16(buff_pass, 9) / 10;
+
+                data[5] = BitConverter.ToInt16(buff_pass, 11) / 100;
+                data[6] = BitConverter.ToInt16(buff_pass, 13) / 100;
+                data[7] = (BitConverter.ToInt16(buff_pass, 15));
+                data[8] = ((BitConverter.ToInt16(buff_pass, 17) / 10) - 1000) / 10;
+
+                data[9] = BitConverter.ToInt16(buff_pass, 19);
+
+                data[10] = BitConverter.ToUInt16(buff_pass, 21);
+
+                data[11] = BitConverter.ToInt16(buff_pass, 23);
+
+                data[12] = BitConverter.ToInt16(buff_pass, 25);
+
+                data[13] = BitConverter.ToUInt16(buff_pass, 27);
             }
 
             return data;
