@@ -73,6 +73,10 @@ void pidInit(void)
   _YAW_Rate.ki = 0;
   _YAW_Rate.kd = 0;
   _YAW_Rate.integral_windup = 500;
+
+  _PID_Test.pid_test_flag = 0;
+  _PID_Test.pid_test_throttle = 0;
+  _PID_Test.pid_test_deg = 0;
 }
 
 void PID_Calculation(PID* axis, float set_point, float measured, float dt)
@@ -133,7 +137,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   }
   PID_Calculation(&_PITCH.in, _PITCH.out.result, bmi270.gyroADCf[Y], dT);
 
-  if(rcData[THROTTLE] < 1030 || !ARMING_FLAG(ARMED))
+  if((rcData[THROTTLE] < 1030 || !ARMING_FLAG(ARMED))&& _PID_Test.pid_test_flag == 0)
   {
 	  Reset_All_PID_Integrator();
   }
