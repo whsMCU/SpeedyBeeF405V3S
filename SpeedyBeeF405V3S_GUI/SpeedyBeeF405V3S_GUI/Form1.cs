@@ -27,7 +27,7 @@ namespace SpeedyBeeF405V3S_GUI
         DataPassing data = new DataPassing();
         Msp_Protocol protocol = new Msp_Protocol();
 
-        DateTime temp;
+        DateTime temp, end;
 
         /// <ExcelDataSave>
         string filePath = "RealTimeData.xlsx";
@@ -371,7 +371,7 @@ namespace SpeedyBeeF405V3S_GUI
                         OpenClose.Text = "Close";
                         comboBox_port.Enabled = false;  //COM포트설정 콤보박스 비활성화
 
-                        AHRS_Timer = new System.Timers.Timer(50);
+                        AHRS_Timer = new System.Timers.Timer(20);
                         AHRS_Timer.Elapsed += OnTimedEvent;
                         AHRS_Timer.AutoReset = true;
                         AHRS_Timer.Enabled = true;
@@ -821,8 +821,8 @@ namespace SpeedyBeeF405V3S_GUI
                 }
                 catch { Console.WriteLine("Fast Telemetry Data Requset Error"); }
             }
-            
-            if(pid_recive_flag == true)
+
+            if (pid_recive_flag == true)
             {
                 pid_recive_flag = false;
                 try
@@ -1182,8 +1182,8 @@ namespace SpeedyBeeF405V3S_GUI
                 this.Invoke((MethodInvoker)delegate
                 {
                     lb_PID_Test_Status.Text = "PID_Control_Testing...";
-                    lb_PID_Test_Progress_Time.Text = (pid_test_time*50).ToString();
-                    lb_PID_Test_Target_Time.Text = (pid_test_setting_time_temp * 50).ToString();
+                    lb_PID_Test_Progress_Time.Text = (pid_test_time*30).ToString();
+                    lb_PID_Test_Target_Time.Text = (pid_test_setting_time_temp * 30).ToString();
                 });
                 switch (pidState)
                 {
@@ -1195,7 +1195,7 @@ namespace SpeedyBeeF405V3S_GUI
                             tb_PID_Throttle.Enabled = false;
                         });
                         pid_test_time = 0;
-                        pid_test_setting_time = int.Parse(tb_PID_ms.Text) / 50;
+                        pid_test_setting_time = int.Parse(tb_PID_ms.Text) / 30;
                         pid_test_setting_time_temp = pid_test_setting_time;
                         pid_test_setting_deg = int.Parse(tb_PID_Deg.Text);
                         pid_test_setting_deg_temp = 0;
@@ -1208,7 +1208,7 @@ namespace SpeedyBeeF405V3S_GUI
                             lb_PID_Test_Progress.Text = $"Thr : {pid_test_setting_throttle}, Deg : {pid_test_setting_deg_temp}, Step : 0";
                         });
 
-                        Console.WriteLine($"Thr : {pid_test_setting_throttle}, Deg : {pid_test_setting_deg_temp}, Step : 0, time : {pid_test_setting_time_temp}");
+                        Console.WriteLine($"Thr : {pid_test_setting_throttle}, Deg : {pid_test_setting_deg_temp}, Step : 0");
                         pidState = pidState_e.TEST_Step1;
                         break;
 
@@ -1219,12 +1219,13 @@ namespace SpeedyBeeF405V3S_GUI
                             pid_test_setting_deg_temp = pid_test_setting_deg;
                             pid_test_request_flag = true;
                             temp = DateTime.Now;
+
                             this.Invoke((MethodInvoker)delegate
                             {
                                 lb_PID_Test_Progress.Text = $"Thr : {pid_test_setting_throttle}, Deg : {pid_test_setting_deg_temp}, Step : 1";
                             });
 
-                            Console.WriteLine($"Thr : {pid_test_setting_throttle}, Deg : {pid_test_setting_deg_temp}, Step : 1, time : {pid_test_setting_time_temp}");
+                            Console.WriteLine($"Thr : {pid_test_setting_throttle}, Deg : {pid_test_setting_deg_temp}, Step : 1");
                             pidState = pidState_e.TEST_Step2;
                         }
                         break;
@@ -1235,13 +1236,14 @@ namespace SpeedyBeeF405V3S_GUI
                             pid_test_setting_time_temp += pid_test_setting_time;
                             pid_test_setting_deg_temp = 0;
                             pid_test_request_flag = true;
-                            DateTime end = DateTime.Now;
+                            end = DateTime.Now;
+                            Console.WriteLine($"DT: {(end - temp).TotalMilliseconds}");
                             this.Invoke((MethodInvoker)delegate
                             {
                                 lb_PID_Test_Progress.Text = $"Thr : {pid_test_setting_throttle}, Deg : {pid_test_setting_deg_temp}, Step : 2";
                             });
 
-                            Console.WriteLine($"Thr : {pid_test_setting_throttle}, Deg : {pid_test_setting_deg_temp}, Step : 2, DT : {(end-temp).TotalMilliseconds}");
+                            Console.WriteLine($"Thr : {pid_test_setting_throttle}, Deg : {pid_test_setting_deg_temp}, Step : 2");
                             pidState = pidState_e.TEST_Step3;
                         }
                         break;
@@ -1283,7 +1285,7 @@ namespace SpeedyBeeF405V3S_GUI
                     case pidState_e.TEST_Step5:
                         if (pid_test_time >= pid_test_setting_time_temp)
                         {
-                            pid_test_setting_time_temp += pid_test_setting_time / 10;
+                            pid_test_setting_time_temp += pid_test_setting_time / 30;
                             pid_test_setting_deg_temp = pid_test_setting_deg;
                             pid_test_request_flag = true;
 
@@ -1317,7 +1319,7 @@ namespace SpeedyBeeF405V3S_GUI
                     case pidState_e.TEST_Step7:
                         if (pid_test_time >= pid_test_setting_time_temp)
                         {
-                            pid_test_setting_time_temp += pid_test_setting_time / 10;
+                            pid_test_setting_time_temp += pid_test_setting_time / 30;
                             pid_test_setting_deg_temp = -pid_test_setting_deg;
                             pid_test_request_flag = true;
 

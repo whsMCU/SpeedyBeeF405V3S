@@ -230,11 +230,6 @@ void scheduler(void)
 			}
 		}
 	}
-	rxRuntimeState.uartAvalable = uartAvailable(_DEF_UART2);
-	while(uartAvailable(_DEF_UART2))
-	{
-		crsfDataReceive(uartRead(_DEF_UART2), (void*) &rxRuntimeState);
-	}
 
   // Check for incoming RX data. Don't do this in the checker as that is called repeatedly within
   // a given gyro loop, and ELRS takes a long time to process this and so can only be safely processed

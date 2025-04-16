@@ -90,7 +90,8 @@ bool uartOpen(uint8_t ch, uint32_t baud)
       {
         ret = true;
         is_open[ch] = true;
-        HAL_UART_Receive_IT(&huart1, (uint8_t *)&rx_data[_DEF_UART1], 1);
+        HAL_UARTEx_ReceiveToIdle_DMA(&huart1, (uint8_t *)&rx_buf[_DEF_UART1][0], MAX_SIZE);
+        __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
       }
       break;
 
@@ -114,7 +115,8 @@ bool uartOpen(uint8_t ch, uint32_t baud)
     	{
     		ret = true;
         is_open[ch] = true;
-        HAL_UART_Receive_IT(&huart2, (uint8_t *)&rx_data[_DEF_UART2], 1);
+        HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *)&rx_buf[_DEF_UART2][0], MAX_SIZE);
+        __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
     	}
       break;
 
@@ -775,7 +777,7 @@ baudRate_e lookupBaudRateIndex(uint32_t baudRate)
 uint32_t overren_cnt = 0;
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
-  if (huart->Instance == USART2)
+  if (huart->Instance == USART1)
   {
   	if(huart->ErrorCode == 8)
   	{
@@ -821,216 +823,7 @@ uint8_t telemetry_rx_cplt_flag;
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	static uint32_t pre_time = 0;
-	static unsigned char cnt1 = 0;
   static unsigned char cnt6 = 0;
-  static gcsState_e gcsState = GCS_IDLE;
-  static gcsData_e gcsData = GCS_Tlemetry;
-
-  if(huart->Instance == USART1)
-  {
-    HAL_UART_Receive_IT(&huart1, (uint8_t *)&rx_data[_DEF_UART1], 1);
-    qbufferWrite(&ring_buffer[_DEF_UART1], (uint8_t *)&rx_data[_DEF_UART1], 1);
-    uart1_rx_data = uartRead(_DEF_UART1);
-    switch(gcsState)
-    {
-      case GCS_IDLE:
-        if(uart1_rx_data == 'G')
-        {
-          telemetry_rx_buf[cnt1] = uart1_rx_data;
-          gcsState = GCS_HEADER_SYNC;
-          cnt1++;
-        }
-        break;
-      case GCS_HEADER_SYNC:
-        if(uart1_rx_data == 'S')
-        {
-          telemetry_rx_buf[cnt1++] = uart1_rx_data;
-          gcsState = GCS_HEADER_ID;
-        }
-        else
-        {
-          gcsState = GCS_IDLE;
-          cnt1 = 0;
-        }
-        break;
-      case GCS_HEADER_ID:
-        switch (uart1_rx_data) {
-            case 0x00:
-                telemetry_rx_buf[cnt1++] = uart1_rx_data;
-                gcsState = GCS_PAYLOAD;
-                gcsData = GCS_PID_save;
-                break;
-            case 0x10:
-                telemetry_rx_buf[cnt1++] = uart1_rx_data;
-                gcsState = GCS_PAYLOAD;
-                gcsData = GCS_PID_send;
-                break;
-            case 0x20:
-                telemetry_rx_buf[cnt1++] = uart1_rx_data;
-                gcsState = GCS_PAYLOAD;
-                gcsData = GCS_Tlemetry;
-                break;
-            case 0x30:
-                telemetry_rx_buf[cnt1++] = uart1_rx_data;
-                gcsState = GCS_PAYLOAD;
-                gcsData = GCS_PID_recive;
-                break;
-            case 0x40:
-                telemetry_rx_buf[cnt1++] = uart1_rx_data;
-                gcsState = GCS_PAYLOAD;
-                gcsData = GCS_ACC_calibration;
-                break;
-            case 0x50:
-                telemetry_rx_buf[cnt1++] = uart1_rx_data;
-                gcsState = GCS_PAYLOAD;
-                gcsData = GCS_MAG_calibration;
-                break;
-            case 0x60:
-                telemetry_rx_buf[cnt1++] = uart1_rx_data;
-                gcsState = GCS_PAYLOAD;
-                gcsData = GCS_PID_Test;
-                break;
-            case 0x70:
-                telemetry_rx_buf[cnt1++] = uart1_rx_data;
-                gcsState = GCS_PAYLOAD;
-                gcsData = GCS_Fast_Tlemetry;
-                break;
-            default:
-                gcsState = GCS_IDLE;
-                gcsData = GCS_Tlemetry;
-                cnt1 = 0;
-                break;
-        }
-        break;
-      case GCS_PAYLOAD:
-        telemetry_rx_buf[cnt1++] = uart1_rx_data;
-        if(gcsData == GCS_PID_save && cnt1 == 19)
-        {
-          gcsState = GCS_CHECKSUM;
-        }
-        else if(gcsData == GCS_PID_send && cnt1 == 19)
-        {
-          gcsState = GCS_CHECKSUM;
-        }
-        else if(gcsData == GCS_Tlemetry && cnt1 == 19)
-        {
-          gcsState = GCS_CHECKSUM;
-        }
-        else if(gcsData == GCS_ACC_calibration && cnt1 == 19)
-        {
-          gcsState = GCS_CHECKSUM;
-        }
-        else if(gcsData == GCS_MAG_calibration && cnt1 == 19)
-        {
-          gcsState = GCS_CHECKSUM;
-        }
-        else if(gcsData == GCS_PID_Test && cnt1 == 19)
-        {
-          gcsState = GCS_CHECKSUM;
-        }
-        else if(gcsData == GCS_PID_recive && cnt1 == 75)
-        {
-          gcsState = GCS_CHECKSUM;
-        }
-        else if(gcsData == GCS_Fast_Tlemetry && cnt1 == 19)
-        {
-          gcsState = GCS_CHECKSUM;
-        }
-        break;
-      case GCS_CHECKSUM:
-        telemetry_rx_buf[cnt1] = uart1_rx_data;
-        if(gcsData == GCS_PID_save)
-        {
-          unsigned char chksum = 0xff;
-          for(int i=0;i<19;i++) chksum = chksum - telemetry_rx_buf[i];
-          if(chksum == telemetry_rx_buf[cnt1])
-          {
-            telemetry_rx_cplt_flag = 1;
-          }
-        }
-        else if(gcsData == GCS_PID_send)
-        {
-          unsigned char chksum = 0xff;
-          for(int i=0;i<19;i++) chksum = chksum - telemetry_rx_buf[i];
-          if(chksum == telemetry_rx_buf[cnt1])
-          {
-            telemetry_rx_cplt_flag = 1;
-          }
-        }
-        else if(gcsData == GCS_Tlemetry)
-        {
-          unsigned char chksum = 0xff;
-          for(int i=0;i<19;i++) chksum = chksum - telemetry_rx_buf[i];
-          if(chksum == telemetry_rx_buf[cnt1])
-          {
-            telemetry_rx_cplt_flag = 1;
-          }
-        }
-        else if(gcsData == GCS_PID_recive)
-        {
-          unsigned char chksum = 0xff;
-          for(int i=0;i<75;i++) chksum = chksum - telemetry_rx_buf[i];
-          if(chksum == telemetry_rx_buf[cnt1])
-          {
-            telemetry_rx_cplt_flag = 1;
-          }
-        }
-        else if(gcsData == GCS_ACC_calibration)
-        {
-          unsigned char chksum = 0xff;
-          for(int i=0;i<19;i++) chksum = chksum - telemetry_rx_buf[i];
-          if(chksum == telemetry_rx_buf[cnt1])
-          {
-            telemetry_rx_cplt_flag = 1;
-          }
-        }
-        else if(gcsData == GCS_MAG_calibration)
-        {
-          unsigned char chksum = 0xff;
-          for(int i=0;i<19;i++) chksum = chksum - telemetry_rx_buf[i];
-          if(chksum == telemetry_rx_buf[cnt1])
-          {
-            telemetry_rx_cplt_flag = 1;
-          }
-        }
-        else if(gcsData == GCS_PID_Test)
-        {
-          unsigned char chksum = 0xff;
-          for(int i=0;i<19;i++) chksum = chksum - telemetry_rx_buf[i];
-          if(chksum == telemetry_rx_buf[cnt1])
-          {
-            telemetry_rx_cplt_flag = 1;
-          }
-        }
-        else if(gcsData == GCS_Fast_Tlemetry)
-        {
-          unsigned char chksum = 0xff;
-          for(int i=0;i<19;i++) chksum = chksum - telemetry_rx_buf[i];
-          if(chksum == telemetry_rx_buf[cnt1])
-          {
-            telemetry_rx_cplt_flag = 1;
-          }
-        }
-        gcsState = GCS_IDLE;
-        cnt1 = 0;
-        break;
-      default:
-        gcsState = GCS_IDLE;
-        cnt1 = 0;
-        break;
-    }
-  }
-
-	if(huart->Instance == USART2)
-	{
-		rxRuntimeState.callbackTime = micros() - pre_time;
-		pre_time = micros();
-		rxRuntimeState.RxCallback_Flag = true;
-		HAL_UART_Receive_IT(&huart2, (uint8_t *)&rx_data[_DEF_UART2], 1);
-		qbufferWrite(&ring_buffer[_DEF_UART2], (uint8_t *)&rx_data[_DEF_UART2], 1);
-		rxRuntimeState.RxCallback_Flag = false;
-	}
 
   if(huart->Instance == USART3)
   {
@@ -1085,6 +878,243 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		}
 	}
 }
+static void GCS_Passer(uint8_t c)
+{
+  static unsigned char cnt1 = 0;
+  static gcsState_e gcsState = GCS_IDLE;
+  static gcsData_e gcsData = GCS_Tlemetry;
+
+  uart1_rx_data = c;
+  switch(gcsState)
+  {
+    case GCS_IDLE:
+      if(uart1_rx_data == 'G')
+      {
+        telemetry_rx_buf[cnt1] = uart1_rx_data;
+        gcsState = GCS_HEADER_SYNC;
+        cnt1++;
+      }
+      break;
+    case GCS_HEADER_SYNC:
+      if(uart1_rx_data == 'S')
+      {
+        telemetry_rx_buf[cnt1++] = uart1_rx_data;
+        gcsState = GCS_HEADER_ID;
+      }
+      else
+      {
+        gcsState = GCS_IDLE;
+        cnt1 = 0;
+      }
+      break;
+    case GCS_HEADER_ID:
+      switch (uart1_rx_data) {
+          case 0x00:
+              telemetry_rx_buf[cnt1++] = uart1_rx_data;
+              gcsState = GCS_PAYLOAD;
+              gcsData = GCS_PID_save;
+              break;
+          case 0x10:
+              telemetry_rx_buf[cnt1++] = uart1_rx_data;
+              gcsState = GCS_PAYLOAD;
+              gcsData = GCS_PID_send;
+              break;
+          case 0x20:
+              telemetry_rx_buf[cnt1++] = uart1_rx_data;
+              gcsState = GCS_PAYLOAD;
+              gcsData = GCS_Tlemetry;
+              break;
+          case 0x30:
+              telemetry_rx_buf[cnt1++] = uart1_rx_data;
+              gcsState = GCS_PAYLOAD;
+              gcsData = GCS_PID_recive;
+              break;
+          case 0x40:
+              telemetry_rx_buf[cnt1++] = uart1_rx_data;
+              gcsState = GCS_PAYLOAD;
+              gcsData = GCS_ACC_calibration;
+              break;
+          case 0x50:
+              telemetry_rx_buf[cnt1++] = uart1_rx_data;
+              gcsState = GCS_PAYLOAD;
+              gcsData = GCS_MAG_calibration;
+              break;
+          case 0x60:
+              telemetry_rx_buf[cnt1++] = uart1_rx_data;
+              gcsState = GCS_PAYLOAD;
+              gcsData = GCS_PID_Test;
+              break;
+          case 0x70:
+              telemetry_rx_buf[cnt1++] = uart1_rx_data;
+              gcsState = GCS_PAYLOAD;
+              gcsData = GCS_Fast_Tlemetry;
+              break;
+          default:
+              gcsState = GCS_IDLE;
+              gcsData = GCS_Tlemetry;
+              cnt1 = 0;
+              break;
+      }
+      break;
+    case GCS_PAYLOAD:
+      telemetry_rx_buf[cnt1++] = uart1_rx_data;
+      if(gcsData == GCS_PID_save && cnt1 == 19)
+      {
+        gcsState = GCS_CHECKSUM;
+      }
+      else if(gcsData == GCS_PID_send && cnt1 == 19)
+      {
+        gcsState = GCS_CHECKSUM;
+      }
+      else if(gcsData == GCS_Tlemetry && cnt1 == 19)
+      {
+        gcsState = GCS_CHECKSUM;
+      }
+      else if(gcsData == GCS_ACC_calibration && cnt1 == 19)
+      {
+        gcsState = GCS_CHECKSUM;
+      }
+      else if(gcsData == GCS_MAG_calibration && cnt1 == 19)
+      {
+        gcsState = GCS_CHECKSUM;
+      }
+      else if(gcsData == GCS_PID_Test && cnt1 == 19)
+      {
+        gcsState = GCS_CHECKSUM;
+      }
+      else if(gcsData == GCS_PID_recive && cnt1 == 75)
+      {
+        gcsState = GCS_CHECKSUM;
+      }
+      else if(gcsData == GCS_Fast_Tlemetry && cnt1 == 19)
+      {
+        gcsState = GCS_CHECKSUM;
+      }
+      break;
+    case GCS_CHECKSUM:
+      telemetry_rx_buf[cnt1] = uart1_rx_data;
+      if(gcsData == GCS_PID_save)
+      {
+        unsigned char chksum = 0xff;
+        for(int i=0;i<19;i++) chksum = chksum - telemetry_rx_buf[i];
+        if(chksum == telemetry_rx_buf[cnt1])
+        {
+          telemetry_rx_cplt_flag = 1;
+        }
+      }
+      else if(gcsData == GCS_PID_send)
+      {
+        unsigned char chksum = 0xff;
+        for(int i=0;i<19;i++) chksum = chksum - telemetry_rx_buf[i];
+        if(chksum == telemetry_rx_buf[cnt1])
+        {
+          telemetry_rx_cplt_flag = 1;
+        }
+      }
+      else if(gcsData == GCS_Tlemetry)
+      {
+        unsigned char chksum = 0xff;
+        for(int i=0;i<19;i++) chksum = chksum - telemetry_rx_buf[i];
+        if(chksum == telemetry_rx_buf[cnt1])
+        {
+          telemetry_rx_cplt_flag = 1;
+        }
+      }
+      else if(gcsData == GCS_PID_recive)
+      {
+        unsigned char chksum = 0xff;
+        for(int i=0;i<75;i++) chksum = chksum - telemetry_rx_buf[i];
+        if(chksum == telemetry_rx_buf[cnt1])
+        {
+          telemetry_rx_cplt_flag = 1;
+        }
+      }
+      else if(gcsData == GCS_ACC_calibration)
+      {
+        unsigned char chksum = 0xff;
+        for(int i=0;i<19;i++) chksum = chksum - telemetry_rx_buf[i];
+        if(chksum == telemetry_rx_buf[cnt1])
+        {
+          telemetry_rx_cplt_flag = 1;
+        }
+      }
+      else if(gcsData == GCS_MAG_calibration)
+      {
+        unsigned char chksum = 0xff;
+        for(int i=0;i<19;i++) chksum = chksum - telemetry_rx_buf[i];
+        if(chksum == telemetry_rx_buf[cnt1])
+        {
+          telemetry_rx_cplt_flag = 1;
+        }
+      }
+      else if(gcsData == GCS_PID_Test)
+      {
+        unsigned char chksum = 0xff;
+        for(int i=0;i<19;i++) chksum = chksum - telemetry_rx_buf[i];
+        if(chksum == telemetry_rx_buf[cnt1])
+        {
+          telemetry_rx_cplt_flag = 1;
+        }
+      }
+      else if(gcsData == GCS_Fast_Tlemetry)
+      {
+        unsigned char chksum = 0xff;
+        for(int i=0;i<19;i++) chksum = chksum - telemetry_rx_buf[i];
+        if(chksum == telemetry_rx_buf[cnt1])
+        {
+          telemetry_rx_cplt_flag = 1;
+        }
+      }
+      gcsState = GCS_IDLE;
+      cnt1 = 0;
+      break;
+    default:
+      gcsState = GCS_IDLE;
+      cnt1 = 0;
+      break;
+  }
+}
+
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
+{
+  static uint32_t pre_time = 0;
+
+  if(huart->Instance == USART1)
+  {
+    HAL_UART_DMAStop(&huart1);
+
+    qbufferWrite(&ring_buffer[_DEF_UART1], (uint8_t *)&rx_buf[_DEF_UART1][0], Size);
+
+    while(uartAvailable(_DEF_UART1))
+    {
+      GCS_Passer(uartRead(_DEF_UART1));
+    }
+
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart1, (uint8_t *)&rx_buf[_DEF_UART1][0], MAX_SIZE);
+    __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
+  }
+
+  if(huart->Instance == USART2)
+  {
+      HAL_UART_DMAStop(&huart2);
+      rxRuntimeState.callbackTime = micros() - pre_time;
+      pre_time = micros();
+      rxRuntimeState.RxCallback_Flag = true;
+
+      qbufferWrite(&ring_buffer[_DEF_UART2], (uint8_t *)&rx_buf[_DEF_UART2][0], Size);
+
+      rxRuntimeState.uartAvalable = uartAvailable(_DEF_UART2);
+      while(uartAvailable(_DEF_UART2))
+      {
+        crsfDataReceive(uartRead(_DEF_UART2), (void*) &rxRuntimeState);
+      }
+
+      // DMA 재시작
+      HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *)&rx_buf[_DEF_UART2][0], MAX_SIZE);
+      __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
+      rxRuntimeState.RxCallback_Flag = false;
+  }
+}
 
 void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 {
@@ -1118,8 +1148,8 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     hdma_usart1_rx.Init.MemInc = DMA_MINC_ENABLE;
     hdma_usart1_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
     hdma_usart1_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
-    hdma_usart1_rx.Init.Mode = DMA_CIRCULAR;
-    hdma_usart1_rx.Init.Priority = DMA_PRIORITY_LOW;
+    hdma_usart1_rx.Init.Mode = DMA_NORMAL;
+    hdma_usart1_rx.Init.Priority = DMA_PRIORITY_MEDIUM;
     hdma_usart1_rx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
     if (HAL_DMA_Init(&hdma_usart1_rx) != HAL_OK)
     {
