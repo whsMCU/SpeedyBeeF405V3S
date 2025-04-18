@@ -115,8 +115,9 @@ bool uartOpen(uint8_t ch, uint32_t baud)
     	{
     		ret = true;
         is_open[ch] = true;
-        HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *)&rx_buf[_DEF_UART2][0], MAX_SIZE);
-        __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
+        HAL_UART_Receive_IT(&huart2, (uint8_t *)&rx_buf[_DEF_UART2][0], 1);
+//        HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *)&rx_buf[_DEF_UART2][0], MAX_SIZE);
+//        __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
     	}
       break;
 
@@ -823,7 +824,20 @@ uint8_t telemetry_rx_cplt_flag;
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
+  static uint32_t pre_time = 0;
   static unsigned char cnt6 = 0;
+
+  if(huart->Instance == USART2)
+  {
+      rxRuntimeState.callbackTime = micros() - pre_time;
+      pre_time = micros();
+      rxRuntimeState.RxCallback_Flag = true;
+      HAL_UART_Receive_IT(&huart2, (uint8_t *)&rx_buf[_DEF_UART2][0], 1);
+      qbufferWrite(&ring_buffer[_DEF_UART2], (uint8_t *)&rx_buf[_DEF_UART2][0], 1);
+//      HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *)&rx_buf[_DEF_UART2][0], MAX_SIZE);
+//      __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
+      rxRuntimeState.RxCallback_Flag = false;
+  }
 
   if(huart->Instance == USART3)
   {
@@ -878,7 +892,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		}
 	}
 }
-static void GCS_Passer(uint8_t c)
+void GCS_Passer(uint8_t c)
 {
   static unsigned char cnt1 = 0;
   static gcsState_e gcsState = GCS_IDLE;
@@ -1077,43 +1091,30 @@ static void GCS_Passer(uint8_t c)
 
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
-  static uint32_t pre_time = 0;
-
   if(huart->Instance == USART1)
   {
     HAL_UART_DMAStop(&huart1);
 
     qbufferWrite(&ring_buffer[_DEF_UART1], (uint8_t *)&rx_buf[_DEF_UART1][0], Size);
 
-    while(uartAvailable(_DEF_UART1))
-    {
-      GCS_Passer(uartRead(_DEF_UART1));
-    }
-
     HAL_UARTEx_ReceiveToIdle_DMA(&huart1, (uint8_t *)&rx_buf[_DEF_UART1][0], MAX_SIZE);
     __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
   }
 
-  if(huart->Instance == USART2)
-  {
-      HAL_UART_DMAStop(&huart2);
-      rxRuntimeState.callbackTime = micros() - pre_time;
-      pre_time = micros();
-      rxRuntimeState.RxCallback_Flag = true;
-
-      qbufferWrite(&ring_buffer[_DEF_UART2], (uint8_t *)&rx_buf[_DEF_UART2][0], Size);
-
-      rxRuntimeState.uartAvalable = uartAvailable(_DEF_UART2);
-      while(uartAvailable(_DEF_UART2))
-      {
-        crsfDataReceive(uartRead(_DEF_UART2), (void*) &rxRuntimeState);
-      }
-
-      // DMA 재시작
-      HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *)&rx_buf[_DEF_UART2][0], MAX_SIZE);
-      __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
-      rxRuntimeState.RxCallback_Flag = false;
-  }
+//  if(huart->Instance == USART2)
+//  {
+//      HAL_UART_DMAStop(&huart2);
+//      rxRuntimeState.callbackTime = micros() - pre_time;
+//      pre_time = micros();
+//      rxRuntimeState.RxCallback_Flag = true;
+//
+//      qbufferWrite(&ring_buffer[_DEF_UART2], (uint8_t *)&rx_buf[_DEF_UART2][0], Size);
+//
+//      // DMA 재시작
+//      HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *)&rx_buf[_DEF_UART2][0], MAX_SIZE);
+//      __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
+//      rxRuntimeState.RxCallback_Flag = false;
+//  }
 }
 
 void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)

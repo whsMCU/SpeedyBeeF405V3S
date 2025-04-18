@@ -230,6 +230,19 @@ void scheduler(void)
 			}
 		}
 	}
+  static uint32_t pre_time1 = 0;
+  pre_time1 = micros();
+  while(uartAvailable(_DEF_UART1))
+  {
+    GCS_Passer(uartRead(_DEF_UART1));
+  }
+  rxRuntimeState.passingTime = micros() - pre_time1;
+
+  rxRuntimeState.uartAvalable = uartAvailable(_DEF_UART2);
+  while(uartAvailable(_DEF_UART2))
+  {
+    crsfDataReceive(uartRead(_DEF_UART2), (void*) &rxRuntimeState);
+  }
 
   // Check for incoming RX data. Don't do this in the checker as that is called repeatedly within
   // a given gyro loop, and ELRS takes a long time to process this and so can only be safely processed

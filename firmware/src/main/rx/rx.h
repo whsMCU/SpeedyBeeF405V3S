@@ -205,6 +205,7 @@ typedef struct rxRuntimeState_s {
     uint32_t            uartAvalable;
     bool            	  RxCallback_Flag;
     uint32_t            RxCount;
+    uint32_t            passingTime;
 } rxRuntimeState_t;
 
 typedef enum {

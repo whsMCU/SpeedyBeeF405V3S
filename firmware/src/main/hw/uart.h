@@ -56,5 +56,7 @@ uint32_t uartGetBaud(uint8_t ch);
 bool uartSetBaud(uint8_t ch, uint32_t baud);
 baudRate_e lookupBaudRateIndex(uint32_t baudRate);
 
+void GCS_Passer(uint8_t c);
+
 
 #endif /* SRC_COMMON_HW_INCLUDE_UART_H_ */
