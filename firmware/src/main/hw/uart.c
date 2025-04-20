@@ -90,8 +90,9 @@ bool uartOpen(uint8_t ch, uint32_t baud)
       {
         ret = true;
         is_open[ch] = true;
-        HAL_UARTEx_ReceiveToIdle_DMA(&huart1, (uint8_t *)&rx_buf[_DEF_UART1][0], MAX_SIZE);
-        __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
+        HAL_UART_Receive_IT(&huart1, (uint8_t *)&rx_buf[_DEF_UART1][0], 1);
+//        HAL_UARTEx_ReceiveToIdle_DMA(&huart1, (uint8_t *)&rx_buf[_DEF_UART1][0], MAX_SIZE);
+//        __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
       }
       break;
 
@@ -827,6 +828,15 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   static uint32_t pre_time = 0;
   static unsigned char cnt6 = 0;
 
+  if(huart->Instance == USART1)
+  {
+    //qbufferWrite(&ring_buffer[_DEF_UART1], (uint8_t *)&rx_buf[_DEF_UART1][0], Size);
+    GCS_Passer(rx_buf[_DEF_UART1][0]);
+    HAL_UART_Receive_IT(&huart1, (uint8_t *)&rx_buf[_DEF_UART1][0], 1);
+//    HAL_UARTEx_ReceiveToIdle_DMA(&huart1, (uint8_t *)&rx_buf[_DEF_UART1][0], MAX_SIZE);
+//    __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
+  }
+
   if(huart->Instance == USART2)
   {
       rxRuntimeState.callbackTime = micros() - pre_time;
@@ -1091,15 +1101,15 @@ void GCS_Passer(uint8_t c)
 
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
-  if(huart->Instance == USART1)
-  {
-    HAL_UART_DMAStop(&huart1);
-
-    qbufferWrite(&ring_buffer[_DEF_UART1], (uint8_t *)&rx_buf[_DEF_UART1][0], Size);
-
-    HAL_UARTEx_ReceiveToIdle_DMA(&huart1, (uint8_t *)&rx_buf[_DEF_UART1][0], MAX_SIZE);
-    __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
-  }
+//  if(huart->Instance == USART1)
+//  {
+//    HAL_UART_DMAStop(&huart1);
+//
+//    qbufferWrite(&ring_buffer[_DEF_UART1], (uint8_t *)&rx_buf[_DEF_UART1][0], Size);
+//
+//    HAL_UARTEx_ReceiveToIdle_DMA(&huart1, (uint8_t *)&rx_buf[_DEF_UART1][0], MAX_SIZE);
+//    __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
+//  }
 
 //  if(huart->Instance == USART2)
 //  {

@@ -371,7 +371,7 @@ namespace SpeedyBeeF405V3S_GUI
                         OpenClose.Text = "Close";
                         comboBox_port.Enabled = false;  //COM포트설정 콤보박스 비활성화
 
-                        AHRS_Timer = new System.Timers.Timer(20);
+                        AHRS_Timer = new System.Timers.Timer(50);
                         AHRS_Timer.Elapsed += OnTimedEvent;
                         AHRS_Timer.AutoReset = true;
                         AHRS_Timer.Enabled = true;
@@ -1195,7 +1195,7 @@ namespace SpeedyBeeF405V3S_GUI
                             tb_PID_Throttle.Enabled = false;
                         });
                         pid_test_time = 0;
-                        pid_test_setting_time = int.Parse(tb_PID_ms.Text) / 30;
+                        pid_test_setting_time = int.Parse(tb_PID_ms.Text) / 50;
                         pid_test_setting_time_temp = pid_test_setting_time;
                         pid_test_setting_deg = int.Parse(tb_PID_Deg.Text);
                         pid_test_setting_deg_temp = 0;
@@ -1285,7 +1285,7 @@ namespace SpeedyBeeF405V3S_GUI
                     case pidState_e.TEST_Step5:
                         if (pid_test_time >= pid_test_setting_time_temp)
                         {
-                            pid_test_setting_time_temp += pid_test_setting_time / 30;
+                            pid_test_setting_time_temp += pid_test_setting_time / 50;
                             pid_test_setting_deg_temp = pid_test_setting_deg;
                             pid_test_request_flag = true;
 
@@ -1319,7 +1319,7 @@ namespace SpeedyBeeF405V3S_GUI
                     case pidState_e.TEST_Step7:
                         if (pid_test_time >= pid_test_setting_time_temp)
                         {
-                            pid_test_setting_time_temp += pid_test_setting_time / 30;
+                            pid_test_setting_time_temp += pid_test_setting_time / 50;
                             pid_test_setting_deg_temp = -pid_test_setting_deg;
                             pid_test_request_flag = true;
 
