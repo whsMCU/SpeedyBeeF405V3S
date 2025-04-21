@@ -75,8 +75,6 @@
 #include "telemetry/telemetry.h"
 #include "telemetry/crsf.h"
 
-
-
 // taskUpdateRxMain() has occasional peaks in execution time so normal moving average duration estimation doesn't work
 // Decay the estimated max task duration by 1/(1 << RX_TASK_DECAY_SHIFT) on every invocation
 #define RX_TASK_DECAY_SHIFT 6

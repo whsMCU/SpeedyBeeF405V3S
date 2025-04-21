@@ -157,7 +157,7 @@ static void updateBatteryBeeperAlert(void)
     switch (getBatteryState()) {
         case BATTERY_WARNING:
             //beeper(BEEPER_BAT_LOW);
-            ENABLE_FAILSAFE(FAILSAFE_BATTERY_LOW);
+            //ENABLE_FAILSAFE(FAILSAFE_BATTERY_LOW);
 
             break;
         case BATTERY_CRITICAL:
