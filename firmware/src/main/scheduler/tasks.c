@@ -543,12 +543,9 @@ void gcsMain(void)
         break;
 
       case 0x60:
-        if(ARMING_FLAG(ARMED))
-        {
           _PID_Test.pid_test_flag = *(uint8_t*)&telemetry_rx_buf[3];
           _PID_Test.pid_test_throttle = *(int*)&telemetry_rx_buf[4];
           _PID_Test.pid_test_deg = *(int*)&telemetry_rx_buf[8];
-        }
         break;
 
       case 0x70:

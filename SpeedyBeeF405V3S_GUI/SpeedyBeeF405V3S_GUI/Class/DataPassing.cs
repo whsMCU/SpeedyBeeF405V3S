@@ -208,12 +208,12 @@ namespace Ball_Ballancer_CS.Class
             if (buff_pass[2] == 0x10) //AHRS Data 수신
             {
                 data[0] = 0;
-                data[1] = BitConverter.ToInt16(buff_pass, 3)/100;
-                data[2] = BitConverter.ToInt16(buff_pass, 5)/100;
+                data[1] = BitConverter.ToInt16(buff_pass, 3)/10;
+                data[2] = BitConverter.ToInt16(buff_pass, 5)/10;
                 data[3] = BitConverter.ToUInt16(buff_pass, 7)/100;
                 data[4] = BitConverter.ToInt16(buff_pass, 9)/10;
-                data[5] = BitConverter.ToInt16(buff_pass, 11)/100;
-                data[6] = BitConverter.ToInt16(buff_pass, 13)/100;
+                data[5] = BitConverter.ToInt16(buff_pass, 11)/10;
+                data[6] = BitConverter.ToInt16(buff_pass, 13)/10;
                 data[7] = (BitConverter.ToInt16(buff_pass, 15));
                 data[8] = ((BitConverter.ToInt16(buff_pass, 17)/10)-1000)/10;
                 data[9] = BitConverter.ToInt32(buff_pass, 19);
@@ -288,14 +288,14 @@ namespace Ball_Ballancer_CS.Class
             else if (buff_pass[2] == 0x30) // FAST Data 수신
             {
                 data[0] = 2;
-                data[1] = BitConverter.ToInt16(buff_pass, 3) / 100;
-                data[2] = BitConverter.ToInt16(buff_pass, 5) / 100;
+                data[1] = BitConverter.ToInt16(buff_pass, 3) / 10;
+                data[2] = BitConverter.ToInt16(buff_pass, 5) / 10;
                 data[3] = BitConverter.ToUInt16(buff_pass, 7) / 100;
 
                 data[4] = BitConverter.ToInt16(buff_pass, 9) / 10;
 
-                data[5] = BitConverter.ToInt16(buff_pass, 11) / 100;
-                data[6] = BitConverter.ToInt16(buff_pass, 13) / 100;
+                data[5] = BitConverter.ToInt16(buff_pass, 11) / 10;
+                data[6] = BitConverter.ToInt16(buff_pass, 13) / 10;
                 data[7] = (BitConverter.ToInt16(buff_pass, 15));
                 data[8] = ((BitConverter.ToInt16(buff_pass, 17) / 10) - 1000) / 10;
 

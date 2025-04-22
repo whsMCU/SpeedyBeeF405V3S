@@ -16,6 +16,7 @@ using OfficeOpenXml;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace SpeedyBeeF405V3S_GUI
 {
@@ -23,6 +24,7 @@ namespace SpeedyBeeF405V3S_GUI
     {
         private static System.Timers.Timer AHRS_Timer;
         float[] passed_data = new float[30];
+        float[] float_data = new float[10];
         UTF8 UTF8 = new UTF8();
         DataPassing data = new DataPassing();
         Msp_Protocol protocol = new Msp_Protocol();
@@ -31,7 +33,7 @@ namespace SpeedyBeeF405V3S_GUI
 
         /// <ExcelDataSave>
         string filePath = "RealTimeData.xlsx";
-        string text_file_path = "PID_TEST_Log.txt";
+        string PID_log_filePath;
         int row = 2;
 
         private ArrayList al;
@@ -126,7 +128,6 @@ namespace SpeedyBeeF405V3S_GUI
             InitGmap();
             InitGraph();
             InitExcel();
-            InitLogger(text_file_path);
         }
 
         public void InitGmap()
@@ -438,8 +439,10 @@ namespace SpeedyBeeF405V3S_GUI
                                 DateTime date_time = DateTime.Now;
                                 int ms = date_time.Millisecond;
                                 time_count++;
-                                lb_roll.Text = passed_data[1].ToString();
-                                lb_pitch.Text = passed_data[2].ToString();
+                                float_data[1] = passed_data[1] / 10;
+                                lb_roll.Text = float_data[1].ToString("F1", CultureInfo.InvariantCulture);
+                                float_data[2] = passed_data[2] / 10;
+                                lb_pitch.Text = float_data[2].ToString("F1", CultureInfo.InvariantCulture);
                                 lb_heading.Text = passed_data[3].ToString();
 
                                 if(rb_roll.Checked == true)
@@ -535,8 +538,10 @@ namespace SpeedyBeeF405V3S_GUI
                                 }
 
                                 lb_altitude.Text = passed_data[4].ToString();
-                                lb_rc_roll.Text = passed_data[5].ToString();
-                                lb_rc_pitch.Text = passed_data[6].ToString();
+                                float_data[5] = passed_data[5] / 10;
+                                lb_rc_roll.Text = float_data[5].ToString("F1", CultureInfo.InvariantCulture);
+                                float_data[6] = passed_data[6] / 10;
+                                lb_rc_pitch.Text = float_data[6].ToString("F1", CultureInfo.InvariantCulture);
                                 lb_rc_yaw.Text = passed_data[7].ToString();
                                 lb_rc_throttle.Text = passed_data[8].ToString();
                                 lb_lat.Text = passed_data[9].ToString();
@@ -631,8 +636,10 @@ namespace SpeedyBeeF405V3S_GUI
                                 DateTime date_time = DateTime.Now;
                                 int ms = date_time.Millisecond;
                                 time_count++;
-                                lb_roll.Text = passed_data[1].ToString();
-                                lb_pitch.Text = passed_data[2].ToString();
+                                float_data[1] = passed_data[1] / 10;
+                                lb_roll.Text = float_data[1].ToString("F1", CultureInfo.InvariantCulture);
+                                float_data[2] = passed_data[2] / 10;
+                                lb_pitch.Text = float_data[2].ToString();
                                 lb_heading.Text = passed_data[3].ToString();
 
                                 if (rb_roll.Checked == true)
@@ -676,7 +683,7 @@ namespace SpeedyBeeF405V3S_GUI
                                     {
                                         _pitch_angle_points.Add(time_count + 150, passed_data[2]);
                                         _rc_pitch_points.Add(time_count + 150, pid_test_setting_deg_temp);
-                                        Data_Log(text_file_path, passed_data, pid_test_setting_deg_temp);
+                                        Data_Log(PID_log_filePath, float_data, pid_test_setting_deg_temp);
                                     }
                                     else
                                     {
@@ -1182,8 +1189,8 @@ namespace SpeedyBeeF405V3S_GUI
                 this.Invoke((MethodInvoker)delegate
                 {
                     lb_PID_Test_Status.Text = "PID_Control_Testing...";
-                    lb_PID_Test_Progress_Time.Text = (pid_test_time*30).ToString();
-                    lb_PID_Test_Target_Time.Text = (pid_test_setting_time_temp * 30).ToString();
+                    lb_PID_Test_Progress_Time.Text = (pid_test_time*50).ToString();
+                    lb_PID_Test_Target_Time.Text = (pid_test_setting_time_temp * 50).ToString();
                 });
                 switch (pidState)
                 {
@@ -2229,6 +2236,22 @@ namespace SpeedyBeeF405V3S_GUI
 
         private void bt_start_pid_test_Click(object sender, EventArgs e)
         {
+            // 바탕화면 경로 가져오기
+            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+            // 로그 폴더 만들기 (선택 사항)
+            string folderPath = Path.Combine(desktopPath, "PID_Log");
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+
+            string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            string fileName = $"log_{timestamp}.txt";
+
+            PID_log_filePath = Path.Combine(folderPath, fileName);
+            InitLogger(PID_log_filePath);
+
             pid_test_flag = true;
         }
 

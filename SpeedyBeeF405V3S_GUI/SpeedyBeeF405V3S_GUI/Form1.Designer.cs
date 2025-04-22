@@ -2392,7 +2392,7 @@
             this.tb_PID_Deg.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.tb_PID_Deg.Size = new System.Drawing.Size(42, 21);
             this.tb_PID_Deg.TabIndex = 72;
-            this.tb_PID_Deg.Text = "25";
+            this.tb_PID_Deg.Text = "20";
             // 
             // tb_PID_Throttle
             // 
@@ -2401,7 +2401,7 @@
             this.tb_PID_Throttle.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.tb_PID_Throttle.Size = new System.Drawing.Size(42, 21);
             this.tb_PID_Throttle.TabIndex = 71;
-            this.tb_PID_Throttle.Text = "1300";
+            this.tb_PID_Throttle.Text = "1200";
             // 
             // panel8
             // 
