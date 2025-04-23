@@ -449,8 +449,15 @@ namespace SpeedyBeeF405V3S_GUI
 
                                 if (rb_pitch_setpoint.Checked == true)
                                 {
+                                    if (pid_test_flag == true)
+                                    {
+                                        _rc_pitch_points.Add(time_count + 150, pid_test_setting_deg_temp);
+                                    }
+                                    else
+                                    {
+                                        _rc_pitch_points.Add(time_count + 150, passed_data[6] / 10);
+                                    }
                                     _pitch_angle_points.Add(time_count + 150, passed_data[2] / 10);
-                                    _rc_pitch_points.Add(time_count + 150, passed_data[6] / 10);
                                     _myPane.XAxis.Scale.Min = time_count;
                                     _myPane.XAxis.Scale.Max = 300 + time_count;
                                 }
@@ -593,113 +600,6 @@ namespace SpeedyBeeF405V3S_GUI
                                 tb_FC_Y_R_I.Text = passed_data[17].ToString();
                                 tb_FC_Y_R_D.Text = passed_data[18].ToString();
                             }
-                            if (passed_data[0] == 2)
-                            {
-                                DateTime date_time = DateTime.Now;
-                                int ms = date_time.Millisecond;
-                                time_count++;
-                                float_data[1] = passed_data[1] / 10;
-                                lb_roll.Text = float_data[1].ToString("F1", CultureInfo.InvariantCulture);
-                                float_data[2] = passed_data[2] / 10;
-                                lb_pitch.Text = float_data[2].ToString();
-                                lb_heading.Text = passed_data[3].ToString();
-
-                                if (rb_roll.Checked == true)
-                                {
-                                    _roll_angle_points.Add(time_count + 150, passed_data[1]);
-                                    _myPane.XAxis.Scale.Min = time_count;
-                                    _myPane.XAxis.Scale.Max = 300 + time_count;
-                                }
-                                if (rb_pitch.Checked == true)
-                                {
-                                    _pitch_angle_points.Add(time_count + 150, passed_data[2]);
-                                    _myPane.XAxis.Scale.Min = time_count;
-                                    _myPane.XAxis.Scale.Max = 300 + time_count;
-                                }
-                                if (rb_yaw.Checked == true)
-                                {
-                                    _yaw_angle_points.Add(time_count + 150, passed_data[3]);
-                                    _myPane.XAxis.Scale.Min = time_count;
-                                    _myPane.XAxis.Scale.Max = 300 + time_count;
-                                }
-
-                                if (rb_roll_pitch.Checked == true)
-                                {
-                                    _roll_angle_points.Add(time_count + 150, passed_data[1]);
-                                    _pitch_angle_points.Add(time_count + 150, passed_data[2]);
-                                    _myPane.XAxis.Scale.Min = time_count;
-                                    _myPane.XAxis.Scale.Max = 300 + time_count;
-                                }
-
-                                if (rb_roll_setpoint.Checked == true)
-                                {
-                                    _roll_angle_points.Add(time_count + 150, passed_data[1]);
-                                    _rc_roll_points.Add(time_count + 150, passed_data[5]);
-                                    _myPane.XAxis.Scale.Min = time_count;
-                                    _myPane.XAxis.Scale.Max = 300 + time_count;
-                                }
-
-                                if (rb_pitch_setpoint.Checked == true)
-                                {
-                                    if (pid_test_flag == true)
-                                    {
-                                        _pitch_angle_points.Add(time_count + 150, passed_data[2]);
-                                        _rc_pitch_points.Add(time_count + 150, pid_test_setting_deg_temp);
-                                        Data_Log(PID_log_filePath, float_data, pid_test_setting_deg_temp);
-                                    }
-                                    else
-                                    {
-                                        _pitch_angle_points.Add(time_count + 150, passed_data[2]);
-                                        _rc_pitch_points.Add(time_count + 150, passed_data[6]);
-                                    }
-                                    _myPane.XAxis.Scale.Min = time_count;
-                                    _myPane.XAxis.Scale.Max = 300 + time_count;
-                                }
-
-                                if (rb_yaw_setpoint.Checked == true)
-                                {
-                                    _yaw_angle_points.Add(time_count + 150, passed_data[3]);
-                                    _rc_yaw_points.Add(time_count + 150, passed_data[7]);
-                                    _myPane.XAxis.Scale.Min = time_count;
-                                    _myPane.XAxis.Scale.Max = 300 + time_count;
-                                }
-
-                                if (rb_altitude.Checked == true)
-                                {
-                                    _altitude_points.Add(time_count + 150, passed_data[4]);
-                                    _myPane.XAxis.Scale.Min = time_count;
-                                    _myPane.XAxis.Scale.Max = 300 + time_count;
-                                }
-
-                                lb_altitude.Text = passed_data[4].ToString();
-                                lb_rc_roll.Text = passed_data[5].ToString();
-                                lb_rc_pitch.Text = passed_data[6].ToString();
-                                lb_rc_yaw.Text = passed_data[7].ToString();
-                                lb_rc_throttle.Text = passed_data[8].ToString();
-
-                                lb_bat.Text = ((passed_data[9] * 4) / 100).ToString();
-                                battery_bar_level = (int)(passed_data[9] * 4) / 10;
-
-                                flight_mode = (UInt16)passed_data[10];
-
-                                lb_fail.Text = passed_data[11].ToString();
-                                error = (UInt16)passed_data[11];
-
-                                lb_armed.Text = passed_data[12].ToString();
-                                start = (byte)passed_data[12];
-
-                                lb_fc_load.Text = passed_data[13].ToString();
-
-                                if (rb_roll.Checked == true || rb_pitch.Checked == true ||
-                                   rb_yaw.Checked == true || rb_roll_pitch.Checked == true ||
-                                   rb_roll_setpoint.Checked == true || rb_pitch_setpoint.Checked == true ||
-                                   rb_yaw_setpoint.Checked == true || rb_altitude.Checked == true)
-                                {
-                                    zedGraphControl1.AxisChange();
-                                    zedGraphControl1.Invalidate();
-                                    zedGraphControl1.Refresh();
-                                }
-                            }
 
                         }
                     }
@@ -717,74 +617,38 @@ namespace SpeedyBeeF405V3S_GUI
         private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
             byte[] buff = new byte[20];
-            if(pid_test_flag == false)
+            try
             {
-                try
+                buff[0] = 0x47;
+                buff[1] = 0x53;
+                buff[2] = 0x20;
+                buff[3] = 0;
+                buff[4] = 0;
+                buff[5] = 0;
+                buff[6] = 0;
+                buff[7] = 0;
+                buff[8] = 0;
+                buff[9] = 0;
+                buff[10] = 0;
+                buff[11] = 0;
+                buff[12] = 0;
+                buff[13] = 0;
+                buff[14] = 0;
+                buff[15] = 0;
+                buff[16] = 0;
+                buff[17] = 0;
+                buff[18] = 0;
+                buff[19] = 0xff;
+
+                for (int i = 0; i < 19; i++)
                 {
-                    buff[0] = 0x47;
-                    buff[1] = 0x53;
-                    buff[2] = 0x20;
-                    buff[3] = 0;
-                    buff[4] = 0;
-                    buff[5] = 0;
-                    buff[6] = 0;
-                    buff[7] = 0;
-                    buff[8] = 0;
-                    buff[9] = 0;
-                    buff[10] = 0;
-                    buff[11] = 0;
-                    buff[12] = 0;
-                    buff[13] = 0;
-                    buff[14] = 0;
-                    buff[15] = 0;
-                    buff[16] = 0;
-                    buff[17] = 0;
-                    buff[18] = 0;
-                    buff[19] = 0xff;
-
-                    for (int i = 0; i < 19; i++)
-                    {
-                        buff[19] -= buff[i];
-                    }
-
-                    //serialPort.Write(Encoding.UTF8.GetString(buff));
-                    serialPort.Write(buff, 0, 20);
+                    buff[19] -= buff[i];
                 }
-                catch { Console.WriteLine("Telemetry Data Requset Error"); }
-            }
-            else
-            {
-                try
-                {
-                    buff[0] = 0x47;
-                    buff[1] = 0x53;
-                    buff[2] = 0x70;
-                    buff[3] = 0;
-                    buff[4] = 0;
-                    buff[5] = 0;
-                    buff[6] = 0;
-                    buff[7] = 0;
-                    buff[8] = 0;
-                    buff[9] = 0;
-                    buff[10] = 0;
-                    buff[11] = 0;
-                    buff[12] = 0;
-                    buff[13] = 0;
-                    buff[14] = 0;
-                    buff[15] = 0;
-                    buff[16] = 0;
-                    buff[17] = 0;
-                    buff[18] = 0;
-                    buff[19] = 0xff;
 
-                    for (int i = 0; i < 19; i++)
-                    {
-                        buff[19] -= buff[i];
-                    }
-                    serialPort.Write(buff, 0, 20);
-                }
-                catch { Console.WriteLine("Fast Telemetry Data Requset Error"); }
+                //serialPort.Write(Encoding.UTF8.GetString(buff));
+                serialPort.Write(buff, 0, 20);
             }
+            catch { Console.WriteLine("Telemetry Data Requset Error"); }
 
             if (pid_recive_flag == true)
             {
