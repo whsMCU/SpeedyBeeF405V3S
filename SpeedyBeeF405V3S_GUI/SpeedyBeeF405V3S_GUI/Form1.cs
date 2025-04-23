@@ -151,65 +151,9 @@ namespace SpeedyBeeF405V3S_GUI
             {
                 writer.AutoFlush = true;
 
-                string log = "DateTime, Roll, Pitch, Yaw, Alt, RollSetPoint, PitchSetPoint, Yaw SetPoint";
+                string log = "DateTime, Roll, Pitch, Yaw, Alt, RollSetPoint, PitchSetPoint, Yaw SetPoint, Thorttle";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
-            }
-        }
-
-        static void SaveData(string filePath, int row, float[] data)
-        {
-            FileInfo file = new FileInfo(filePath);
-
-            using (ExcelPackage excel = new ExcelPackage(file.Exists ? file : null))
-            {
-                var sheet = excel.Workbook.Worksheets.Count > 0
-                    ? excel.Workbook.Worksheets[0]
-                    : excel.Workbook.Worksheets.Add("실시간 데이터");
-
-                // 헤더 추가 (최초 실행 시)
-                if (row == 2)
-                {
-                    sheet.Cells[1, 1].Value = "시간";
-                    sheet.Cells[1, 2].Value = "RC_PITCH";
-                    sheet.Cells[1, 3].Value = "IMU_PITCH";
-                }
-
-                // 데이터 추가
-                sheet.Cells[row, 1].Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-                sheet.Cells[row, 2].Value = data[6]; // RC_PITCH
-                sheet.Cells[row, 3].Value = data[2]; // IMU_PITCH
-
-                // 파일 저장
-                excel.SaveAs(file);
-            }
-        }
-
-        static void Save_PID_Data(string filePath, int row, float data)
-        {
-            FileInfo file = new FileInfo(filePath);
-
-            using (ExcelPackage excel = new ExcelPackage(file.Exists ? file : null))
-            {
-                var sheet = excel.Workbook.Worksheets.Count > 0
-                    ? excel.Workbook.Worksheets[0]
-                    : excel.Workbook.Worksheets.Add("실시간 데이터");
-
-                // 헤더 추가 (최초 실행 시)
-                if (row == 2)
-                {
-                    sheet.Cells[1, 1].Value = "시간";
-                    sheet.Cells[1, 2].Value = "RC_PITCH";
-                    sheet.Cells[1, 3].Value = "IMU_PITCH";
-                }
-
-                // 데이터 추가
-                sheet.Cells[row, 1].Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-                sheet.Cells[row, 2].Value = "Inner_PID";
-                sheet.Cells[row, 3].Value = data;
-
-                // 파일 저장
-                excel.SaveAs(file);
             }
         }
 
@@ -218,10 +162,27 @@ namespace SpeedyBeeF405V3S_GUI
             using (StreamWriter writer = new StreamWriter(filePath, append: true))
             {
                 writer.AutoFlush = true;
+                data[1] /= 10;
+                data[2] /= 10;
 
                 string log = $"{DateTime.Now:HH:mm:ss.fff}, {data[1]}, {data[2]}, {data[3]}, {data[4]}, 0, {setpoint},0";
                 writer.WriteLine(log);
                 //Console.WriteLine(log); // 콘솔에도 출력
+            }
+        }
+
+        static void Check_Data_Log(string filePath, float[] data)
+        {
+            using (StreamWriter writer = new StreamWriter(filePath, append: true))
+            {
+                writer.AutoFlush = true;
+                data[1] /= 10;
+                data[2] /= 10;
+                data[5] /= 10;
+                data[6] /= 10;
+                string log = $"{DateTime.Now:HH:mm:ss.fff}, {data[1]}, {data[2]}, {data[3]}, {data[4]}, {data[5]}, {data[6]}, {data[7]}, {data[8]}";
+                writer.WriteLine(log);
+                Console.WriteLine(log); // 콘솔에도 출력
             }
         }
 
@@ -439,6 +400,12 @@ namespace SpeedyBeeF405V3S_GUI
                                 DateTime date_time = DateTime.Now;
                                 int ms = date_time.Millisecond;
                                 time_count++;
+
+                                if (cb_record.Checked == true)
+                                {
+                                    Check_Data_Log(PID_log_filePath, passed_data);
+                                }
+
                                 float_data[1] = passed_data[1] / 10;
                                 lb_roll.Text = float_data[1].ToString("F1", CultureInfo.InvariantCulture);
                                 float_data[2] = passed_data[2] / 10;
@@ -447,13 +414,13 @@ namespace SpeedyBeeF405V3S_GUI
 
                                 if(rb_roll.Checked == true)
                                 {
-                                    _roll_angle_points.Add(time_count+150, passed_data[1]);
+                                    _roll_angle_points.Add(time_count+150, passed_data[1]/10);
                                     _myPane.XAxis.Scale.Min = time_count;
                                     _myPane.XAxis.Scale.Max = 300 + time_count;
                                 }
                                 if (rb_pitch.Checked == true)
                                 {
-                                    _pitch_angle_points.Add(time_count + 150, passed_data[2]);
+                                    _pitch_angle_points.Add(time_count + 150, passed_data[2] / 10);
                                     _myPane.XAxis.Scale.Min = time_count;
                                     _myPane.XAxis.Scale.Max = 300 + time_count;
                                 }
@@ -466,31 +433,26 @@ namespace SpeedyBeeF405V3S_GUI
 
                                 if (rb_roll_pitch.Checked == true)
                                 {
-                                    _roll_angle_points.Add(time_count + 150, passed_data[1]);
-                                    _pitch_angle_points.Add(time_count + 150, passed_data[2]);
+                                    _roll_angle_points.Add(time_count + 150, passed_data[1] / 10);
+                                    _pitch_angle_points.Add(time_count + 150, passed_data[2] / 10);
                                     _myPane.XAxis.Scale.Min = time_count;
                                     _myPane.XAxis.Scale.Max = 300 + time_count;
                                 }
 
                                 if (rb_roll_setpoint.Checked == true)
                                 {
-                                    _roll_angle_points.Add(time_count + 150, passed_data[1]);
-                                    _rc_roll_points.Add(time_count + 150, passed_data[5]);
+                                    _roll_angle_points.Add(time_count + 150, passed_data[1] / 10);
+                                    _rc_roll_points.Add(time_count + 150, passed_data[5] / 10);
                                     _myPane.XAxis.Scale.Min = time_count;
                                     _myPane.XAxis.Scale.Max = 300 + time_count;
                                 }
 
                                 if (rb_pitch_setpoint.Checked == true)
                                 {
-                                    _pitch_angle_points.Add(time_count + 150, passed_data[2]);
-                                    _rc_pitch_points.Add(time_count + 150, passed_data[6]);
+                                    _pitch_angle_points.Add(time_count + 150, passed_data[2] / 10);
+                                    _rc_pitch_points.Add(time_count + 150, passed_data[6] / 10);
                                     _myPane.XAxis.Scale.Min = time_count;
                                     _myPane.XAxis.Scale.Max = 300 + time_count;
-                                    if(cb_record.Checked == true)
-                                    {
-                                        SaveData(filePath, row, passed_data);
-                                        row++;
-                                    }
                                 }
 
                                 if (rb_yaw_setpoint.Checked == true)
@@ -692,11 +654,6 @@ namespace SpeedyBeeF405V3S_GUI
                                     }
                                     _myPane.XAxis.Scale.Min = time_count;
                                     _myPane.XAxis.Scale.Max = 300 + time_count;
-                                    if (cb_record.Checked == true)
-                                    {
-                                        SaveData(filePath, row, passed_data);
-                                        row++;
-                                    }
                                 }
 
                                 if (rb_yaw_setpoint.Checked == true)
@@ -959,12 +916,6 @@ namespace SpeedyBeeF405V3S_GUI
                     pid_buff[29] = tmp[2];
                     pid_buff[30] = tmp[3];
 
-                    if (cb_record.Checked == true)
-                    {
-                        Save_PID_Data(filePath, row, float_buff);
-                        row++;
-                    }
-
                     float_buff = float.Parse(tb_P_I_I.Text);
                     tmp = BitConverter.GetBytes(float_buff);
                     pid_buff[31] = tmp[0];
@@ -972,24 +923,12 @@ namespace SpeedyBeeF405V3S_GUI
                     pid_buff[33] = tmp[2];
                     pid_buff[34] = tmp[3];
 
-                    if (cb_record.Checked == true)
-                    {
-                        Save_PID_Data(filePath, row, float_buff);
-                        row++;
-                    }
-
                     float_buff = float.Parse(tb_P_I_D.Text);
                     tmp = BitConverter.GetBytes(float_buff);
                     pid_buff[35] = tmp[0];
                     pid_buff[36] = tmp[1];
                     pid_buff[37] = tmp[2];
                     pid_buff[38] = tmp[3];
-
-                    if (cb_record.Checked == true)
-                    {
-                        Save_PID_Data(filePath, row, float_buff);
-                        row++;
-                    }
 
                     float_buff = float.Parse(tb_P_O_P.Text);
                     tmp = BitConverter.GetBytes(float_buff);
@@ -2253,6 +2192,28 @@ namespace SpeedyBeeF405V3S_GUI
             InitLogger(PID_log_filePath);
 
             pid_test_flag = true;
+        }
+
+        private void cb_record_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cb_record.Checked == true)
+            {
+                // 바탕화면 경로 가져오기
+                string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+                // 로그 폴더 만들기 (선택 사항)
+                string folderPath = Path.Combine(desktopPath, "PID_Log");
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+
+                string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                string fileName = $"log_{timestamp}.txt";
+
+                PID_log_filePath = Path.Combine(folderPath, fileName);
+                InitLogger(PID_log_filePath);
+            }
         }
 
         private void bt_open_folder_Click(object sender, EventArgs e)

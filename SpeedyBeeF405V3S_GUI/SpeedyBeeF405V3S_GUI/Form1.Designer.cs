@@ -2420,6 +2420,7 @@
             this.cb_record.TabIndex = 13;
             this.cb_record.Text = "Excel Record";
             this.cb_record.UseVisualStyleBackColor = true;
+            this.cb_record.CheckedChanged += new System.EventHandler(this.cb_record_CheckedChanged);
             // 
             // rb_debug
             // 
