@@ -59,6 +59,9 @@
 //#include "drivers/time.h"
 //#include "drivers/timer.h"
 //#include "drivers/vtx_common.h"
+#include "drivers/gps/M8N.h"
+#include "drivers/gps/gps.h"
+#include "drivers/motor.h"
 
 //#include "fc/fc_core.h"
 //#include "fc/config.h"
@@ -67,17 +70,18 @@
 //#include "fc/fc_msp_box.h"
 //#include "fc/firmware_update.h"
 //#include "fc/rc_adjustments.h"
-//#include "fc/rc_controls.h"
+#include "fc/rc_controls.h"
 //#include "fc/rc_modes.h"
 #include "fc/runtime_config.h"
 //#include "fc/settings.h"
 
-//#include "flight/failsafe.h"
+#include "flight/failsafe.h"
 #include "flight/imu.h"
 //#include "flight/mixer_profile.h"
 //#include "flight/mixer.h"
 #include "flight/pid.h"
 //#include "flight/servos.h"
+#include "flight/position.h"
 
 //#include "config/config_eeprom.h"
 //#include "config/feature.h"
@@ -121,6 +125,8 @@
 #include "sensors/opflow.h"
 //#include "sensors/temperature.h"
 //#include "sensors/esc_sensor.h"
+
+#include "scheduler/tasks.h"
 
 #include "telemetry/telemetry.h"
 
@@ -443,6 +449,66 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
 //                sbufWriteU16(dst, armingFlags);
 //                sbufWriteU8(dst, accGetCalibrationAxisFlags());
 //            }
+          sbufWriteU16(dst, (uint16_t)(attitude.values.roll*10));
+          sbufWriteU16(dst, (uint16_t)(attitude.values.pitch*10));
+          sbufWriteU16(dst, (uint16_t)(attitude.values.yaw*10));
+
+          sbufWriteU16(dst, (uint16_t)(getEstimatedAltitudeCm()*10));
+
+          sbufWriteU16(dst, (uint16_t)(rcCommand[ROLL]*100));
+          sbufWriteU16(dst, (uint16_t)(rcCommand[PITCH]*100));
+          sbufWriteU16(dst, (uint16_t)(rcCommand[YAW]*10));
+          sbufWriteU16(dst, (uint16_t)(rcData[THROTTLE]*10));
+
+          sbufWriteU32(dst, posllh.lat);
+          sbufWriteU32(dst, posllh.lon);
+
+          sbufWriteU16(dst, (uint16_t)(getBatteryAverageCellVoltage()));
+
+          sbufWriteU16(dst, (uint16_t)(flightModeFlags));
+
+          sbufWriteU16(dst, (uint16_t)(failsafeFlags));
+
+          sbufWriteU16(dst, (uint16_t)(ARMING_FLAG(ARMED)));
+
+          sbufWriteU16(dst, (uint16_t)(motor.motor[R_R]));
+          sbufWriteU16(dst, (uint16_t)(motor.motor[R_F]));
+          sbufWriteU16(dst, (uint16_t)(motor.motor[L_R]));
+          sbufWriteU16(dst, (uint16_t)(motor.motor[L_F]));
+
+
+          sbufWriteU32(dst, debug[0]);
+          sbufWriteU32(dst, debug[1]);
+          sbufWriteU32(dst, debug[2]);
+          sbufWriteU32(dst, debug[3]);
+
+          sbufWriteU32(dst, bmi270.gyroADCf[X]);
+          sbufWriteU32(dst, bmi270.gyroADCf[Y]);
+          sbufWriteU32(dst, bmi270.gyroADCf[Z]);
+
+          sbufWriteU16(dst, (uint16_t)(bmi270.accelerationTrims.raw[X]));
+          sbufWriteU16(dst, (uint16_t)(bmi270.accelerationTrims.raw[Y]));
+          sbufWriteU16(dst, (uint16_t)(bmi270.accelerationTrims.raw[Z]));
+
+          sbufWriteU16(dst, (uint16_t)(compassConfig.magZero.raw[X]));
+          sbufWriteU16(dst, (uint16_t)(compassConfig.magZero.raw[Y]));
+          sbufWriteU16(dst, (uint16_t)(compassConfig.magZero.raw[Z]));
+
+
+          sbufWriteU32(dst, mag.magADC[X]);
+          sbufWriteU32(dst, mag.magADC[Y]);
+          sbufWriteU32(dst, mag.magADC[Z]);
+
+          sbufWriteU32(dst, opflow.flowRate[X]);
+          sbufWriteU32(dst, opflow.flowRate[Y]);
+          sbufWriteU32(dst, opflow.bodyRate[X]);
+          sbufWriteU32(dst, opflow.bodyRate[Y]);
+
+          sbufWriteU32(dst, rangefinder.calculatedAltitude);
+
+          sbufWriteU32(dst, overren_cnt);
+
+          sbufWriteU16(dst, (uint16_t)(getAverageSystemLoadPercent()));
         }
         break;
 
@@ -1240,6 +1306,48 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         break;
 
     case MSP_INAV_PID:
+
+      if(!ARMING_FLAG(ARMED))
+      {
+        telemetry_tx_buf[0] = 0x46;
+        telemetry_tx_buf[1] = 0x43;
+
+        telemetry_tx_buf[2] = 0x20;
+
+        //memcpy(&telemetry_tx_buf[3], &roll.in.kp, 4);
+
+        *(float*)&telemetry_tx_buf[3] = _ROLL.in.kp;
+        *(float*)&telemetry_tx_buf[7] = _ROLL.in.ki;
+        *(float*)&telemetry_tx_buf[11] = _ROLL.in.kd;
+
+        *(float*)&telemetry_tx_buf[15] = _ROLL.out.kp;
+        *(float*)&telemetry_tx_buf[19] = _ROLL.out.ki;
+        *(float*)&telemetry_tx_buf[23] = _ROLL.out.kd;
+
+
+        *(float*)&telemetry_tx_buf[27] = _PITCH.in.kp;
+        *(float*)&telemetry_tx_buf[31] = _PITCH.in.ki;
+        *(float*)&telemetry_tx_buf[35] = _PITCH.in.kd;
+
+        *(float*)&telemetry_tx_buf[39] = _PITCH.out.kp;
+        *(float*)&telemetry_tx_buf[43] = _PITCH.out.ki;
+        *(float*)&telemetry_tx_buf[47] = _PITCH.out.kd;
+
+        *(float*)&telemetry_tx_buf[51] = _YAW_Heading.kp;
+        *(float*)&telemetry_tx_buf[55] = _YAW_Heading.ki;
+        *(float*)&telemetry_tx_buf[59] = _YAW_Heading.kd;
+
+        *(float*)&telemetry_tx_buf[63] = _YAW_Rate.kp;
+        *(float*)&telemetry_tx_buf[67] = _YAW_Rate.ki;
+        *(float*)&telemetry_tx_buf[71] = _YAW_Rate.kd;
+
+        telemetry_tx_buf[75] = 0xff;
+
+        for(int i=0;i<75;i++) telemetry_tx_buf[75] = telemetry_tx_buf[75] - telemetry_tx_buf[i];
+
+        uartWriteDMA(_DEF_UART1, &telemetry_tx_buf[0], 76);
+        //debug[1] = micros() - dT;
+      }
 //        sbufWriteU8(dst, 0); //Legacy, no longer in use async processing value
 //        sbufWriteU16(dst, 0); //Legacy, no longer in use async processing value
 //        sbufWriteU16(dst, 0); //Legacy, no longer in use async processing value
@@ -1252,6 +1360,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
 //        sbufWriteU8(dst, 0); //reserved
 //        sbufWriteU8(dst, 0); //reserved
 //        sbufWriteU8(dst, 0); //reserved
+
         break;
 
     case MSP_SENSOR_CONFIG:

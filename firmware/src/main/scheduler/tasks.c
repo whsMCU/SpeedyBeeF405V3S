@@ -102,7 +102,7 @@ static void ledUpdate(uint32_t currentTimeUs)
 uint8_t telemetry_tx_buf[150];
 uint32_t debug1;
 
-static void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf)
+void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf)
 {
   telemetry_tx_buf[0] = 0x46;
   telemetry_tx_buf[1] = 0x43;
@@ -402,7 +402,6 @@ void gcsMain(void)
       case 0x10:
         if(!ARMING_FLAG(ARMED))
         {
-          uint32_t dT = micros();
           telemetry_tx_buf[0] = 0x46;
           telemetry_tx_buf[1] = 0x43;
 
@@ -440,7 +439,6 @@ void gcsMain(void)
           for(int i=0;i<75;i++) telemetry_tx_buf[75] = telemetry_tx_buf[75] - telemetry_tx_buf[i];
 
           uartWriteDMA(_DEF_UART1, &telemetry_tx_buf[0], 76);
-          //debug[1] = micros() - dT;
         }
         break;
 

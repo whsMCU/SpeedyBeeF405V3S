@@ -54,8 +54,9 @@ void resetMspPort(uint8_t ch, mspPort_t *mspPortToReset)
 
 void mspSerialAllocatePorts(void)
 {
-    resetMspPort(_DEF_UART3, &mspPorts[0]);
-    resetMspPort(_DEF_UART4, &mspPorts[1]);
+    resetMspPort(_DEF_UART1, &mspPorts[0]);
+    resetMspPort(_DEF_UART3, &mspPorts[1]);
+    resetMspPort(_DEF_UART4, &mspPorts[2]);
 }
 
 //void mspSerialReleasePortIfAllocated(serialPort_t *serialPort)
@@ -277,11 +278,25 @@ static int mspSerialSendFrame(mspPort_t *msp, uint8_t * hdr, int hdrLen, uint8_t
     if (!uartTxBufEmpty(ch) && ((int)uartTotalTxBytesFree(ch) < totalFrameLength))
         return 0;
 
+    uint8_t frameBuf[16 + JUMBO_FRAME_SIZE_LIMIT + 2]; // 최대 크기 확보
+    int offset = 0;
+
+    memcpy(&frameBuf[offset], hdr, hdrLen);
+    offset += hdrLen;
+
+    memcpy(&frameBuf[offset], data, dataLen);
+    offset += dataLen;
+
+    memcpy(&frameBuf[offset], crc, crcLen);
+    offset += crcLen;
+
+    uartWriteIT(ch, frameBuf, totalFrameLength);
+    //uartWriteDMA(ch, frameBuf, totalFrameLength);
     // Transmit frame
     //serialBeginWrite(ch);
-    uartWriteIT(ch, hdr, hdrLen);
-    uartWriteIT(ch, data, dataLen);
-    uartWriteIT(ch, crc, crcLen);
+    //uartWriteIT(ch, hdr, hdrLen);
+    //uartWriteIT(ch, data, dataLen);
+    //uartWriteIT(ch, crc, crcLen);
     //serialEndWrite(ch);
 
     return totalFrameLength;
@@ -502,6 +517,7 @@ void mspSerialInit(void)
 {
     memset(mspPorts, 0, sizeof(mspPorts));
 
+    uartOpen(_DEF_UART1, 115200);
     uartOpen(_DEF_UART3, 115200);
     uartOpen(_DEF_UART4, 115200);
     mspSerialAllocatePorts();

@@ -18,16 +18,12 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include <stdint.h>
 
-#include "scheduler/scheduler.h"
+#include "hw.h"
 
-extern uint32_t debug1;
+#include "atomic.h"
 
-void tasksInitData(void);
-void tasksInit(void);
-task_t *getTask(unsigned taskId);
-
-void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf);
-extern uint8_t telemetry_tx_buf[150];
-
+#if defined(UNIT_TEST)
+uint8_t atomic_BASEPRI;
+#endif

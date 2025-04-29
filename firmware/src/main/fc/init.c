@@ -136,7 +136,7 @@ void init(void)
 
 	tasksInitData();
 	cliOpen(_DEF_USB, 57600);
-	uartOpen(_DEF_UART1, 115200);
+	//uartOpen(_DEF_UART1, 115200);
 
 	mspSerialInit();
 	//mixerInit(mixerConfig.mixerMode);

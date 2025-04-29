@@ -1030,8 +1030,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
   if(huart->Instance == USART1)
   {
-    //qbufferWrite(&ring_buffer[_DEF_UART1], (uint8_t *)&rx_buf[_DEF_UART1][0], Size);
-    GCS_Passer(rx_buf[_DEF_UART1][0]);
+    qbufferWrite(&ring_buffer[_DEF_UART1], (uint8_t *)&rx_buf[_DEF_UART1][0], 1);
+    //GCS_Passer(rx_buf[_DEF_UART1][0]);
     HAL_UART_Receive_IT(&huart1, (uint8_t *)&rx_buf[_DEF_UART1][0], 1);
 //    HAL_UARTEx_ReceiveToIdle_DMA(&huart1, (uint8_t *)&rx_buf[_DEF_UART1][0], MAX_SIZE);
 //    __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
