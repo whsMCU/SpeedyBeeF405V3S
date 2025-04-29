@@ -449,32 +449,32 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
 //                sbufWriteU16(dst, armingFlags);
 //                sbufWriteU8(dst, accGetCalibrationAxisFlags());
 //            }
-          sbufWriteU16(dst, (uint16_t)(attitude.values.roll*10));
-          sbufWriteU16(dst, (uint16_t)(attitude.values.pitch*10));
-          sbufWriteU16(dst, (uint16_t)(attitude.values.yaw*10));
+          sbufWriteU16(dst, (attitude.values.roll*10));
+          sbufWriteU16(dst, (attitude.values.pitch*10));
+          sbufWriteU16(dst, (attitude.values.yaw*10));
 
-          sbufWriteU16(dst, (uint16_t)(getEstimatedAltitudeCm()*10));
+          sbufWriteU16(dst, (getEstimatedAltitudeCm()*10));
 
-          sbufWriteU16(dst, (uint16_t)(rcCommand[ROLL]*100));
-          sbufWriteU16(dst, (uint16_t)(rcCommand[PITCH]*100));
-          sbufWriteU16(dst, (uint16_t)(rcCommand[YAW]*10));
-          sbufWriteU16(dst, (uint16_t)(rcData[THROTTLE]*10));
+          sbufWriteU16(dst, (rcCommand[ROLL]*100));
+          sbufWriteU16(dst, (rcCommand[PITCH]*100));
+          sbufWriteU16(dst, (rcCommand[YAW]*10));
+          sbufWriteU16(dst, (rcData[THROTTLE]*10));
 
           sbufWriteU32(dst, posllh.lat);
           sbufWriteU32(dst, posllh.lon);
 
-          sbufWriteU16(dst, (uint16_t)(getBatteryAverageCellVoltage()));
+          sbufWriteU16(dst, getBatteryAverageCellVoltage());
 
-          sbufWriteU16(dst, (uint16_t)(flightModeFlags));
+          sbufWriteU16(dst, flightModeFlags);
 
-          sbufWriteU16(dst, (uint16_t)(failsafeFlags));
+          sbufWriteU16(dst, failsafeFlags);
 
-          sbufWriteU16(dst, (uint16_t)(ARMING_FLAG(ARMED)));
+          sbufWriteU16(dst, ARMING_FLAG(ARMED));
 
-          sbufWriteU16(dst, (uint16_t)(motor.motor[R_R]));
-          sbufWriteU16(dst, (uint16_t)(motor.motor[R_F]));
-          sbufWriteU16(dst, (uint16_t)(motor.motor[L_R]));
-          sbufWriteU16(dst, (uint16_t)(motor.motor[L_F]));
+          sbufWriteU16(dst, motor.motor[R_R]);
+          sbufWriteU16(dst, motor.motor[R_F]);
+          sbufWriteU16(dst, motor.motor[L_R]);
+          sbufWriteU16(dst, motor.motor[L_F]);
 
 
           sbufWriteU32(dst, debug[0]);
@@ -486,13 +486,13 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU32(dst, bmi270.gyroADCf[Y]);
           sbufWriteU32(dst, bmi270.gyroADCf[Z]);
 
-          sbufWriteU16(dst, (uint16_t)(bmi270.accelerationTrims.raw[X]));
-          sbufWriteU16(dst, (uint16_t)(bmi270.accelerationTrims.raw[Y]));
-          sbufWriteU16(dst, (uint16_t)(bmi270.accelerationTrims.raw[Z]));
+          sbufWriteU16(dst, bmi270.accelerationTrims.raw[X]);
+          sbufWriteU16(dst, bmi270.accelerationTrims.raw[Y]);
+          sbufWriteU16(dst, bmi270.accelerationTrims.raw[Z]);
 
-          sbufWriteU16(dst, (uint16_t)(compassConfig.magZero.raw[X]));
-          sbufWriteU16(dst, (uint16_t)(compassConfig.magZero.raw[Y]));
-          sbufWriteU16(dst, (uint16_t)(compassConfig.magZero.raw[Z]));
+          sbufWriteU16(dst, compassConfig.magZero.raw[X]);
+          sbufWriteU16(dst, compassConfig.magZero.raw[Y]);
+          sbufWriteU16(dst, compassConfig.magZero.raw[Z]);
 
 
           sbufWriteU32(dst, mag.magADC[X]);
@@ -508,7 +508,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
 
           sbufWriteU32(dst, overren_cnt);
 
-          sbufWriteU16(dst, (uint16_t)(getAverageSystemLoadPercent()));
+          sbufWriteU16(dst, getAverageSystemLoadPercent());
         }
         break;
 
@@ -1309,58 +1309,30 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
 
       if(!ARMING_FLAG(ARMED))
       {
-        telemetry_tx_buf[0] = 0x46;
-        telemetry_tx_buf[1] = 0x43;
+        sbufWriteU32(dst, (int32_t)_ROLL.in.kp);
+        sbufWriteU32(dst, _ROLL.in.ki);
+        sbufWriteU32(dst, _ROLL.in.kd);
 
-        telemetry_tx_buf[2] = 0x20;
+        sbufWriteU32(dst, _ROLL.out.kp);
+        sbufWriteU32(dst, _ROLL.out.ki);
+        sbufWriteU32(dst, _ROLL.out.kd);
 
-        //memcpy(&telemetry_tx_buf[3], &roll.in.kp, 4);
+        sbufWriteU32(dst, _PITCH.in.kp);
+        sbufWriteU32(dst, _PITCH.in.ki);
+        sbufWriteU32(dst, _PITCH.in.kd);
 
-        *(float*)&telemetry_tx_buf[3] = _ROLL.in.kp;
-        *(float*)&telemetry_tx_buf[7] = _ROLL.in.ki;
-        *(float*)&telemetry_tx_buf[11] = _ROLL.in.kd;
+        sbufWriteU32(dst, _PITCH.out.kp);
+        sbufWriteU32(dst, _PITCH.out.ki);
+        sbufWriteU32(dst, _PITCH.out.kd);
 
-        *(float*)&telemetry_tx_buf[15] = _ROLL.out.kp;
-        *(float*)&telemetry_tx_buf[19] = _ROLL.out.ki;
-        *(float*)&telemetry_tx_buf[23] = _ROLL.out.kd;
+        sbufWriteU32(dst, _YAW_Heading.kp);
+        sbufWriteU32(dst, _YAW_Heading.ki);
+        sbufWriteU32(dst, _YAW_Heading.kd);
 
-
-        *(float*)&telemetry_tx_buf[27] = _PITCH.in.kp;
-        *(float*)&telemetry_tx_buf[31] = _PITCH.in.ki;
-        *(float*)&telemetry_tx_buf[35] = _PITCH.in.kd;
-
-        *(float*)&telemetry_tx_buf[39] = _PITCH.out.kp;
-        *(float*)&telemetry_tx_buf[43] = _PITCH.out.ki;
-        *(float*)&telemetry_tx_buf[47] = _PITCH.out.kd;
-
-        *(float*)&telemetry_tx_buf[51] = _YAW_Heading.kp;
-        *(float*)&telemetry_tx_buf[55] = _YAW_Heading.ki;
-        *(float*)&telemetry_tx_buf[59] = _YAW_Heading.kd;
-
-        *(float*)&telemetry_tx_buf[63] = _YAW_Rate.kp;
-        *(float*)&telemetry_tx_buf[67] = _YAW_Rate.ki;
-        *(float*)&telemetry_tx_buf[71] = _YAW_Rate.kd;
-
-        telemetry_tx_buf[75] = 0xff;
-
-        for(int i=0;i<75;i++) telemetry_tx_buf[75] = telemetry_tx_buf[75] - telemetry_tx_buf[i];
-
-        uartWriteDMA(_DEF_UART1, &telemetry_tx_buf[0], 76);
-        //debug[1] = micros() - dT;
+        sbufWriteU32(dst, _YAW_Rate.kp);
+        sbufWriteU32(dst, _YAW_Rate.ki);
+        sbufWriteU32(dst, _YAW_Rate.kd);
       }
-//        sbufWriteU8(dst, 0); //Legacy, no longer in use async processing value
-//        sbufWriteU16(dst, 0); //Legacy, no longer in use async processing value
-//        sbufWriteU16(dst, 0); //Legacy, no longer in use async processing value
-//        sbufWriteU8(dst, pidProfile()->heading_hold_rate_limit);
-//        sbufWriteU8(dst, HEADING_HOLD_ERROR_LPF_FREQ);
-//        sbufWriteU16(dst, 0);
-//        sbufWriteU8(dst, gyroConfig()->gyro_lpf);
-//        sbufWriteU8(dst, accelerometerConfig()->acc_lpf_hz);
-//        sbufWriteU8(dst, 0); //reserved
-//        sbufWriteU8(dst, 0); //reserved
-//        sbufWriteU8(dst, 0); //reserved
-//        sbufWriteU8(dst, 0); //reserved
-
         break;
 
     case MSP_SENSOR_CONFIG:

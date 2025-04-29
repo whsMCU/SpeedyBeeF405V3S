@@ -631,7 +631,7 @@
             this.groupBox4.Size = new System.Drawing.Size(327, 201);
             this.groupBox4.TabIndex = 65;
             this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Telemetry data";
+            this.groupBox4.Text = "Telemetry passed_data";
             // 
             // label75
             // 

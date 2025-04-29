@@ -23,10 +23,9 @@ namespace SpeedyBeeF405V3S_GUI
     public partial class Form1 : Form
     {
         private static System.Timers.Timer AHRS_Timer;
-        float[] passed_data = new float[30];
+        float[] passed_data = new float[50];
         float[] float_data = new float[10];
         UTF8 UTF8 = new UTF8();
-        DataPassing data = new DataPassing();
         Msp_Protocol protocol = new Msp_Protocol();
         MspProtocol mspProtocol = new MspProtocol();
 
@@ -131,9 +130,16 @@ namespace SpeedyBeeF405V3S_GUI
 
             mspProtocol.OnPacketReceived += (command, payload) =>
             {
-                if (command == 101) // MSP_RAW_IMU
+                switch (command)
                 {
-                    Msp_raw_data(payload);
+                    case 6:
+                        Msp_pid_data(payload);
+                        break;
+                    case 101: // MSP_RAW_IMU
+                        Msp_raw_data(payload);
+                        break;
+                    default:
+                        break;
                 }
             };
         }
@@ -188,7 +194,7 @@ namespace SpeedyBeeF405V3S_GUI
                 data[2] /= 10;
                 data[5] /= 10;
                 data[6] /= 10;
-                string log = $"{DateTime.Now:HH:mm:ss.fff}, {data[1]}, {data[2]}, {data[3]}, {data[4]}, {data[5]}, {data[6]}, {data[7]}, {data[8]}";
+                string log = $"{DateTime.Now:HH:mm:ss.fff}, {data[0]}, {data[1]}, {data[2]}, {data[3]}, {data[4]}, {data[5]}, {data[6]}, {data[7]}";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
             }
@@ -196,7 +202,7 @@ namespace SpeedyBeeF405V3S_GUI
 
         private void gMapControl1_MouseClick(object sender, MouseEventArgs e)
         {
-            if(e.Button == MouseButtons.Left)
+            if (e.Button == MouseButtons.Left)
             {
                 // 클릭한 위치의 위도, 경도 가져오기
                 PointLatLng point = gMapControl1.FromLocalToLatLng(e.X, e.Y);
@@ -242,7 +248,7 @@ namespace SpeedyBeeF405V3S_GUI
 
         private void gMapControl1_OnMarkerClick(GMapMarker item, MouseEventArgs e)
         {
-            if(e.Button == MouseButtons.Right)
+            if (e.Button == MouseButtons.Right)
             {
                 RemoveMarker(item);
             }
@@ -328,7 +334,7 @@ namespace SpeedyBeeF405V3S_GUI
             {
                 if (!serialPort.IsOpen && OpenClose.Text == "Open")  //시리얼포트가 열려 있지 않으면
                 {
-                    if(comboBox_port.Text.Length > 1)
+                    if (comboBox_port.Text.Length > 1)
                     {
                         serialPort.PortName = comboBox_port.Text;  //콤보박스의 선택된 COM포트명을 시리얼포트명으로 지정
                         serialPort.BaudRate = 115200;  //보레이트 변경이 필요하면 숫자 변경하기
@@ -389,55 +395,15 @@ namespace SpeedyBeeF405V3S_GUI
 
         private void MySerialReceived(object s, EventArgs e)  //여기에서 수신 데이타를 사용자의 용도에 따라 처리한다.
         {
-            //int ReceiveData = serialPort1.ReadByte();  //시리얼 버터에 수신된 데이타를 ReceiveData 읽어오기
-            //richTextBox_received.Text = richTextBox_received.Text + string.Format("{0:X2}", ReceiveData);  //int 형식을 string형식으로 변환하여 출력
- 
             try
             {
                 if (received_data == 0) received_data = 1;
- 
+
                 while (serialPort.BytesToRead > 0)
                 {
                     byte b = (byte)serialPort.ReadByte();
                     mspProtocol.ParseByte(b);
                 }
-
-
-                        //passed_data = data.dataPassing(buff, iRecSize);
-                        //if (passed_data != null)
-                        //{
-                        //    if (passed_data[0] == 0)
-                        //    {
-                        //        
-                        //    }
-                        //    else if (passed_data[0] == 1)
-                        //    {
-                        //        tb_FC_R_I_P.Text = passed_data[1].ToString();
-                        //        tb_FC_R_I_I.Text = passed_data[2].ToString();
-                        //        tb_FC_R_I_D.Text = passed_data[3].ToString();
-
-                        //        tb_FC_R_O_P.Text = passed_data[4].ToString();
-                        //        tb_FC_R_O_I.Text = passed_data[5].ToString();
-                        //        tb_FC_R_O_D.Text = passed_data[6].ToString();
-
-                        //        tb_FC_P_I_P.Text = passed_data[7].ToString();
-                        //        tb_FC_P_I_I.Text = passed_data[8].ToString();
-                        //        tb_FC_P_I_D.Text = passed_data[9].ToString();
-
-                        //        tb_FC_P_O_P.Text = passed_data[10].ToString();
-                        //        tb_FC_P_O_I.Text = passed_data[11].ToString();
-                        //        tb_FC_P_O_D.Text = passed_data[12].ToString();
-
-                        //        tb_FC_Y_A_P.Text = passed_data[13].ToString();
-                        //        tb_FC_Y_A_I.Text = passed_data[14].ToString();
-                        //        tb_FC_Y_A_D.Text = passed_data[15].ToString();
-
-                        //        tb_FC_Y_R_P.Text = passed_data[16].ToString();
-                        //        tb_FC_Y_R_I.Text = passed_data[17].ToString();
-                        //        tb_FC_Y_R_D.Text = passed_data[18].ToString();
-                        //    }
-
-                        //}
             }
             catch (System.Exception)
             {
@@ -450,78 +416,21 @@ namespace SpeedyBeeF405V3S_GUI
         private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
             byte[] buff = new byte[20];
-
-            mspProtocol.SendMspCommand(101);
-            //try
-            //{
-            //    buff[0] = 0x47;
-            //    buff[1] = 0x53;
-            //    buff[2] = 0x20;
-            //    buff[3] = 0;
-            //    buff[4] = 0;
-            //    buff[5] = 0;
-            //    buff[6] = 0;
-            //    buff[7] = 0;
-            //    buff[8] = 0;
-            //    buff[9] = 0;
-            //    buff[10] = 0;
-            //    buff[11] = 0;
-            //    buff[12] = 0;
-            //    buff[13] = 0;
-            //    buff[14] = 0;
-            //    buff[15] = 0;
-            //    buff[16] = 0;
-            //    buff[17] = 0;
-            //    buff[18] = 0;
-            //    buff[19] = 0xff;
-
-            //    for (int i = 0; i < 19; i++)
-            //    {
-            //        buff[19] -= buff[i];
-            //    }
-
-            //    serialPort.Write(Encoding.UTF8.GetString(buff));
-            //    serialPort.Write(buff, 0, 20);
-            //}
-            //catch { Console.WriteLine("Telemetry Data Requset Error"); }
+            try
+            {
+                mspProtocol.SendMspCommand(101);
+            }
+            catch { Console.WriteLine("STATUS DATA Requset Error"); }
 
             if (pid_recive_flag == true)
             {
                 pid_recive_flag = false;
-                mspProtocol.SendMspCommand(6);
-                //try
-                //{
-                //    buff[0] = 0x47;
-                //    buff[1] = 0x53;
-                //    buff[2] = 0x10;
-                //    buff[3] = 0;
-                //    buff[4] = 0;
-                //    buff[5] = 0;
-                //    buff[6] = 0;
-                //    buff[7] = 0;
-                //    buff[8] = 0;
-                //    buff[9] = 0;
-                //    buff[10] = 0;
-                //    buff[11] = 0;
-                //    buff[12] = 0;
-                //    buff[13] = 0;
-                //    buff[14] = 0;
-                //    buff[15] = 0;
-                //    buff[16] = 0;
-                //    buff[17] = 0;
-                //    buff[18] = 0;
-                //    buff[19] = 0xff;
 
-                //    for (int i = 0; i < 19; i++)
-                //    {
-                //        buff[19] -= buff[i];
-                //    }
-
-                //    //serialPort.Write(Encoding.UTF8.GetString(buff));
-                //    serialPort.Write(buff, 0, 20);
-                //    Console.WriteLine("PID값 수신명령 전송 완료");
-                //}
-                //catch { Console.WriteLine("PID Data Requset Error"); }
+                try
+                {
+                    mspProtocol.SendMspCommand(6);
+                }
+                catch { Console.WriteLine("PID Data Requset Error"); }
             }
             if (pid_save_flag == true)
             {
@@ -559,7 +468,7 @@ namespace SpeedyBeeF405V3S_GUI
                 }
                 catch { Console.WriteLine("PID Save Requset Error"); }
             }
-            if(pid_send_flag == true)
+            if (pid_send_flag == true)
             {
                 pid_send_flag = false;
                 byte[] pid_buff = new byte[76];
@@ -774,9 +683,9 @@ namespace SpeedyBeeF405V3S_GUI
                 catch { Console.WriteLine("MAG Calibration Requset Error"); }
             }
 
-            if(pid_test_flag == true)
+            if (pid_test_flag == true)
             {
-                if(pid_test_request_flag == true)
+                if (pid_test_request_flag == true)
                 {
                     byte[] pid_buff = new byte[20];
                     byte[] tmp = new byte[4];
@@ -819,7 +728,7 @@ namespace SpeedyBeeF405V3S_GUI
                     }
                     catch { Console.WriteLine("PID 테스트 Step1 Signal Requset Error"); }
                 }
-            
+
             }
 
             if (pid_test_flag == true)
@@ -828,7 +737,7 @@ namespace SpeedyBeeF405V3S_GUI
                 this.Invoke((MethodInvoker)delegate
                 {
                     lb_PID_Test_Status.Text = "PID_Control_Testing...";
-                    lb_PID_Test_Progress_Time.Text = (pid_test_time*50).ToString();
+                    lb_PID_Test_Progress_Time.Text = (pid_test_time * 50).ToString();
                     lb_PID_Test_Target_Time.Text = (pid_test_setting_time_temp * 50).ToString();
                 });
                 switch (pidState)
@@ -1164,18 +1073,18 @@ namespace SpeedyBeeF405V3S_GUI
                 label36.Text = ("00:" + (flight_timer_seconds / 60).ToString("00.") + ":" + (flight_timer_seconds % 60).ToString("00."));
             }
 
-            if(mag_cal_remain_time_flag == true)
+            if (mag_cal_remain_time_flag == true)
             {
                 lb_magcal_remain_time.Text = mag_cal_remain_time.ToString();
                 mag_cal_remain_time--;
-                if(mag_cal_remain_time < 0)
+                if (mag_cal_remain_time < 0)
                 {
                     mag_cal_remain_time_flag = false;
                     lb_magcal_remain_time.Text = "완료";
                 }
             }
 
-            if(cb_record.Checked == true)
+            if (cb_record.Checked == true)
             {
                 program_timer_seconds++;
                 if (program_timer_seconds % 2 == 0)
@@ -1236,7 +1145,7 @@ namespace SpeedyBeeF405V3S_GUI
 
             tb_P_O_P.Text = tb_FC_P_O_P.Text;
             tb_P_O_I.Text = tb_FC_P_O_I.Text;
-            tb_P_O_D.Text =  tb_FC_P_O_D.Text;
+            tb_P_O_D.Text = tb_FC_P_O_D.Text;
 
             tb_Y_A_P.Text = tb_FC_Y_A_P.Text;
             tb_Y_A_I.Text = tb_FC_Y_A_I.Text;
@@ -1931,48 +1840,98 @@ namespace SpeedyBeeF405V3S_GUI
             int ms = date_time.Millisecond;
             time_count++;
 
+            passed_data[0] = BitConverter.ToInt16(payload, 0) / 10;                  // attitude_roll
+            passed_data[1] = BitConverter.ToInt16(payload, 2) / 10;                  // attitude_pitch
+            passed_data[2] = BitConverter.ToUInt16(payload, 4) / 100;                // attitude_yaw
+            passed_data[3] = BitConverter.ToInt16(payload, 6) / 10;                  // Altitude_Cm
+            passed_data[4] = BitConverter.ToInt16(payload, 8) / 10;                  // RC_ROLL
+            passed_data[5] = BitConverter.ToInt16(payload, 10) / 10;                 // RC_PITCH
+            passed_data[6] = (BitConverter.ToInt16(payload, 12));                    // RC_YAW
+            passed_data[7] = ((BitConverter.ToInt16(payload, 14) / 10) - 1000) / 10; // RC_Throttole
+            passed_data[8] = BitConverter.ToInt32(payload, 16);     // posllh.lat
+            passed_data[9] = BitConverter.ToInt32(payload, 20);     // posllh.lon
+            passed_data[10] = BitConverter.ToInt16(payload, 24);    // batteryAverageCellVoltage
+            passed_data[11] = BitConverter.ToUInt16(payload, 26);   // flightMode_Flags
+            passed_data[12] = BitConverter.ToInt16(payload, 28);    // failsafe_Flags
+            passed_data[13] = BitConverter.ToInt16(payload, 30);    // ARMING_Flags
+            passed_data[14] = BitConverter.ToUInt16(payload, 32);   // Motor[R_R]
+            passed_data[15] = BitConverter.ToUInt16(payload, 34);   // Motor[R_F]
+            passed_data[16] = BitConverter.ToUInt16(payload, 36);   // Motor[L_R]
+            passed_data[17] = BitConverter.ToUInt16(payload, 38);   // Motor[L_F]
+            passed_data[18] = BitConverter.ToInt32(payload, 40);    // Debug[0]
+            passed_data[19] = BitConverter.ToInt32(payload, 44);    // Debug[1]
+            passed_data[20] = BitConverter.ToInt32(payload, 48);    // Debug[2]
+            passed_data[21] = BitConverter.ToInt32(payload, 52);    // Debug[3]
+
+            passed_data[22] = BitConverter.ToSingle(payload, 56);   // gyroADCf[X]
+            passed_data[23] = BitConverter.ToSingle(payload, 60);   // gyroADCf[Y]
+            passed_data[24] = BitConverter.ToSingle(payload, 64);   // gyroADCf[Z]
+
+            passed_data[25] = BitConverter.ToInt16(payload, 68);    // accel_Trim[X]
+            passed_data[26] = BitConverter.ToInt16(payload, 70);    // accel_Trim[Y]
+            passed_data[27] = BitConverter.ToInt16(payload, 72);    // accel_Trim[Z]
+
+            passed_data[28] = BitConverter.ToInt16(payload, 74);    // mag_Zero[X]
+            passed_data[29] = BitConverter.ToInt16(payload, 76);    // mag_Zero[Y]
+            passed_data[30] = BitConverter.ToInt16(payload, 78);    // mag_Zero[Z]
+
+            passed_data[31] = BitConverter.ToSingle(payload, 80);   // mag_ADC[X]
+            passed_data[32] = BitConverter.ToSingle(payload, 84);   // mag_ADC[Y]
+            passed_data[33] = BitConverter.ToSingle(payload, 88);   // mag_ADC[Z]
+
+            passed_data[34] = BitConverter.ToSingle(payload, 92);   // opflow_Rate[X]
+            passed_data[35] = BitConverter.ToSingle(payload, 96);   // opflow_Rate[Y]
+            passed_data[36] = BitConverter.ToSingle(payload, 100);  // opflow_bodyRate[X]
+            passed_data[37] = BitConverter.ToSingle(payload, 104);  // opflow_bodyRate[Y]
+
+            passed_data[38] = BitConverter.ToInt32(payload, 108);   // rangefinder_cm
+
+            passed_data[39] = BitConverter.ToInt32(payload, 112);   // overren_cnt
+
+            passed_data[40] = BitConverter.ToUInt16(payload, 116);  // CPU_LOAD
+
             if (cb_record.Checked == true)
             {
                 Check_Data_Log(PID_log_filePath, passed_data);
             }
 
-            float_data[1] = (BitConverter.ToInt16(payload, 0) / 10) / 10;
-            lb_roll.Text = float_data[1].ToString("F1", CultureInfo.InvariantCulture);
-            float_data[2] = (BitConverter.ToInt16(payload, 2) / 10) / 10;
-            lb_pitch.Text = float_data[2].ToString("F1", CultureInfo.InvariantCulture);
-            lb_heading.Text = (BitConverter.ToInt16(payload, 4)/100).ToString();
+            float_data[0] = passed_data[0] / 10;
+            lb_roll.Text = float_data[0].ToString("F1", CultureInfo.InvariantCulture);
+            float_data[1] = passed_data[1] / 10;
+            lb_pitch.Text = float_data[1].ToString("F1", CultureInfo.InvariantCulture);
+            lb_heading.Text = passed_data[2].ToString();
 
             if (rb_roll.Checked == true)
             {
-                _roll_angle_points.Add(time_count + 150, (BitConverter.ToInt16(payload, 0) / 100));
+                _roll_angle_points.Add(time_count + 150, passed_data[0] / 10);
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
             if (rb_pitch.Checked == true)
             {
-                _pitch_angle_points.Add(time_count + 150, (BitConverter.ToInt16(payload, 2) / 100));
+                _pitch_angle_points.Add(time_count + 150, passed_data[1] / 10);
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
             if (rb_yaw.Checked == true)
             {
-                _yaw_angle_points.Add(time_count + 150, (BitConverter.ToInt16(payload, 4) / 100));
+                _yaw_angle_points.Add(time_count + 150, passed_data[2]);
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
 
             if (rb_roll_pitch.Checked == true)
             {
-                _roll_angle_points.Add(time_count + 150, (BitConverter.ToInt16(payload, 0) / 100));
-                _pitch_angle_points.Add(time_count + 150, (BitConverter.ToInt16(payload, 2) / 100));
+                _roll_angle_points.Add(time_count + 150, passed_data[0] / 10);
+                _pitch_angle_points.Add(time_count + 150, passed_data[1] / 10);
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
 
             if (rb_roll_setpoint.Checked == true)
             {
-                _roll_angle_points.Add(time_count + 150, (BitConverter.ToInt16(payload, 0) / 100));
-                _rc_roll_points.Add(time_count + 150, (BitConverter.ToInt16(payload, 8) / 100));
+                _roll_angle_points.Add(time_count + 150, passed_data[0] / 10);
+                _rc_roll_points.Add(time_count + 150, passed_data[4] / 10);
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
@@ -1985,112 +1944,112 @@ namespace SpeedyBeeF405V3S_GUI
                 }
                 else
                 {
-                    _rc_pitch_points.Add(time_count + 150, (BitConverter.ToInt16(payload, 8) / 100));
+                    _rc_pitch_points.Add(time_count + 150, passed_data[5] / 10);
                 }
-                _pitch_angle_points.Add(time_count + 150, (BitConverter.ToInt16(payload, 2) / 100));
+                _pitch_angle_points.Add(time_count + 150, passed_data[1] / 10);
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
 
             if (rb_yaw_setpoint.Checked == true)
             {
-                _yaw_angle_points.Add(time_count + 150, passed_data[3]);
-                _rc_yaw_points.Add(time_count + 150, passed_data[7]);
+                _yaw_angle_points.Add(time_count + 150, passed_data[2]);
+                _rc_yaw_points.Add(time_count + 150, passed_data[6]);
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
 
             if (rb_altitude.Checked == true)
             {
-                _altitude_points.Add(time_count + 150, passed_data[4]);
+                _altitude_points.Add(time_count + 150, passed_data[3]);
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
 
             if (rb_gyro.Checked == true)
             {
-                _gyro_x_points.Add(time_count + 150, passed_data[23]);
-                _gyro_y_points.Add(time_count + 150, passed_data[24]);
-                _gyro_z_points.Add(time_count + 150, passed_data[25]);
+                _gyro_x_points.Add(time_count + 150, passed_data[22]);
+                _gyro_y_points.Add(time_count + 150, passed_data[23]);
+                _gyro_z_points.Add(time_count + 150, passed_data[24]);
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
 
             if (rb_motor.Checked == true)
             {
-                _motor_0_points.Add(time_count + 150, passed_data[15]);
-                _motor_1_points.Add(time_count + 150, passed_data[16]);
-                _motor_2_points.Add(time_count + 150, passed_data[17]);
-                _motor_3_points.Add(time_count + 150, passed_data[18]);
+                _motor_0_points.Add(time_count + 150, passed_data[14]);
+                _motor_1_points.Add(time_count + 150, passed_data[15]);
+                _motor_2_points.Add(time_count + 150, passed_data[16]);
+                _motor_3_points.Add(time_count + 150, passed_data[17]);
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
 
             if (rb_debug.Checked == true)
             {
-                _debug_0_points.Add(time_count + 150, passed_data[19]);
-                _debug_1_points.Add(time_count + 150, passed_data[20]);
-                _debug_2_points.Add(time_count + 150, passed_data[21]);
-                _debug_3_points.Add(time_count + 150, passed_data[22]);
+                _debug_0_points.Add(time_count + 150, passed_data[18]);
+                _debug_1_points.Add(time_count + 150, passed_data[19]);
+                _debug_2_points.Add(time_count + 150, passed_data[20]);
+                _debug_3_points.Add(time_count + 150, passed_data[21]);
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
 
-            lb_altitude.Text = (BitConverter.ToInt16(payload, 6)/10).ToString();
-            float_data[5] = (BitConverter.ToInt16(payload, 8) / 100);
-            lb_rc_roll.Text = float_data[5].ToString("F1", CultureInfo.InvariantCulture);
-            float_data[6] = (BitConverter.ToInt16(payload, 10) / 100);
-            lb_rc_pitch.Text = float_data[6].ToString("F1", CultureInfo.InvariantCulture);
-            lb_rc_yaw.Text = BitConverter.ToInt16(payload, 12).ToString();
-            lb_rc_throttle.Text = ((BitConverter.ToInt16(payload, 14)/10-1000)/10).ToString();
-            lb_lat.Text = BitConverter.ToInt16(payload, 16).ToString();
-            lb_long.Text = BitConverter.ToInt16(payload, 18).ToString();
-            lb_bat.Text = ((passed_data[11] * 4) / 100).ToString();
-            battery_bar_level = (int)(passed_data[11] * 4) / 10;
+            lb_altitude.Text = passed_data[3].ToString();
+            float_data[4] = passed_data[4] / 10;
+            lb_rc_roll.Text = float_data[4].ToString("F1", CultureInfo.InvariantCulture);
+            float_data[5] = passed_data[5] / 10;
+            lb_rc_pitch.Text = float_data[5].ToString("F1", CultureInfo.InvariantCulture);
+            lb_rc_yaw.Text = passed_data[6].ToString();
+            lb_rc_throttle.Text = passed_data[7].ToString();
+            lb_lat.Text = passed_data[8].ToString();
+            lb_long.Text = passed_data[9].ToString();
+            lb_bat.Text = ((passed_data[10] * 4) / 100).ToString();
+            battery_bar_level = (int)(passed_data[10] * 4) / 10;
 
-            flight_mode = (UInt16)passed_data[12];
+            flight_mode = (UInt16)passed_data[11];
 
-            lb_fail.Text = passed_data[13].ToString();
-            error = (UInt16)passed_data[13];
+            lb_fail.Text = passed_data[12].ToString();
+            error = (UInt16)passed_data[12];
 
-            lb_armed.Text = passed_data[14].ToString();
-            start = (byte)passed_data[14];
+            lb_armed.Text = passed_data[13].ToString();
+            start = (byte)passed_data[13];
 
-            lb_motor0.Text = passed_data[15].ToString();
-            lb_motor1.Text = passed_data[16].ToString();
-            lb_motor2.Text = passed_data[17].ToString();
-            lb_motor3.Text = passed_data[18].ToString();
+            lb_motor0.Text = passed_data[14].ToString();
+            lb_motor1.Text = passed_data[15].ToString();
+            lb_motor2.Text = passed_data[16].ToString();
+            lb_motor3.Text = passed_data[17].ToString();
 
-            lb_debug0.Text = passed_data[19].ToString();
-            lb_debug1.Text = passed_data[20].ToString();
-            lb_debug2.Text = passed_data[21].ToString();
-            lb_debug3.Text = passed_data[22].ToString();
+            lb_debug0.Text = passed_data[18].ToString();
+            lb_debug1.Text = passed_data[19].ToString();
+            lb_debug2.Text = passed_data[20].ToString();
+            lb_debug3.Text = passed_data[21].ToString();
 
-            lb_gyro_X.Text = passed_data[23].ToString("0.00");
-            lb_gyro_Y.Text = passed_data[24].ToString("0.00");
-            lb_gyro_Z.Text = passed_data[25].ToString("0.00");
+            lb_gyro_X.Text = passed_data[22].ToString("0.00");
+            lb_gyro_Y.Text = passed_data[23].ToString("0.00");
+            lb_gyro_Z.Text = passed_data[24].ToString("0.00");
 
-            lb_accTrim_X.Text = passed_data[26].ToString();
-            lb_accTrim_Y.Text = passed_data[27].ToString();
-            lb_accTrim_Z.Text = passed_data[28].ToString();
+            lb_accTrim_X.Text = passed_data[25].ToString();
+            lb_accTrim_Y.Text = passed_data[26].ToString();
+            lb_accTrim_Z.Text = passed_data[27].ToString();
 
-            lb_magZero_X.Text = passed_data[29].ToString();
-            lb_magZero_Y.Text = passed_data[30].ToString();
-            lb_magZero_Z.Text = passed_data[31].ToString();
+            lb_magZero_X.Text = passed_data[28].ToString();
+            lb_magZero_Y.Text = passed_data[29].ToString();
+            lb_magZero_Z.Text = passed_data[30].ToString();
 
-            lb_mag_X.Text = passed_data[32].ToString();
-            lb_mag_Y.Text = passed_data[33].ToString();
-            lb_mag_Z.Text = passed_data[34].ToString();
+            lb_mag_X.Text = passed_data[31].ToString();
+            lb_mag_Y.Text = passed_data[32].ToString();
+            lb_mag_Z.Text = passed_data[33].ToString();
 
-            lb_flowrate_X.Text = passed_data[35].ToString();
-            lb_flowrate_Y.Text = passed_data[36].ToString();
-            lb_bodyrate_X.Text = passed_data[37].ToString();
-            lb_bodyrate_Y.Text = passed_data[38].ToString();
+            lb_flowrate_X.Text = passed_data[34].ToString();
+            lb_flowrate_Y.Text = passed_data[35].ToString();
+            lb_bodyrate_X.Text = passed_data[36].ToString();
+            lb_bodyrate_Y.Text = passed_data[37].ToString();
 
-            lb_rangefinder.Text = passed_data[39].ToString();
+            lb_rangefinder.Text = passed_data[38].ToString();
 
-            tb_rx_error.Text = passed_data[40].ToString();
-            lb_fc_load.Text = passed_data[41].ToString();
+            tb_rx_error.Text = passed_data[39].ToString();
+            lb_fc_load.Text = passed_data[40].ToString();
 
             if (rb_roll.Checked == true || rb_pitch.Checked == true ||
                rb_yaw.Checked == true || rb_roll_pitch.Checked == true ||
@@ -2103,6 +2062,63 @@ namespace SpeedyBeeF405V3S_GUI
                 zedGraphControl1.Invalidate();
                 zedGraphControl1.Refresh();
             }
+            return true;
+        }
+
+        bool Msp_pid_data(byte[] payload)
+        {
+            DateTime date_time = DateTime.Now;
+            int ms = date_time.Millisecond;
+            time_count++;
+
+            passed_data[0] = BitConverter.ToSingle(payload, 0);     // R_I_P
+            passed_data[1] = BitConverter.ToSingle(payload, 4);     // R_I_I
+            passed_data[2] = BitConverter.ToSingle(payload, 8);    // R_I_D
+
+            passed_data[3] = BitConverter.ToSingle(payload, 12);    // R_O_P
+            passed_data[4] = BitConverter.ToSingle(payload, 16);    // R_O_I
+            passed_data[5] = BitConverter.ToSingle(payload, 20);    // R_O_D
+
+            passed_data[6] = BitConverter.ToSingle(payload, 24);    // P_I_P
+            passed_data[7] = BitConverter.ToSingle(payload, 28);    // P_I_I
+            passed_data[8] = BitConverter.ToSingle(payload, 32);    // P_I_D
+
+            passed_data[9] = BitConverter.ToSingle(payload, 36);    // P_O_P
+            passed_data[10] = BitConverter.ToSingle(payload, 40);   // P_O_I
+            passed_data[11] = BitConverter.ToSingle(payload, 44);   // P_O_D
+
+            passed_data[12] = BitConverter.ToSingle(payload, 48);   // Y_A_P
+            passed_data[13] = BitConverter.ToSingle(payload, 52);   // Y_A_I
+            passed_data[14] = BitConverter.ToSingle(payload, 56);   // Y_A_D
+
+            passed_data[15] = BitConverter.ToSingle(payload, 60);   // Y_A_P
+            passed_data[16] = BitConverter.ToSingle(payload, 64);   // Y_A_I
+            passed_data[17] = BitConverter.ToSingle(payload, 68);   // Y_A_D
+
+            tb_FC_R_I_P.Text = passed_data[0].ToString();
+            tb_FC_R_I_I.Text = passed_data[1].ToString();
+            tb_FC_R_I_D.Text = passed_data[2].ToString();
+
+            tb_FC_R_O_P.Text = passed_data[3].ToString();
+            tb_FC_R_O_I.Text = passed_data[4].ToString();
+            tb_FC_R_O_D.Text = passed_data[5].ToString();
+
+            tb_FC_P_I_P.Text = passed_data[6].ToString();
+            tb_FC_P_I_I.Text = passed_data[7].ToString();
+            tb_FC_P_I_D.Text = passed_data[8].ToString();
+
+            tb_FC_P_O_P.Text = passed_data[9].ToString();
+            tb_FC_P_O_I.Text = passed_data[10].ToString();
+            tb_FC_P_O_D.Text = passed_data[11].ToString();
+
+            tb_FC_Y_A_P.Text = passed_data[12].ToString();
+            tb_FC_Y_A_I.Text = passed_data[13].ToString();
+            tb_FC_Y_A_D.Text = passed_data[14].ToString();
+
+            tb_FC_Y_R_P.Text = passed_data[15].ToString();
+            tb_FC_Y_R_I.Text = passed_data[16].ToString();
+            tb_FC_Y_R_D.Text = passed_data[17].ToString();
+
             return true;
         }
     }
