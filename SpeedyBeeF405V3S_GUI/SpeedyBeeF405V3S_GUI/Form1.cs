@@ -18,6 +18,7 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Globalization;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 
 namespace SpeedyBeeF405V3S_GUI
 {
@@ -382,6 +383,7 @@ namespace SpeedyBeeF405V3S_GUI
                 comboBox_port.DataSource = SerialPort.GetPortNames(); //연결 가능한 시리얼포트 이름을 콤보박스에 가져오기 
             }
             catch { }
+
         }
         public void AddMarker(PointLatLng p, string text)
         {
@@ -481,8 +483,16 @@ namespace SpeedyBeeF405V3S_GUI
 
         pidState_e pidState = pidState_e.TEST_IDLE;
 
+        Stopwatch stopwatch = new Stopwatch();
+
         private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
+            stopwatch.Stop();
+            Console.WriteLine($"Period : {stopwatch.ElapsedMilliseconds}ms");
+            stopwatch.Reset();
+
+            stopwatch.Start();
+
             byte[] buff = new byte[20];
             try
             {
@@ -942,6 +952,7 @@ namespace SpeedyBeeF405V3S_GUI
                 }
             }
         }
+
         private void indicator_on()
         {
             Graphics g = panel1.CreateGraphics();
@@ -1800,30 +1811,12 @@ namespace SpeedyBeeF405V3S_GUI
             Process.Start("explorer.exe", folderPath);
         }
 
-        static DateTime? lastExecutionTime = null;
-        static void MeasureExecutionInterval()
-        {
-            DateTime current = DateTime.Now;
-
-            if (lastExecutionTime != null)
-            {
-                TimeSpan interval = current - lastExecutionTime.Value;
-                Console.WriteLine($"실행 주기: {interval.TotalMilliseconds} ms");
-            }
-            else
-            {
-                Console.WriteLine("첫 실행입니다.");
-            }
-
-            lastExecutionTime = current;
-        }
-
         bool Msp_raw_data(byte[] payload)
         {
             DateTime date_time = DateTime.Now;
             int ms = date_time.Millisecond;
             time_count++;
-            MeasureExecutionInterval();
+
             passed_data[0] = BitConverter.ToInt16(payload, 0) / 10;                  // attitude_roll
             passed_data[1] = BitConverter.ToInt16(payload, 2) / 10;                  // attitude_pitch
             passed_data[2] = BitConverter.ToUInt16(payload, 4) / 100;                // attitude_yaw

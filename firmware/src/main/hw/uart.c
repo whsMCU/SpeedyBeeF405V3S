@@ -14,6 +14,8 @@
 
 #include "drivers/gps/M8N.h"
 
+#include "msp/msp_serial.h"
+
 //#include "fc/core.h"
 
 
@@ -1021,6 +1023,14 @@ static void GCS_Passer(uint8_t c)
       gcsState = GCS_IDLE;
       cnt1 = 0;
       break;
+  }
+}
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+  if(huart->Instance == USART1)
+  {
+    msp_tx_end_time = micros()-msp_tx_start_time;
   }
 }
 

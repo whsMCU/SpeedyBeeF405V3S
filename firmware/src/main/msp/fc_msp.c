@@ -432,24 +432,6 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
     case MSP_STATUS_EX:
     case MSP_STATUS:
         {
-//            boxBitmask_t mspBoxModeFlags;
-//            packBoxModeFlags(&mspBoxModeFlags);
-//
-//            sbufWriteU16(dst, (uint16_t)cycleTime);
-//#ifdef USE_I2C
-//            sbufWriteU16(dst, i2cGetErrorCounter());
-//#else
-//            sbufWriteU16(dst, 0);
-//#endif
-//            sbufWriteU16(dst, packSensorStatus());
-//            sbufWriteData(dst, &mspBoxModeFlags, 4);
-//            sbufWriteU8(dst, getConfigProfile());
-//
-//            if (cmdMSP == MSP_STATUS_EX) {
-//                sbufWriteU16(dst, averageSystemLoadPercent);
-//                sbufWriteU16(dst, armingFlags);
-//                sbufWriteU8(dst, accGetCalibrationAxisFlags());
-//            }
           sbufWriteU16(dst, (attitude.values.roll*10));
           sbufWriteU16(dst, (attitude.values.pitch*10));
           sbufWriteU16(dst, (attitude.values.yaw*10));
