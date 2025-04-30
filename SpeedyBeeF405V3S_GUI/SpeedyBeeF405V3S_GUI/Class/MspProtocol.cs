@@ -16,6 +16,8 @@ namespace SpeedyBeeF405V3S_GUI.Class
     {
         private SerialPort _serialPort;
 
+        private int msp_error;
+
         public delegate void MspPacketReceivedHandler(byte command, byte[] payload);
         public event MspPacketReceivedHandler OnPacketReceived;
 
@@ -91,10 +93,16 @@ namespace SpeedyBeeF405V3S_GUI.Class
                     }
                     else
                     {
+                        msp_error++;
                         c_state = ParseState.IDLE;
                     }
                     break;
             }
+        }
+
+        public int GetMspError()
+        {
+            return msp_error;
         }
 
         public void SendMspCommand(byte command, byte[] payload = null)

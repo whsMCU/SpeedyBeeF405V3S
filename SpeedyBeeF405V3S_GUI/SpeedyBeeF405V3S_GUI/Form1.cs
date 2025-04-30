@@ -17,6 +17,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Globalization;
+using System.Security.Cryptography;
 
 namespace SpeedyBeeF405V3S_GUI
 {
@@ -25,6 +26,7 @@ namespace SpeedyBeeF405V3S_GUI
         private static System.Timers.Timer AHRS_Timer;
         float[] passed_data = new float[50];
         float[] float_data = new float[10];
+        float[] float_data_pid = new float[18];
         UTF8 UTF8 = new UTF8();
         Msp_Protocol protocol = new Msp_Protocol();
         MspProtocol mspProtocol = new MspProtocol();
@@ -165,7 +167,73 @@ namespace SpeedyBeeF405V3S_GUI
             {
                 writer.AutoFlush = true;
 
-                string log = "DateTime, Roll, Pitch, Yaw, Alt, RollSetPoint, PitchSetPoint, Yaw SetPoint, Thorttle";
+                float_data_pid[0] = float.Parse(tb_R_I_P.Text);
+                float_data_pid[1] = float.Parse(tb_R_I_I.Text);
+                float_data_pid[2] = float.Parse(tb_R_I_D.Text);
+
+                float_data_pid[3] = float.Parse(tb_R_O_P.Text);
+                float_data_pid[4] = float.Parse(tb_R_O_I.Text);
+                float_data_pid[5] = float.Parse(tb_R_O_D.Text);
+
+                float_data_pid[6] = float.Parse(tb_P_I_P.Text);
+                float_data_pid[7] = float.Parse(tb_P_I_I.Text);
+                float_data_pid[8] = float.Parse(tb_P_I_D.Text);
+
+                float_data_pid[9] = float.Parse(tb_P_O_P.Text);
+                float_data_pid[10] = float.Parse(tb_P_O_I.Text);
+                float_data_pid[11] = float.Parse(tb_P_O_D.Text);
+
+                float_data_pid[12] = float.Parse(tb_Y_A_P.Text);
+                float_data_pid[13] = float.Parse(tb_Y_A_I.Text);
+                float_data_pid[14] = float.Parse(tb_Y_A_D.Text);
+
+                float_data_pid[15] = float.Parse(tb_Y_R_P.Text);
+                float_data_pid[16] = float.Parse(tb_Y_R_I.Text);
+                float_data_pid[17] = float.Parse(tb_Y_R_D.Text);
+
+                string log = "R_I_P, R_I_I, R_I_D";
+                writer.WriteLine(log);
+                Console.WriteLine(log); // 콘솔에도 출력
+                log = $"{float_data_pid[0]}, {float_data_pid[1]}, {float_data_pid[2]}";
+                writer.WriteLine(log);
+                Console.WriteLine(log); // 콘솔에도 출력
+
+                log = "R_O_P, R_O_I, R_O_D";
+                writer.WriteLine(log);
+                Console.WriteLine(log); // 콘솔에도 출력
+                log = $"{float_data_pid[3]}, {float_data_pid[4]}, {float_data_pid[5]}";
+                writer.WriteLine(log);
+                Console.WriteLine(log); // 콘솔에도 출력
+
+                log = "P_I_P, P_I_I, P_I_D";
+                writer.WriteLine(log);
+                Console.WriteLine(log); // 콘솔에도 출력
+                log = $"{float_data_pid[6]}, {float_data_pid[7]}, {float_data_pid[8]}";
+                writer.WriteLine(log);
+                Console.WriteLine(log); // 콘솔에도 출력
+
+                log = "P_O_P, P_O_I, P_O_D";
+                writer.WriteLine(log);
+                Console.WriteLine(log); // 콘솔에도 출력
+                log = $"{float_data_pid[9]}, {float_data_pid[10]}, {float_data_pid[11]}";
+                writer.WriteLine(log);
+                Console.WriteLine(log); // 콘솔에도 출력
+
+                log = "Y_A_P, Y_A_I, Y_A_D";
+                writer.WriteLine(log);
+                Console.WriteLine(log); // 콘솔에도 출력
+                log = $"{float_data_pid[12]}, {float_data_pid[13]}, {float_data_pid[14]}";
+                writer.WriteLine(log);
+                Console.WriteLine(log); // 콘솔에도 출력
+
+                log = "Y_R_P, Y_R_I, Y_R_D";
+                writer.WriteLine(log);
+                Console.WriteLine(log); // 콘솔에도 출력
+                log = $"{float_data_pid[15]}, {float_data_pid[16]}, {float_data_pid[17]}";
+                writer.WriteLine(log);
+                Console.WriteLine(log); // 콘솔에도 출력
+
+                log = "DateTime, Roll, Pitch, Yaw, Alt, RollSetPoint, PitchSetPoint, Yaw SetPoint, Thorttle";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
             }
@@ -437,33 +505,7 @@ namespace SpeedyBeeF405V3S_GUI
                 pid_save_flag = false;
                 try
                 {
-                    buff[0] = 0x47;
-                    buff[1] = 0x53;
-                    buff[2] = 0x00;
-                    buff[3] = 0;
-                    buff[4] = 0;
-                    buff[5] = 0;
-                    buff[6] = 0;
-                    buff[7] = 0;
-                    buff[8] = 0;
-                    buff[9] = 0;
-                    buff[10] = 0;
-                    buff[11] = 0;
-                    buff[12] = 0;
-                    buff[13] = 0;
-                    buff[14] = 0;
-                    buff[15] = 0;
-                    buff[16] = 0;
-                    buff[17] = 0;
-                    buff[18] = 0;
-                    buff[19] = 0xff;
-
-                    for (int i = 0; i < 19; i++)
-                    {
-                        buff[19] -= buff[i];
-                    }
-                    //serialPort.Write(Encoding.UTF8.GetString(buff));
-                    serialPort.Write(buff, 0, 20);
+                    mspProtocol.SendMspCommand(7);
                     Console.WriteLine("PID값 저장명령 전송 완료");
                 }
                 catch { Console.WriteLine("PID Save Requset Error"); }
@@ -471,177 +513,141 @@ namespace SpeedyBeeF405V3S_GUI
             if (pid_send_flag == true)
             {
                 pid_send_flag = false;
-                byte[] pid_buff = new byte[76];
+                byte[] pid_buff = new byte[72];
                 float float_buff;
                 byte[] tmp = new byte[4];
                 try
                 {
-                    pid_buff[0] = 0x47;
-                    pid_buff[1] = 0x53;
-                    pid_buff[2] = 0x30;
-
                     float_buff = float.Parse(tb_R_I_P.Text);
                     tmp = BitConverter.GetBytes(float_buff);
-                    pid_buff[3] = tmp[0];
-                    pid_buff[4] = tmp[1];
-                    pid_buff[5] = tmp[2];
-                    pid_buff[6] = tmp[3];
+                    pid_buff[0] = tmp[0];
+                    pid_buff[1] = tmp[1];
+                    pid_buff[2] = tmp[2];
+                    pid_buff[3] = tmp[3];
                     float_buff = float.Parse(tb_R_I_I.Text);
                     tmp = BitConverter.GetBytes(float_buff);
-                    pid_buff[7] = tmp[0];
-                    pid_buff[8] = tmp[1];
-                    pid_buff[9] = tmp[2];
-                    pid_buff[10] = tmp[3];
+                    pid_buff[4] = tmp[0];
+                    pid_buff[5] = tmp[1];
+                    pid_buff[6] = tmp[2];
+                    pid_buff[7] = tmp[3];
                     float_buff = float.Parse(tb_R_I_D.Text);
                     tmp = BitConverter.GetBytes(float_buff);
-                    pid_buff[11] = tmp[0];
-                    pid_buff[12] = tmp[1];
-                    pid_buff[13] = tmp[2];
-                    pid_buff[14] = tmp[3];
+                    pid_buff[8] = tmp[0];
+                    pid_buff[9] = tmp[1];
+                    pid_buff[10] = tmp[2];
+                    pid_buff[11] = tmp[3];
 
                     float_buff = float.Parse(tb_R_O_P.Text);
                     tmp = BitConverter.GetBytes(float_buff);
-                    pid_buff[15] = tmp[0];
-                    pid_buff[16] = tmp[1];
-                    pid_buff[17] = tmp[2];
-                    pid_buff[18] = tmp[3];
+                    pid_buff[12] = tmp[0];
+                    pid_buff[13] = tmp[1];
+                    pid_buff[14] = tmp[2];
+                    pid_buff[15] = tmp[3];
                     float_buff = float.Parse(tb_R_O_I.Text);
                     tmp = BitConverter.GetBytes(float_buff);
-                    pid_buff[19] = tmp[0];
-                    pid_buff[20] = tmp[1];
-                    pid_buff[21] = tmp[2];
-                    pid_buff[22] = tmp[3];
+                    pid_buff[16] = tmp[0];
+                    pid_buff[17] = tmp[1];
+                    pid_buff[18] = tmp[2];
+                    pid_buff[19] = tmp[3];
                     float_buff = float.Parse(tb_R_O_D.Text);
                     tmp = BitConverter.GetBytes(float_buff);
-                    pid_buff[23] = tmp[0];
-                    pid_buff[24] = tmp[1];
-                    pid_buff[25] = tmp[2];
-                    pid_buff[26] = tmp[3];
+                    pid_buff[20] = tmp[0];
+                    pid_buff[21] = tmp[1];
+                    pid_buff[22] = tmp[2];
+                    pid_buff[23] = tmp[3];
 
                     float_buff = float.Parse(tb_P_I_P.Text);
                     tmp = BitConverter.GetBytes(float_buff);
-                    pid_buff[27] = tmp[0];
-                    pid_buff[28] = tmp[1];
-                    pid_buff[29] = tmp[2];
-                    pid_buff[30] = tmp[3];
+                    pid_buff[24] = tmp[0];
+                    pid_buff[25] = tmp[1];
+                    pid_buff[26] = tmp[2];
+                    pid_buff[27] = tmp[3];
 
                     float_buff = float.Parse(tb_P_I_I.Text);
                     tmp = BitConverter.GetBytes(float_buff);
-                    pid_buff[31] = tmp[0];
-                    pid_buff[32] = tmp[1];
-                    pid_buff[33] = tmp[2];
-                    pid_buff[34] = tmp[3];
+                    pid_buff[28] = tmp[0];
+                    pid_buff[29] = tmp[1];
+                    pid_buff[30] = tmp[2];
+                    pid_buff[31] = tmp[3];
 
                     float_buff = float.Parse(tb_P_I_D.Text);
                     tmp = BitConverter.GetBytes(float_buff);
-                    pid_buff[35] = tmp[0];
-                    pid_buff[36] = tmp[1];
-                    pid_buff[37] = tmp[2];
-                    pid_buff[38] = tmp[3];
+                    pid_buff[32] = tmp[0];
+                    pid_buff[33] = tmp[1];
+                    pid_buff[34] = tmp[2];
+                    pid_buff[35] = tmp[3];
 
                     float_buff = float.Parse(tb_P_O_P.Text);
                     tmp = BitConverter.GetBytes(float_buff);
-                    pid_buff[39] = tmp[0];
-                    pid_buff[40] = tmp[1];
-                    pid_buff[41] = tmp[2];
-                    pid_buff[42] = tmp[3];
+                    pid_buff[36] = tmp[0];
+                    pid_buff[37] = tmp[1];
+                    pid_buff[38] = tmp[2];
+                    pid_buff[39] = tmp[3];
                     float_buff = float.Parse(tb_P_O_I.Text);
                     tmp = BitConverter.GetBytes(float_buff);
-                    pid_buff[43] = tmp[0];
-                    pid_buff[44] = tmp[1];
-                    pid_buff[45] = tmp[2];
-                    pid_buff[46] = tmp[3];
+                    pid_buff[40] = tmp[0];
+                    pid_buff[41] = tmp[1];
+                    pid_buff[42] = tmp[2];
+                    pid_buff[43] = tmp[3];
                     float_buff = float.Parse(tb_P_O_D.Text);
                     tmp = BitConverter.GetBytes(float_buff);
-                    pid_buff[47] = tmp[0];
-                    pid_buff[48] = tmp[1];
-                    pid_buff[49] = tmp[2];
-                    pid_buff[50] = tmp[3];
+                    pid_buff[44] = tmp[0];
+                    pid_buff[45] = tmp[1];
+                    pid_buff[46] = tmp[2];
+                    pid_buff[47] = tmp[3];
 
                     float_buff = float.Parse(tb_Y_A_P.Text);
                     tmp = BitConverter.GetBytes(float_buff);
-                    pid_buff[51] = tmp[0];
-                    pid_buff[52] = tmp[1];
-                    pid_buff[53] = tmp[2];
-                    pid_buff[54] = tmp[3];
+                    pid_buff[48] = tmp[0];
+                    pid_buff[49] = tmp[1];
+                    pid_buff[50] = tmp[2];
+                    pid_buff[51] = tmp[3];
                     float_buff = float.Parse(tb_Y_A_I.Text);
                     tmp = BitConverter.GetBytes(float_buff);
-                    pid_buff[55] = tmp[0];
-                    pid_buff[56] = tmp[1];
-                    pid_buff[57] = tmp[2];
-                    pid_buff[58] = tmp[3];
+                    pid_buff[52] = tmp[0];
+                    pid_buff[53] = tmp[1];
+                    pid_buff[54] = tmp[2];
+                    pid_buff[55] = tmp[3];
                     float_buff = float.Parse(tb_Y_A_D.Text);
                     tmp = BitConverter.GetBytes(float_buff);
-                    pid_buff[59] = tmp[0];
-                    pid_buff[60] = tmp[1];
-                    pid_buff[61] = tmp[2];
-                    pid_buff[62] = tmp[3];
+                    pid_buff[56] = tmp[0];
+                    pid_buff[57] = tmp[1];
+                    pid_buff[58] = tmp[2];
+                    pid_buff[59] = tmp[3];
 
                     float_buff = float.Parse(tb_Y_R_P.Text);
                     tmp = BitConverter.GetBytes(float_buff);
-                    pid_buff[63] = tmp[0];
-                    pid_buff[64] = tmp[1];
-                    pid_buff[65] = tmp[2];
-                    pid_buff[66] = tmp[3];
+                    pid_buff[60] = tmp[0];
+                    pid_buff[61] = tmp[1];
+                    pid_buff[62] = tmp[2];
+                    pid_buff[63] = tmp[3];
                     float_buff = float.Parse(tb_Y_R_I.Text);
                     tmp = BitConverter.GetBytes(float_buff);
-                    pid_buff[67] = tmp[0];
-                    pid_buff[68] = tmp[1];
-                    pid_buff[69] = tmp[2];
-                    pid_buff[70] = tmp[3];
+                    pid_buff[64] = tmp[0];
+                    pid_buff[65] = tmp[1];
+                    pid_buff[66] = tmp[2];
+                    pid_buff[67] = tmp[3];
                     float_buff = float.Parse(tb_Y_R_D.Text);
                     tmp = BitConverter.GetBytes(float_buff);
-                    pid_buff[71] = tmp[0];
-                    pid_buff[72] = tmp[1];
-                    pid_buff[73] = tmp[2];
-                    pid_buff[74] = tmp[3];
+                    pid_buff[68] = tmp[0];
+                    pid_buff[69] = tmp[1];
+                    pid_buff[70] = tmp[2];
+                    pid_buff[71] = tmp[3];
 
-                    pid_buff[75] = 0xff;
+                    mspProtocol.SendMspCommand(95, pid_buff);
 
-                    for (int i = 0; i < 75; i++)
-                    {
-                        pid_buff[75] -= pid_buff[i];
-                    }
-
-                    //serialPort.Write(Encoding.UTF8.GetString(pid_buff));
-                    serialPort.Write(pid_buff, 0, 76);
                     Console.WriteLine("PID값 전송 완료");
-
                 }
                 catch { Console.WriteLine("PID Data Send Error"); }
             }
 
             if (acc_cal_flag == true)
             {
+                
                 acc_cal_flag = false;
                 try
                 {
-                    buff[0] = 0x47;
-                    buff[1] = 0x53;
-                    buff[2] = 0x40;
-                    buff[3] = 0;
-                    buff[4] = 0;
-                    buff[5] = 0;
-                    buff[6] = 0;
-                    buff[7] = 0;
-                    buff[8] = 0;
-                    buff[9] = 0;
-                    buff[10] = 0;
-                    buff[11] = 0;
-                    buff[12] = 0;
-                    buff[13] = 0;
-                    buff[14] = 0;
-                    buff[15] = 0;
-                    buff[16] = 0;
-                    buff[17] = 0;
-                    buff[18] = 0;
-                    buff[19] = 0xff;
-
-                    for (int i = 0; i < 19; i++)
-                    {
-                        buff[19] -= buff[i];
-                    }
-                    serialPort.Write(buff, 0, 20);
+                    mspProtocol.SendMspCommand(205);
                     Console.WriteLine("가속도센서 캘리브레이션 명령 전송 완료");
                 }
                 catch { Console.WriteLine("ACC Calibration Requset Error"); }
@@ -652,32 +658,7 @@ namespace SpeedyBeeF405V3S_GUI
                 mag_cal_flag = false;
                 try
                 {
-                    buff[0] = 0x47;
-                    buff[1] = 0x53;
-                    buff[2] = 0x50;
-                    buff[3] = 0;
-                    buff[4] = 0;
-                    buff[5] = 0;
-                    buff[6] = 0;
-                    buff[7] = 0;
-                    buff[8] = 0;
-                    buff[9] = 0;
-                    buff[10] = 0;
-                    buff[11] = 0;
-                    buff[12] = 0;
-                    buff[13] = 0;
-                    buff[14] = 0;
-                    buff[15] = 0;
-                    buff[16] = 0;
-                    buff[17] = 0;
-                    buff[18] = 0;
-                    buff[19] = 0xff;
-
-                    for (int i = 0; i < 19; i++)
-                    {
-                        buff[19] -= buff[i];
-                    }
-                    serialPort.Write(buff, 0, 20);
+                    mspProtocol.SendMspCommand(206);
                     Console.WriteLine("지자계 캘리브레이션 명령 전송 완료");
                 }
                 catch { Console.WriteLine("MAG Calibration Requset Error"); }
@@ -687,43 +668,27 @@ namespace SpeedyBeeF405V3S_GUI
             {
                 if (pid_test_request_flag == true)
                 {
-                    byte[] pid_buff = new byte[20];
+                    byte[] pid_buff = new byte[9];
                     byte[] tmp = new byte[4];
                     pid_test_request_flag = false;
                     try
                     {
-                        pid_buff[0] = 0x47;
-                        pid_buff[1] = 0x53;
-                        pid_buff[2] = 0x60;
-
-                        pid_buff[3] = Convert.ToByte(pid_test_flag_temp);
+                        pid_buff[0] = Convert.ToByte(pid_test_flag_temp);
 
                         tmp = BitConverter.GetBytes(pid_test_setting_throttle);
-                        pid_buff[4] = tmp[0];
-                        pid_buff[5] = tmp[1];
-                        pid_buff[6] = tmp[2];
-                        pid_buff[7] = tmp[3];
+                        pid_buff[1] = tmp[0];
+                        pid_buff[2] = tmp[1];
+                        pid_buff[3] = tmp[2];
+                        pid_buff[4] = tmp[3];
 
                         tmp = BitConverter.GetBytes(pid_test_setting_deg_temp);
-                        pid_buff[8] = tmp[0];
-                        pid_buff[9] = tmp[1];
-                        pid_buff[10] = tmp[2];
-                        pid_buff[11] = tmp[3];
+                        pid_buff[5] = tmp[0];
+                        pid_buff[6] = tmp[1];
+                        pid_buff[7] = tmp[2];
+                        pid_buff[8] = tmp[3];
 
-                        pid_buff[12] = 0;
-                        pid_buff[13] = 0;
-                        pid_buff[14] = 0;
-                        pid_buff[15] = 0;
-                        pid_buff[16] = 0;
-                        pid_buff[17] = 0;
-                        pid_buff[18] = 0;
-                        pid_buff[19] = 0xff;
+                        mspProtocol.SendMspCommand(8, pid_buff);
 
-                        for (int i = 0; i < 19; i++)
-                        {
-                            pid_buff[19] -= pid_buff[i];
-                        }
-                        serialPort.Write(pid_buff, 0, 20);
                         Console.WriteLine($"PID 테스트 Step flag : {pid_test_flag_temp}, throttle : {pid_test_setting_throttle}, Deg : {pid_test_setting_deg_temp} 신호 전송");
                     }
                     catch { Console.WriteLine("PID 테스트 Step1 Signal Requset Error"); }
@@ -1063,6 +1028,7 @@ namespace SpeedyBeeF405V3S_GUI
             panel6.Size = new Size(34, 134 - ((battery_bar_level - 80) * 3));
 
             textBox10.Text = gMapControl1.Zoom.ToString();
+            tb_msp_error.Text = mspProtocol.GetMspError().ToString();
         }
 
         private void flight_timer_Tick(object sender, EventArgs e)
@@ -1834,12 +1800,30 @@ namespace SpeedyBeeF405V3S_GUI
             Process.Start("explorer.exe", folderPath);
         }
 
+        static DateTime? lastExecutionTime = null;
+        static void MeasureExecutionInterval()
+        {
+            DateTime current = DateTime.Now;
+
+            if (lastExecutionTime != null)
+            {
+                TimeSpan interval = current - lastExecutionTime.Value;
+                Console.WriteLine($"실행 주기: {interval.TotalMilliseconds} ms");
+            }
+            else
+            {
+                Console.WriteLine("첫 실행입니다.");
+            }
+
+            lastExecutionTime = current;
+        }
+
         bool Msp_raw_data(byte[] payload)
         {
             DateTime date_time = DateTime.Now;
             int ms = date_time.Millisecond;
             time_count++;
-
+            MeasureExecutionInterval();
             passed_data[0] = BitConverter.ToInt16(payload, 0) / 10;                  // attitude_roll
             passed_data[1] = BitConverter.ToInt16(payload, 2) / 10;                  // attitude_pitch
             passed_data[2] = BitConverter.ToUInt16(payload, 4) / 100;                // attitude_yaw
@@ -1863,9 +1847,9 @@ namespace SpeedyBeeF405V3S_GUI
             passed_data[20] = BitConverter.ToInt32(payload, 48);    // Debug[2]
             passed_data[21] = BitConverter.ToInt32(payload, 52);    // Debug[3]
 
-            passed_data[22] = BitConverter.ToSingle(payload, 56);   // gyroADCf[X]
-            passed_data[23] = BitConverter.ToSingle(payload, 60);   // gyroADCf[Y]
-            passed_data[24] = BitConverter.ToSingle(payload, 64);   // gyroADCf[Z]
+            passed_data[22] = (float)(BitConverter.ToInt32(payload, 56)) / 1000;   // gyroADCf[X]
+            passed_data[23] = (float)(BitConverter.ToInt32(payload, 60)) / 1000;   // gyroADCf[Y]
+            passed_data[24] = (float)(BitConverter.ToInt32(payload, 64)) / 1000;   // gyroADCf[Z]
 
             passed_data[25] = BitConverter.ToInt16(payload, 68);    // accel_Trim[X]
             passed_data[26] = BitConverter.ToInt16(payload, 70);    // accel_Trim[Y]
@@ -1875,14 +1859,14 @@ namespace SpeedyBeeF405V3S_GUI
             passed_data[29] = BitConverter.ToInt16(payload, 76);    // mag_Zero[Y]
             passed_data[30] = BitConverter.ToInt16(payload, 78);    // mag_Zero[Z]
 
-            passed_data[31] = BitConverter.ToSingle(payload, 80);   // mag_ADC[X]
-            passed_data[32] = BitConverter.ToSingle(payload, 84);   // mag_ADC[Y]
-            passed_data[33] = BitConverter.ToSingle(payload, 88);   // mag_ADC[Z]
+            passed_data[31] = (float)(BitConverter.ToInt32(payload, 80)) / 1000;   // mag_ADC[X]
+            passed_data[32] = (float)(BitConverter.ToInt32(payload, 84)) / 1000;   // mag_ADC[Y]
+            passed_data[33] = (float)(BitConverter.ToInt32(payload, 88)) / 1000;   // mag_ADC[Z]
 
-            passed_data[34] = BitConverter.ToSingle(payload, 92);   // opflow_Rate[X]
-            passed_data[35] = BitConverter.ToSingle(payload, 96);   // opflow_Rate[Y]
-            passed_data[36] = BitConverter.ToSingle(payload, 100);  // opflow_bodyRate[X]
-            passed_data[37] = BitConverter.ToSingle(payload, 104);  // opflow_bodyRate[Y]
+            passed_data[34] = (float)(BitConverter.ToInt32(payload, 92)) / 1000;   // opflow_Rate[X]
+            passed_data[35] = (float)(BitConverter.ToInt32(payload, 96)) / 1000;   // opflow_Rate[Y]
+            passed_data[36] = (float)(BitConverter.ToInt32(payload, 100)) / 1000;  // opflow_bodyRate[X]
+            passed_data[37] = (float)(BitConverter.ToInt32(payload, 104)) / 1000;  // opflow_bodyRate[Y]
 
             passed_data[38] = BitConverter.ToInt32(payload, 108);   // rangefinder_cm
 
@@ -2071,29 +2055,29 @@ namespace SpeedyBeeF405V3S_GUI
             int ms = date_time.Millisecond;
             time_count++;
 
-            passed_data[0] = BitConverter.ToSingle(payload, 0);     // R_I_P
-            passed_data[1] = BitConverter.ToSingle(payload, 4);     // R_I_I
-            passed_data[2] = BitConverter.ToSingle(payload, 8);    // R_I_D
+            passed_data[0] = (float)(BitConverter.ToInt32(payload, 0)) / 10;     // R_I_P
+            passed_data[1] = (float)(BitConverter.ToInt32(payload, 4)) / 10;     // R_I_I
+            passed_data[2] = (float)(BitConverter.ToInt32(payload, 8)) / 10;    // R_I_D
 
-            passed_data[3] = BitConverter.ToSingle(payload, 12);    // R_O_P
-            passed_data[4] = BitConverter.ToSingle(payload, 16);    // R_O_I
-            passed_data[5] = BitConverter.ToSingle(payload, 20);    // R_O_D
+            passed_data[3] = (float)(BitConverter.ToInt32(payload, 12)) / 10;    // R_O_P
+            passed_data[4] = (float)(BitConverter.ToInt32(payload, 16)) / 10;    // R_O_I
+            passed_data[5] = (float)(BitConverter.ToInt32(payload, 20)) / 10;    // R_O_D
 
-            passed_data[6] = BitConverter.ToSingle(payload, 24);    // P_I_P
-            passed_data[7] = BitConverter.ToSingle(payload, 28);    // P_I_I
-            passed_data[8] = BitConverter.ToSingle(payload, 32);    // P_I_D
+            passed_data[6] = (float)(BitConverter.ToInt32(payload, 24)) / 10;    // P_I_P
+            passed_data[7] = (float)(BitConverter.ToInt32(payload, 28)) / 10;    // P_I_I
+            passed_data[8] = (float)(BitConverter.ToInt32(payload, 32)) / 10;    // P_I_D
 
-            passed_data[9] = BitConverter.ToSingle(payload, 36);    // P_O_P
-            passed_data[10] = BitConverter.ToSingle(payload, 40);   // P_O_I
-            passed_data[11] = BitConverter.ToSingle(payload, 44);   // P_O_D
+            passed_data[9] = (float)(BitConverter.ToInt32(payload, 36)) / 10;    // P_O_P
+            passed_data[10] = (float)(BitConverter.ToInt32(payload, 40)) / 10;   // P_O_I
+            passed_data[11] = (float)(BitConverter.ToInt32(payload, 44)) / 10;   // P_O_D
 
-            passed_data[12] = BitConverter.ToSingle(payload, 48);   // Y_A_P
-            passed_data[13] = BitConverter.ToSingle(payload, 52);   // Y_A_I
-            passed_data[14] = BitConverter.ToSingle(payload, 56);   // Y_A_D
+            passed_data[12] = (float)(BitConverter.ToInt32(payload, 48)) / 10;   // Y_A_P
+            passed_data[13] = (float)(BitConverter.ToInt32(payload, 52)) / 10;   // Y_A_I
+            passed_data[14] = (float)(BitConverter.ToInt32(payload, 56)) / 10;   // Y_A_D
 
-            passed_data[15] = BitConverter.ToSingle(payload, 60);   // Y_A_P
-            passed_data[16] = BitConverter.ToSingle(payload, 64);   // Y_A_I
-            passed_data[17] = BitConverter.ToSingle(payload, 68);   // Y_A_D
+            passed_data[15] = (float)(BitConverter.ToInt32(payload, 60)) / 10;   // Y_A_P
+            passed_data[16] = (float)(BitConverter.ToInt32(payload, 64)) / 10;   // Y_A_I
+            passed_data[17] = (float)(BitConverter.ToInt32(payload, 68)) / 10;   // Y_A_D
 
             tb_FC_R_I_P.Text = passed_data[0].ToString();
             tb_FC_R_I_I.Text = passed_data[1].ToString();

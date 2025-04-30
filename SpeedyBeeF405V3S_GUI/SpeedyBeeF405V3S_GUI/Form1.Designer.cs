@@ -314,6 +314,8 @@
             this.bt_acc_cal = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.bt_ReScan = new System.Windows.Forms.Button();
+            this.textBox5 = new System.Windows.Forms.TextBox();
+            this.tb_msp_error = new System.Windows.Forms.TextBox();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -3002,11 +3004,37 @@
             this.bt_ReScan.UseVisualStyleBackColor = true;
             this.bt_ReScan.Click += new System.EventHandler(this.bt_ReScan_Click);
             // 
+            // textBox5
+            // 
+            this.textBox5.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox5.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox5.Location = new System.Drawing.Point(13, 633);
+            this.textBox5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.textBox5.Name = "textBox5";
+            this.textBox5.ReadOnly = true;
+            this.textBox5.Size = new System.Drawing.Size(97, 22);
+            this.textBox5.TabIndex = 94;
+            this.textBox5.Text = "MSP_Error :";
+            // 
+            // tb_msp_error
+            // 
+            this.tb_msp_error.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.tb_msp_error.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tb_msp_error.Location = new System.Drawing.Point(122, 633);
+            this.tb_msp_error.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tb_msp_error.Name = "tb_msp_error";
+            this.tb_msp_error.ReadOnly = true;
+            this.tb_msp_error.Size = new System.Drawing.Size(55, 22);
+            this.tb_msp_error.TabIndex = 93;
+            this.tb_msp_error.Text = "-";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1184, 661);
+            this.Controls.Add(this.textBox5);
+            this.Controls.Add(this.tb_msp_error);
             this.Controls.Add(this.bt_ReScan);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.tabControl1);
@@ -3308,6 +3336,8 @@
         private System.Windows.Forms.Label lb_PID_Test_Progress_Time;
         private System.Windows.Forms.Label label86;
         private System.Windows.Forms.Label label85;
+        public System.Windows.Forms.TextBox textBox5;
+        public System.Windows.Forms.TextBox tb_msp_error;
     }
 }
 

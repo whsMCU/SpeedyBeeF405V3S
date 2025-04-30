@@ -40,6 +40,7 @@
 //#include "programming/pid.h"
 
 //#include "config/parameter_group_ids.h"
+#include "config/sdcard.h"
 
 #include "drivers/accgyro/accgyro.h"
 #include "drivers/compass/compass.h"
@@ -482,9 +483,9 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU32(dst, debug[2]);
           sbufWriteU32(dst, debug[3]);
 
-          sbufWriteU32(dst, bmi270.gyroADCf[X]);
-          sbufWriteU32(dst, bmi270.gyroADCf[Y]);
-          sbufWriteU32(dst, bmi270.gyroADCf[Z]);
+          sbufWriteU32(dst, (int32_t)(bmi270.gyroADCf[X] * 1000.0f));
+          sbufWriteU32(dst, (int32_t)(bmi270.gyroADCf[Y] * 1000.0f));
+          sbufWriteU32(dst, (int32_t)(bmi270.gyroADCf[Z] * 1000.0f));
 
           sbufWriteU16(dst, bmi270.accelerationTrims.raw[X]);
           sbufWriteU16(dst, bmi270.accelerationTrims.raw[Y]);
@@ -495,14 +496,14 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU16(dst, compassConfig.magZero.raw[Z]);
 
 
-          sbufWriteU32(dst, mag.magADC[X]);
-          sbufWriteU32(dst, mag.magADC[Y]);
-          sbufWriteU32(dst, mag.magADC[Z]);
+          sbufWriteU32(dst, (int32_t)(mag.magADC[X] * 1000.0f));
+          sbufWriteU32(dst, (int32_t)(mag.magADC[Y] * 1000.0f));
+          sbufWriteU32(dst, (int32_t)(mag.magADC[Z] * 1000.0f));
 
-          sbufWriteU32(dst, opflow.flowRate[X]);
-          sbufWriteU32(dst, opflow.flowRate[Y]);
-          sbufWriteU32(dst, opflow.bodyRate[X]);
-          sbufWriteU32(dst, opflow.bodyRate[Y]);
+          sbufWriteU32(dst, (int32_t)(opflow.flowRate[X] * 1000.0f));
+          sbufWriteU32(dst, (int32_t)(opflow.flowRate[Y] * 1000.0f));
+          sbufWriteU32(dst, (int32_t)(opflow.bodyRate[X] * 1000.0f));
+          sbufWriteU32(dst, (int32_t)(opflow.bodyRate[Y] * 1000.0f));
 
           sbufWriteU32(dst, rangefinder.calculatedAltitude);
 
@@ -758,7 +759,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
 
     case MSP2_PID:
 //        for (int i = 0; i < PID_ITEM_COUNT; i++) {
-//            sbufWriteU8(dst, constrain(pidBank()->pid[i].P, 0, 255));
+//            sbufWriteU8(dst, constrain(_setBank()->pid[i].P, 0, 255));
 //            sbufWriteU8(dst, constrain(pidBank()->pid[i].I, 0, 255));
 //            sbufWriteU8(dst, constrain(pidBank()->pid[i].D, 0, 255));
 //            sbufWriteU8(dst, constrain(pidBank()->pid[i].FF, 0, 255));
@@ -1309,29 +1310,29 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
 
       if(!ARMING_FLAG(ARMED))
       {
-        sbufWriteU32(dst, (int32_t)_ROLL.in.kp);
-        sbufWriteU32(dst, _ROLL.in.ki);
-        sbufWriteU32(dst, _ROLL.in.kd);
+        sbufWriteU32(dst, (int32_t)(_ROLL.in.kp * 10.0f));
+        sbufWriteU32(dst, (int32_t)(_ROLL.in.ki * 10.0f));
+        sbufWriteU32(dst, (int32_t)(_ROLL.in.kd * 10.0f));
 
-        sbufWriteU32(dst, _ROLL.out.kp);
-        sbufWriteU32(dst, _ROLL.out.ki);
-        sbufWriteU32(dst, _ROLL.out.kd);
+        sbufWriteU32(dst, (int32_t)(_ROLL.out.kp * 10.0f));
+        sbufWriteU32(dst, (int32_t)(_ROLL.out.ki * 10.0f));
+        sbufWriteU32(dst, (int32_t)(_ROLL.out.kd * 10.0f));
 
-        sbufWriteU32(dst, _PITCH.in.kp);
-        sbufWriteU32(dst, _PITCH.in.ki);
-        sbufWriteU32(dst, _PITCH.in.kd);
+        sbufWriteU32(dst, (int32_t)(_PITCH.in.kp * 10.0f));
+        sbufWriteU32(dst, (int32_t)(_PITCH.in.ki * 10.0f));
+        sbufWriteU32(dst, (int32_t)(_PITCH.in.kd * 10.0f));
 
-        sbufWriteU32(dst, _PITCH.out.kp);
-        sbufWriteU32(dst, _PITCH.out.ki);
-        sbufWriteU32(dst, _PITCH.out.kd);
+        sbufWriteU32(dst, (int32_t)(_PITCH.out.kp * 10.0f));
+        sbufWriteU32(dst, (int32_t)(_PITCH.out.ki * 10.0f));
+        sbufWriteU32(dst, (int32_t)(_PITCH.out.kd * 10.0f));
 
-        sbufWriteU32(dst, _YAW_Heading.kp);
-        sbufWriteU32(dst, _YAW_Heading.ki);
-        sbufWriteU32(dst, _YAW_Heading.kd);
+        sbufWriteU32(dst, (int32_t)(_YAW_Heading.kp * 10.0f));
+        sbufWriteU32(dst, (int32_t)(_YAW_Heading.ki * 10.0f));
+        sbufWriteU32(dst, (int32_t)(_YAW_Heading.kd * 10.0f));
 
-        sbufWriteU32(dst, _YAW_Rate.kp);
-        sbufWriteU32(dst, _YAW_Rate.ki);
-        sbufWriteU32(dst, _YAW_Rate.kd);
+        sbufWriteU32(dst, (int32_t)(_YAW_Rate.kp * 10.0f));
+        sbufWriteU32(dst, (int32_t)(_YAW_Rate.ki * 10.0f));
+        sbufWriteU32(dst, (int32_t)(_YAW_Rate.kd * 10.0f));
       }
         break;
 
@@ -2270,44 +2271,72 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         break;
 
     case MSP_SET_PID_ADVANCED:
-//        if (dataSize == 17) {
-//            sbufReadU16(src);   // pidProfileMutable()->rollPitchItermIgnoreRate
-//            sbufReadU16(src);   // pidProfileMutable()->yawItermIgnoreRate
-//            sbufReadU16(src); //pidProfile()->yaw_p_limit
-//
-//            sbufReadU8(src); //BF: pidProfileMutable()->deltaMethod
-//            sbufReadU8(src); //BF: pidProfileMutable()->vbatPidCompensation
-//            sbufReadU8(src); //BF: pidProfileMutable()->setpointRelaxRatio
-//            sbufReadU8(src);
-//            pidProfileMutable()->pidSumLimit = sbufReadU16(src);
-//            sbufReadU8(src); //BF: pidProfileMutable()->itermThrottleGain
-//
-//            /*
-//             * To keep compatibility on MSP frame length level with Betaflight, axis axisAccelerationLimitYaw
-//             * limit will be sent and received in [dps / 10]
-//             */
-//            pidProfileMutable()->axisAccelerationLimitRollPitch = sbufReadU16(src) * 10;
-//            pidProfileMutable()->axisAccelerationLimitYaw = sbufReadU16(src) * 10;
-//        } else
-//            return MSP_RESULT_ERROR;
+        union {
+            uint32_t b;
+            float f;
+        } u;
+        u.b = sbufReadU32(src);
+        _ROLL.in.kp = (float)u.f;
+        u.b = sbufReadU32(src);
+        _ROLL.in.ki = (float)u.f;
+        u.b = sbufReadU32(src);
+        _ROLL.in.kd = (float)u.f;
+
+        u.b = sbufReadU32(src);
+        _ROLL.out.kp = (float)u.f;
+        u.b = sbufReadU32(src);
+        _ROLL.out.ki = (float)u.f;
+        u.b = sbufReadU32(src);
+        _ROLL.out.kd = (float)u.f;
+
+        u.b = sbufReadU32(src);
+        _PITCH.in.kp = (float)u.f;
+        u.b = sbufReadU32(src);
+        _PITCH.in.ki = (float)u.f;
+        u.b = sbufReadU32(src);
+        _PITCH.in.kd = (float)u.f;
+
+        u.b = sbufReadU32(src);
+        _PITCH.out.kp = (float)u.f;
+        u.b = sbufReadU32(src);
+        _PITCH.out.ki = (float)u.f;
+        u.b = sbufReadU32(src);
+        _PITCH.out.kd = (float)u.f;
+
+        u.b = sbufReadU32(src);
+        _YAW_Heading.kp = (float)u.f;
+        u.b = sbufReadU32(src);
+        _YAW_Heading.ki = (float)u.f;
+        u.b = sbufReadU32(src);
+        _YAW_Heading.kd = (float)u.f;
+
+        u.b = sbufReadU32(src);
+        _YAW_Rate.kp = (float)u.f;
+        u.b = sbufReadU32(src);
+        _YAW_Rate.ki = (float)u.f;
+        u.b = sbufReadU32(src);
+        _YAW_Rate.kd = (float)u.f;
         break;
 
     case MSP_SET_INAV_PID:
-//        if (dataSize == 15) {
-//            sbufReadU8(src);  //Legacy, no longer in use async processing value
-//            sbufReadU16(src);  //Legacy, no longer in use async processing value
-//            sbufReadU16(src);  //Legacy, no longer in use async processing value
-//            pidProfileMutable()->heading_hold_rate_limit = sbufReadU8(src);
-//            sbufReadU8(src); //HEADING_HOLD_ERROR_LPF_FREQ
-//            sbufReadU16(src); //Legacy yaw_jump_prevention_limit
-//            gyroConfigMutable()->gyro_lpf = sbufReadU8(src);
-//            accelerometerConfigMutable()->acc_lpf_hz = sbufReadU8(src);
-//            sbufReadU8(src); //reserved
-//            sbufReadU8(src); //reserved
-//            sbufReadU8(src); //reserved
-//            sbufReadU8(src); //reserved
-//        } else
-//            return MSP_RESULT_ERROR;
+        if(!ARMING_FLAG(ARMED))
+        {
+          writeSDCard(PID_Roll_in);
+          writeSDCard(PID_Roll_out);
+          writeSDCard(PID_pitch_in);
+          writeSDCard(PID_pitch_out);
+          writeSDCard(PID_yaw_heading);
+          writeSDCard(PID_yaw_rate);
+          writeSDCard(ACC_offset);
+        }
+        break;
+
+    case MSP_TEST_PID:
+        {
+          _PID_Test.pid_test_flag = (uint8_t)sbufReadU8(src);
+          _PID_Test.pid_test_throttle = (int)sbufReadU32(src);
+          _PID_Test.pid_test_deg = (int)sbufReadU32(src);
+        }
         break;
 
     case MSP_SET_SENSOR_CONFIG:
@@ -2317,7 +2346,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
 //            barometerConfigMutable()->baro_hardware = sbufReadU8(src);
 //#else
 //            sbufReadU8(src);
-//#endif
+//#endiff
 //#ifdef USE_MAG
 //            compassConfigMutable()->mag_hardware = sbufReadU8(src);
 //#else
@@ -2454,17 +2483,19 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         break;
 
     case MSP_ACC_CALIBRATION:
-//        if (!ARMING_FLAG(ARMED))
-//            accStartCalibration();
-//        else
-//            return MSP_RESULT_ERROR;
+        if (!ARMING_FLAG(ARMED))
+        {
+          accStartCalibration();
+        }
         break;
 
     case MSP_MAG_CALIBRATION:
-//        if (!ARMING_FLAG(ARMED))
-//            ENABLE_STATE(CALIBRATE_MAG);
-//        else
-//            return MSP_RESULT_ERROR;
+        if(!ARMING_FLAG(ARMED))
+        {
+          #ifdef USE_MAG
+            compassStartCalibration();
+          #endif
+        }
         break;
 
 #ifdef USE_OPFLOW
