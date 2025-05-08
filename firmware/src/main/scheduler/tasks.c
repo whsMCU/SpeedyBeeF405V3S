@@ -216,7 +216,7 @@ task_attribute_t task_attributes[TASK_COUNT] = {
     [TASK_DISPATCH] = DEFINE_TASK("DISPATCH", dispatchProcess, TASK_PERIOD_HZ(1000)),
 
     [TASK_LED] = DEFINE_TASK("LED", ledUpdate, TASK_PERIOD_HZ(100)),
-    [TASK_DEBUG] = DEFINE_TASK("DEBUG", debugPrint, TASK_PERIOD_HZ(30)),
+    [TASK_DEBUG] = DEFINE_TASK("DEBUG", debugPrint, TASK_PERIOD_HZ(50)),
 
 #ifdef USE_BEEPER
     [TASK_BEEPER] = DEFINE_TASK("BEEPER", NULL, NULL, beeperUpdate, TASK_PERIOD_HZ(100), TASK_PRIORITY_LOW),

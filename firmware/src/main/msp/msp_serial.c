@@ -21,6 +21,8 @@
 
 //#include "platform.h"
 
+#include "hw.h"
+
 #include "build/debug.h"
 
 #include "common/streambuf.h"
@@ -297,7 +299,7 @@ static int mspSerialSendFrame(mspPort_t *msp, uint8_t * hdr, int hdrLen, uint8_t
 
     msp_tx_start_time = micros();
     uartWriteIT(ch, frameBuf, totalFrameLength);
-    //uartWriteDMA(ch, frameBuf, totalFrameLength);
+    //uartWriteDMA(ch, (uint8_t*)frameBuf, (uint32_t)totalFrameLength);
     // Transmit frame
     //serialBeginWrite(ch);
     //uartWriteIT(ch, hdr, hdrLen);

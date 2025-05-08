@@ -41,6 +41,7 @@ namespace SpeedyBeeF405V3S_GUI
 
         private ArrayList al;
 
+        bool drone_status_flag = true;
         bool pid_recive_flag = false;
         bool pid_send_flag = false;
         bool pid_save_flag = false;
@@ -483,26 +484,22 @@ namespace SpeedyBeeF405V3S_GUI
 
         pidState_e pidState = pidState_e.TEST_IDLE;
 
-        Stopwatch stopwatch = new Stopwatch();
-
         private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
-            stopwatch.Stop();
-            Console.WriteLine($"Period : {stopwatch.ElapsedMilliseconds}ms");
-            stopwatch.Reset();
-
-            stopwatch.Start();
-
             byte[] buff = new byte[20];
-            try
+            if(drone_status_flag == true)
             {
-                mspProtocol.SendMspCommand(101);
+                try
+                {
+                    mspProtocol.SendMspCommand(101);
+                }
+                catch { Console.WriteLine("STATUS DATA Requset Error"); }
             }
-            catch { Console.WriteLine("STATUS DATA Requset Error"); }
 
             if (pid_recive_flag == true)
             {
                 pid_recive_flag = false;
+                drone_status_flag = true;
 
                 try
                 {
@@ -513,6 +510,7 @@ namespace SpeedyBeeF405V3S_GUI
             if (pid_save_flag == true)
             {
                 pid_save_flag = false;
+                drone_status_flag = true;
                 try
                 {
                     mspProtocol.SendMspCommand(7);
@@ -523,6 +521,7 @@ namespace SpeedyBeeF405V3S_GUI
             if (pid_send_flag == true)
             {
                 pid_send_flag = false;
+                drone_status_flag = true;
                 byte[] pid_buff = new byte[72];
                 float float_buff;
                 byte[] tmp = new byte[4];
@@ -655,6 +654,7 @@ namespace SpeedyBeeF405V3S_GUI
             {
                 
                 acc_cal_flag = false;
+                drone_status_flag = true;
                 try
                 {
                     mspProtocol.SendMspCommand(205);
@@ -666,6 +666,7 @@ namespace SpeedyBeeF405V3S_GUI
             if (mag_cal_flag == true)
             {
                 mag_cal_flag = false;
+                drone_status_flag = true;
                 try
                 {
                     mspProtocol.SendMspCommand(206);
@@ -681,6 +682,7 @@ namespace SpeedyBeeF405V3S_GUI
                     byte[] pid_buff = new byte[9];
                     byte[] tmp = new byte[4];
                     pid_test_request_flag = false;
+                    drone_status_flag = true;
                     try
                     {
                         pid_buff[0] = Convert.ToByte(pid_test_flag_temp);
@@ -1082,21 +1084,25 @@ namespace SpeedyBeeF405V3S_GUI
         private void bt_pid_recive_Click(object sender, EventArgs e)
         {
             pid_recive_flag = true;
+            drone_status_flag = false;
         }
 
         private void bt_pid_send_Click(object sender, EventArgs e)
         {
             pid_send_flag = true;
+            drone_status_flag = false;
         }
 
         private void bt_pid_save_Click(object sender, EventArgs e)
         {
             pid_save_flag = true;
+            drone_status_flag = false;
         }
 
         private void bt_acc_cal_Click(object sender, EventArgs e)
         {
             acc_cal_flag = true;
+            drone_status_flag = false;
         }
 
         private void bt_mag_cal_Click(object sender, EventArgs e)
