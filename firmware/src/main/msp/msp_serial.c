@@ -404,7 +404,7 @@ static int mspSerialEncode(mspPort_t *msp, mspPacket_t *packet, mspVersion_e msp
 
 static mspPostProcessFnPtr mspSerialProcessReceivedCommand(mspPort_t *msp, mspProcessCommandFnPtr mspProcessCommandFn)
 {
-    uint8_t outBuf[MSP_PORT_OUTBUF_SIZE];
+    uint8_t outBuf[MSP_PORT_OUTBUF_SIZE] = {0, };
 
     mspPacket_t reply = {
         .buf = { .ptr = outBuf, .end = ARRAYEND(outBuf), },
