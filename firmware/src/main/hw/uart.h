@@ -33,6 +33,7 @@ typedef enum {
 } baudRate_e;
 
 extern const uint32_t baudRates[];
+extern bool tx_done;
 
 extern uint8_t telemetry_rx_buf[80];
 extern uint8_t telemetry_rx_cplt_flag;

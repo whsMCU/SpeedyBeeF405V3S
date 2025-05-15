@@ -261,6 +261,7 @@ static uint8_t mspSerialChecksumBuf(uint8_t checksum, const uint8_t *data, int l
     return checksum;
 }
 uint32_t msp_pre_time, msp_delta_time, msp_tx_start_time, msp_tx_end_time;
+
 #define JUMBO_FRAME_SIZE_LIMIT 255
 static int mspSerialSendFrame(mspPort_t *msp, uint8_t * hdr, int hdrLen, uint8_t * data, int dataLen, uint8_t * crc, int crcLen)
 {
@@ -280,13 +281,13 @@ static int mspSerialSendFrame(mspPort_t *msp, uint8_t * hdr, int hdrLen, uint8_t
     //     this allows us to transmit jumbo frames bigger than TX buffer (serialWriteBuf will block, but for jumbo frames we don't care)
     //  b) Response fits into TX buffer
     const int totalFrameLength = hdrLen + dataLen + crcLen;
-//    if (!uartTxBufEmpty(ch) && ((int)uartTotalTxBytesFree(ch) < totalFrameLength))
-//        return 0;
+    if (!uartTxBufEmpty(ch) && ((int)uartTotalTxBytesFree(ch) < totalFrameLength))
+        return 0;
 
     uint8_t frameBuf[16 + JUMBO_FRAME_SIZE_LIMIT + 2]; // 최대 크기 확보
     int offset = 0;
 
-    memset(&frameBuf[offset], 0, 16 + JUMBO_FRAME_SIZE_LIMIT + 2);
+    memset(frameBuf, 0, sizeof(frameBuf));
 
     memcpy(&frameBuf[offset], hdr, hdrLen);
     offset += hdrLen;

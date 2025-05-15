@@ -55,7 +55,7 @@ void hwInit(void);
 int main(void)
 {
 
-  SystemClock_Config();
+   SystemClock_Config();
   //cycleCounterInit();
 
   hwInit();
