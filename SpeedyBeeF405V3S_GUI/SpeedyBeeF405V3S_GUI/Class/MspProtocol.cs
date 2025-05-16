@@ -67,6 +67,7 @@ namespace SpeedyBeeF405V3S_GUI.Class
                     c_state = (c == '>') ? ParseState.HEADER_ARROW : ParseState.IDLE;
                     _offset = 0;
                     _checksum = 0;
+                    _dataSize = 0;
                     break;
                 case ParseState.HEADER_ARROW:
                     _dataSize = c;
@@ -79,23 +80,39 @@ namespace SpeedyBeeF405V3S_GUI.Class
                     c_state = (_dataSize > 0) ? ParseState.PAYLOAD : ParseState.CHECKSUM;
                     break;
                 case ParseState.PAYLOAD:
-                    _inBuf[_offset++] = c;
-                    _checksum ^= c;
-                    if (_offset >= _dataSize)
+                    if (_offset < _inBuf.Length)
                     {
-                        c_state = ParseState.CHECKSUM;
+                        _inBuf[_offset++] = c;
+                        _checksum ^= c;
+                        if (_offset >= _dataSize)
+                        {
+                            c_state = ParseState.CHECKSUM;
+                        }
                     }
+                    else
+                    {
+                        c_state = ParseState.IDLE;
+                        _offset = 0;
+                        _checksum = 0;
+                        _dataSize = 0;
+                    }
+
                     break;
                 case ParseState.CHECKSUM:
                     if (_checksum == c)
                     {
-                        OnPacketReceived?.Invoke(_cmdMSP, _inBuf);
+                        byte[] payload = new byte[_dataSize];
+                        Array.Copy(_inBuf, payload, _dataSize);
+                        OnPacketReceived?.Invoke(_cmdMSP, payload);
                     }
                     else
                     {
                         msp_error++;
-                        c_state = ParseState.IDLE;
                     }
+                    c_state = ParseState.IDLE;
+                    _offset = 0;
+                    _checksum = 0;
+                    _dataSize = 0;
                     break;
             }
         }

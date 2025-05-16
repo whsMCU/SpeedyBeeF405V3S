@@ -300,7 +300,7 @@ static int mspSerialSendFrame(mspPort_t *msp, uint8_t * hdr, int hdrLen, uint8_t
 
     msp_tx_start_time = micros();
     uartWriteIT(ch, frameBuf, totalFrameLength);
-    //uartWriteDMA(ch, (uint8_t*)frameBuf, (uint32_t)totalFrameLength);
+    //uartWriteDMA(ch, &frameBuf[0], totalFrameLength);
     // Transmit frame
     //serialBeginWrite(ch);
     //uartWriteIT(ch, hdr, hdrLen);

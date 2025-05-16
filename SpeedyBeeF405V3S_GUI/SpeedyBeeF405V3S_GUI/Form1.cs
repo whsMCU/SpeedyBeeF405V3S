@@ -476,9 +476,9 @@ namespace SpeedyBeeF405V3S_GUI
                     mspProtocol.ParseByte(b);
                 }
             }
-            catch (System.Exception)
+            catch (Exception ex)
             {
-                Console.WriteLine("Data Passing Error");
+                Console.WriteLine($"Serial receive error: {ex.Message}");
             }
         }
 
