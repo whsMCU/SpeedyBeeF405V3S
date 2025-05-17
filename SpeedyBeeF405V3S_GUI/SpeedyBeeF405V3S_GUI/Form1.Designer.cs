@@ -312,7 +312,6 @@
             this.lb_accTrim_X = new System.Windows.Forms.Label();
             this.bt_mag_cal = new System.Windows.Forms.Button();
             this.bt_acc_cal = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.bt_ReScan = new System.Windows.Forms.Button();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.tb_msp_error = new System.Windows.Forms.TextBox();
@@ -2982,18 +2981,6 @@
             this.bt_acc_cal.UseVisualStyleBackColor = true;
             this.bt_acc_cal.Click += new System.EventHandler(this.bt_acc_cal_Click);
             // 
-            // textBox1
-            // 
-            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(13, 605);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(327, 22);
-            this.textBox1.TabIndex = 89;
-            this.textBox1.Text = "-";
-            // 
             // bt_ReScan
             // 
             this.bt_ReScan.Location = new System.Drawing.Point(12, 36);
@@ -3008,7 +2995,7 @@
             // 
             this.textBox5.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox5.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox5.Location = new System.Drawing.Point(13, 633);
+            this.textBox5.Location = new System.Drawing.Point(15, 601);
             this.textBox5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox5.Name = "textBox5";
             this.textBox5.ReadOnly = true;
@@ -3020,7 +3007,7 @@
             // 
             this.tb_msp_error.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.tb_msp_error.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_msp_error.Location = new System.Drawing.Point(122, 633);
+            this.tb_msp_error.Location = new System.Drawing.Point(124, 601);
             this.tb_msp_error.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tb_msp_error.Name = "tb_msp_error";
             this.tb_msp_error.ReadOnly = true;
@@ -3036,7 +3023,6 @@
             this.Controls.Add(this.textBox5);
             this.Controls.Add(this.tb_msp_error);
             this.Controls.Add(this.bt_ReScan);
-            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel4);
@@ -3248,7 +3234,6 @@
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Label label56;
-        public System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label57;
         private System.Windows.Forms.Label lb_gyro_Z;
         private System.Windows.Forms.Label lb_gyro_Y;
