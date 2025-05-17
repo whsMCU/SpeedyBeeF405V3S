@@ -100,7 +100,6 @@ static void ledUpdate(uint32_t currentTimeUs)
 }
 
 uint32_t debug1;
-
 static void debugPrint(uint32_t currentTimeUs)
 {
 

@@ -284,7 +284,7 @@ static int mspSerialSendFrame(mspPort_t *msp, uint8_t * hdr, int hdrLen, uint8_t
     if (!uartTxBufEmpty(ch) && ((int)uartTotalTxBytesFree(ch) < totalFrameLength))
         return 0;
 
-    uint8_t frameBuf[16 + JUMBO_FRAME_SIZE_LIMIT + 2]; // 최대 크기 확보
+    static uint8_t frameBuf[16 + JUMBO_FRAME_SIZE_LIMIT + 2]; // 최대 크기 확보
     int offset = 0;
 
     memset(frameBuf, 0, sizeof(frameBuf));
@@ -299,14 +299,7 @@ static int mspSerialSendFrame(mspPort_t *msp, uint8_t * hdr, int hdrLen, uint8_t
     offset += crcLen;
 
     msp_tx_start_time = micros();
-    uartWriteIT(ch, frameBuf, totalFrameLength);
-    //uartWriteDMA(ch, &frameBuf[0], totalFrameLength);
-    // Transmit frame
-    //serialBeginWrite(ch);
-    //uartWriteIT(ch, hdr, hdrLen);
-    //uartWriteIT(ch, data, dataLen);
-    //uartWriteIT(ch, crc, crcLen);
-    //serialEndWrite(ch);
+    uartWriteDMA(ch, frameBuf, totalFrameLength);
 
     return totalFrameLength;
 }
