@@ -1079,7 +1079,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 	if(huart->Instance == USART6)
 	{
-		GPS_Passer(rx_buf[_DEF_UART1][0]);
+		GPS_Passer(rx_buf[_DEF_UART6][0]);
 		HAL_UART_Receive_IT(&huart6, (uint8_t *)&rx_buf[_DEF_UART6][0], 1);
 	}
 }
