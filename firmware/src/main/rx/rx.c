@@ -599,7 +599,7 @@ void processRxModes(uint32_t currentTimeUs)
 		}
 
 	}
-	rx_SwArm_Prev = rcData[ARMED];
+	rx_SwArm_Prev = rcData[ARM];
 
 	if(rcData[ARM] != 2000)
 	{
