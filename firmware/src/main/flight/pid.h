@@ -31,21 +31,23 @@
 
 // PID 구조체 정의
 typedef struct _PID{
-   float kp;     // 비례 게인
-   float ki;     // 적분 게인
-   float kd;     // 미분 게인
-   float error;
-   float prev_error; // 이전 오차값
-   float integral;   // 적분 값
-   float derivative;
-   float derivative_filter;
+  const char * pidName;
 
-   float integral_windup;
+  float kp;     // 비례 게인
+  float ki;     // 적분 게인
+  float kd;     // 미분 게인
+  float error;
+  float prev_error; // 이전 오차값
+  float integral;   // 적분 값
+  float derivative;
+  float derivative_filter;
 
-   float result_p;
-   float result_i;
-   float result_d;
-   float result;
+  float integral_windup;
+
+  float result_p;
+  float result_i;
+  float result_d;
+  float result;
 } PID;
 
 typedef struct _DoublePID

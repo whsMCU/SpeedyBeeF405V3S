@@ -43,32 +43,37 @@ PID_Test _PID_Test;
 
 void pidInit(void)
 {
+  _ROLL.in.pidName = "ROLL_IN";
   _ROLL.in.kp = 10;
   _ROLL.in.ki = 0;
   _ROLL.in.kd = 0;
   _ROLL.in.integral_windup = 500;
 
+  _ROLL.out.pidName = "ROLL_OUT";
   _ROLL.out.kp = 10;
   _ROLL.out.ki = 0;
   _ROLL.out.kd = 0;
   _ROLL.out.integral_windup = 500;
 
+  _PITCH.in.pidName = "PITCH_IN";
   _PITCH.in.kp = 10;
   _PITCH.in.ki = 0;
   _PITCH.in.kd = 0;
   _PITCH.in.integral_windup = 500;
 
+  _PITCH.out.pidName = "PITCH_OUT";
   _PITCH.out.kp = 10;
   _PITCH.out.ki = 0;
   _PITCH.out.kd = 0;
   _PITCH.out.integral_windup = 500;
 
+  _YAW_Heading.pidName = "YAW_Heading";
   _YAW_Heading.kp = 10;
   _YAW_Heading.ki = 0;
   _YAW_Heading.kd = 0;
   _YAW_Heading.integral_windup = 500;
 
-
+  _YAW_Rate.pidName = "YAW_Rate";
   _YAW_Rate.kp = 10;
   _YAW_Rate.ki = 0;
   _YAW_Rate.kd = 0;
@@ -82,6 +87,13 @@ void pidInit(void)
 void PID_Calculation(PID* axis, float set_point, float measured, float dt)
 {
   axis->error = set_point - measured;
+
+  if (strcmp(axis->pidName, "YAW_Heading") == 0)
+  {
+    if (axis->error > 180.0f)  axis->error -= 360.0f;
+    if (axis->error < -180.0f) axis->error += 360.0f;
+  }
+
   axis->integral += axis->error * dt;
   if(axis->integral > axis->integral_windup) axis->integral = axis->integral_windup;
   else if(axis->integral < -axis->integral_windup) axis->integral = -axis->integral_windup;
