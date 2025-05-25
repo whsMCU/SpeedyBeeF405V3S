@@ -344,7 +344,7 @@ static float imuCalcKpGain(uint32_t currentTimeUs, bool useAcc, float *gyroAvera
     float ret;
     bool attitudeResetActive = false;
 
-    const bool armState = false;//ARMING_FLAG(ARMED);
+    const bool armState = ARMING_FLAG(ARMED);
 
     if (!armState) {
         if (lastArmState) {   // Just disarmed; start the gyro quiet period
