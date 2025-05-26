@@ -90,8 +90,8 @@ void PID_Calculation(PID* axis, float set_point, float measured, float dt)
 
   if (strcmp(axis->pidName, "YAW_Heading") == 0)
   {
-    if (axis->error > 180.0f)  axis->error -= 360.0f;
-    if (axis->error < -180.0f) axis->error += 360.0f;
+    if (axis->error >= 180.0f)  axis->error -= 360.0f;
+    if (axis->error <= -180.0f) axis->error += 360.0f;
   }
 
   axis->integral += axis->error * dt;

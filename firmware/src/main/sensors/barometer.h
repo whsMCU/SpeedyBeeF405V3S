@@ -61,6 +61,7 @@ typedef struct baro_s {
 } baro_t;
 
 extern baro_t baro;
+extern barometerConfig_t barometerConfig;
 
 void barometerConfig_Init(void);
 

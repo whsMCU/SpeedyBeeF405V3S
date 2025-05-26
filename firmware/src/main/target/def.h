@@ -55,6 +55,7 @@
 
 #define USE_ACC
 #define USE_BARO
+#define USE_VARIO
 #define USE_ADC
 //#define USE_OSD
 //#define USE_MAX7456

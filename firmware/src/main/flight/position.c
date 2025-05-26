@@ -82,7 +82,7 @@ int16_t calculateEstimatedVario(int32_t baroAlt, const uint32_t dTime) {
     baroVel = constrain(baroVel, -1500.0f, 1500.0f);
     baroVel = applyDeadband(baroVel, 10.0f);
 
-    vel = vel * CONVERT_PARAMETER_TO_FLOAT(barometerConfig()->baro_cf_vel) + baroVel * (1.0f - CONVERT_PARAMETER_TO_FLOAT(barometerConfig()->baro_cf_vel));
+    vel = vel * CONVERT_PARAMETER_TO_FLOAT(barometerConfig.baro_cf_vel) + baroVel * (1.0f - CONVERT_PARAMETER_TO_FLOAT(barometerConfig.baro_cf_vel));
     int32_t vel_tmp = lrintf(vel);
     vel_tmp = applyDeadband(vel_tmp, 5.0f);
 
