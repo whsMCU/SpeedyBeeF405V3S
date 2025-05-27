@@ -492,6 +492,8 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU32(dst, overren_cnt);
 
           sbufWriteU16(dst, getAverageSystemLoadPercent());
+
+          sbufWriteU32(dst, yaw_heading_reference);
         }
         break;
 

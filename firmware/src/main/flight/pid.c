@@ -25,10 +25,16 @@
 #include "build/debug.h"
 
 #include "pid.h"
+
 #include "sensors/gyro.h"
+
 #include "flight/imu.h"
+#include "flight/position.h"
+
 #include "fc/rc_controls.h"
+
 #include "rx/rx.h"
+
 #include "drivers/motor.h"
 
 #include "fc/runtime_config.h"
@@ -38,6 +44,8 @@ DoublePID _PITCH;
 
 PID _YAW_Heading;
 PID _YAW_Rate;
+
+PID _ALT;
 
 PID_Test _PID_Test;
 
@@ -79,6 +87,12 @@ void pidInit(void)
   _YAW_Rate.kd = 0;
   _YAW_Rate.integral_windup = 500;
 
+  _ALT.pidName = "ALT";
+  _ALT.kp = 5;
+  _ALT.ki = 0;
+  _ALT.kd = 0;
+  _ALT.integral_windup = 200;
+
   _PID_Test.pid_test_flag = 0;
   _PID_Test.pid_test_throttle = 0;
   _PID_Test.pid_test_deg = 0;
@@ -117,6 +131,7 @@ void Reset_All_PID_Integrator(void)
   _PITCH.in.integral = 0;
   _YAW_Heading.integral = 0;
   _YAW_Rate.integral = 0;
+  _ALT.integral = 0;
 }
 
 float yaw_heading_reference;
@@ -131,11 +146,11 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 
   static timeUs_t previousUpdateTimeUs;
   float dT = (float)US2S(currentTimeUs - previousUpdateTimeUs);
-  debug[0] = currentTimeUs - previousUpdateTimeUs;
+  //debug[0] = currentTimeUs - previousUpdateTimeUs;
   previousUpdateTimeUs = currentTimeUs;
-  debug[1] = bmi270.gyroADCf[Y];
-  debug[2] = _PITCH.in.result_d;
-  debug[3] = _PITCH.in.result;
+  //debug[1] = bmi270.gyroADCf[Y];
+  //debug[2] = _PITCH.in.result_d;
+  //debug[3] = _PITCH.in.result;
 
   PID_Calculation(&_ROLL.out, rcCommand[ROLL], imu_roll, dT);
   PID_Calculation(&_ROLL.in, _ROLL.out.result, bmi270.gyroADCf[X], dT);
@@ -148,6 +163,45 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     PID_Calculation(&_PITCH.out, rcCommand[PITCH], imu_pitch, dT);
   }
   PID_Calculation(&_PITCH.in, _PITCH.out.result, bmi270.gyroADCf[Y], dT);
+
+  float targetVel = constrain(AltHold - getEstimatedAltitudeCm(), -100, 100);
+  PID_Calculation(&_ALT, targetVel, (float)getEstimatedVario(), dT);
+  _ALT.result = constrain(_ALT.result, -200, 200);
+
+  if(FLIGHT_MODE(BARO_MODE))
+  {
+    static uint8_t isAltHoldChanged = 0;
+    #if defined(ALTHOLD_FAST_THROTTLE_CHANGE)
+      if (abs(rcCommand[THROTTLE]-initialThrottleHold) > ALT_HOLD_THROTTLE_NEUTRAL_ZONE) {
+       //errorAltitudeI = 0;
+        isAltHoldChanged = 1;
+        rcCommand[THROTTLE] += (rcCommand[THROTTLE] > initialThrottleHold) ? -ALT_HOLD_THROTTLE_NEUTRAL_ZONE : ALT_HOLD_THROTTLE_NEUTRAL_ZONE;
+       // initialThrottleHold += (rcCommand[THROTTLE] > initialThrottleHold) ? -ALT_HOLD_THROTTLE_NEUTRAL_ZONE : ALT_HOLD_THROTTLE_NEUTRAL_ZONE;; //++hex nano
+      } else {
+        if (isAltHoldChanged) {
+          AltHold = getEstimatedAltitudeCm();
+          isAltHoldChanged = 0;
+        }
+        rcCommand[THROTTLE] = initialThrottleHold + _ALT.result;
+      }
+    #else
+      static int16_t AltHoldCorr = 0;
+      if (abs(rcCommand[THROTTLE]-initialThrottleHold)>ALT_HOLD_THROTTLE_NEUTRAL_ZONE) {
+        // Slowly increase/decrease AltHold proportional to stick movement ( +100 throttle gives ~ +50 cm in 1 second with cycle time about 3-4ms)
+        AltHoldCorr+= rcCommand[THROTTLE] - initialThrottleHold;
+        if(abs(AltHoldCorr) > 500) {
+          AltHold += AltHoldCorr/500;
+          AltHoldCorr %= 500;
+        }
+        //errorAltitudeI = 0;
+        isAltHoldChanged = 1;
+      } else if (isAltHoldChanged) {
+        AltHold = getEstimatedAltitudeCm();
+        isAltHoldChanged = 0;
+      }
+      rcCommand[THROTTLE] = initialThrottleHold + _ALT.result;
+    #endif
+  }
 
   if((rcData[THROTTLE] < 1030 || !ARMING_FLAG(ARMED))&& _PID_Test.pid_test_flag == 0)
   {

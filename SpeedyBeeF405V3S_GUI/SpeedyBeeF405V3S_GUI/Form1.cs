@@ -88,6 +88,8 @@ namespace SpeedyBeeF405V3S_GUI
         LineItem _pitch_angle_curve;
         PointPairList _yaw_angle_points = new PointPairList();
         LineItem _yaw_angle_curve;
+        PointPairList _yaw_reference_points = new PointPairList();
+        LineItem _yaw_reference_curve;
         PointPairList _rc_roll_points = new PointPairList();
         LineItem _rc_roll_curve;
         PointPairList _rc_pitch_points = new PointPairList();
@@ -235,7 +237,7 @@ namespace SpeedyBeeF405V3S_GUI
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
 
-                log = "DateTime, Roll, Pitch, Yaw, Alt, RollSetPoint, PitchSetPoint, Yaw SetPoint, Thorttle";
+                log = "DateTime, Roll, Pitch, Yaw, Alt, RollSetPoint, PitchSetPoint, Yaw SetPoint, Thorttle, yaw_heading_reference, Debug[0], Debug[1], Debug[2], Debug[3]";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
             }
@@ -260,11 +262,11 @@ namespace SpeedyBeeF405V3S_GUI
             using (StreamWriter writer = new StreamWriter(filePath, append: true))
             {
                 writer.AutoFlush = true;
+                data[0] /= 10;
                 data[1] /= 10;
-                data[2] /= 10;
+                data[4] /= 10;
                 data[5] /= 10;
-                data[6] /= 10;
-                string log = $"{DateTime.Now:HH:mm:ss.fff}, {data[0]}, {data[1]}, {data[2]}, {data[3]}, {data[4]}, {data[5]}, {data[6]}, {data[7]}";
+                string log = $"{DateTime.Now:HH:mm:ss.fff}, {data[0]}, {data[1]}, {data[2]}, {data[3]}, {data[4]}, {data[5]}, {data[6]}, {data[7]}, {data[41]}, {data[18]}, {data[19]}, {data[20]}, {data[21]}";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
             }
@@ -1247,6 +1249,9 @@ namespace SpeedyBeeF405V3S_GUI
             _rc_yaw_curve = _myPane.AddCurve("YAW_Setpoint", _rc_yaw_points, Color.Red, SymbolType.None);
             _rc_yaw_curve.Line.Width = 2;
             _rc_yaw_points.Clear();
+            _yaw_reference_curve = _myPane.AddCurve("YAW_Reference", _yaw_reference_points, Color.Yellow, SymbolType.None);
+            _yaw_reference_curve.Line.Width = 2;
+            _yaw_reference_points.Clear();
 
             zedGraphControl1.AxisChange();
             zedGraphControl1.Invalidate();
@@ -1873,6 +1878,8 @@ namespace SpeedyBeeF405V3S_GUI
 
             passed_data[40] = BitConverter.ToUInt16(payload, 116);  // CPU_LOAD
 
+            passed_data[41] = BitConverter.ToUInt16(payload, 118);  // yaw_heading_reference
+
             if (cb_record.Checked == true)
             {
                 Check_Data_Log(PID_log_filePath, passed_data);
@@ -1938,6 +1945,7 @@ namespace SpeedyBeeF405V3S_GUI
             {
                 _yaw_angle_points.Add(time_count + 150, passed_data[2]);
                 _rc_yaw_points.Add(time_count + 150, passed_data[6]);
+                _yaw_reference_points.Add(time_count + 150, passed_data[41]);
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }

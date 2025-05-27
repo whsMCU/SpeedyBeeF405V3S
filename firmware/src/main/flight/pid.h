@@ -66,6 +66,7 @@ extern DoublePID _ROLL;
 extern DoublePID _PITCH;
 extern PID _YAW_Heading;
 extern PID _YAW_Rate;
+extern PID _ALT;
 extern PID_Test _PID_Test;
 
 

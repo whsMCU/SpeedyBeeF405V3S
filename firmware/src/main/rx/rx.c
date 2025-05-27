@@ -46,6 +46,7 @@
 #include "flight/failsafe.h"
 #include "flight/imu.h"
 #include "flight/pid.h"
+#include "flight/position.h"
 
 #include "rx/rx.h"
 #include "rx/crsf.h"
@@ -88,6 +89,8 @@ static float rcRaw[MAX_SUPPORTED_RC_CHANNEL_COUNT];     // last received raw val
 uint16_t rcData[MAX_SUPPORTED_RC_CHANNEL_COUNT];           // scaled, modified, checked and constrained values
 
 uint32_t validRxSignalTimeout[MAX_SUPPORTED_RC_CHANNEL_COUNT];
+
+float initialThrottleHold;
 
 #define MAX_INVALID_PULSE_TIME_MS 300                   // hold time in milliseconds after bad channel or Rx link loss
 // will not be actioned until the nearest multiple of 100ms
@@ -616,6 +619,18 @@ void processRxModes(uint32_t currentTimeUs)
 		DISABLE_FAILSAFE(FAILSAFE_RX_SWITCH);
 	}
 	ENABLE_FLIGHT_MODE(ANGLE_MODE);
+
+	if(rcData[SB] >= 1500)
+	{
+	  ENABLE_FLIGHT_MODE(BARO_MODE);
+	  AltHold = getEstimatedAltitudeCm();
+	  initialThrottleHold = rcCommand[THROTTLE];
+	  _ALT.integral = 0;
+    _ALT.result = 0;
+	}else
+	{
+	  DISABLE_FLIGHT_MODE(BARO_MODE);
+	}
 
   if(rcData[SA] == 2000)
   {
