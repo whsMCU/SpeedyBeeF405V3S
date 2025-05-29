@@ -18,7 +18,8 @@ enum
   PID_pitch_out,
   PID_yaw_heading,
   PID_yaw_rate,
-  ACC_offset
+  ACC_offset,
+  PID_ALT
 };
 
 bool loadFromSDCard(void);

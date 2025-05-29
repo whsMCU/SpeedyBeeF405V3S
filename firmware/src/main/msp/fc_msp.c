@@ -494,6 +494,8 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU16(dst, getAverageSystemLoadPercent());
 
           sbufWriteU32(dst, yaw_heading_reference);
+
+          sbufWriteU32(dst, AltHold);
         }
         break;
 
@@ -1317,6 +1319,10 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         sbufWriteU32(dst, (int32_t)(_YAW_Rate.kp * 10.0f));
         sbufWriteU32(dst, (int32_t)(_YAW_Rate.ki * 10.0f));
         sbufWriteU32(dst, (int32_t)(_YAW_Rate.kd * 10.0f));
+
+        sbufWriteU32(dst, (int32_t)(_ALT.kp * 10.0f));
+        sbufWriteU32(dst, (int32_t)(_ALT.ki * 10.0f));
+        sbufWriteU32(dst, (int32_t)(_ALT.kd * 10.0f));
       }
         break;
 
@@ -2300,6 +2306,14 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         _YAW_Rate.ki = (float)u.f;
         u.b = sbufReadU32(src);
         _YAW_Rate.kd = (float)u.f;
+
+        u.b = sbufReadU32(src);
+        _ALT.kp = (float)u.f;
+        u.b = sbufReadU32(src);
+        _ALT.ki = (float)u.f;
+        u.b = sbufReadU32(src);
+        _ALT.kd = (float)u.f;
+
         break;
 
     case MSP_SET_INAV_PID:
@@ -2312,6 +2326,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
           writeSDCard(PID_yaw_heading);
           writeSDCard(PID_yaw_rate);
           writeSDCard(ACC_offset);
+          writeSDCard(PID_ALT);
         }
         break;
 

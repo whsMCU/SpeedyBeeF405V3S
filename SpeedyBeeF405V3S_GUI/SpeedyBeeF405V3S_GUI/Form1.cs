@@ -90,6 +90,10 @@ namespace SpeedyBeeF405V3S_GUI
         LineItem _yaw_angle_curve;
         PointPairList _yaw_reference_points = new PointPairList();
         LineItem _yaw_reference_curve;
+        PointPairList _alt_points = new PointPairList();
+        LineItem _alt_curve;
+        PointPairList _alt_reference_points = new PointPairList();
+        LineItem _alt_reference_curve;
         PointPairList _rc_roll_points = new PointPairList();
         LineItem _rc_roll_curve;
         PointPairList _rc_pitch_points = new PointPairList();
@@ -237,7 +241,7 @@ namespace SpeedyBeeF405V3S_GUI
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
 
-                log = "DateTime, Roll, Pitch, Yaw, Alt, RollSetPoint, PitchSetPoint, Yaw SetPoint, Thorttle, yaw_heading_reference, Debug[0], Debug[1], Debug[2], Debug[3]";
+                log = "DateTime, Roll, Pitch, Yaw, Alt, RollSetPoint, PitchSetPoint, Yaw SetPoint, Thorttle, yaw_heading_reference, altHold, Debug[0], Debug[1], Debug[2], Debug[3]";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
             }
@@ -266,7 +270,7 @@ namespace SpeedyBeeF405V3S_GUI
                 data[1] /= 10;
                 data[4] /= 10;
                 data[5] /= 10;
-                string log = $"{DateTime.Now:HH:mm:ss.fff}, {data[0]}, {data[1]}, {data[2]}, {data[3]}, {data[4]}, {data[5]}, {data[6]}, {data[7]}, {data[41]}, {data[18]}, {data[19]}, {data[20]}, {data[21]}";
+                string log = $"{DateTime.Now:HH:mm:ss.fff}, {data[0]}, {data[1]}, {data[2]}, {data[3]}, {data[4]}, {data[5]}, {data[6]}, {data[7]}, {data[41]}, {data[42]}, {data[18]}, {data[19]}, {data[20]}, {data[21]}";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
             }
@@ -524,8 +528,9 @@ namespace SpeedyBeeF405V3S_GUI
             {
                 pid_send_flag = false;
                 drone_status_flag = true;
-                byte[] pid_buff = new byte[72];
+                byte[] pid_buff = new byte[84];
                 float float_buff;
+                float int16_buff;
                 byte[] tmp = new byte[4];
                 try
                 {
@@ -644,6 +649,27 @@ namespace SpeedyBeeF405V3S_GUI
                     pid_buff[69] = tmp[1];
                     pid_buff[70] = tmp[2];
                     pid_buff[71] = tmp[3];
+
+                    float_buff = float.Parse(tb_ALT_P.Text);
+                    tmp = BitConverter.GetBytes(float_buff);
+                    pid_buff[72] = tmp[0];
+                    pid_buff[73] = tmp[1];
+                    pid_buff[74] = tmp[2];
+                    pid_buff[75] = tmp[3];
+
+                    float_buff = float.Parse(tb_ALT_I.Text);
+                    tmp = BitConverter.GetBytes(float_buff);
+                    pid_buff[76] = tmp[0];
+                    pid_buff[77] = tmp[1];
+                    pid_buff[78] = tmp[2];
+                    pid_buff[79] = tmp[3];
+
+                    float_buff = float.Parse(tb_ALT_D.Text);
+                    tmp = BitConverter.GetBytes(float_buff);
+                    pid_buff[80] = tmp[0];
+                    pid_buff[81] = tmp[1];
+                    pid_buff[82] = tmp[2];
+                    pid_buff[83] = tmp[3];
 
                     mspProtocol.SendMspCommand(95, pid_buff);
 
@@ -1139,6 +1165,10 @@ namespace SpeedyBeeF405V3S_GUI
             tb_Y_R_P.Text = tb_FC_Y_R_P.Text;
             tb_Y_R_I.Text = tb_FC_Y_R_I.Text;
             tb_Y_R_D.Text = tb_FC_Y_R_D.Text;
+
+            tb_ALT_P.Text = tb_FC_ALT_P.Text;
+            tb_ALT_I.Text = tb_FC_ALT_I.Text;
+            tb_ALT_D.Text = tb_FC_ALT_D.Text;
         }
 
         private void rb_yaw_MouseDown(object sender, MouseEventArgs e)
@@ -1252,6 +1282,25 @@ namespace SpeedyBeeF405V3S_GUI
             _yaw_reference_curve = _myPane.AddCurve("YAW_Reference", _yaw_reference_points, Color.Yellow, SymbolType.None);
             _yaw_reference_curve.Line.Width = 2;
             _yaw_reference_points.Clear();
+
+            zedGraphControl1.AxisChange();
+            zedGraphControl1.Invalidate();
+            zedGraphControl1.Refresh();
+        }
+
+        private void rb_alt_setpoint_MouseDown(object sender, MouseEventArgs e)
+        {
+            _myPane.CurveList.Clear();
+            _myPane.YAxis.Scale.Min = -500;
+            _myPane.YAxis.Scale.Max = 500;
+
+            _alt_curve = _myPane.AddCurve("ALT(CM)", _alt_points, Color.Blue, SymbolType.None);
+            _alt_curve.Line.Width = 2;
+            _alt_points.Clear();
+
+            _alt_reference_curve = _myPane.AddCurve("ALT_Reference", _alt_reference_points, Color.Yellow, SymbolType.None);
+            _alt_reference_curve.Line.Width = 2;
+            _alt_reference_points.Clear();
 
             zedGraphControl1.AxisChange();
             zedGraphControl1.Invalidate();
@@ -1880,6 +1929,8 @@ namespace SpeedyBeeF405V3S_GUI
 
             passed_data[41] = BitConverter.ToUInt16(payload, 118);  // yaw_heading_reference
 
+            passed_data[42] = BitConverter.ToUInt16(payload, 122);  // altHold
+
             if (cb_record.Checked == true)
             {
                 Check_Data_Log(PID_log_filePath, passed_data);
@@ -1946,6 +1997,14 @@ namespace SpeedyBeeF405V3S_GUI
                 _yaw_angle_points.Add(time_count + 150, passed_data[2]);
                 _rc_yaw_points.Add(time_count + 150, passed_data[6]);
                 _yaw_reference_points.Add(time_count + 150, passed_data[41]);
+                _myPane.XAxis.Scale.Min = time_count;
+                _myPane.XAxis.Scale.Max = 300 + time_count;
+            }
+
+            if (rb_alt_setpoint.Checked == true)
+            {
+                _alt_points.Add(time_count + 150, passed_data[3]);
+                _alt_reference_points.Add(time_count + 150, passed_data[42]);
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
@@ -2047,7 +2106,7 @@ namespace SpeedyBeeF405V3S_GUI
                rb_roll_setpoint.Checked == true || rb_pitch_setpoint.Checked == true ||
                rb_yaw_setpoint.Checked == true || rb_altitude.Checked == true ||
                rb_gyro.Checked == true || rb_motor.Checked == true ||
-               rb_debug.Checked == true)
+               rb_debug.Checked == true || rb_alt_setpoint.Checked == true)
             {
                 zedGraphControl1.AxisChange();
                 zedGraphControl1.Invalidate();
@@ -2086,6 +2145,10 @@ namespace SpeedyBeeF405V3S_GUI
             passed_data[16] = (float)(BitConverter.ToInt32(payload, 64)) / 10;   // Y_A_I
             passed_data[17] = (float)(BitConverter.ToInt32(payload, 68)) / 10;   // Y_A_D
 
+            passed_data[18] = (float)(BitConverter.ToInt32(payload, 72)) / 10;   // ALT_P
+            passed_data[19] = (float)(BitConverter.ToInt32(payload, 76)) / 10;   // ALT_I
+            passed_data[20] = (float)(BitConverter.ToInt32(payload, 80)) / 10;   // ALT_D
+
             tb_FC_R_I_P.Text = passed_data[0].ToString();
             tb_FC_R_I_I.Text = passed_data[1].ToString();
             tb_FC_R_I_D.Text = passed_data[2].ToString();
@@ -2109,6 +2172,10 @@ namespace SpeedyBeeF405V3S_GUI
             tb_FC_Y_R_P.Text = passed_data[15].ToString();
             tb_FC_Y_R_I.Text = passed_data[16].ToString();
             tb_FC_Y_R_D.Text = passed_data[17].ToString();
+
+            tb_FC_ALT_P.Text = passed_data[18].ToString();
+            tb_FC_ALT_I.Text = passed_data[19].ToString();
+            tb_FC_ALT_D.Text = passed_data[20].ToString();
 
             return true;
         }

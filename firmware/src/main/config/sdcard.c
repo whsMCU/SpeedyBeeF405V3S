@@ -446,6 +446,67 @@ static bool write_ini_acc_offset(const char * ini_name)
       return ret;
 }
 
+static bool write_ini_alt(const char * ini_name)
+{
+  void *dictionary;
+  FIL ini_file;
+  FRESULT fp_ret;
+  int ret = 0;
+
+  char str[20];
+
+  if (!ini_name) {
+      fprintf(stderr, "Invalid argurment\n");
+      return -1;
+  }
+
+  dictionary = iniparser_load(ini_name);
+  if (!dictionary) {
+      fprintf(stderr, "cannot parse file: %s\n", ini_name);
+      return -1 ;
+  }
+
+  /* set key/value pair */
+  sprintf(str, "%.1f", _ALT.kp);
+  ret = iniparser_set(dictionary, "pid:alt.kp", str);
+  if (ret < 0) {
+      fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
+      ret = -1;
+      goto free_dict;
+  }
+
+  sprintf(str, "%.1f", _ALT.ki);
+  ret = iniparser_set(dictionary, "pid:alt.ki", str);
+  if (ret < 0) {
+      fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
+      ret = -1;
+      goto free_dict;
+  }
+
+  sprintf(str, "%.1f", _ALT.kd);
+  ret = iniparser_set(dictionary, "pid:alt.kd", str);
+  if (ret < 0) {
+      fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
+      ret = -1;
+      goto free_dict;
+  }
+
+  fp_ret = f_open(&ini_file, ini_name, FA_READ | FA_WRITE);
+
+  if (fp_ret != FR_OK) {
+      fprintf(stderr, "iniparser: cannot create example.ini\n");
+      ret = -1;
+      goto free_dict;
+  }
+
+  iniparser_dump_ini(dictionary, &ini_file);
+  f_close(&ini_file);
+
+  free_dict:
+      iniparser_freedict(dictionary);
+      return ret;
+}
+
 static bool parse_ini(const char * ini_name)
 {
   dictionary  *   ini ;
@@ -512,6 +573,13 @@ static bool parse_ini(const char * ini_name)
   d = iniparser_getdouble(ini, "pid:yaw_rate.kd", 0.0);
   _YAW_Rate.kd = d;
 
+  d = iniparser_getdouble(ini, "pid:alt.kp", 0.0);
+  _ALT.kp = d;
+  d = iniparser_getdouble(ini, "pid:alt.ki", 0.0);
+  _ALT.ki = d;
+  d = iniparser_getdouble(ini, "pid:alt.kd", 0.0);
+  _ALT.kd = d;
+
   return true;
 }
 
@@ -520,7 +588,7 @@ bool loadFromSDCard(void)
   FRESULT result;
   FIL ini_file;
 
-  result= f_open(&ini_file, defaultSDCardConfigFilename, FA_READ);
+  result= f_open(&ini_file, defaultSDCardConfigFilename, FA_READ | FA_WRITE);
 //  if (result == FR_OK)
 //  {
 //    f_printf(&ini_file,
@@ -590,6 +658,9 @@ bool writeSDCard(uint8_t type)
       break;
     case ACC_offset:
       result = write_ini_acc_offset(defaultSDCardConfigFilename);
+      break;
+    case PID_ALT:
+      result = write_ini_alt(defaultSDCardConfigFilename);
       break;
   }
 

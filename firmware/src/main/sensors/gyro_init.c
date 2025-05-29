@@ -68,9 +68,9 @@ void gyroConfig_init(void)
   bmi270.acc_high_fsr = false;
 
   resetFlightDynamicsTrims(&bmi270.accelerationTrims);
-  bmi270.accelerationTrims.values.roll = 16;//29
-  bmi270.accelerationTrims.values.pitch = -49;//-35
-  bmi270.accelerationTrims.values.yaw = -7;//-9
+  bmi270.accelerationTrims.values.roll = 21;
+  bmi270.accelerationTrims.values.pitch = -55;
+  bmi270.accelerationTrims.values.yaw = -6;
 }
 
 bool gyroInit(void)
