@@ -459,7 +459,6 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU16(dst, motor.motor[L_R]);
           sbufWriteU16(dst, motor.motor[L_F]);
 
-
           sbufWriteU32(dst, debug[0]);
           sbufWriteU32(dst, debug[1]);
           sbufWriteU32(dst, debug[2]);
@@ -477,7 +476,6 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU16(dst, compassConfig.magZero.raw[Y]);
           sbufWriteU16(dst, compassConfig.magZero.raw[Z]);
 
-
           sbufWriteU32(dst, (int32_t)(mag.magADC[X] * 1000.0f));
           sbufWriteU32(dst, (int32_t)(mag.magADC[Y] * 1000.0f));
           sbufWriteU32(dst, (int32_t)(mag.magADC[Z] * 1000.0f));
@@ -493,7 +491,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
 
           sbufWriteU16(dst, getAverageSystemLoadPercent());
 
-          sbufWriteU32(dst, yaw_heading_reference);
+          sbufWriteU32(dst, (int32_t)(yaw_heading_reference) * 1000.0f);
 
           sbufWriteU32(dst, AltHold);
         }

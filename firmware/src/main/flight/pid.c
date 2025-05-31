@@ -146,7 +146,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 
   static timeUs_t previousUpdateTimeUs;
   float dT = (float)US2S(currentTimeUs - previousUpdateTimeUs);
-  //debug[0] = currentTimeUs - previousUpdateTimeUs;
+  debug[0] = currentTimeUs - previousUpdateTimeUs;
   previousUpdateTimeUs = currentTimeUs;
   //debug[1] = bmi270.gyroADCf[Y];
   //debug[2] = _PITCH.in.result_d;
@@ -176,6 +176,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
        //errorAltitudeI = 0;
         isAltHoldChanged = 1;
         rcCommand[THROTTLE] += (rcCommand[THROTTLE] > initialThrottleHold) ? -ALT_HOLD_THROTTLE_NEUTRAL_ZONE : ALT_HOLD_THROTTLE_NEUTRAL_ZONE;
+        debug[1] = rcCommand[THROTTLE];
        // initialThrottleHold += (rcCommand[THROTTLE] > initialThrottleHold) ? -ALT_HOLD_THROTTLE_NEUTRAL_ZONE : ALT_HOLD_THROTTLE_NEUTRAL_ZONE;; //++hex nano
       } else {
         if (isAltHoldChanged) {
@@ -183,7 +184,9 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
           isAltHoldChanged = 0;
         }
         rcCommand[THROTTLE] = initialThrottleHold + _ALT.result;
+        debug[2] = rcCommand[THROTTLE];
       }
+      debug[3] = isAltHoldChanged;
     #else
       static int16_t AltHoldCorr = 0;
       if (abs(rcCommand[THROTTLE]-initialThrottleHold)>ALT_HOLD_THROTTLE_NEUTRAL_ZONE) {
@@ -222,10 +225,10 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 	    RF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result - _ROLL.in.result + _YAW_Rate.result;
 	  }else
 	  {
-	    LF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - _PITCH.in.result + _ROLL.in.result - _YAW_Rate.result;
-	    LR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + _PITCH.in.result + _ROLL.in.result + _YAW_Rate.result;
-	    RR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + _PITCH.in.result - _ROLL.in.result - _YAW_Rate.result;
-	    RF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - _PITCH.in.result - _ROLL.in.result + _YAW_Rate.result;
+	    LF = 10500 + 500 + rcCommand[THROTTLE] * 10 - _PITCH.in.result + _ROLL.in.result - _YAW_Rate.result;
+	    LR = 10500 + 500 + rcCommand[THROTTLE] * 10 + _PITCH.in.result + _ROLL.in.result + _YAW_Rate.result;
+	    RR = 10500 + 500 + rcCommand[THROTTLE] * 10 + _PITCH.in.result - _ROLL.in.result - _YAW_Rate.result;
+	    RF = 10500 + 500 + rcCommand[THROTTLE] * 10 - _PITCH.in.result - _ROLL.in.result + _YAW_Rate.result;
 	  }
   }
   else
@@ -239,10 +242,10 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
       RF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result - _ROLL.in.result + _YAW_Heading.result;
     }else
     {
-      LF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - _PITCH.in.result + _ROLL.in.result - _YAW_Heading.result;
-      LR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + _PITCH.in.result + _ROLL.in.result + _YAW_Heading.result;
-      RR = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 + _PITCH.in.result - _ROLL.in.result - _YAW_Heading.result;
-      RF = 10500 + 500 + (rcData[THROTTLE] - 1000) * 10 - _PITCH.in.result - _ROLL.in.result + _YAW_Heading.result;
+      LF = 10500 + 500 + rcCommand[THROTTLE] * 10 - _PITCH.in.result + _ROLL.in.result - _YAW_Heading.result;
+      LR = 10500 + 500 + rcCommand[THROTTLE] * 10 + _PITCH.in.result + _ROLL.in.result + _YAW_Heading.result;
+      RR = 10500 + 500 + rcCommand[THROTTLE] * 10 + _PITCH.in.result - _ROLL.in.result - _YAW_Heading.result;
+      RF = 10500 + 500 + rcCommand[THROTTLE] * 10 - _PITCH.in.result - _ROLL.in.result + _YAW_Heading.result;
     }
   }
 

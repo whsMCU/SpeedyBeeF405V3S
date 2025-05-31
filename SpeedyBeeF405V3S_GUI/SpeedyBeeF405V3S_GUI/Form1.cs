@@ -530,7 +530,6 @@ namespace SpeedyBeeF405V3S_GUI
                 drone_status_flag = true;
                 byte[] pid_buff = new byte[84];
                 float float_buff;
-                float int16_buff;
                 byte[] tmp = new byte[4];
                 try
                 {
@@ -1927,9 +1926,9 @@ namespace SpeedyBeeF405V3S_GUI
 
             passed_data[40] = BitConverter.ToUInt16(payload, 116);  // CPU_LOAD
 
-            passed_data[41] = BitConverter.ToUInt16(payload, 118);  // yaw_heading_reference
+            passed_data[41] = (float)(BitConverter.ToInt32(payload, 118)) / 1000;  // yaw_heading_reference
 
-            passed_data[42] = BitConverter.ToUInt16(payload, 122);  // altHold
+            passed_data[42] = BitConverter.ToInt32(payload, 122);  // altHold
 
             if (cb_record.Checked == true)
             {
@@ -2100,6 +2099,8 @@ namespace SpeedyBeeF405V3S_GUI
 
             tb_rx_error.Text = passed_data[39].ToString();
             lb_fc_load.Text = passed_data[40].ToString();
+
+            lb_althold.Text = passed_data[42].ToString();
 
             if (rb_roll.Checked == true || rb_pitch.Checked == true ||
                rb_yaw.Checked == true || rb_roll_pitch.Checked == true ||
