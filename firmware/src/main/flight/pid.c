@@ -206,6 +206,26 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     #endif
   }
 
+#ifdef USE_GPS1
+  if ( (FLIGHT_MODE(GPS_HOME_MODE) || FLIGHT_MODE(GPS_HOLD_MODE)) && STATE(GPS_FIX) ) {
+    float sin_yaw_y = sin(heading*0.0174532925f);
+    float cos_yaw_x = cos(heading*0.0174532925f);
+    #if defined(NAV_SLEW_RATE)
+      nav_rated[LON]   += constrain(wrap_18000(nav[LON]-nav_rated[LON]),-NAV_SLEW_RATE,NAV_SLEW_RATE);
+      nav_rated[LAT]   += constrain(wrap_18000(nav[LAT]-nav_rated[LAT]),-NAV_SLEW_RATE,NAV_SLEW_RATE);
+      GPS_angle[ROLL]   = (nav_rated[LON]*cos_yaw_x - nav_rated[LAT]*sin_yaw_y) /10;
+      GPS_angle[PITCH]  = (nav_rated[LON]*sin_yaw_y + nav_rated[LAT]*cos_yaw_x) /10;
+    #else
+      GPS_angle[ROLL]   = (nav[LON]*cos_yaw_x - nav[LAT]*sin_yaw_y) /10;
+      GPS_angle[PITCH]  = (nav[LON]*sin_yaw_y + nav[LAT]*cos_yaw_x) /10;
+    #endif
+  } else {
+    GPS_angle[ROLL]  = 0;
+    GPS_angle[PITCH] = 0;
+  }
+#endif
+
+
   if((rcData[THROTTLE] < 1030 || !ARMING_FLAG(ARMED))&& _PID_Test.pid_test_flag == 0)
   {
 	  Reset_All_PID_Integrator();

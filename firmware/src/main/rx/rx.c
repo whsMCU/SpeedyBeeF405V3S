@@ -632,6 +632,46 @@ void processRxModes(uint32_t currentTimeUs)
 	  DISABLE_FLIGHT_MODE(BARO_MODE);
 	}
 
+#ifdef USE_GPS1
+  static uint8_t GPSNavReset = 1;
+  if (STATE(GPS_FIX) && GPS_numSat >= 5 ) {
+    if (rcData[SC] >= 1500) {  // if both GPS_HOME & GPS_HOLD are checked => GPS_HOME is the priority
+      if (!FLIGHT_MODE(GPS_HOME_MODE))  {
+        ENABLE_FLIGHT_MODE(GPS_HOME_MODE);
+        DISABLE_FLIGHT_MODE(GPS_HOLD_MODE);
+        GPSNavReset = 0;
+        GPS_set_next_wp(&GPS_home[LAT],&GPS_home[LON]);
+        nav_mode    = NAV_MODE_WP;
+      }
+    } else {
+      DISABLE_FLIGHT_MODE(GPS_HOME_MODE);
+      if ((rcData[SB] >= 1950) && abs(rcCommand[ROLL])< AP_MODE && abs(rcCommand[PITCH]) < AP_MODE) {
+        if (!FLIGHT_MODE(GPS_HOLD_MODE)) {
+          ENABLE_FLIGHT_MODE(GPS_HOLD_MODE);
+          GPSNavReset = 0;
+          GPS_hold[LAT] = GPS_coord[LAT];
+          GPS_hold[LON] = GPS_coord[LON];
+          GPS_set_next_wp(&GPS_hold[LAT],&GPS_hold[LON]);
+          nav_mode = NAV_MODE_POSHOLD;
+        }
+      } else {
+        DISABLE_FLIGHT_MODE(GPS_HOLD_MODE);
+        // both boxes are unselected here, nav is reset if not already done
+        if (GPSNavReset == 0 ) {
+          GPSNavReset = 1;
+          GPS_reset_nav();
+        }
+      }
+    }
+  } else {
+    DISABLE_FLIGHT_MODE(GPS_HOME_MODE);
+    DISABLE_FLIGHT_MODE(GPS_HOLD_MODE);
+    #if !defined(I2C_GPS)
+      nav_mode = NAV_MODE_NONE;
+    #endif
+  }
+#endif
+
   if(rcData[SA] == 2000)
   {
     ENABLE_FLIGHT_MODE(HEADFREE_MODE);
