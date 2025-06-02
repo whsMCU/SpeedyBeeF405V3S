@@ -61,20 +61,20 @@ unsigned char M8N_UBX_CHKSUM_Check(unsigned char* data, unsigned char len)
 	return ((CK_A == data[len-2]) && (CK_B == data[len-1]));
 }
 
-void gpsUpdate(uint32_t currentTimeUs)
-{
-  if(m8n_rx_cplt_flag == 1)
-  {
-	  m8n_rx_cplt_flag = 0;
-
-	  if(M8N_UBX_CHKSUM_Check(&m8n_rx_buf[0], 36) == 1)
-	  {
-		  M8N_UBX_NAV_POSLLH_Parsing(&m8n_rx_buf[0], &posllh);
-
-		  //printf("LAT: %ld\tLON: %ld\tHeight: %ld\n", posllh.lat, posllh.lon, posllh.height);
-	  }
-  }
-}
+//void gpsUpdate(uint32_t currentTimeUs)
+//{
+//  if(m8n_rx_cplt_flag == 1)
+//  {
+//	  m8n_rx_cplt_flag = 0;
+//
+//	  if(M8N_UBX_CHKSUM_Check(&m8n_rx_buf[0], 36) == 1)
+//	  {
+//		  M8N_UBX_NAV_POSLLH_Parsing(&m8n_rx_buf[0], &posllh);
+//
+//		  //printf("LAT: %ld\tLON: %ld\tHeight: %ld\n", posllh.lat, posllh.lon, posllh.height);
+//	  }
+//  }
+//}
 
 void M8N_UBX_NAV_POSLLH_Parsing(unsigned char* data, M8N_UBX_NAV_POSLLH* posllh)
 {

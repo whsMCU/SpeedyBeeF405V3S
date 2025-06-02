@@ -35,7 +35,7 @@ unsigned char M8N_UBX_CHKSUM_Check(unsigned char* data, unsigned char len);
 void M8N_UBX_NAV_POSLLH_Parsing(unsigned char* data, M8N_UBX_NAV_POSLLH* posllh);
 void M8N_UART4_Initialization(void);
 void M8N_Initialization(void);
-void gpsUpdate(uint32_t currentTimeUs);
+//void gpsUpdate(uint32_t currentTimeUs);
 
 #ifdef __cplusplus
 }
