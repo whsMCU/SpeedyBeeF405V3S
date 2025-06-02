@@ -758,135 +758,135 @@ static void updateGpsIndicator(uint32_t currentTimeUs)
     }
 }
 
-void gpsUpdate(uint32_t currentTimeUs)
-{
-    static gpsState_e gpsStateDurationUs[GPS_STATE_COUNT];
-    uint32_t executeTimeUs;
-    gpsState_e gpsCurrentState = gpsData.state;
-
-    // read out available GPS bytes
-    if (uartIsConnected(_DEF_UART6)) {//gpsPort
-        while (uartAvailable(_DEF_UART6)) {
-            if (cmpTimeUs(micros(), currentTimeUs) > GPS_MAX_WAIT_DATA_RX) {
-                // Wait 1ms and come back
-                rescheduleTask(TASK_SELF, TASK_PERIOD_HZ(TASK_GPS_RATE_FAST));
-                return;
-            }
-            gpsNewData(uartRead(_DEF_UART6));//serialRead(gpsPort)
-        }
-        // Restore default task rate
-        rescheduleTask(TASK_SELF, TASK_PERIOD_HZ(TASK_GPS_RATE));
-   } else if (GPS_update & GPS_MSP_UPDATE) { // GPS data received via MSP
-        gpsSetState(GPS_STATE_RECEIVING_DATA);
-        onGpsNewData();
-        GPS_update &= ~GPS_MSP_UPDATE;
-    }
-
-#if DEBUG_UBLOX_INIT
-    debug[0] = gpsData.state;
-    debug[1] = gpsData.state_position;
-    debug[2] = gpsData.ackState;
-#endif
-
-    switch (gpsData.state) {
-        case GPS_STATE_UNKNOWN:
-        case GPS_STATE_INITIALIZED:
-            break;
-
-        case GPS_STATE_INITIALIZING:
-        case GPS_STATE_CHANGE_BAUD:
-        case GPS_STATE_CONFIGURE:
-            gpsInitHardware();
-            break;
-
-        case GPS_STATE_LOST_COMMUNICATION:
-            gpsData.timeouts++;
-            if (false) { //gpsConfig()->autoBaud
-                // try another rate
-                gpsData.baudrateIndex++;
-                gpsData.baudrateIndex %= GPS_INIT_ENTRIES;
-            }
-            gpsSol.numSat = 0;
-            DISABLE_STATE(GPS_FIX);
-            gpsSetState(GPS_STATE_INITIALIZING);
-            break;
-
-        case GPS_STATE_RECEIVING_DATA:
-            // check for no data/gps timeout/cable disconnection etc
-            if (millis() - gpsData.lastMessage > GPS_TIMEOUT) {
-                gpsSetState(GPS_STATE_LOST_COMMUNICATION);
-#ifdef USE_GPS_UBLOX
-            } else {
-                if (gpsConfig.autoConfig == GPS_AUTOCONFIG_ON) { // Only if autoconfig is enabled
-                    switch (gpsData.state_position) {
-                        case 0:
-                            if (!isConfiguratorConnected()) {
-                                if (gpsData.ubloxUseSAT) {
-                                    ubloxSetMessageRate(CLASS_NAV, MSG_SAT, 0); // disable SAT MSG
-                                } else {
-                                    ubloxSetMessageRate(CLASS_NAV, MSG_SVINFO, 0); // disable SVINFO MSG
-                                }
-                                gpsData.state_position = 1;
-                            }
-                            break;
-                        case 1:
-                            if (STATE(GPS_FIX) && (gpsConfig.gps_ublox_mode == UBLOX_DYNAMIC)) {
-                                ubloxSendNAV5Message(true);
-                                gpsData.state_position = 2;
-                            }
-                            if (isConfiguratorConnected()) {
-                                gpsData.state_position = 2;
-                            }
-                            break;
-                        case 2:
-                            if (isConfiguratorConnected()) {
-                                if (gpsData.ubloxUseSAT) {
-                                    ubloxSetMessageRate(CLASS_NAV, MSG_SAT, 5); // set SAT MSG rate (every 5 cycles)
-                                } else {
-                                    ubloxSetMessageRate(CLASS_NAV, MSG_SVINFO, 5); // set SVINFO MSG rate (every 5 cycles)
-                                }
-                                gpsData.state_position = 0;
-                            }
-                            break;
-                    }
-                }
-#endif //USE_GPS_UBLOX
-            }
-            break;
-    }
-
-    executeTimeUs = micros() - currentTimeUs;
-
-    if (executeTimeUs > gpsStateDurationUs[gpsCurrentState]) {
-        gpsStateDurationUs[gpsCurrentState] = executeTimeUs;
-    }
-    //schedulerSetNextStateTime(gpsStateDurationUs[gpsData.state]);
-
-    updateGpsIndicator(currentTimeUs);
-	if (!ARMING_FLAG(ARMED) && !gpsConfig.gps_set_home_point_once) {
-		DISABLE_STATE(GPS_FIX_HOME);
-	}
-
-    uint8_t minSats = 5;
-
-#if defined(USE_GPS_RESCUE)
-    if (gpsRescueIsConfigured()) {
-        updateGPSRescueState();
-        minSats = gpsRescueConfig()->minSats;
-    }
-#endif
-
-     static bool hasFix = false;
-     if (STATE(GPS_FIX)) {
-         if (gpsIsHealthy() && gpsSol.numSat >= minSats && !hasFix) {
-             // ready beep sequence on fix or requirements for gps rescue met.
-             //beeper(BEEPER_READY_BEEP);
-             hasFix = true;
-         }
-     } else {
-         hasFix = false;
-     }
-}
+//void gpsUpdate(uint32_t currentTimeUs)
+//{
+//    static gpsState_e gpsStateDurationUs[GPS_STATE_COUNT];
+//    uint32_t executeTimeUs;
+//    gpsState_e gpsCurrentState = gpsData.state;
+//
+//    // read out available GPS bytes
+//    if (uartIsConnected(_DEF_UART6)) {//gpsPort
+//        while (uartAvailable(_DEF_UART6)) {
+//            if (cmpTimeUs(micros(), currentTimeUs) > GPS_MAX_WAIT_DATA_RX) {
+//                // Wait 1ms and come back
+//                rescheduleTask(TASK_SELF, TASK_PERIOD_HZ(TASK_GPS_RATE_FAST));
+//                return;
+//            }
+//            gpsNewData(uartRead(_DEF_UART6));//serialRead(gpsPort)
+//        }
+//        // Restore default task rate
+//        rescheduleTask(TASK_SELF, TASK_PERIOD_HZ(TASK_GPS_RATE));
+//   } else if (GPS_update & GPS_MSP_UPDATE) { // GPS data received via MSP
+//        gpsSetState(GPS_STATE_RECEIVING_DATA);
+//        onGpsNewData();
+//        GPS_update &= ~GPS_MSP_UPDATE;
+//    }
+//
+//#if DEBUG_UBLOX_INIT
+//    debug[0] = gpsData.state;
+//    debug[1] = gpsData.state_position;
+//    debug[2] = gpsData.ackState;
+//#endif
+//
+//    switch (gpsData.state) {
+//        case GPS_STATE_UNKNOWN:
+//        case GPS_STATE_INITIALIZED:
+//            break;
+//
+//        case GPS_STATE_INITIALIZING:
+//        case GPS_STATE_CHANGE_BAUD:
+//        case GPS_STATE_CONFIGURE:
+//            gpsInitHardware();
+//            break;
+//
+//        case GPS_STATE_LOST_COMMUNICATION:
+//            gpsData.timeouts++;
+//            if (false) { //gpsConfig()->autoBaud
+//                // try another rate
+//                gpsData.baudrateIndex++;
+//                gpsData.baudrateIndex %= GPS_INIT_ENTRIES;
+//            }
+//            gpsSol.numSat = 0;
+//            DISABLE_STATE(GPS_FIX);
+//            gpsSetState(GPS_STATE_INITIALIZING);
+//            break;
+//
+//        case GPS_STATE_RECEIVING_DATA:
+//            // check for no data/gps timeout/cable disconnection etc
+//            if (millis() - gpsData.lastMessage > GPS_TIMEOUT) {
+//                gpsSetState(GPS_STATE_LOST_COMMUNICATION);
+//#ifdef USE_GPS_UBLOX
+//            } else {
+//                if (gpsConfig.autoConfig == GPS_AUTOCONFIG_ON) { // Only if autoconfig is enabled
+//                    switch (gpsData.state_position) {
+//                        case 0:
+//                            if (!isConfiguratorConnected()) {
+//                                if (gpsData.ubloxUseSAT) {
+//                                    ubloxSetMessageRate(CLASS_NAV, MSG_SAT, 0); // disable SAT MSG
+//                                } else {
+//                                    ubloxSetMessageRate(CLASS_NAV, MSG_SVINFO, 0); // disable SVINFO MSG
+//                                }
+//                                gpsData.state_position = 1;
+//                            }
+//                            break;
+//                        case 1:
+//                            if (STATE(GPS_FIX) && (gpsConfig.gps_ublox_mode == UBLOX_DYNAMIC)) {
+//                                ubloxSendNAV5Message(true);
+//                                gpsData.state_position = 2;
+//                            }
+//                            if (isConfiguratorConnected()) {
+//                                gpsData.state_position = 2;
+//                            }
+//                            break;
+//                        case 2:
+//                            if (isConfiguratorConnected()) {
+//                                if (gpsData.ubloxUseSAT) {
+//                                    ubloxSetMessageRate(CLASS_NAV, MSG_SAT, 5); // set SAT MSG rate (every 5 cycles)
+//                                } else {
+//                                    ubloxSetMessageRate(CLASS_NAV, MSG_SVINFO, 5); // set SVINFO MSG rate (every 5 cycles)
+//                                }
+//                                gpsData.state_position = 0;
+//                            }
+//                            break;
+//                    }
+//                }
+//#endif //USE_GPS_UBLOX
+//            }
+//            break;
+//    }
+//
+//    executeTimeUs = micros() - currentTimeUs;
+//
+//    if (executeTimeUs > gpsStateDurationUs[gpsCurrentState]) {
+//        gpsStateDurationUs[gpsCurrentState] = executeTimeUs;
+//    }
+//    //schedulerSetNextStateTime(gpsStateDurationUs[gpsData.state]);
+//
+//    updateGpsIndicator(currentTimeUs);
+//	if (!ARMING_FLAG(ARMED) && !gpsConfig.gps_set_home_point_once) {
+//		DISABLE_STATE(GPS_FIX_HOME);
+//	}
+//
+//    uint8_t minSats = 5;
+//
+//#if defined(USE_GPS_RESCUE)
+//    if (gpsRescueIsConfigured()) {
+//        updateGPSRescueState();
+//        minSats = gpsRescueConfig()->minSats;
+//    }
+//#endif
+//
+//     static bool hasFix = false;
+//     if (STATE(GPS_FIX)) {
+//         if (gpsIsHealthy() && gpsSol.numSat >= minSats && !hasFix) {
+//             // ready beep sequence on fix or requirements for gps rescue met.
+//             //beeper(BEEPER_READY_BEEP);
+//             hasFix = true;
+//         }
+//     } else {
+//         hasFix = false;
+//     }
+//}
 
 static void gpsNewData(uint16_t c)
 {

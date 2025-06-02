@@ -97,6 +97,8 @@
             this.label25 = new System.Windows.Forms.Label();
             this.label26 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.lb_althold = new System.Windows.Forms.Label();
+            this.label91 = new System.Windows.Forms.Label();
             this.label75 = new System.Windows.Forms.Label();
             this.label82 = new System.Windows.Forms.Label();
             this.lb_rangefinder = new System.Windows.Forms.Label();
@@ -138,7 +140,7 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.label79 = new System.Windows.Forms.Label();
             this.label57 = new System.Windows.Forms.Label();
-            this.label56 = new System.Windows.Forms.Label();
+            this.lb_sat_num = new System.Windows.Forms.Label();
             this.lb_fail = new System.Windows.Forms.Label();
             this.lb_armed = new System.Windows.Forms.Label();
             this.pictureBox6 = new System.Windows.Forms.PictureBox();
@@ -325,8 +327,7 @@
             this.bt_ReScan = new System.Windows.Forms.Button();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.tb_msp_error = new System.Windows.Forms.TextBox();
-            this.lb_althold = new System.Windows.Forms.Label();
-            this.label91 = new System.Windows.Forms.Label();
+            this.label56 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -647,6 +648,27 @@
             this.groupBox4.TabIndex = 65;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Telemetry passed_data";
+            // 
+            // lb_althold
+            // 
+            this.lb_althold.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_althold.Location = new System.Drawing.Point(251, 96);
+            this.lb_althold.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_althold.Name = "lb_althold";
+            this.lb_althold.Size = new System.Drawing.Size(76, 20);
+            this.lb_althold.TabIndex = 98;
+            this.lb_althold.Text = "-";
+            // 
+            // label91
+            // 
+            this.label91.AutoSize = true;
+            this.label91.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label91.Location = new System.Drawing.Point(163, 96);
+            this.label91.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label91.Name = "label91";
+            this.label91.Size = new System.Drawing.Size(62, 21);
+            this.label91.TabIndex = 97;
+            this.label91.Text = "AltHold";
             // 
             // label75
             // 
@@ -1066,9 +1088,10 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.label56);
             this.panel2.Controls.Add(this.label79);
             this.panel2.Controls.Add(this.label57);
-            this.panel2.Controls.Add(this.label56);
+            this.panel2.Controls.Add(this.lb_sat_num);
             this.panel2.Controls.Add(this.lb_fail);
             this.panel2.Controls.Add(this.lb_armed);
             this.panel2.Controls.Add(this.pictureBox6);
@@ -1110,15 +1133,15 @@
             this.label57.TabIndex = 89;
             this.label57.Text = "V";
             // 
-            // label56
+            // lb_sat_num
             // 
-            this.label56.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label56.Location = new System.Drawing.Point(4, 244);
-            this.label56.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label56.Name = "label56";
-            this.label56.Size = new System.Drawing.Size(64, 19);
-            this.label56.TabIndex = 87;
-            this.label56.Text = "-";
+            this.lb_sat_num.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_sat_num.Location = new System.Drawing.Point(27, 246);
+            this.lb_sat_num.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_sat_num.Name = "lb_sat_num";
+            this.lb_sat_num.Size = new System.Drawing.Size(35, 19);
+            this.lb_sat_num.TabIndex = 87;
+            this.lb_sat_num.Text = "-";
             // 
             // lb_fail
             // 
@@ -3128,26 +3151,15 @@
             this.tb_msp_error.TabIndex = 93;
             this.tb_msp_error.Text = "-";
             // 
-            // lb_althold
+            // label56
             // 
-            this.lb_althold.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_althold.Location = new System.Drawing.Point(251, 96);
-            this.lb_althold.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lb_althold.Name = "lb_althold";
-            this.lb_althold.Size = new System.Drawing.Size(76, 20);
-            this.lb_althold.TabIndex = 98;
-            this.lb_althold.Text = "-";
-            // 
-            // label91
-            // 
-            this.label91.AutoSize = true;
-            this.label91.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label91.Location = new System.Drawing.Point(163, 96);
-            this.label91.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label91.Name = "label91";
-            this.label91.Size = new System.Drawing.Size(62, 21);
-            this.label91.TabIndex = 97;
-            this.label91.Text = "AltHold";
+            this.label56.AutoSize = true;
+            this.label56.Location = new System.Drawing.Point(5, 228);
+            this.label56.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label56.Name = "label56";
+            this.label56.Size = new System.Drawing.Size(63, 12);
+            this.label56.TabIndex = 91;
+            this.label56.Text = "SAT_NUM";
             // 
             // Form1
             // 
@@ -3367,7 +3379,7 @@
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.Label label56;
+        private System.Windows.Forms.Label lb_sat_num;
         private System.Windows.Forms.Label label57;
         private System.Windows.Forms.Label lb_gyro_Z;
         private System.Windows.Forms.Label lb_gyro_Y;
@@ -3469,6 +3481,7 @@
         private System.Windows.Forms.RadioButton rb_alt_setpoint;
         private System.Windows.Forms.Label lb_althold;
         private System.Windows.Forms.Label label91;
+        private System.Windows.Forms.Label label56;
     }
 }
 

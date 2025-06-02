@@ -847,6 +847,108 @@ static void GPS_Passer(uint8_t c)
     break;
   }
 }
+
+
+
+#define UBX_SYNC_CHAR1 0xB5
+#define UBX_SYNC_CHAR2 0x62
+
+#define UBX_MAX_PAYLOAD 256
+
+typedef enum {
+    UBX_SYNC1,
+    UBX_SYNC2,
+    UBX_CLASS,
+    UBX_ID,
+    UBX_LENGTH1,
+    UBX_LENGTH2,
+    UBX_PAYLOAD,
+    UBX_CK_A,
+    UBX_CK_B
+} UbxParserState_t;
+
+typedef struct {
+    UbxParserState_t state;
+    uint8_t class;
+    uint8_t id;
+    uint16_t length;
+    uint16_t payload_counter;
+    uint8_t payload[UBX_MAX_PAYLOAD];
+    uint8_t ck_a;
+    uint8_t ck_b;
+} UbxParser_t;
+
+UbxParser_t ubxParser = {
+    .state = UBX_SYNC1
+};
+
+static void GPS_Passer_test(uint8_t c)
+{
+  switch (ubxParser.state) {
+      case UBX_SYNC1:
+          if (c == UBX_SYNC_CHAR1) ubxParser.state = UBX_SYNC2;
+          break;
+      case UBX_SYNC2:
+          if (c == UBX_SYNC_CHAR2) ubxParser.state = UBX_CLASS;
+          else ubxParser.state = UBX_SYNC1;
+          break;
+      case UBX_CLASS:
+          ubxParser.class = c;
+          ubxParser.ck_a = c;
+          ubxParser.ck_b = ubxParser.ck_a;
+          ubxParser.state = UBX_ID;
+          break;
+      case UBX_ID:
+          ubxParser.id = c;
+          ubxParser.ck_a += c;
+          ubxParser.ck_b += ubxParser.ck_a;
+          ubxParser.state = UBX_LENGTH1;
+          break;
+      case UBX_LENGTH1:
+          ubxParser.length = c;
+          ubxParser.ck_a += c;
+          ubxParser.ck_b += ubxParser.ck_a;
+          ubxParser.state = UBX_LENGTH2;
+          break;
+      case UBX_LENGTH2:
+          ubxParser.length |= ((uint16_t)c << 8);
+          ubxParser.ck_a += c;
+          ubxParser.ck_b += ubxParser.ck_a;
+          if (ubxParser.length > UBX_MAX_PAYLOAD) {
+              // 길이 에러 시 초기화
+              ubxParser.state = UBX_SYNC1;
+          } else if (ubxParser.length == 0) {
+              ubxParser.state = UBX_CK_A;
+          } else {
+              ubxParser.payload_counter = 0;
+              ubxParser.state = UBX_PAYLOAD;
+          }
+          break;
+      case UBX_PAYLOAD:
+          ubxParser.payload[ubxParser.payload_counter++] = c;
+          ubxParser.ck_a += c;
+          ubxParser.ck_b += ubxParser.ck_a;
+          if (ubxParser.payload_counter >= ubxParser.length) {
+              ubxParser.state = UBX_CK_A;
+          }
+          break;
+      case UBX_CK_A:
+          if (c == ubxParser.ck_a) {
+              ubxParser.state = UBX_CK_B;
+          } else {
+              ubxParser.state = UBX_SYNC1; // 체크섬 에러
+          }
+          break;
+      case UBX_CK_B:
+          if (c == ubxParser.ck_b) {
+              // 메시지 완성
+              Ubx_HandleMessage(ubxParser.class, ubxParser.id, ubxParser.payload, ubxParser.length);
+          }
+          ubxParser.state = UBX_SYNC1;
+          break;
+  }
+}
+
 static void GCS_Passer(uint8_t c)
 {
   static unsigned char cnt1 = 0;
@@ -1080,7 +1182,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	if(huart->Instance == USART6)
 	{
 		//GPS_Passer(rx_buf[_DEF_UART6][0]);
-    qbufferWrite(&ring_buffer[_DEF_UART6], (uint8_t *)&rx_buf[_DEF_UART6][0], 1);
+		GPS_Passer_test(rx_buf[_DEF_UART6][0]);
+    //qbufferWrite(&ring_buffer[_DEF_UART6], (uint8_t *)&rx_buf[_DEF_UART6][0], 1);
 		HAL_UART_Receive_IT(&huart6, (uint8_t *)&rx_buf[_DEF_UART6][0], 1);
 	}
 }

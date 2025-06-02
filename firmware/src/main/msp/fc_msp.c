@@ -494,6 +494,8 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU32(dst, (int32_t)(yaw_heading_reference) * 1000.0f);
 
           sbufWriteU32(dst, AltHold);
+
+          sbufWriteU16(dst, sat.numSvs);
         }
         break;
 
