@@ -876,6 +876,7 @@ typedef struct {
     uint8_t payload[UBX_MAX_PAYLOAD];
     uint8_t ck_a;
     uint8_t ck_b;
+    uint32_t Ubx_Error;
 } UbxParser_t;
 
 UbxParser_t ubxParser = {
@@ -936,13 +937,16 @@ static void GPS_Passer_test(uint8_t c)
           if (c == ubxParser.ck_a) {
               ubxParser.state = UBX_CK_B;
           } else {
-              ubxParser.state = UBX_SYNC1; // 체크섬 에러
+            ubxParser.Ubx_Error++;
+            ubxParser.state = UBX_SYNC1; // 체크섬 에러
           }
           break;
       case UBX_CK_B:
           if (c == ubxParser.ck_b) {
               // 메시지 완성
               Ubx_HandleMessage(ubxParser.class, ubxParser.id, ubxParser.payload, ubxParser.length);
+          } else {
+            ubxParser.Ubx_Error++;
           }
           ubxParser.state = UBX_SYNC1;
           break;

@@ -37,6 +37,22 @@ void M8N_UART4_Initialization(void);
 void M8N_Initialization(void);
 void gpsUpdate(uint32_t currentTimeUs);
 
+typedef struct {
+  uint8_t nav_mode;
+  int32_t  GPS_coord[2];
+  int32_t  GPS_home[2];
+  int32_t  GPS_hold[2];
+  uint8_t  GPS_numSat;
+  uint16_t GPS_distanceToHome;                          // distance to home  - unit: meter
+  int16_t  GPS_directionToHome;                         // direction to home - unit: degree
+  uint16_t GPS_altitude;                                // GPS altitude      - unit: meter
+  uint16_t GPS_speed;                                   // GPS speed         - unit: cm/s
+  uint8_t  GPS_update;                              // a binary toogle to distinct a GPS position update
+  int16_t  GPS_angle[2];                      // the angles that must be applied for GPS correction
+  uint16_t GPS_ground_course;                       //                   - unit: degree*10
+} GpsNav_t;
+
+extern GpsNav_t GpsNav;
 
 // NAV-POSLLH 구조체 (위치정보)
 typedef struct {
@@ -71,8 +87,20 @@ typedef struct {
     UbxNavSat_SV_t sv[MAX_SATS];
 } UbxNavSat_t;
 
+typedef struct {
+    uint32_t iTOW;     // GPS Time of Week in ms
+    uint8_t gpsFix;    // 0: No Fix, 2: 2D Fix, 3: 3D Fix, 5: Time only
+    uint8_t flags;     // Fix flags
+    uint8_t fixStat;   // Fix status info
+    uint8_t flags2;    // Additional flags
+    uint32_t ttff;     // Time to first fix (ms)
+    uint32_t msss;     // Time since startup/reset to last fix (ms)
+} UbxNavStatus_t;
+
 extern UbxNavPosllh_t posllh;
 extern UbxNavSat_t sat;
+
+extern UbxNavStatus_t nav_status;
 
 void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t length);
 

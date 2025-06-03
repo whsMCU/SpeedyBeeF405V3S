@@ -6,6 +6,8 @@
  */
 
 #include "M8N.h"
+#include "drivers/gps/gps.h"
+#include "fc/runtime_config.h"
 
 M8N_UBX_NAV_POSLLH posllh_test;
 
@@ -26,6 +28,11 @@ const unsigned char UBX_CFG_MSG_POSLLH[] = {
 const unsigned char UBX_CFG_MSG_SAT[] = {
   0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0x01, 0x35, 0x00, 0x01,
   0x00, 0x00, 0x00, 0x00, 0x46, 0x23
+};
+
+const unsigned char UBX_CFG_MSG_STATUS[] = {
+  0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0x01, 0x03, 0x00, 0x01,
+  0x00, 0x00, 0x00, 0x00, 0x14, 0xC5
 };
 
 const unsigned char UBX_CFG_RATE[] = {
@@ -50,9 +57,27 @@ void M8N_Initialization(void)
 	HAL_Delay(100);
   uartWrite(_DEF_UART6, (uint8_t*)&UBX_CFG_MSG_SAT[0], sizeof(UBX_CFG_MSG_SAT));
   HAL_Delay(100);
+  uartWrite(_DEF_UART6, (uint8_t*)&UBX_CFG_MSG_STATUS[0], sizeof(UBX_CFG_MSG_SAT));
+  HAL_Delay(100);
 	uartWrite(_DEF_UART6, (uint8_t*)&UBX_CFG_RATE[0], sizeof(UBX_CFG_RATE));
 	HAL_Delay(100);
 	uartWrite(_DEF_UART6, (uint8_t*)&UBX_CFG_CFG[0], sizeof(UBX_CFG_CFG));
+}
+
+void gpsUpdate(uint32_t currentTimeUs)
+{
+//  if(m8n_rx_cplt_flag == 1)
+//  {
+//    m8n_rx_cplt_flag = 0;
+//
+//    if(M8N_UBX_CHKSUM_Check(&m8n_rx_buf[0], 36) == 1)
+//    {
+//      M8N_UBX_NAV_POSLLH_Parsing(&m8n_rx_buf[0], &posllh_test);
+//
+//      //printf("LAT: %ld\tLON: %ld\tHeight: %ld\n", posllh.lat, posllh.lon, posllh.height);
+//    }
+//  }
+
 }
 
 unsigned char M8N_UBX_CHKSUM_Check(unsigned char* data, unsigned char len)
@@ -68,25 +93,29 @@ unsigned char M8N_UBX_CHKSUM_Check(unsigned char* data, unsigned char len)
 	return ((CK_A == data[len-2]) && (CK_B == data[len-1]));
 }
 
-void gpsUpdate(uint32_t currentTimeUs)
-{
-  if(m8n_rx_cplt_flag == 1)
-  {
-	  m8n_rx_cplt_flag = 0;
+enum {
+    FIX_NONE = 0,
+    FIX_DEAD_RECKONING = 1,
+    FIX_2D = 2,
+    FIX_3D = 3,
+    FIX_GPS_DEAD_RECKONING = 4,
+    FIX_TIME = 5
+} ubx_nav_fix_type;
 
-	  if(M8N_UBX_CHKSUM_Check(&m8n_rx_buf[0], 36) == 1)
-	  {
-		  M8N_UBX_NAV_POSLLH_Parsing(&m8n_rx_buf[0], &posllh_test);
+enum {
+    NAV_STATUS_FIX_VALID = 1,
+    NAV_STATUS_TIME_WEEK_VALID = 4,
+    NAV_STATUS_TIME_SECOND_VALID = 8
+} ubx_nav_status_bit;
 
-		  //printf("LAT: %ld\tLON: %ld\tHeight: %ld\n", posllh.lat, posllh.lon, posllh.height);
-	  }
-  }
-}
+GpsNav_t GpsNav;
 
 UbxNavPosllh_t posllh;
 UbxNavSat_t sat;
+UbxNavStatus_t nav_status;
+static bool next_fix;
 
-uint32_t posllh_dt, posllh_tmp, sat_dt, sat_tmp;
+uint32_t posllh_dt, posllh_tmp, sat_dt, sat_tmp, status_dt, status_tmp;
 
 void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t length) {
     if (cls == 0x01 && id == 0x02) {  // NAV-POSLLH
@@ -106,8 +135,7 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
         posllh.lon_deg = posllh.lon / 1e7f;
         posllh.lat_deg = posllh.lat / 1e7f;
         // 여기서 드론 위치 갱신 또는 출력 등 처리
-    }
-    else if (cls == 0x01 && id == 0x35) { // NAV-SAT
+    } else if (cls == 0x01 && id == 0x35) { // NAV-SAT
         if (length < 8) return;
 
         sat_dt = micros() - sat_tmp;
@@ -129,6 +157,25 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
             p += 12;
             // 여기서 위성 정보 활용 가능 (신호 세기, PRN 등)
         }
+    } else if (cls == 0x01 && id == 0x03) { // NAV-STATUS
+        if (length < 16) return;
+
+        status_dt = micros() - status_tmp;
+        status_tmp = micros();
+
+        nav_status.iTOW   = payload[0] | (payload[1]<<8) | (payload[2]<<16) | (payload[3]<<24);
+        nav_status.gpsFix = payload[4];
+        nav_status.flags  = payload[5];
+        nav_status.fixStat = payload[6];
+        nav_status.flags2  = payload[7];
+        nav_status.ttff    = payload[8] | (payload[9]<<8) | (payload[10]<<16) | (payload[11]<<24);
+        nav_status.msss    = payload[12] | (payload[13]<<8) | (payload[14]<<16) | (payload[15]<<24);
+
+        next_fix = (nav_status.flags & NAV_STATUS_FIX_VALID) && (nav_status.gpsFix == FIX_3D);
+        if (!next_fix){
+          DISABLE_STATE(GPS_FIX);
+        }
+        gpsSetFixState(next_fix);
     }
 }
 
