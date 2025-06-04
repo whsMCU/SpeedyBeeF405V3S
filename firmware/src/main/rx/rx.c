@@ -37,6 +37,8 @@
 //#include "config/config_reset.h"
 //#include "config/feature.h"
 
+#include "drivers/gps/M8N.h"
+
 #include "fc/rc_controls.h"
 #include "fc/rc_adjustments.h"
 //#include "fc/rc_modes.h"
@@ -634,14 +636,14 @@ void processRxModes(uint32_t currentTimeUs)
 
 #ifdef USE_GPS1
   static uint8_t GPSNavReset = 1;
-  if (STATE(GPS_FIX) && GPS_numSat >= 5 ) {
+  if (STATE(GPS_FIX) && GpsNav.GPS_numSat >= 6 ) {
     if (rcData[SC] >= 1500) {  // if both GPS_HOME & GPS_HOLD are checked => GPS_HOME is the priority
       if (!FLIGHT_MODE(GPS_HOME_MODE))  {
         ENABLE_FLIGHT_MODE(GPS_HOME_MODE);
         DISABLE_FLIGHT_MODE(GPS_HOLD_MODE);
         GPSNavReset = 0;
-        GPS_set_next_wp(&GPS_home[LAT],&GPS_home[LON]);
-        nav_mode    = NAV_MODE_WP;
+        GPS_set_next_wp(&GpsNav.GPS_home[LAT],&GpsNav.GPS_home[LON]);
+        GpsNav.nav_mode    = NAV_MODE_WP;
       }
     } else {
       DISABLE_FLIGHT_MODE(GPS_HOME_MODE);
@@ -649,9 +651,9 @@ void processRxModes(uint32_t currentTimeUs)
         if (!FLIGHT_MODE(GPS_HOLD_MODE)) {
           ENABLE_FLIGHT_MODE(GPS_HOLD_MODE);
           GPSNavReset = 0;
-          GPS_hold[LAT] = GPS_coord[LAT];
-          GPS_hold[LON] = GPS_coord[LON];
-          GPS_set_next_wp(&GPS_hold[LAT],&GPS_hold[LON]);
+          GpsNav.GPS_hold[LAT] = GpsNav.GPS_coord[LAT];
+          GpsNav.GPS_hold[LON] = GpsNav.GPS_coord[LON];
+          GPS_set_next_wp(&GpsNav.GPS_hold[LAT],&GpsNav.GPS_hold[LON]);
           nav_mode = NAV_MODE_POSHOLD;
         }
       } else {

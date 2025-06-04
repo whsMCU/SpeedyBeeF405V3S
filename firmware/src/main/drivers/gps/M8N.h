@@ -8,6 +8,21 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
+typedef enum {
+  LON,
+  LAT
+} gps_axis_e;
+
+typedef enum {
+  NAV_MODE_NONE,
+  NAV_MODE_POSHOLD,
+  NAV_MODE_WP
+} nav_mode_e;
+
+/************************        AP FlightMode        **********************************/
+/* Temporarily Disables GPS_HOLD_MODE to be able to make it possible to adjust the Hold-position when moving the sticks.*/
+#define AP_MODE 40  // Create a deadspan for GPS.
+
 typedef struct _M8N_UBX_NAV_POSLLH
 {
 	unsigned char CLASS;
@@ -50,6 +65,8 @@ typedef struct {
   uint8_t  GPS_update;                              // a binary toogle to distinct a GPS position update
   int16_t  GPS_angle[2];                      // the angles that must be applied for GPS correction
   uint16_t GPS_ground_course;                       //                   - unit: degree*10
+  int16_t nav_takeoff_bearing;
+  int16_t nav[2];
 } GpsNav_t;
 
 extern GpsNav_t GpsNav;
@@ -103,6 +120,9 @@ extern UbxNavSat_t sat;
 extern UbxNavStatus_t nav_status;
 
 void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t length);
+
+void GPS_calc_longitude_scaling(int32_t lat);
+void GPS_reset_home_position(void);
 
 #ifdef __cplusplus
 }

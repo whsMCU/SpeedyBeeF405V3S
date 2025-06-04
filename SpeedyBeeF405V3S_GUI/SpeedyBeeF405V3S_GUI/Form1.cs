@@ -241,7 +241,7 @@ namespace SpeedyBeeF405V3S_GUI
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
 
-                log = "DateTime, Roll, Pitch, Yaw, Alt, RollSetPoint, PitchSetPoint, Yaw SetPoint, Thorttle, yaw_heading_reference, altHold, lattitude, longitude, Sat_Num, Debug[0], Debug[1], Debug[2], Debug[3]";
+                log = "DateTime, Roll, Pitch, Yaw, Alt, RollSetPoint, PitchSetPoint, Yaw SetPoint, Thorttle, yaw_heading_reference, altHold, lattitude, longitude, Sat_Num, gps_fix, Debug[0], Debug[1], Debug[2], Debug[3]";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
             }
@@ -270,7 +270,7 @@ namespace SpeedyBeeF405V3S_GUI
                 data[1] /= 10;
                 data[4] /= 10;
                 data[5] /= 10;
-                string log = $"{DateTime.Now:HH:mm:ss.fff}, {data[0]}, {data[1]}, {data[2]}, {data[3]}, {data[4]}, {data[5]}, {data[6]}, {data[7]}, {data[41]}, {data[42]}, {data[8]}, {data[9]}, {data[43]},{data[18]}, {data[19]}, {data[20]}, {data[21]}";
+                string log = $"{DateTime.Now:HH:mm:ss.fff}, {data[0]}, {data[1]}, {data[2]}, {data[3]}, {data[4]}, {data[5]}, {data[6]}, {data[7]}, {data[41]}, {data[42]}, {data[8]}, {data[9]}, {data[43]}, {data[44]}, {data[18]}, {data[19]}, {data[20]}, {data[21]}";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
             }
@@ -1058,6 +1058,28 @@ namespace SpeedyBeeF405V3S_GUI
             if (error == 4) textBox3.Text = "RX_SWITCH";
             if (error == 8) textBox3.Text = "Battery LOW";
             //if (error == 2) textBox3.Text = "Program loop time";
+
+            if ((passed_data[43] > 6) && (passed_data[44] == 1)) // GPS_Num > 6 && GPS_FIX == 1
+            {
+                pictureBox4.Visible = false;
+                pictureBox5.Visible = false;
+                pictureBox6.Visible = true;
+
+            }
+            else if (passed_data[43] > 3) // GPS_Num > 3
+            {
+                pictureBox4.Visible = false;
+                pictureBox5.Visible = true;
+                pictureBox6.Visible = false;
+
+            }
+            else
+            {
+                pictureBox4.Visible = true;
+                pictureBox5.Visible = false;
+                pictureBox6.Visible = false;
+
+            }
 
             if (battery_bar_level > 164) battery_bar_level = 124;
             if (battery_bar_level < 110) battery_bar_level = 85;
@@ -1932,6 +1954,8 @@ namespace SpeedyBeeF405V3S_GUI
 
             passed_data[43] = BitConverter.ToUInt16(payload, 126);  // GPS_SAT_NUM
 
+            passed_data[44] = BitConverter.ToUInt16(payload, 128);  // GPS_FIX
+
             if (cb_record.Checked == true)
             {
                 Check_Data_Log(PID_log_filePath, passed_data);
@@ -2105,6 +2129,8 @@ namespace SpeedyBeeF405V3S_GUI
             lb_althold.Text = passed_data[42].ToString();
 
             lb_sat_num.Text = passed_data[43].ToString();
+
+            lb_gps_fix.Text = passed_data[44].ToString();
 
             if (rb_roll.Checked == true || rb_pitch.Checked == true ||
                rb_yaw.Checked == true || rb_roll_pitch.Checked == true ||

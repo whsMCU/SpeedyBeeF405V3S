@@ -65,7 +65,6 @@ static char *gpsPacketLogChar = gpsPacketLog;
 // **********************
 // GPS
 // **********************
-int32_t GPS_home[2];
 uint16_t GPS_distanceToHome;        // distance to home point in meters
 int16_t GPS_directionToHome;        // direction to home or hol point in degrees
 uint32_t GPS_distanceFlownInCm;     // distance flown since armed in centimeters

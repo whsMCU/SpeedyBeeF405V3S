@@ -443,8 +443,8 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU16(dst, (int16_t)(rcCommand[YAW]*10));
           sbufWriteU16(dst, (rcData[THROTTLE]*10));
 
-          sbufWriteU32(dst, posllh.lat);
-          sbufWriteU32(dst, posllh.lon);
+          sbufWriteU32(dst, GpsNav.GPS_coord[LAT]);
+          sbufWriteU32(dst, GpsNav.GPS_coord[LON]);
 
           sbufWriteU16(dst, getBatteryAverageCellVoltage());
 
@@ -495,7 +495,9 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
 
           sbufWriteU32(dst, AltHold);
 
-          sbufWriteU16(dst, sat.numSvs);
+          sbufWriteU16(dst, GpsNav.GPS_numSat);
+
+          sbufWriteU16(dst, STATE(GPS_FIX));
         }
         break;
 

@@ -143,6 +143,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 	imu_roll = (float)attitude.values.roll/10;
 	imu_pitch = (float)attitude.values.pitch/10;
 	imu_yaw = (float)attitude.values.yaw/10;
+	//heading = attitude.values.yaw/10;
 
   static timeUs_t previousUpdateTimeUs;
   float dT = (float)US2S(currentTimeUs - previousUpdateTimeUs);
@@ -153,7 +154,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   //debug[3] = _PITCH.in.result;
 
 #ifdef USE_GPS1
-  if ( (FLIGHT_MODE(GPS_HOME_MODE) || FLIGHT_MODE(GPS_HOLD_MODE)) && STATE(GPS_FIX) ) {
+  if ( (FLIGHT_MODE(GPS_HOME_MODE) || FLIGHT_MODE(GPS_HOLD_MODE)) && STATE(GPS_FIX_HOME) ) {
     float sin_yaw_y = sin(heading*0.0174532925f);
     float cos_yaw_x = cos(heading*0.0174532925f);
     #if defined(NAV_SLEW_RATE)
@@ -162,8 +163,8 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
       GPS_angle[ROLL]   = (nav_rated[LON]*cos_yaw_x - nav_rated[LAT]*sin_yaw_y) /10;
       GPS_angle[PITCH]  = (nav_rated[LON]*sin_yaw_y + nav_rated[LAT]*cos_yaw_x) /10;
     #else
-      GPS_angle[ROLL]   = (nav[LON]*cos_yaw_x - nav[LAT]*sin_yaw_y) /10;
-      GPS_angle[PITCH]  = (nav[LON]*sin_yaw_y + nav[LAT]*cos_yaw_x) /10;
+      GPS_angle[ROLL]   = (GpsNav.nav[LON]*cos_yaw_x - GpsNav.nav[LAT]*sin_yaw_y) /10;
+      GPS_angle[PITCH]  = (GpsNav.nav[LON]*sin_yaw_y + GpsNav.nav[LAT]*cos_yaw_x) /10;
     #endif
   } else {
     GPS_angle[ROLL]  = 0;

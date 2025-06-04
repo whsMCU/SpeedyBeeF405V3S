@@ -8,11 +8,8 @@
 #include "M8N.h"
 #include "drivers/gps/gps.h"
 #include "fc/runtime_config.h"
-
-M8N_UBX_NAV_POSLLH posllh_test;
-
-uint8_t m8n_rx_buf[36];
-uint8_t m8n_rx_cplt_flag = 0;
+#include "common/maths.h"
+#include "flight/imu.h"
 
 const unsigned char UBX_CFG_PRT[] = {
 	0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00,
@@ -62,35 +59,16 @@ void M8N_Initialization(void)
 	uartWrite(_DEF_UART6, (uint8_t*)&UBX_CFG_RATE[0], sizeof(UBX_CFG_RATE));
 	HAL_Delay(100);
 	uartWrite(_DEF_UART6, (uint8_t*)&UBX_CFG_CFG[0], sizeof(UBX_CFG_CFG));
+
+	GpsNav.nav_mode = NAV_MODE_NONE;
 }
 
 void gpsUpdate(uint32_t currentTimeUs)
 {
-//  if(m8n_rx_cplt_flag == 1)
-//  {
-//    m8n_rx_cplt_flag = 0;
-//
-//    if(M8N_UBX_CHKSUM_Check(&m8n_rx_buf[0], 36) == 1)
-//    {
-//      M8N_UBX_NAV_POSLLH_Parsing(&m8n_rx_buf[0], &posllh_test);
-//
-//      //printf("LAT: %ld\tLON: %ld\tHeight: %ld\n", posllh.lat, posllh.lon, posllh.height);
-//    }
-//  }
-
-}
-
-unsigned char M8N_UBX_CHKSUM_Check(unsigned char* data, unsigned char len)
-{
-	unsigned char CK_A = 0, CK_B = 0;
-
-	for(int i=2;i<len-2;i++)
-	{
-		CK_A = CK_A + data[i];
-		CK_B = CK_B + CK_A;
-	}
-
-	return ((CK_A == data[len-2]) && (CK_B == data[len-1]));
+  if(FLIGHT_MODE(GPS_HOME_MODE) && ARMING_FLAG(ARMED))    //if home is not set set home position to WP#0 and activate it
+  {
+    GPS_reset_home_position();
+  }
 }
 
 enum {
@@ -135,6 +113,8 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
         posllh.lon_deg = posllh.lon / 1e7f;
         posllh.lat_deg = posllh.lat / 1e7f;
         // 여기서 드론 위치 갱신 또는 출력 등 처리
+        GpsNav.GPS_coord[LON] = posllh.lon;
+        GpsNav.GPS_coord[LAT] = posllh.lat;
     } else if (cls == 0x01 && id == 0x35) { // NAV-SAT
         if (length < 8) return;
 
@@ -157,6 +137,8 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
             p += 12;
             // 여기서 위성 정보 활용 가능 (신호 세기, PRN 등)
         }
+        GpsNav.GPS_numSat = sat.numSvs;
+
     } else if (cls == 0x01 && id == 0x03) { // NAV-STATUS
         if (length < 16) return;
 
@@ -196,4 +178,25 @@ void M8N_UBX_NAV_POSLLH_Parsing(unsigned char* data, M8N_UBX_NAV_POSLLH* posllh)
 
 //	posllh->lon_f64 = posllh->lon / 10000000.;
 //	posllh->lat_f64 = posllh->lat / 10000000.;
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+// this is used to offset the shrinking longitude as we go towards the poles
+// It's ok to calculate this once per waypoint setting, since it changes a little within the reach of a multicopter
+//
+float GPS_scaleLonDown = 1.0f;  // this is used to offset the shrinking longitude as we go towards the poles
+void GPS_calc_longitude_scaling(int32_t lat) {
+  float rads = (fabsf((float)lat) / 10000000.0f) * 0.0174532925f;
+  GPS_scaleLonDown = cos_approx(rads);
+}
+
+void GPS_reset_home_position(void) {
+  if (STATE(GPS_FIX) && GpsNav.GPS_numSat >= 5) {
+    GpsNav.GPS_home[LAT] = GpsNav.GPS_coord[LAT];
+    GpsNav.GPS_home[LON] = GpsNav.GPS_coord[LON];
+    GPS_calc_longitude_scaling(GpsNav.GPS_coord[LAT]);  //need an initial value for distance and bearing calc
+    GpsNav.nav_takeoff_bearing = attitude.values.yaw/10;;             //save takeoff heading
+    //Set ground altitude
+    ENABLE_STATE(GPS_FIX_HOME);
+  }
 }

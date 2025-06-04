@@ -138,6 +138,8 @@
             this.label36 = new System.Windows.Forms.Label();
             this.textBox11 = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.lb_gps_fix = new System.Windows.Forms.Label();
+            this.label56 = new System.Windows.Forms.Label();
             this.label79 = new System.Windows.Forms.Label();
             this.label57 = new System.Windows.Forms.Label();
             this.lb_sat_num = new System.Windows.Forms.Label();
@@ -327,7 +329,6 @@
             this.bt_ReScan = new System.Windows.Forms.Button();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.tb_msp_error = new System.Windows.Forms.TextBox();
-            this.label56 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -1088,6 +1089,7 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.lb_gps_fix);
             this.panel2.Controls.Add(this.label56);
             this.panel2.Controls.Add(this.label79);
             this.panel2.Controls.Add(this.label57);
@@ -1111,6 +1113,26 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(71, 596);
             this.panel2.TabIndex = 84;
+            // 
+            // lb_gps_fix
+            // 
+            this.lb_gps_fix.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_gps_fix.Location = new System.Drawing.Point(23, 328);
+            this.lb_gps_fix.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_gps_fix.Name = "lb_gps_fix";
+            this.lb_gps_fix.Size = new System.Drawing.Size(35, 19);
+            this.lb_gps_fix.TabIndex = 92;
+            this.lb_gps_fix.Text = "-";
+            // 
+            // label56
+            // 
+            this.label56.AutoSize = true;
+            this.label56.Location = new System.Drawing.Point(5, 228);
+            this.label56.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label56.Name = "label56";
+            this.label56.Size = new System.Drawing.Size(63, 12);
+            this.label56.TabIndex = 91;
+            this.label56.Text = "SAT_NUM";
             // 
             // label79
             // 
@@ -1146,7 +1168,7 @@
             // lb_fail
             // 
             this.lb_fail.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_fail.Location = new System.Drawing.Point(3, 328);
+            this.lb_fail.Location = new System.Drawing.Point(4, 369);
             this.lb_fail.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_fail.Name = "lb_fail";
             this.lb_fail.Size = new System.Drawing.Size(64, 19);
@@ -1301,12 +1323,13 @@
             // 
             // label15
             // 
-            this.label15.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(9, 309);
+            this.label15.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label15.Location = new System.Drawing.Point(6, 309);
             this.label15.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(51, 19);
+            this.label15.Size = new System.Drawing.Size(60, 19);
             this.label15.TabIndex = 42;
+            this.label15.Text = "GPS_FIX";
             this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lb_debug0
@@ -3151,16 +3174,6 @@
             this.tb_msp_error.TabIndex = 93;
             this.tb_msp_error.Text = "-";
             // 
-            // label56
-            // 
-            this.label56.AutoSize = true;
-            this.label56.Location = new System.Drawing.Point(5, 228);
-            this.label56.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label56.Name = "label56";
-            this.label56.Size = new System.Drawing.Size(63, 12);
-            this.label56.TabIndex = 91;
-            this.label56.Text = "SAT_NUM";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -3482,6 +3495,7 @@
         private System.Windows.Forms.Label lb_althold;
         private System.Windows.Forms.Label label91;
         private System.Windows.Forms.Label label56;
+        private System.Windows.Forms.Label lb_gps_fix;
     }
 }
 
