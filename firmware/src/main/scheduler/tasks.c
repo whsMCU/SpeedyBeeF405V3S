@@ -42,8 +42,6 @@
 #include "drivers/gps/gps.h"
 #include "drivers/motor.h"
 
-#include "drivers/gps/M8N.h"
-
 #include "flight/pid.h"
 
 #include "scheduler/scheduler.h"

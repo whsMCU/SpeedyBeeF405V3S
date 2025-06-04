@@ -37,7 +37,7 @@
 //#include "config/config_reset.h"
 //#include "config/feature.h"
 
-#include "drivers/gps/M8N.h"
+#include "drivers/gps/gps.h"
 
 #include "fc/rc_controls.h"
 #include "fc/rc_adjustments.h"
@@ -654,7 +654,7 @@ void processRxModes(uint32_t currentTimeUs)
           GpsNav.GPS_hold[LAT] = GpsNav.GPS_coord[LAT];
           GpsNav.GPS_hold[LON] = GpsNav.GPS_coord[LON];
           GPS_set_next_wp(&GpsNav.GPS_hold[LAT],&GpsNav.GPS_hold[LON]);
-          nav_mode = NAV_MODE_POSHOLD;
+          GpsNav.nav_mode = NAV_MODE_POSHOLD;
         }
       } else {
         DISABLE_FLIGHT_MODE(GPS_HOLD_MODE);
@@ -668,9 +668,8 @@ void processRxModes(uint32_t currentTimeUs)
   } else {
     DISABLE_FLIGHT_MODE(GPS_HOME_MODE);
     DISABLE_FLIGHT_MODE(GPS_HOLD_MODE);
-    #if !defined(I2C_GPS)
-      nav_mode = NAV_MODE_NONE;
-    #endif
+
+    GpsNav.nav_mode = NAV_MODE_NONE;
   }
 #endif
 

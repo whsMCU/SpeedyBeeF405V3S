@@ -54,7 +54,7 @@ void statsConfig_Init(void)
 }
 
 #ifdef USE_GPS
-    #define DISTANCE_FLOWN_CM (GPS_distanceFlownInCm)
+    #define DISTANCE_FLOWN_CM (GpsNav.GPS_distanceFlownInCm)
 #else
     #define DISTANCE_FLOWN_CM (0)
 #endif

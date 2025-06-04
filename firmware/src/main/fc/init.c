@@ -18,6 +18,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <gps.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
@@ -36,8 +37,6 @@
 //#include "config/config.h"
 //#include "config/feature.h"
 #include "config/sdcard.h"
-
-#include "drivers/gps/M8N.h"
 
 #include "drivers/accgyro/accgyro.h"
 #include "drivers/accgyro/accgyro_spi_bmi270.h"
@@ -108,7 +107,7 @@
 
 #include "flight/pid.h"
 
-#include "drivers/gps/gps.h"
+//#include "drivers/gps/gps.h"
 #include "drivers/motor.h"
 //#include "drivers/pwm_output.h"
 #include "drivers/osd/osd.h"
@@ -185,8 +184,7 @@ void init(void)
     rxInit();
 
 #ifdef USE_GPS
-    //gpsInit();
-    M8N_Initialization();
+    gpsInit();
 #endif
 
 //#ifdef USE_ACC
@@ -247,7 +245,7 @@ void Param_Config_Init(void)
 	statsConfig_Init();
 	motorConfig_Init();
 #ifdef USE_GPS
-	gpsConfig_Init();
+	//gpsConfig_Init();
 #endif
 
 #ifdef USE_OPFLOW

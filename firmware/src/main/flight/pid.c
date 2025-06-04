@@ -24,6 +24,8 @@
 
 #include "build/debug.h"
 
+#include "drivers/gps/gps.h"
+
 #include "pid.h"
 
 #include "sensors/gyro.h"
@@ -143,7 +145,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 	imu_roll = (float)attitude.values.roll/10;
 	imu_pitch = (float)attitude.values.pitch/10;
 	imu_yaw = (float)attitude.values.yaw/10;
-	//heading = attitude.values.yaw/10;
+	heading = attitude.values.yaw/10;
 
   static timeUs_t previousUpdateTimeUs;
   float dT = (float)US2S(currentTimeUs - previousUpdateTimeUs);
@@ -158,17 +160,17 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     float sin_yaw_y = sin(heading*0.0174532925f);
     float cos_yaw_x = cos(heading*0.0174532925f);
     #if defined(NAV_SLEW_RATE)
-      nav_rated[LON]   += constrain(wrap_18000(nav[LON]-nav_rated[LON]),-NAV_SLEW_RATE,NAV_SLEW_RATE);
-      nav_rated[LAT]   += constrain(wrap_18000(nav[LAT]-nav_rated[LAT]),-NAV_SLEW_RATE,NAV_SLEW_RATE);
-      GPS_angle[ROLL]   = (nav_rated[LON]*cos_yaw_x - nav_rated[LAT]*sin_yaw_y) /10;
-      GPS_angle[PITCH]  = (nav_rated[LON]*sin_yaw_y + nav_rated[LAT]*cos_yaw_x) /10;
+      GpsNav.nav_rated[LON]   += constrain(wrap_18000(GpsNav.nav[LON]-GpsNav.nav_rated[LON]),-NAV_SLEW_RATE,NAV_SLEW_RATE);
+      GpsNav.nav_rated[LAT]   += constrain(wrap_18000(GpsNav.nav[LAT]-GpsNav.nav_rated[LAT]),-NAV_SLEW_RATE,NAV_SLEW_RATE);
+      GpsNav.GPS_angle[ROLL]   = (GpsNav.nav_rated[LON]*cos_yaw_x - GpsNav.nav_rated[LAT]*sin_yaw_y) /10;
+      GpsNav.GPS_angle[PITCH]  = (GpsNav.nav_rated[LON]*sin_yaw_y + GpsNav.nav_rated[LAT]*cos_yaw_x) /10;
     #else
-      GPS_angle[ROLL]   = (GpsNav.nav[LON]*cos_yaw_x - GpsNav.nav[LAT]*sin_yaw_y) /10;
-      GPS_angle[PITCH]  = (GpsNav.nav[LON]*sin_yaw_y + GpsNav.nav[LAT]*cos_yaw_x) /10;
+      GpsNav.GPS_angle[ROLL]   = (GpsNav.nav[LON]*cos_yaw_x - GpsNav.nav[LAT]*sin_yaw_y) /10;
+      GpsNav.GPS_angle[PITCH]  = (GpsNav.nav[LON]*sin_yaw_y + GpsNav.nav[LAT]*cos_yaw_x) /10;
     #endif
   } else {
-    GPS_angle[ROLL]  = 0;
-    GPS_angle[PITCH] = 0;
+    GpsNav.GPS_angle[ROLL]  = 0;
+    GpsNav.GPS_angle[PITCH] = 0;
   }
 #endif
 

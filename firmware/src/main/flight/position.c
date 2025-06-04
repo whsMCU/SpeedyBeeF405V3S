@@ -127,22 +127,22 @@ void calculateEstimatedAltitude(timeUs_t currentTimeUs)
 			}
 #endif
 
-#ifdef USE_GPS
-    if (sensors(SENSOR_GPS) && STATE(GPS_FIX)) {
-        gpsAlt = gpsSol.llh.altCm;
-        gpsNumSat = gpsSol.numSat;
-#ifdef USE_VARIO
-        gpsVertSpeed = GPS_verticalSpeedInCmS;
-#endif
-        haveGpsAlt = true;
-
-        if (gpsSol.hdop != 0) {
-            gpsTrust = 100.0 / gpsSol.hdop;
-        }
-        // always use at least 10% of other sources besides gps if available
-        gpsTrust = MIN(gpsTrust, 0.9f);
-    }
-#endif
+//#ifdef USE_GPS
+//    if (sensors(SENSOR_GPS) && STATE(GPS_FIX)) {
+//        gpsAlt = posllh.height*10;
+//        gpsNumSat = GpsNav.GPS_numSat;
+//#ifdef USE_VARIO
+//        gpsVertSpeed = GPS_verticalSpeedInCmS;
+//#endif
+//        haveGpsAlt = true;
+//
+//        if (gpsSol.hdop != 0) {
+//            gpsTrust = 100.0 / gpsSol.hdop;
+//        }
+//        // always use at least 10% of other sources besides gps if available
+//        gpsTrust = MIN(gpsTrust, 0.9f);
+//    }
+//#endif
 
     if (ARMING_FLAG(ARMED) && !altitudeOffsetSetBaro) {
         baroAltOffset = baroAlt;

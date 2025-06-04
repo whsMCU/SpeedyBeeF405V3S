@@ -12,7 +12,7 @@
 #include "rx/rx.h"
 #include "rx/crsf.h"
 
-#include "drivers/gps/M8N.h"
+#include "drivers/gps/gps.h"
 
 #include "msp/msp_serial.h"
 

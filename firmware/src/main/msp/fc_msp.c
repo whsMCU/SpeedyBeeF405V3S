@@ -60,7 +60,6 @@
 //#include "drivers/time.h"
 //#include "drivers/timer.h"
 //#include "drivers/vtx_common.h"
-#include "drivers/gps/M8N.h"
 #include "drivers/gps/gps.h"
 #include "drivers/motor.h"
 
