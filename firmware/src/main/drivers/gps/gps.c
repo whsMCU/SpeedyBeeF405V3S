@@ -62,6 +62,7 @@ void gpsInit(void)
 	uartWrite(_DEF_UART6, (uint8_t*)&UBX_CFG_CFG[0], sizeof(UBX_CFG_CFG));
 
 	GpsNav.nav_mode = NAV_MODE_NONE;
+	GpsNav.GPS_wp_radius = GPS_WP_RADIUS;
 }
 
 //Apply moving average filter to GPS data
@@ -316,6 +317,118 @@ void GPS_reset_nav(void) {
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+// Calculate nav_lat and nav_lon from the x and y error and the speed
+//
+static void GPS_calc_poshold() {
+  int32_t d;
+  int32_t target_speed;
+  uint8_t axis;
+
+//  for (axis=0;axis<2;axis++) {
+//    target_speed = get_P(error[axis], &posholdPID_PARAM); // calculate desired speed from lat/lon error
+//    target_speed = constrain(target_speed,-100,100);      // Constrain the target speed in poshold mode to 1m/s it helps avoid runaways..
+//    rate_error[axis] = target_speed - actual_speed[axis]; // calc the speed error
+//
+//    nav[axis]      =
+//        get_P(rate_error[axis],                                               &poshold_ratePID_PARAM)
+//       +get_I(rate_error[axis] + error[axis], &dTnav, &poshold_ratePID[axis], &poshold_ratePID_PARAM);
+//
+//    d = get_D(error[axis],                    &dTnav, &poshold_ratePID[axis], &poshold_ratePID_PARAM);
+//
+//    d = constrain(d, -2000, 2000);
+//    // get rid of noise
+//    if(abs(actual_speed[axis]) < 50) d = 0;
+//
+//    nav[axis] +=d;
+//    nav[axis]  = constrain(nav[axis], -NAV_BANK_MAX, NAV_BANK_MAX);
+//    navPID[axis].integrator = poshold_ratePID[axis].integrator;
+//  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+// Calculating cross track error, this tries to keep the copter on a direct line
+// when flying to a waypoint.
+//
+static void GPS_update_crosstrack(void) {
+//  if (abs(wrap_18000(target_bearing - original_target_bearing)) < 4500) {  // If we are too far off or too close we don't do track following
+//    float temp = (target_bearing - original_target_bearing) * RADX100;
+//    crosstrack_error = sin(temp) * (wp_distance * CROSSTRACK_GAIN);  // Meters we are off track line
+//    nav_bearing = target_bearing + constrain(crosstrack_error, -3000, 3000);
+//    nav_bearing = wrap_36000(nav_bearing);
+//  }else{
+//    nav_bearing = target_bearing;
+//  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+// Calculate the desired nav_lat and nav_lon for distance flying such as RTH
+//
+static void GPS_calc_nav_rate(uint16_t max_speed) {
+  float trig[2];
+  uint8_t axis;
+  // push us towards the original track
+  GPS_update_crosstrack();
+
+//  // nav_bearing includes crosstrack
+//  float temp = (9000l - nav_bearing) * RADX100;
+//  trig[_X] = cos(temp);
+//  trig[_Y] = sin(temp);
+//
+//  for (axis=0;axis<2;axis++) {
+//    rate_error[axis] = (trig[axis] * max_speed) - actual_speed[axis];
+//    rate_error[axis] = constrain(rate_error[axis], -1000, 1000);
+//    // P + I + D
+//    nav[axis]      =
+//        get_P(rate_error[axis],                        &navPID_PARAM)
+//       +get_I(rate_error[axis], &dTnav, &navPID[axis], &navPID_PARAM)
+//       +get_D(rate_error[axis], &dTnav, &navPID[axis], &navPID_PARAM);
+//
+//    nav[axis]      = constrain(nav[axis], -NAV_BANK_MAX, NAV_BANK_MAX);
+//    poshold_ratePID[axis].integrator = navPID[axis].integrator;
+//  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+// Check if we missed the destination somehow
+//
+static bool check_missed_wp() {
+  int32_t temp;
+  temp = GpsNav.target_bearing - GpsNav.original_target_bearing;
+  temp = wrap_18000(temp);
+  return (abs(temp) > 10000);   // we passed the waypoint by 100 degrees
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+// Determine desired speed when navigating towards a waypoint, also implement slow
+// speed rampup when starting a navigation
+//
+//      |< WP Radius
+//      0  1   2   3   4   5   6   7   8m
+//      ...|...|...|...|...|...|...|...|
+//                100  |  200     300     400cm/s
+//                 |                                        +|+
+//                 |< we should slow to 1.5 m/s as we hit the target
+//
+static uint16_t GPS_calc_desired_speed(uint16_t max_speed, bool _slow) {
+  // max_speed is default 400 or 4m/s
+  if(_slow){
+    max_speed = min(max_speed, GpsNav.wp_distance / 2);
+    //max_speed = max(max_speed, 0);
+  }else{
+    max_speed = min(max_speed, GpsNav.wp_distance);
+    max_speed = max(max_speed, NAV_SPEED_MIN);  // go at least 100cm/s
+  }
+
+  // limit the ramp up of the speed
+  // waypoint_speed_gov is reset to 0 at each new WP command
+  if(max_speed > GpsNav.waypoint_speed_gov){
+    GpsNav.waypoint_speed_gov += (int)(100.0 * GpsNav.dTnav); // increase at .5/ms
+    max_speed = GpsNav.waypoint_speed_gov;
+  }
+  return max_speed;
+}
+
 void gpsUpdate(uint32_t currentTimeUs)
 {
   if(FLIGHT_MODE(GPS_HOME_MODE) && ARMING_FLAG(ARMED))    //if home is not set set home position to WP#0 and activate it
@@ -345,6 +458,43 @@ void gpsUpdate(uint32_t currentTimeUs)
 
   //calculate the current velocity based on gps coordinates continously to get a valid speed at the moment when we start navigating
   GPS_calc_velocity();
+
+  if (STATE(GPS_HOLD_MODE) || STATE(GPS_HOME_MODE)){    //ok we are navigating
+    //do gps nav calculations here, these are common for nav and poshold
+    #if defined(GPS_LEAD_FILTER)
+      GPS_distance_cm_bearing(&GPS_coord_lead[LAT],&GPS_coord_lead[LON],&GPS_WP[LAT],&GPS_WP[LON],&wp_distance,&target_bearing);
+      GPS_calc_location_error(&GPS_WP[LAT],&GPS_WP[LON],&GPS_coord_lead[LAT],&GPS_coord_lead[LON]);
+    #else
+      GPS_distance_cm_bearing(&GpsNav.GPS_coord[LAT],&GpsNav.GPS_coord[LON],&GpsNav.GPS_WP[LAT],&GpsNav.GPS_WP[LON],&GpsNav.wp_distance,&GpsNav.target_bearing);
+      GPS_calc_location_error(&GpsNav.GPS_WP[LAT],&GpsNav.GPS_WP[LON],&GpsNav.GPS_coord[LAT],&GpsNav.GPS_coord[LON]);
+    #endif
+    switch (GpsNav.nav_mode) {
+      case NAV_MODE_POSHOLD:
+        //Desired output is in nav_lat and nav_lon where 1deg inclination is 100
+        GPS_calc_poshold();
+        break;
+      case NAV_MODE_WP:
+        int16_t speed = GPS_calc_desired_speed(NAV_SPEED_MAX, NAV_SLOW_NAV);      //slow navigation
+        // use error as the desired rate towards the target
+        //Desired output is in nav_lat and nav_lon where 1deg inclination is 100
+        GPS_calc_nav_rate(speed);
+
+        //Tail control
+        if (NAV_CONTROLS_HEADING) {
+          if (NAV_TAIL_FIRST) {
+            GpsNav.magHold = wrap_18000(GpsNav.nav_bearing-18000)/100;
+          } else {
+            GpsNav.magHold = GpsNav.nav_bearing/100;
+          }
+        }
+        // Are we there yet ?(within 2 meters of the destination)
+        if ((GpsNav.wp_distance <= GpsNav.GPS_wp_radius) || check_missed_wp()){         //if yes switch to poshold mode
+          GpsNav.nav_mode = NAV_MODE_POSHOLD;
+          if (NAV_SET_TAKEOFF_HEADING) { GpsNav.magHold = GpsNav.nav_takeoff_bearing; }
+        }
+        break;
+    }
+  }
 }
 
 #endif

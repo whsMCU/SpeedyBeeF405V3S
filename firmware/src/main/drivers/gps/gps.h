@@ -31,10 +31,22 @@ typedef enum {
 #define TASK_GPS_RATE       100
 #define TASK_GPS_RATE_FAST  1000
 
-#define NAV_SLEW_RATE              30        // Adds a rate control to nav output, will smoothen out nav angle spikes
-
+#define RADX100                    0.000174532925
+#define CROSSTRACK_GAIN            1
 #define NAV_SPEED_MIN              100    // cm/sec
 #define NAV_SPEED_MAX              300    // cm/sec
+#define NAV_SLOW_NAV               true
+#define NAV_BANK_MAX 3000        //30deg max banking when navigating (just for security and testing)
+
+#define GPS_WP_RADIUS              200       // if we are within this distance to a waypoint then we consider it reached (distance is in cm)
+#define NAV_SLEW_RATE              30        // Adds a rate control to nav output, will smoothen out nav angle spikes
+
+/* GPS navigation can control the heading */
+
+#define NAV_CONTROLS_HEADING       true      // copter faces toward the navigation point, maghold must be enabled for it
+#define NAV_TAIL_FIRST             false     // true - copter comes in with tail first
+#define NAV_SET_TAKEOFF_HEADING    true      // true - when copter arrives to home position it rotates it's head to takeoff direction
+
 
 //#define GPS_LEAD_FILTER                      // Adds a forward predictive filterig to compensate gps lag. Code based on Jason Short's lead filter implementation
 
@@ -71,6 +83,7 @@ typedef struct {
   uint8_t  GPS_update;                              // a binary toogle to distinct a GPS position update
   int16_t  GPS_angle[2];                      // the angles that must be applied for GPS correction
   uint16_t GPS_ground_course;                       //                   - unit: degree*10
+  uint16_t GPS_wp_radius;
   int16_t nav_takeoff_bearing;
   int16_t nav[2];
   int16_t nav_rated[2];                      //Adding a rate controller to the navigation to make it smoother
@@ -83,6 +96,7 @@ typedef struct {
   int32_t error[2];
   float  dTnav;                             // Delta Time in milliseconds for navigation computations, updated with every good GPS read
   int16_t actual_speed[2];
+  int16_t magHold;
 } GpsNav_t;
 
 extern GpsNav_t GpsNav;
