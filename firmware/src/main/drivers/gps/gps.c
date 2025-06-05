@@ -64,11 +64,26 @@ void gpsInit(void)
 	GpsNav.nav_mode = NAV_MODE_NONE;
 }
 
-void gpsUpdate(uint32_t currentTimeUs)
+//Apply moving average filter to GPS data
+static void GPS_Filter(int32_t *GPS_coord)
 {
-  if(FLIGHT_MODE(GPS_HOME_MODE) && ARMING_FLAG(ARMED))    //if home is not set set home position to WP#0 and activate it
-  {
-    GPS_reset_home_position();
+  GpsNavFilter_t * GpsFilter = &GpsNav.GPS_filter;
+  GpsFilter->GPS_filter_index = (GpsFilter->GPS_filter_index+1) % GPS_FILTER_VECTOR_LENGTH;
+  for (int axis = 0; axis< 2; axis++) {
+    GpsFilter->GPS_read[axis] = GPS_coord[axis]; //latest unfiltered data is in GPS_latitude and GPS_longitude
+    GpsFilter->GPS_degree[axis] = GpsFilter->GPS_read[axis] / 10000000;  // get the degree to assure the sum fits to the int32_t
+
+    // How close we are to a degree line ? its the first three digits from the fractions of degree
+    // later we use it to Check if we are close to a degree line, if yes, disable averaging,
+    GpsFilter->fraction3[axis] = (GpsFilter->GPS_read[axis]- GpsFilter->GPS_degree[axis]*10000000) / 10000;
+
+    GpsFilter->GPS_filter_sum[axis] -= GpsFilter->GPS_filter[axis][GpsFilter->GPS_filter_index];
+    GpsFilter->GPS_filter[axis][GpsFilter->GPS_filter_index] = GpsFilter->GPS_read[axis] - (GpsFilter->GPS_degree[axis]*10000000);
+    GpsFilter->GPS_filter_sum[axis] += GpsFilter->GPS_filter[axis][GpsFilter->GPS_filter_index];
+    GpsFilter->GPS_filtered[axis] = GpsFilter->GPS_filter_sum[axis] / GPS_FILTER_VECTOR_LENGTH + (GpsFilter->GPS_degree[axis]*10000000);
+    if ( GpsNav.nav_mode == NAV_MODE_POSHOLD) {      //we use gps averaging only in poshold mode...
+      if ( GpsFilter->fraction3[axis]>1 && GpsFilter->fraction3[axis]<999 ) GPS_coord[axis] = GpsFilter->GPS_filtered[axis];
+    }
   }
 }
 
@@ -116,6 +131,9 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
         // 여기서 드론 위치 갱신 또는 출력 등 처리
         GpsNav.GPS_coord[LON] = posllh.lon;
         GpsNav.GPS_coord[LAT] = posllh.lat;
+        #if defined(GPS_FILTERING)
+          GPS_Filter(GpsNav.GPS_coord);
+        #endif
     } else if (cls == 0x01 && id == 0x35) { // NAV-SAT
         if (length < 8) return;
 
@@ -170,6 +188,47 @@ float GPS_scaleLonDown = 1.0f;  // this is used to offset the shrinking longitud
 void GPS_calc_longitude_scaling(int32_t lat) {
   float rads = (fabsf((float)lat) / 10000000.0f) * 0.0174532925f;
   GPS_scaleLonDown = cos_approx(rads);
+}
+
+//*******************************************************************************************************
+// calc_velocity_and_filtered_position - velocity in lon and lat directions calculated from GPS position
+//       and accelerometer data
+// lon_speed expressed in cm/s.  positive numbers mean moving east
+// lat_speed expressed in cm/s.  positive numbers when moving north
+// Note: we use gps locations directly to calculate velocity instead of asking gps for velocity because
+//       this is more accurate below 1.5m/s
+// Note: even though the positions are projected using a lead filter, the velocities are calculated
+//       from the unaltered gps locations.  We do not want noise from our lead filter affecting velocity
+//*******************************************************************************************************
+static void GPS_calc_velocity(){
+  static int16_t speed_old[2] = {0,0};
+  static int32_t last[2] = {0,0};
+  static uint8_t init = 0;
+
+  if (init) {
+    float tmp = 1.0/GpsNav.dTnav;
+    GpsNav.actual_speed[_X] = (float)(GpsNav.GPS_coord[LON] - last[LON]) *  GPS_scaleLonDown * tmp;
+    GpsNav.actual_speed[_Y] = (float)(GpsNav.GPS_coord[LAT]  - last[LAT])  * tmp;
+
+#if !defined(GPS_LEAD_FILTER)
+    GpsNav.actual_speed[_X] = (GpsNav.actual_speed[_X] + speed_old[_X]) / 2;
+    GpsNav.actual_speed[_Y] = (GpsNav.actual_speed[_Y] + speed_old[_Y]) / 2;
+
+    speed_old[_X] = GpsNav.actual_speed[_X];
+    speed_old[_Y] = GpsNav.actual_speed[_Y];
+
+#endif
+  }
+  init=1;
+
+  last[LON] = GpsNav.GPS_coord[LON];
+  last[LAT] = GpsNav.GPS_coord[LAT];
+
+#if defined(GPS_LEAD_FILTER)
+  GPS_coord_lead[LON] = xLeadFilter.get_position(GpsNav.GPS_coord[LON], GpsNav.actual_speed[_X], GPS_LAG);
+  GPS_coord_lead[LAT] = yLeadFilter.get_position(GpsNav.GPS_coord[LAT], GpsNav.actual_speed[_Y], GPS_LAG);
+#endif
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -255,6 +314,37 @@ void GPS_reset_nav(void) {
 //    reset_PID(&navPID[i]);
     GpsNav.nav_mode = NAV_MODE_NONE;
   }
+}
+
+void gpsUpdate(uint32_t currentTimeUs)
+{
+  if(FLIGHT_MODE(GPS_HOME_MODE) && ARMING_FLAG(ARMED))    //if home is not set set home position to WP#0 and activate it
+  {
+    GPS_reset_home_position();
+  }
+
+  //dTnav calculation
+  //Time for calculating x,y speed and navigation pids
+  static uint32_t nav_loopTimer;
+  GpsNav.dTnav = (float)(millis() - nav_loopTimer)/ 1000.0;
+  nav_loopTimer = millis();
+  // prevent runup from bad GPS
+  GpsNav.dTnav = min(GpsNav.dTnav, 1.0);
+
+  //calculate distance and bearings for gui and other stuff continously - From home to copter
+  uint32_t dist;
+  int32_t  dir;
+  GPS_distance_cm_bearing(&GpsNav.GPS_coord[LAT],&GpsNav.GPS_coord[LON],&GpsNav.GPS_home[LAT],&GpsNav.GPS_home[LON],&dist,&dir);
+  GpsNav.GPS_distanceToHome = dist/100;
+  GpsNav.GPS_directionToHome = dir/100;
+
+  if (!STATE(GPS_FIX_HOME)) {     //If we don't have home set, do not display anything
+    GpsNav.GPS_distanceToHome = 0;
+    GpsNav.GPS_directionToHome = 0;
+  }
+
+  //calculate the current velocity based on gps coordinates continously to get a valid speed at the moment when we start navigating
+  GPS_calc_velocity();
 }
 
 #endif

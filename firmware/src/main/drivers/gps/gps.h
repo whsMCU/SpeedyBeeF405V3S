@@ -19,6 +19,11 @@ typedef enum {
   NAV_MODE_WP
 } nav_mode_e;
 
+#define _X 1
+#define _Y 0
+
+#define GPS_LAG 0.5f                          //UBLOX GPS has a smaller lag than MTK and other
+
 /************************        AP FlightMode        **********************************/
 /* Temporarily Disables GPS_HOLD_MODE to be able to make it possible to adjust the Hold-position when moving the sticks.*/
 #define AP_MODE 40  // Create a deadspan for GPS.
@@ -31,10 +36,27 @@ typedef enum {
 #define NAV_SPEED_MIN              100    // cm/sec
 #define NAV_SPEED_MAX              300    // cm/sec
 
+//#define GPS_LEAD_FILTER                      // Adds a forward predictive filterig to compensate gps lag. Code based on Jason Short's lead filter implementation
+
+//#define GPS_FILTERING                        // add a 5 element moving average filter to GPS coordinates, helps eliminate gps noise but adds latency comment out to disable
+
 void gpsInit(void);
 void gpsUpdate(uint32_t currentTimeUs);
 
+#define GPS_FILTER_VECTOR_LENGTH 5
+
 typedef struct {
+  uint8_t GPS_filter_index;
+  int32_t GPS_filter[2][GPS_FILTER_VECTOR_LENGTH];
+  int32_t GPS_filter_sum[2];
+  int32_t GPS_read[2];
+  int32_t GPS_filtered[2];
+  int32_t GPS_degree[2];    //the lat lon degree without any decimals (lat/10 000 000)
+  uint16_t fraction3[2];
+} GpsNavFilter_t;
+
+typedef struct {
+  GpsNavFilter_t GPS_filter;
   uint8_t nav_mode;
   int32_t  GPS_coord[2];
   int32_t  GPS_home[2];
@@ -59,6 +81,8 @@ typedef struct {
   int32_t original_target_bearing;          // deg * 100, The original angle to the next_WP when the next_WP was set Also used to check when we pass a WP
   uint16_t waypoint_speed_gov;              // used for slow speed wind up when start navigation;
   int32_t error[2];
+  float  dTnav;                             // Delta Time in milliseconds for navigation computations, updated with every good GPS read
+  int16_t actual_speed[2];
 } GpsNav_t;
 
 extern GpsNav_t GpsNav;
