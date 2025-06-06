@@ -297,7 +297,7 @@ static void updateRcCommands(void)
             } else {
                 tmp = 0;
             }
-            rcCommand[axis] = tmp * -GET_DIRECTION(rcControlsConfig.yaw_control_reversed);
+            rcCommand[axis] = (tmp*10) * -GET_DIRECTION(rcControlsConfig.yaw_control_reversed);
         }
         if (rcData[axis] < rxConfig.midrc) {
             rcCommand[axis] = -rcCommand[axis];
@@ -593,7 +593,8 @@ void processRxModes(uint32_t currentTimeUs)
 		if(rcData[THROTTLE] <1030)
 		{
 			ENABLE_ARMING_FLAG(ARMED);
-			yaw_heading_reference = (float)attitude.values.yaw/10;
+			yaw_heading_reference = (float)DECIDEGREES_TO_DEGREES(attitude.values.yaw);
+			GPS_reset_home_position();
 #ifdef USE_PERSISTENT_STATS
 			 statsOnArm();
 #endif

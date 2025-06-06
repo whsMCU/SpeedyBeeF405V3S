@@ -34,6 +34,11 @@
 //#include "config/config.h"
 
 #include "fc/runtime_config.h"
+#include "fc/rc_controls.h"
+
+#include "flight/imu.h"
+
+#include "rx/rx.h"
 
 #include "scheduler/scheduler.h"
 
@@ -52,6 +57,10 @@ static void cliQmc5883l(cli_args_t *args);
 static uint32_t tCal = 0;
 static flightDynamicsTrims_t magZeroTempMin;
 static flightDynamicsTrims_t magZeroTempMax;
+
+#if defined(USE_GPS) || defined(USE_MAG)
+int16_t magHold;
+#endif
 
 magDev_t magDev;
 mag_t mag;
@@ -116,6 +125,9 @@ bool compassInit(void)
      }
 
     buildRotationMatrixFromAlignment(&compassConfig.mag_customAlignment, &magDev.rotationMatrix);
+
+    ENABLE_FLIGHT_MODE(MAG_MODE);
+    magHold = DECIDEGREES_TO_DEGREES(attitude.values.yaw);
 
     return true;
 }
@@ -197,6 +209,24 @@ void taskUpdateMag(uint32_t currentTimeUs)
 		}
 
 }
+
+#if defined(USE_GPS) || defined(USE_MAG)
+void updateMagHold(void)
+{
+    if (fabsf(rcData[YAW]-1500) < 15 && FLIGHT_MODE(MAG_MODE)) {
+        int16_t dif = DECIDEGREES_TO_DEGREES(attitude.values.yaw) - magHold;
+        if (dif <= -180)
+            dif += 360;
+        if (dif >= +180)
+            dif -= 360;
+        dif *= -GET_DIRECTION(rcControlsConfig.yaw_control_reversed);
+//        if (isUpright()) {
+//            rcCommand[YAW] -= dif * currentPidProfile->pid[PID_MAG].P / 30;    // 18 deg
+//        }
+    } else
+        magHold = DECIDEGREES_TO_DEGREES(attitude.values.yaw);
+}
+#endif
 
 #ifdef _USE_HW_CLI
 void cliQmc5883l(cli_args_t *args)

@@ -13,6 +13,10 @@
 #include "common/maths.h"
 #include "flight/imu.h"
 
+#include "sensors/compass.h"
+
+uint8_t gps_set_home_point_once;
+
 const unsigned char UBX_CFG_PRT[] = {
 	0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00,
 	0xD0, 0x08, 0x00, 0x00, 0x80, 0x25, 0x00, 0x00, 0x01, 0x00,
@@ -63,6 +67,7 @@ void gpsInit(void)
 
 	GpsNav.nav_mode = NAV_MODE_NONE;
 	GpsNav.GPS_wp_radius = GPS_WP_RADIUS;
+	gps_set_home_point_once = false;
 }
 
 //Apply moving average filter to GPS data
@@ -132,6 +137,7 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
         // 여기서 드론 위치 갱신 또는 출력 등 처리
         GpsNav.GPS_coord[LON] = posllh.lon;
         GpsNav.GPS_coord[LAT] = posllh.lat;
+        GpsNav.altCm = posllh.height / 10;
         #if defined(GPS_FILTERING)
           GPS_Filter(GpsNav.GPS_coord);
         #endif
@@ -263,26 +269,68 @@ void GPS_set_next_wp(int32_t* lat, int32_t* lon) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
+#define DISTANCE_BETWEEN_TWO_LONGITUDE_POINTS_AT_EQUATOR_IN_HUNDREDS_OF_KILOMETERS 1.113195f
+#define TAN_89_99_DEGREES 5729.57795f
 // Get distance between two points in cm
 // Get bearing from pos1 to pos2, returns an 1deg = 100 precision
-void GPS_distance_cm_bearing(int32_t* lat1, int32_t* lon1, int32_t* lat2, int32_t* lon2,uint32_t* dist, int32_t* bearing) {
-  float dLat = *lat2 - *lat1;                                    // difference of latitude in 1/10 000 000 degrees
-  float dLon = (float)(*lon2 - *lon1) * GPS_scaleLonDown;
-  *dist = sqrt(sq(dLat) + sq(dLon)) * 1.113195;
+void GPS_distance_cm_bearing(int32_t *currentLat1, int32_t *currentLon1, int32_t *destinationLat2, int32_t *destinationLon2, uint32_t *dist, int32_t *bearing)
+{
+    float dLat = *destinationLat2 - *currentLat1; // difference of latitude in 1/10 000 000 degrees
+    float dLon = (float)(*destinationLon2 - *currentLon1) * GPS_scaleLonDown;
+    *dist = sqrtf(sq(dLat) + sq(dLon)) * DISTANCE_BETWEEN_TWO_LONGITUDE_POINTS_AT_EQUATOR_IN_HUNDREDS_OF_KILOMETERS;
 
-  *bearing = 9000.0f + atan2(-dLat, dLon) * 5729.57795f;      //Convert the output redians to 100xdeg
-  if (*bearing < 0) *bearing += 36000;
+    *bearing = 9000.0f + atan2_approx(-dLat, dLon) * TAN_89_99_DEGREES;      // Convert the output radians to 100xdeg
+    if (*bearing < 0)
+        *bearing += 36000;
 }
+
+////////////////////////////////////////////////////////////////////////////////////
+// Calculate the distance flown and vertical speed from gps position data
+//
+//static void GPS_calculateDistanceFlownVerticalSpeed(bool initialize)
+//{
+//    static int32_t lastCoord[2] = { 0, 0 };
+//    static int32_t lastAlt;
+//    static int32_t lastMillis;
+//
+//    int currentMillis = millis();
+//
+//    if (initialize) {
+//      GpsNav.GPS_distanceFlownInCm = 0;
+//      GpsNav.GPS_verticalSpeedInCmS = 0;
+//    } else {
+//        if (STATE(GPS_FIX_HOME) && ARMING_FLAG(ARMED)) {
+//            uint16_t speed = gpsConfig()->gps_use_3d_speed ? gpsSol.speed3d : gpsSol.groundSpeed;
+//            // Only add up movement when speed is faster than minimum threshold
+//            if (speed > GPS_DISTANCE_FLOWN_MIN_SPEED_THRESHOLD_CM_S) {
+//                uint32_t dist;
+//                int32_t dir;
+//                GPS_distance_cm_bearing(&gpsSol.llh.lat, &gpsSol.llh.lon, &lastCoord[GPS_LATITUDE], &lastCoord[GPS_LONGITUDE], &dist, &dir);
+//                if (gpsConfig()->gps_use_3d_speed) {
+//                    dist = sqrtf(powf(gpsSol.llh.altCm - lastAlt, 2.0f) + powf(dist, 2.0f));
+//                }
+//                GPS_distanceFlownInCm += dist;
+//            }
+//        }
+//        GPS_verticalSpeedInCmS = (gpsSol.llh.altCm - lastAlt) * 1000 / (currentMillis - lastMillis);
+//        GPS_verticalSpeedInCmS = constrain(GPS_verticalSpeedInCmS, -1500, 1500);
+//    }
+//    lastCoord[GPS_LONGITUDE] = gpsSol.llh.lon;
+//    lastCoord[GPS_LATITUDE] = gpsSol.llh.lat;
+//    lastAlt = gpsSol.llh.altCm;
+//    lastMillis = currentMillis;
+//}
 
 void GPS_reset_home_position(void) {
   if (STATE(GPS_FIX) && GpsNav.GPS_numSat >= 5) {
     GpsNav.GPS_home[LAT] = GpsNav.GPS_coord[LAT];
     GpsNav.GPS_home[LON] = GpsNav.GPS_coord[LON];
     GPS_calc_longitude_scaling(GpsNav.GPS_coord[LAT]);  //need an initial value for distance and bearing calc
-    GpsNav.nav_takeoff_bearing = attitude.values.yaw/10;;             //save takeoff heading
+    GpsNav.nav_takeoff_bearing = DECIDEGREES_TO_DEGREES(attitude.values.yaw);             //save takeoff heading
     //Set ground altitude
     ENABLE_STATE(GPS_FIX_HOME);
   }
+  //GPS_calculateDistanceFlownVerticalSpeed(true); //Initialize
 }
 
 void gpsSetFixState(bool state)
@@ -429,6 +477,21 @@ static uint16_t GPS_calc_desired_speed(uint16_t max_speed, bool _slow) {
   return max_speed;
 }
 
+void GPS_calculateDistanceAndDirectionToHome(void)
+{
+  //calculate distance and bearings for gui and other stuff continously - From home to copter
+    if (STATE(GPS_FIX_HOME)) {      // If we don't have home set, do not display anything
+        uint32_t dist;
+        int32_t dir;
+        GPS_distance_cm_bearing(&GpsNav.GPS_coord[LAT],&GpsNav.GPS_coord[LON],&GpsNav.GPS_home[LAT],&GpsNav.GPS_home[LON],&dist,&dir);
+        GpsNav.GPS_distanceToHome = dist/100;
+        GpsNav.GPS_directionToHome = dir/100;
+    } else {
+      GpsNav.GPS_distanceToHome = 0;
+      GpsNav.GPS_directionToHome = 0;
+    }
+}
+
 void gpsUpdate(uint32_t currentTimeUs)
 {
   if(FLIGHT_MODE(GPS_HOME_MODE) && ARMING_FLAG(ARMED))    //if home is not set set home position to WP#0 and activate it
@@ -439,22 +502,16 @@ void gpsUpdate(uint32_t currentTimeUs)
   //dTnav calculation
   //Time for calculating x,y speed and navigation pids
   static uint32_t nav_loopTimer;
-  GpsNav.dTnav = (float)(millis() - nav_loopTimer)/ 1000.0;
+  GpsNav.dTnav = (float)(millis() - nav_loopTimer)/ 1000.0f;
   nav_loopTimer = millis();
   // prevent runup from bad GPS
-  GpsNav.dTnav = min(GpsNav.dTnav, 1.0);
+  GpsNav.dTnav = MIN(GpsNav.dTnav, 1.0f);
 
-  //calculate distance and bearings for gui and other stuff continously - From home to copter
-  uint32_t dist;
-  int32_t  dir;
-  GPS_distance_cm_bearing(&GpsNav.GPS_coord[LAT],&GpsNav.GPS_coord[LON],&GpsNav.GPS_home[LAT],&GpsNav.GPS_home[LON],&dist,&dir);
-  GpsNav.GPS_distanceToHome = dist/100;
-  GpsNav.GPS_directionToHome = dir/100;
+  GPS_calculateDistanceAndDirectionToHome();
 
-  if (!STATE(GPS_FIX_HOME)) {     //If we don't have home set, do not display anything
-    GpsNav.GPS_distanceToHome = 0;
-    GpsNav.GPS_directionToHome = 0;
-  }
+//  if (ARMING_FLAG(ARMED)) {
+//      GPS_calculateDistanceFlownVerticalSpeed(false);
+//  }
 
   //calculate the current velocity based on gps coordinates continously to get a valid speed at the moment when we start navigating
   GPS_calc_velocity();
@@ -482,15 +539,15 @@ void gpsUpdate(uint32_t currentTimeUs)
         //Tail control
         if (NAV_CONTROLS_HEADING) {
           if (NAV_TAIL_FIRST) {
-            GpsNav.magHold = wrap_18000(GpsNav.nav_bearing-18000)/100;
+            magHold = wrap_18000(GpsNav.nav_bearing-18000)/100;
           } else {
-            GpsNav.magHold = GpsNav.nav_bearing/100;
+            magHold = GpsNav.nav_bearing/100;
           }
         }
         // Are we there yet ?(within 2 meters of the destination)
         if ((GpsNav.wp_distance <= GpsNav.GPS_wp_radius) || check_missed_wp()){         //if yes switch to poshold mode
           GpsNav.nav_mode = NAV_MODE_POSHOLD;
-          if (NAV_SET_TAKEOFF_HEADING) { GpsNav.magHold = GpsNav.nav_takeoff_bearing; }
+          if (NAV_SET_TAKEOFF_HEADING) { magHold = GpsNav.nav_takeoff_bearing; }
         }
         break;
     }

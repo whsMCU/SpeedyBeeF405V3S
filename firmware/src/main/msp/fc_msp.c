@@ -439,7 +439,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
 
           sbufWriteU16(dst, (int16_t)(rcCommand[ROLL]*100));
           sbufWriteU16(dst, (int16_t)(rcCommand[PITCH]*100));
-          sbufWriteU16(dst, (int16_t)(rcCommand[YAW]*10));
+          sbufWriteU16(dst, (int16_t)(rcCommand[YAW]));
           sbufWriteU16(dst, (rcData[THROTTLE]*10));
 
           sbufWriteU32(dst, GpsNav.GPS_coord[LAT]);

@@ -28,6 +28,10 @@
 #include "drivers/accgyro/accgyro.h"
 #include "common/time.h"
 
+#if defined(USE_GPS) || defined(USE_MAG)
+extern int16_t magHold;
+#endif
+
 // Type of magnetometer used/detected
 typedef enum {
     MAG_DEFAULT = 0,
@@ -62,4 +66,5 @@ void taskUpdateMag(uint32_t currentTimeUs);
 bool compassInit(void);
 void compassStartCalibration(void);
 bool compassIsCalibrationComplete(void);
+void updateMagHold(void);
 

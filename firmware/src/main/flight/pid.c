@@ -41,6 +41,8 @@
 
 #include "fc/runtime_config.h"
 
+#include "sensors/compass.h"
+
 DoublePID _ROLL;
 DoublePID _PITCH;
 
@@ -142,10 +144,10 @@ float yaw_heading_reference;
 void taskMainPidLoop(timeUs_t currentTimeUs)
 {
 	float imu_roll, imu_pitch, imu_yaw;
-	imu_roll = (float)attitude.values.roll/10;
-	imu_pitch = (float)attitude.values.pitch/10;
-	imu_yaw = (float)attitude.values.yaw/10;
-	heading = attitude.values.yaw/10;
+	imu_roll = (float)DECIDEGREES_TO_DEGREES(attitude.values.roll);
+	imu_pitch = (float)DECIDEGREES_TO_DEGREES(attitude.values.pitch);
+	imu_yaw = (float)DECIDEGREES_TO_DEGREES(attitude.values.yaw);
+	heading = DECIDEGREES_TO_DEGREES(attitude.values.yaw);
 
   static timeUs_t previousUpdateTimeUs;
   float dT = (float)US2S(currentTimeUs - previousUpdateTimeUs);
@@ -237,7 +239,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   {
 	  yaw_heading_reference = imu_yaw;
 
-	  PID_Calculation(&_YAW_Rate, rcCommand[YAW] * 10.f, -bmi270.gyroADCf[Z], dT);//left -, right +
+	  PID_Calculation(&_YAW_Rate, rcCommand[YAW], -bmi270.gyroADCf[Z], dT);//left -, right +
 
 	  if(_PID_Test.pid_test_flag == 1)
 	  {
@@ -272,4 +274,10 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   }
 
   motorWriteAll();
+
+#if defined(USE_GPS) || defined(USE_MAG)
+    if (sensors(SENSOR_GPS) || sensors(SENSOR_MAG)) {
+        updateMagHold();
+    }
+#endif
 }

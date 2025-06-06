@@ -47,6 +47,8 @@ typedef enum {
 #define NAV_TAIL_FIRST             false     // true - copter comes in with tail first
 #define NAV_SET_TAKEOFF_HEADING    true      // true - when copter arrives to home position it rotates it's head to takeoff direction
 
+#define GPS_DISTANCE_FLOWN_MIN_SPEED_THRESHOLD_CM_S 15 // 5.4Km/h 3.35mph
+
 
 //#define GPS_LEAD_FILTER                      // Adds a forward predictive filterig to compensate gps lag. Code based on Jason Short's lead filter implementation
 
@@ -96,7 +98,7 @@ typedef struct {
   int32_t error[2];
   float  dTnav;                             // Delta Time in milliseconds for navigation computations, updated with every good GPS read
   int16_t actual_speed[2];
-  int16_t magHold;
+  int32_t altCm;                            // altitude in 0.01m
 } GpsNav_t;
 
 extern GpsNav_t GpsNav;
