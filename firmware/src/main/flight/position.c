@@ -44,6 +44,7 @@
 
 #include "sensors.h"
 #include "sensors/barometer.h"
+#include "sensors/gyro.h"
 
 
 typedef enum {
@@ -91,9 +92,17 @@ int16_t calculateEstimatedVario(int32_t baroAlt, const uint32_t dTime) {
 }
 #endif
 
+float navGetAccelerometerWeight(void)
+{
+    const float accWeightScaled = bmi270.accWeightFactor * 1;
+
+    return accWeightScaled;
+}
+
 #if defined(USE_BARO) || defined(USE_GPS)
 static bool altitudeOffsetSetBaro = false;
 static bool altitudeOffsetSetGPS = false;
+float pos_z, vel_z;
 
 void calculateEstimatedAltitude(timeUs_t currentTimeUs)
 {
@@ -200,6 +209,12 @@ void calculateEstimatedAltitude(timeUs_t currentTimeUs)
         estimatedVario = calculateEstimatedVario(baroAlt, dTime);
 #endif
     }
+
+    bmi270.accWeight = navGetAccelerometerWeight();
+
+    pos_z += vel_z * US2S(dTime);
+    pos_z += bmi270.accADCf[YAW] * sq(US2S(dTime)) / 2.0f * bmi270.accWeight;
+    vel_z += bmi270.accADCf[YAW] * US2S(dTime) * sq(bmi270.accWeight);
 
     DEBUG_SET(DEBUG_ALTITUDE, 0, (int32_t)(100 * gpsTrust));
     DEBUG_SET(DEBUG_ALTITUDE, 1, baroAlt);

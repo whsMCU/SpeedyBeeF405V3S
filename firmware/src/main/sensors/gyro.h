@@ -32,6 +32,13 @@
 
 //#include "flight/pid.h"
 
+#define GRAVITY_CMSS    980.665f
+#define GRAVITY_MSS     9.80665f
+
+#define ACC_CLIPPING_THRESHOLD_G        7.9f
+#define ACC_VIBE_FLOOR_FILT_HZ          5.0f
+#define ACC_VIBE_FILT_HZ                2.0f
+
 typedef union gyroLowpassFilter_u {
     pt1Filter_t pt1FilterState;
     biquadFilter_t biquadFilterState;
@@ -104,6 +111,7 @@ typedef struct gyro_s {
     uint16_t acc_1G;
     int16_t accADCRaw[XYZ_AXIS_COUNT];
     float accADC[XYZ_AXIS_COUNT];
+    float accADCf[XYZ_AXIS_COUNT];
     flightDynamicsTrims_t accelerationTrims;
     rollAndPitchTrims_t rollAndPitchTrims;
     int acc_accumulatedMeasurementCount;
@@ -115,6 +123,8 @@ typedef struct gyro_s {
     uint16_t accSampleRateHz;
     bool acc_high_fsr;
 
+    float accWeightFactor;
+    float accWeight;
 
 } imu_t;
 
