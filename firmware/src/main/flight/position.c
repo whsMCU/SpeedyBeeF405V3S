@@ -92,18 +92,11 @@ int16_t calculateEstimatedVario(int32_t baroAlt, const uint32_t dTime) {
 }
 #endif
 
-float navGetAccelerometerWeight(void)
-{
-    const float accWeightScaled = bmi270.accWeightFactor * 1;
-
-    return accWeightScaled;
-}
-
 #if defined(USE_BARO) || defined(USE_GPS)
 static bool altitudeOffsetSetBaro = false;
 static bool altitudeOffsetSetGPS = false;
 float pos_z, vel_z;
-
+float altitude_dt;
 void calculateEstimatedAltitude(timeUs_t currentTimeUs)
 {
     static timeUs_t previousTimeUs = 0;
@@ -116,7 +109,7 @@ void calculateEstimatedAltitude(timeUs_t currentTimeUs)
         return;
     }
     previousTimeUs = currentTimeUs;
-
+    altitude_dt = US2S(dTime);
     int32_t baroAlt = 0;
     int32_t gpsAlt = 0;
     uint8_t gpsNumSat = 0;
@@ -210,11 +203,8 @@ void calculateEstimatedAltitude(timeUs_t currentTimeUs)
 #endif
     }
 
-    bmi270.accWeight = navGetAccelerometerWeight();
-
+    vel_z += bmi270.accADCf[YAW] * US2S(dTime);
     pos_z += vel_z * US2S(dTime);
-    pos_z += bmi270.accADCf[YAW] * sq(US2S(dTime)) / 2.0f * bmi270.accWeight;
-    vel_z += bmi270.accADCf[YAW] * US2S(dTime) * sq(bmi270.accWeight);
 
     DEBUG_SET(DEBUG_ALTITUDE, 0, (int32_t)(100 * gpsTrust));
     DEBUG_SET(DEBUG_ALTITUDE, 1, baroAlt);

@@ -5,7 +5,6 @@
  *      Author: WANG
  */
 
-#include "filter.h"
 #include "gyro_init.h"
 #include "gyro.h"
 //#include "scheduler/scheduler.h"
@@ -39,7 +38,7 @@ bool Sensor_Init(void)
 	if (is_init != true)
  	{
    		return false;
-  	}
+  }
 
 	#ifdef _USE_HW_CLI
   		cliAdd("Sensor", cliSensor);

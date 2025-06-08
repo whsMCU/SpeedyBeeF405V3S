@@ -97,6 +97,8 @@ typedef enum {
     BMI270_VAL_CMD_FIFOFLUSH = 0xB0,
     BMI270_VAL_PWR_CTRL = 0x0E,              // enable gyro, acc and temp sensors
     BMI270_VAL_PWR_CONF = 0x02,              // disable advanced power save, enable FIFO self-wake
+    BMI270_VAL_ACC_CONF_ODR100 = 0x08,       // set acc sample rate to 100hz
+    BMI270_VAL_ACC_CONF_ODR400 = 0x0A,       // set acc sample rate to 400hz
     BMI270_VAL_ACC_CONF_ODR800 = 0x0B,       // set acc sample rate to 800hz
     BMI270_VAL_ACC_CONF_ODR1600 = 0x0C,      // set acc sample rate to 1600hz
     BMI270_VAL_ACC_CONF_BWP = 0x02,          // set acc filter in normal mode

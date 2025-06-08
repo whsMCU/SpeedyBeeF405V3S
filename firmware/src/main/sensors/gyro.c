@@ -35,6 +35,7 @@
 //#include "config/config.h"
 
 #include "fc/runtime_config.h"
+#include "fc/init.h"
 
 #include "flight/pid.h"
 
@@ -333,22 +334,14 @@ void performAcclerationCalibration(rollAndPitchTrims_t *rollAndPitchTrims)
 
     bmi270.calibratingA--;
 }
-#define INAV_ACC_CLIPPING_RC_CONSTANT           (0.010f)    // Reduce acc weight for ~10ms after clipping
-
-static void updateIMUEstimationWeight(const float dt)
-{
-  const float relAlpha = dt / (dt + INAV_ACC_CLIPPING_RC_CONSTANT);
-  bmi270.accWeightFactor = bmi270.accWeightFactor * (1.0f - relAlpha) + 1.0f * relAlpha;
-
-}
 
 #define acc_lpf_factor 4
 
 void taskAccUpdate(timeUs_t currentTimeUs)
 {
-  static timeUs_t previousIMUUpdateTime;
-  const timeDelta_t deltaT = currentTimeUs - previousIMUUpdateTime;
-  previousIMUUpdateTime = currentTimeUs;
+  //static timeUs_t previousIMUUpdateTime;
+  //const timeDelta_t deltaT = currentTimeUs - previousIMUUpdateTime;
+  //previousIMUUpdateTime = currentTimeUs;
   //debug[2] = deltaT;
 	UNUSED(currentTimeUs);
 	if (!bmi270SpiAccRead(&bmi270)) {
@@ -367,18 +360,24 @@ void taskAccUpdate(timeUs_t currentTimeUs)
 
     applyAccelerationTrims(&bmi270.accelerationTrims);
 
+    for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+      bmi270.accADC[axis] = (bmi270.accADC[axis] * 0.9) + (bmi270.accPrevious[axis] * 0.1);
+      bmi270.accPrevious[axis] = bmi270.accADC[axis];
+    }
+
+
+    for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+      bmi270.accADCf[axis] = laggedMovingAverageUpdate(&accAvg[axis].filter, (float)bmi270.accADC[axis]);
+    }
     // Calculate acceleration readings in G's
     for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-      bmi270.accADCf[axis] = (float)(bmi270.accADC[axis] / bmi270.acc_1G) * GRAVITY_CMSS;
+      bmi270.accADCf[axis] = ((bmi270.accADCf[axis] / (float)bmi270.acc_1G) - 1.0f) * GRAVITY_CMSS;
     }
 
   ++bmi270.acc_accumulatedMeasurementCount;
   for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
   	bmi270.acc_accumulatedMeasurements[axis] += bmi270.accADC[axis];
   }
-
-  /* Update acceleration weight based on vibration levels and clipping */
-  updateIMUEstimationWeight(US2S(deltaT));
 }
 
 bool accGetAccumulationAverage(float *accumulationAverage)

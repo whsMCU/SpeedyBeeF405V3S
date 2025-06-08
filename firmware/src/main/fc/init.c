@@ -119,6 +119,9 @@
 
 #include "rx/rx.h"
 
+static uint8_t averagingCount;
+laggedMovingAverageCombined_t  accAvg[XYZ_AXIS_COUNT];
+
 static void Param_Config_Init(void);
 
 void init(void)
@@ -141,6 +144,12 @@ void init(void)
 	//mixerInit(mixerConfig.mixerMode);
 
 	bmi270_Init();
+  //Sensor_Init();
+
+  averagingCount = 10;
+  for (int i = 0; i < XYZ_AXIS_COUNT; i++) {
+    laggedMovingAverageInit(&accAvg[i].filter, averagingCount, (float *)&accAvg[i].buf[0]);
+  }
 
 #ifdef USE_MAG
 	compassInit();

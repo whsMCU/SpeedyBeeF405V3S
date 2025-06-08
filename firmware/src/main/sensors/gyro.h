@@ -112,6 +112,7 @@ typedef struct gyro_s {
     int16_t accADCRaw[XYZ_AXIS_COUNT];
     float accADC[XYZ_AXIS_COUNT];
     float accADCf[XYZ_AXIS_COUNT];
+    float accPrevious[XYZ_AXIS_COUNT];
     flightDynamicsTrims_t accelerationTrims;
     rollAndPitchTrims_t rollAndPitchTrims;
     int acc_accumulatedMeasurementCount;
@@ -122,10 +123,6 @@ typedef struct gyro_s {
     bool isAccelUpdatedAtLeastOnce;
     uint16_t accSampleRateHz;
     bool acc_high_fsr;
-
-    float accWeightFactor;
-    float accWeight;
-
 } imu_t;
 
 extern imu_t bmi270;
