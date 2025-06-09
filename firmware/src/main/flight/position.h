@@ -21,6 +21,8 @@
 #pragma once
 
 #include "common/time.h"
+#include "common/filter.h"
+#include "common/axis.h"
 
 #define POSITION_DEFAULT_ALT_NUM_SATS_GPS_USE 10
 #define POSITION_DEFAULT_ALT_NUM_SATS_BARO_FALLBACK 7
@@ -34,7 +36,14 @@ typedef struct positionConfig_s {
 extern positionConfig_t positionConfig;
 extern int32_t AltHold;
 
+typedef struct laggedMovingAverageCombined_s {
+     laggedMovingAverage_t filter;
+     float buf[10];
+} laggedMovingAverageCombined_t;
+extern laggedMovingAverageCombined_t  accAvg[XYZ_AXIS_COUNT];
+
 void positionConfig_Init(void);
+void position_Init(void);
 
 bool isAltitudeOffset(void);
 void calculateEstimatedAltitude(timeUs_t currentTimeUs);

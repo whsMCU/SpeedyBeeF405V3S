@@ -22,9 +22,6 @@
 
 #include "hw.h"
 
-#include "common/filter.h"
-#include "common/axis.h"
-
 typedef enum {
     SYSTEM_STATE_INITIALISING   = 0,
     SYSTEM_STATE_CONFIG_LOADED  = (1 << 0),
@@ -35,11 +32,5 @@ typedef enum {
 } systemState_e;
 
 extern uint8_t systemState;
-
-typedef struct laggedMovingAverageCombined_s {
-     laggedMovingAverage_t filter;
-     float buf[10];
-} laggedMovingAverageCombined_t;
-extern laggedMovingAverageCombined_t  accAvg[XYZ_AXIS_COUNT];
 
 void init(void);

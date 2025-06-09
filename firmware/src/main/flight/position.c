@@ -63,6 +63,77 @@ void positionConfig_Init(void)
 	positionConfig.altNumSatsBaroFallback = POSITION_DEFAULT_ALT_NUM_SATS_BARO_FALLBACK;
 }
 
+static uint8_t averagingCount;
+laggedMovingAverageCombined_t  accAvg[XYZ_AXIS_COUNT];
+
+typedef struct {
+    float altitude;  // 상태 x[0]
+    float velocity;  // 상태 x[1]
+    float P[2][2];   // 공분산 행렬
+} KalmanState;
+
+KalmanState kf;
+
+void kalmanInit(KalmanState* state) {
+    state->altitude = 0.0f;
+    state->velocity = 0.0f;
+
+    state->P[0][0] = 1.0f;
+    state->P[0][1] = 0.0f;
+    state->P[1][0] = 0.0f;
+    state->P[1][1] = 1.0f;
+}
+
+void kalmanUpdate(KalmanState* state, float acc_z_mps2, float pressure_alt_cm, float dt) {
+    // 상태 예측
+    state->altitude += state->velocity * dt + 0.5f * acc_z_mps2 * dt * dt;
+    state->velocity += acc_z_mps2 * dt;
+
+    // 공분산 예측
+    float q_alt = 1.0f;  // 고도 예측 노이즈
+    float q_vel = 1.0f;  // 속도 예측 노이즈
+
+    state->P[0][0] += dt * (2 * state->P[0][1] + dt * state->P[1][1]) + q_alt;
+    state->P[0][1] += dt * state->P[1][1];
+    state->P[1][0] += dt * state->P[1][1];
+    state->P[1][1] += q_vel;
+
+    // 측정 업데이트 (기압센서 고도)
+    float R = 50.0f;  // 측정 노이즈 공분산 (cm^2)
+    float z = pressure_alt_cm;
+    float y = z - state->altitude;  // innovation
+
+    float S = state->P[0][0] + R;
+    float K0 = state->P[0][0] / S;
+    float K1 = state->P[1][0] / S;
+
+    // 상태 보정
+    state->altitude += K0 * y;
+    state->velocity += K1 * y;
+
+    // 공분산 보정
+    float P00 = state->P[0][0];
+    float P01 = state->P[0][1];
+    float P10 = state->P[1][0];
+    float P11 = state->P[1][1];
+
+    state->P[0][0] = P00 - K0 * P00;
+    state->P[0][1] = P01 - K0 * P01;
+    state->P[1][0] = P10 - K1 * P00;
+    state->P[1][1] = P11 - K1 * P01;
+}
+
+void position_Init(void)
+{
+
+  kalmanInit(&kf);
+
+  averagingCount = 10;
+  for (int i = 0; i < XYZ_AXIS_COUNT; i++) {
+    laggedMovingAverageInit(&accAvg[i].filter, averagingCount, (float *)&accAvg[i].buf[0]);
+  }
+}
+
 
 static int32_t estimatedAltitudeCm = 0;                // in cm
 int32_t AltHold = 0;
@@ -205,6 +276,8 @@ void calculateEstimatedAltitude(timeUs_t currentTimeUs)
 
     vel_z += bmi270.accADCf[YAW] * US2S(dTime);
     pos_z += vel_z * US2S(dTime);
+
+    kalmanUpdate(&kf, bmi270.accADCf[YAW], baroAlt, US2S(dTime));
 
     DEBUG_SET(DEBUG_ALTITUDE, 0, (int32_t)(100 * gpsTrust));
     DEBUG_SET(DEBUG_ALTITUDE, 1, baroAlt);
