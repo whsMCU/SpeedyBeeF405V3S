@@ -66,13 +66,7 @@ void positionConfig_Init(void)
 static uint8_t averagingCount;
 laggedMovingAverageCombined_t  accAvg[XYZ_AXIS_COUNT];
 
-typedef struct {
-    float altitude;  // 상태 x[0]
-    float velocity;  // 상태 x[1]
-    float P[2][2];   // 공분산 행렬
-} KalmanState;
-
-KalmanState kf;
+extern KalmanState kf;
 
 void kalmanInit(KalmanState* state) {
     state->altitude = 0.0f;
@@ -110,6 +104,7 @@ void kalmanUpdate(KalmanState* state, float acc_z_mps2, float pressure_alt_cm, f
     // 상태 보정
     state->altitude += K0 * y;
     state->velocity += K1 * y;
+    state->altitude_est = state->altitude;
 
     // 공분산 보정
     float P00 = state->P[0][0];
@@ -277,7 +272,7 @@ void calculateEstimatedAltitude(timeUs_t currentTimeUs)
     vel_z += bmi270.accADCf[YAW] * US2S(dTime);
     pos_z += vel_z * US2S(dTime);
 
-    kalmanUpdate(&kf, bmi270.accADCf[YAW], baroAlt, US2S(dTime));
+    kalmanUpdate(&kf, bmi270.accADCf[YAW], estimatedAltitudeCm, US2S(dTime));
 
     DEBUG_SET(DEBUG_ALTITUDE, 0, (int32_t)(100 * gpsTrust));
     DEBUG_SET(DEBUG_ALTITUDE, 1, baroAlt);

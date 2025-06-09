@@ -42,6 +42,15 @@ typedef struct laggedMovingAverageCombined_s {
 } laggedMovingAverageCombined_t;
 extern laggedMovingAverageCombined_t  accAvg[XYZ_AXIS_COUNT];
 
+typedef struct {
+    float altitude;  // 상태 x[0]
+    float velocity;  // 상태 x[1]
+    float P[2][2];   // 공분산 행렬
+    float altitude_est;
+} KalmanState;
+
+extern KalmanState kf;
+
 void positionConfig_Init(void);
 void position_Init(void);
 

@@ -192,6 +192,8 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   PID_Calculation(&_ALT, targetVel, (float)getEstimatedVario(), dT);
   _ALT.result = constrain(_ALT.result, -200, 200);
 
+  debug[1] = (int32_t)rcCommand[THROTTLE];
+
   if(FLIGHT_MODE(BARO_MODE))
   {
     static uint8_t isAltHoldChanged = 0;
@@ -200,7 +202,6 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
        //errorAltitudeI = 0;
         isAltHoldChanged = 1;
         rcCommand[THROTTLE] += (rcCommand[THROTTLE] > initialThrottleHold) ? -ALT_HOLD_THROTTLE_NEUTRAL_ZONE : ALT_HOLD_THROTTLE_NEUTRAL_ZONE;
-        debug[1] = rcCommand[THROTTLE];
        // initialThrottleHold += (rcCommand[THROTTLE] > initialThrottleHold) ? -ALT_HOLD_THROTTLE_NEUTRAL_ZONE : ALT_HOLD_THROTTLE_NEUTRAL_ZONE;; //++hex nano
       } else {
         if (isAltHoldChanged) {
@@ -208,9 +209,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
           isAltHoldChanged = 0;
         }
         rcCommand[THROTTLE] = initialThrottleHold + _ALT.result;
-        debug[2] = rcCommand[THROTTLE];
       }
-      debug[3] = isAltHoldChanged;
     #else
       static int16_t AltHoldCorr = 0;
       if (abs(rcCommand[THROTTLE]-initialThrottleHold)>ALT_HOLD_THROTTLE_NEUTRAL_ZONE) {
@@ -229,6 +228,8 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
       rcCommand[THROTTLE] = initialThrottleHold + _ALT.result;
     #endif
   }
+  debug[2] = (int32_t)_ALT.result;
+  debug[3] = (int32_t)rcCommand[THROTTLE];
 
   if((rcData[THROTTLE] < 1030 || !ARMING_FLAG(ARMED))&& _PID_Test.pid_test_flag == 0)
   {

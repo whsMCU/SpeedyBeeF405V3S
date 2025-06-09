@@ -119,7 +119,6 @@ typedef struct gyro_s {
     float acc_accumulatedMeasurements[XYZ_AXIS_COUNT];
     uint16_t calibratingA;      // the calibration is done is the main loop. Calibrating decreases at each cycle down to 0, then we enter in a normal mode.
 
-
     bool isAccelUpdatedAtLeastOnce;
     uint16_t accSampleRateHz;
     bool acc_high_fsr;
