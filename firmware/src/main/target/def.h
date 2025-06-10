@@ -74,7 +74,7 @@
  * but if it's commented: Smooth alt change routine is activated, for slow auto and aerophoto modes (in general solution from alexmos). It's slowly increase/decrease
  * altitude proportional to stick movement (+/-100 throttle gives about +/-50 cm in 1 second with cycle time about 3-4ms)
  */
-#define ALTHOLD_FAST_THROTTLE_CHANGE
+//#define ALTHOLD_FAST_THROTTLE_CHANGE
 
 #define USE_ACC
 #define USE_BARO

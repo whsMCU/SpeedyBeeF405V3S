@@ -353,6 +353,7 @@ void taskUpdateRxMain(uint32_t currentTimeUs)
     case RX_STATE_UPDATE:
         //updateRcCommands sets rcCommand, which is needed by updateAltHoldState and updateSonarAltHoldState
         updateRcCommands();
+        updateAltHold(currentTimeUs);
         //updateArmingStatus();
 
         rxState = RX_STATE_CHECK;
@@ -625,11 +626,14 @@ void processRxModes(uint32_t currentTimeUs)
 
 	if(rcData[SB] >= 1500)
 	{
-	  ENABLE_FLIGHT_MODE(BARO_MODE);
-	  AltHold = getEstimatedAltitudeCm();
-	  initialThrottleHold = rcCommand[THROTTLE];
-	  _ALT.integral = 0;
-    _ALT.result = 0;
+    if(!FLIGHT_MODE(BARO_MODE))
+    {
+      ENABLE_FLIGHT_MODE(BARO_MODE);
+      AltHold = getEstimatedAltitudeCm();
+      initialThrottleHold = rcCommand[THROTTLE];
+      _ALT.integral = 0;
+      _ALT.result = 0;
+    }
 	}else
 	{
 	  DISABLE_FLIGHT_MODE(BARO_MODE);
@@ -676,7 +680,10 @@ void processRxModes(uint32_t currentTimeUs)
 
   if(rcData[SA] == 2000)
   {
-    ENABLE_FLIGHT_MODE(HEADFREE_MODE);
+    if(!FLIGHT_MODE(HEADFREE_MODE))
+    {
+      ENABLE_FLIGHT_MODE(HEADFREE_MODE);
+    }
   }
   else
   {

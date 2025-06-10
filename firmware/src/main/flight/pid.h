@@ -76,6 +76,8 @@ void Reset_All_PID_Integrator(void);
 void pidInit(void);
 void taskMainPidLoop(timeUs_t currentTimeUs);
 
+void updateAltHold(timeUs_t currentTimeUs);
+
 extern float yaw_heading_reference;
 
 #ifdef __cplusplus

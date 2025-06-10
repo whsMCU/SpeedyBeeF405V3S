@@ -66,7 +66,7 @@ void positionConfig_Init(void)
 static uint8_t averagingCount;
 laggedMovingAverageCombined_t  accAvg[XYZ_AXIS_COUNT];
 
-extern KalmanState kf;
+KalmanState kf;
 
 void kalmanInit(KalmanState* state) {
     state->altitude = 0.0f;
@@ -273,6 +273,8 @@ void calculateEstimatedAltitude(timeUs_t currentTimeUs)
     pos_z += vel_z * US2S(dTime);
 
     kalmanUpdate(&kf, bmi270.accADCf[YAW], estimatedAltitudeCm, US2S(dTime));
+
+
 
     DEBUG_SET(DEBUG_ALTITUDE, 0, (int32_t)(100 * gpsTrust));
     DEBUG_SET(DEBUG_ALTITUDE, 1, baroAlt);

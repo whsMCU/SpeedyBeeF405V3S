@@ -213,7 +213,8 @@ void taskUpdateMag(uint32_t currentTimeUs)
 #if defined(USE_GPS) || defined(USE_MAG)
 void updateMagHold(void)
 {
-    if (fabsf(rcData[YAW]-1500) < 15 && FLIGHT_MODE(MAG_MODE)) {
+    if (fabsf(rcData[YAW]-1500) < 15 && FLIGHT_MODE(MAG_MODE))
+    {
         int16_t dif = DECIDEGREES_TO_DEGREES(attitude.values.yaw) - magHold;
         if (dif <= -180)
             dif += 360;
@@ -224,7 +225,9 @@ void updateMagHold(void)
 //            rcCommand[YAW] -= dif * currentPidProfile->pid[PID_MAG].P / 30;    // 18 deg
 //        }
     } else
-        magHold = DECIDEGREES_TO_DEGREES(attitude.values.yaw);
+    {
+      magHold = DECIDEGREES_TO_DEGREES(attitude.values.yaw);
+    }
 }
 #endif
 

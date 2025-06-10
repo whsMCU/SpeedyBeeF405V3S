@@ -151,7 +151,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 
   static timeUs_t previousUpdateTimeUs;
   float dT = (float)US2S(currentTimeUs - previousUpdateTimeUs);
-  debug[0] = currentTimeUs - previousUpdateTimeUs;
+  //debug[0] = currentTimeUs - previousUpdateTimeUs;
   previousUpdateTimeUs = currentTimeUs;
   //debug[1] = bmi270.gyroADCf[Y];
   //debug[2] = _PITCH.in.result_d;
@@ -187,49 +187,6 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     PID_Calculation(&_PITCH.out, rcCommand[PITCH], imu_pitch, dT);
   }
   PID_Calculation(&_PITCH.in, _PITCH.out.result, bmi270.gyroADCf[Y], dT);
-
-  float targetVel = constrain(AltHold - getEstimatedAltitudeCm(), -100, 100);
-  PID_Calculation(&_ALT, targetVel, (float)getEstimatedVario(), dT);
-  _ALT.result = constrain(_ALT.result, -200, 200);
-
-  debug[1] = (int32_t)rcCommand[THROTTLE];
-
-  if(FLIGHT_MODE(BARO_MODE))
-  {
-    static uint8_t isAltHoldChanged = 0;
-    #if defined(ALTHOLD_FAST_THROTTLE_CHANGE)
-      if (abs(rcCommand[THROTTLE]-initialThrottleHold) > ALT_HOLD_THROTTLE_NEUTRAL_ZONE) {
-       //errorAltitudeI = 0;
-        isAltHoldChanged = 1;
-        rcCommand[THROTTLE] += (rcCommand[THROTTLE] > initialThrottleHold) ? -ALT_HOLD_THROTTLE_NEUTRAL_ZONE : ALT_HOLD_THROTTLE_NEUTRAL_ZONE;
-       // initialThrottleHold += (rcCommand[THROTTLE] > initialThrottleHold) ? -ALT_HOLD_THROTTLE_NEUTRAL_ZONE : ALT_HOLD_THROTTLE_NEUTRAL_ZONE;; //++hex nano
-      } else {
-        if (isAltHoldChanged) {
-          AltHold = getEstimatedAltitudeCm();
-          isAltHoldChanged = 0;
-        }
-        rcCommand[THROTTLE] = initialThrottleHold + _ALT.result;
-      }
-    #else
-      static int16_t AltHoldCorr = 0;
-      if (abs(rcCommand[THROTTLE]-initialThrottleHold)>ALT_HOLD_THROTTLE_NEUTRAL_ZONE) {
-        // Slowly increase/decrease AltHold proportional to stick movement ( +100 throttle gives ~ +50 cm in 1 second with cycle time about 3-4ms)
-        AltHoldCorr+= rcCommand[THROTTLE] - initialThrottleHold;
-        if(abs(AltHoldCorr) > 500) {
-          AltHold += AltHoldCorr/500;
-          AltHoldCorr %= 500;
-        }
-        //errorAltitudeI = 0;
-        isAltHoldChanged = 1;
-      } else if (isAltHoldChanged) {
-        AltHold = getEstimatedAltitudeCm();
-        isAltHoldChanged = 0;
-      }
-      rcCommand[THROTTLE] = initialThrottleHold + _ALT.result;
-    #endif
-  }
-  debug[2] = (int32_t)_ALT.result;
-  debug[3] = (int32_t)rcCommand[THROTTLE];
 
   if((rcData[THROTTLE] < 1030 || !ARMING_FLAG(ARMED))&& _PID_Test.pid_test_flag == 0)
   {
@@ -281,4 +238,56 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
         updateMagHold();
     }
 #endif
+}
+
+void updateAltHold(timeUs_t currentTimeUs)
+{
+  static timeUs_t previousUpdateTimeUs;
+  float dT = (float)US2S(currentTimeUs - previousUpdateTimeUs);
+  //debug[0] = currentTimeUs - previousUpdateTimeUs;
+  previousUpdateTimeUs = currentTimeUs;
+
+  float targetVel = constrain(AltHold - getEstimatedAltitudeCm(), -100, 100);
+  PID_Calculation(&_ALT, targetVel, (float)getEstimatedVario(), dT);
+  _ALT.result = constrain(_ALT.result, -200, 200);
+
+  debug[0] = initialThrottleHold;
+  debug[1] = (int32_t)rcCommand[THROTTLE];
+
+  if(FLIGHT_MODE(BARO_MODE))
+  {
+    static uint8_t isAltHoldChanged = 0;
+    #if defined(ALTHOLD_FAST_THROTTLE_CHANGE)
+      if (abs(rcCommand[THROTTLE]-initialThrottleHold) > ALT_HOLD_THROTTLE_NEUTRAL_ZONE) {
+       //errorAltitudeI = 0;
+        isAltHoldChanged = 1;
+        rcCommand[THROTTLE] += (rcCommand[THROTTLE] > initialThrottleHold) ? -ALT_HOLD_THROTTLE_NEUTRAL_ZONE : ALT_HOLD_THROTTLE_NEUTRAL_ZONE;
+       // initialThrottleHold += (rcCommand[THROTTLE] > initialThrottleHold) ? -ALT_HOLD_THROTTLE_NEUTRAL_ZONE : ALT_HOLD_THROTTLE_NEUTRAL_ZONE;; //++hex nano
+      } else {
+        if (isAltHoldChanged) {
+          AltHold = getEstimatedAltitudeCm();
+          isAltHoldChanged = 0;
+        }
+        rcCommand[THROTTLE] = initialThrottleHold + _ALT.result;
+      }
+    #else
+      static int16_t AltHoldCorr = 0;
+      if (abs(rcCommand[THROTTLE]-initialThrottleHold)>ALT_HOLD_THROTTLE_NEUTRAL_ZONE) {
+        // Slowly increase/decrease AltHold proportional to stick movement ( +100 throttle gives ~ +50 cm in 1 second with cycle time about 3-4ms)
+        AltHoldCorr+= rcCommand[THROTTLE] - initialThrottleHold;
+        if(abs(AltHoldCorr) > 500) {
+          AltHold += AltHoldCorr/500;
+          AltHoldCorr %= 500;
+        }
+        //errorAltitudeI = 0;
+        isAltHoldChanged = 1;
+      } else if (isAltHoldChanged) {
+        AltHold = getEstimatedAltitudeCm();
+        isAltHoldChanged = 0;
+      }
+      rcCommand[THROTTLE] = initialThrottleHold + _ALT.result;
+    #endif
+  }
+  debug[2] = (int32_t)_ALT.result;
+  debug[3] = (int32_t)rcCommand[THROTTLE];
 }
