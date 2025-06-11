@@ -94,6 +94,12 @@ namespace SpeedyBeeF405V3S_GUI
         LineItem _alt_curve;
         PointPairList _alt_reference_points = new PointPairList();
         LineItem _alt_reference_curve;
+
+        PointPairList _Throttle_Hold_points = new PointPairList();
+        LineItem _Throttle_Hold_curve;
+        PointPairList _alt_pidresult_points = new PointPairList();
+        LineItem _alt_pidresult_curve;
+
         PointPairList _rc_roll_points = new PointPairList();
         LineItem _rc_roll_curve;
         PointPairList _rc_pitch_points = new PointPairList();
@@ -241,7 +247,7 @@ namespace SpeedyBeeF405V3S_GUI
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
 
-                log = "DateTime, Roll, Pitch, Yaw, Alt, RollSetPoint, PitchSetPoint, Yaw SetPoint, Thorttle, yaw_heading_reference, altHold, lattitude, longitude, Sat_Num, gps_fix, Debug[0], Debug[1], Debug[2], Debug[3]";
+                log = "DateTime, Roll, Pitch, Yaw, Alt, RollSetPoint, PitchSetPoint, Yaw SetPoint, Thorttle, yaw_heading_reference, altHold, lattitude, longitude, Sat_Num, gps_fix, Throttle_Hold_point, Alt_PID_Result, Debug[0], Debug[1], Debug[2], Debug[3]";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
             }
@@ -270,7 +276,7 @@ namespace SpeedyBeeF405V3S_GUI
                 data[1] /= 10;
                 data[4] /= 10;
                 data[5] /= 10;
-                string log = $"{DateTime.Now:HH:mm:ss.fff}, {data[0]}, {data[1]}, {data[2]}, {data[3]}, {data[4]}, {data[5]}, {data[6]}, {data[7]}, {data[41]}, {data[42]}, {data[8]}, {data[9]}, {data[43]}, {data[44]}, {data[18]}, {data[19]}, {data[20]}, {data[21]}";
+                string log = $"{DateTime.Now:HH:mm:ss.fff}, {data[0]}, {data[1]}, {data[2]}, {data[3]}, {data[4]}, {data[5]}, {data[6]}, {data[7]}, {data[41]}, {data[42]}, {data[8]}, {data[9]}, {data[43]}, {data[44]}, {data[45]}, {data[46]},{data[18]}, {data[19]}, {data[20]}, {data[21]}";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
             }
@@ -1323,6 +1329,14 @@ namespace SpeedyBeeF405V3S_GUI
             _alt_reference_curve.Line.Width = 2;
             _alt_reference_points.Clear();
 
+            _Throttle_Hold_curve = _myPane.AddCurve("Throttle_Hold", _Throttle_Hold_points, Color.Green, SymbolType.None);
+            _Throttle_Hold_curve.Line.Width = 2;
+            _Throttle_Hold_points.Clear();
+
+            _alt_pidresult_curve = _myPane.AddCurve("ALT_PID_Result", _alt_pidresult_points, Color.Black, SymbolType.None);
+            _alt_pidresult_curve.Line.Width = 2;
+            _alt_pidresult_points.Clear();
+
             zedGraphControl1.AxisChange();
             zedGraphControl1.Invalidate();
             zedGraphControl1.Refresh();
@@ -1956,6 +1970,10 @@ namespace SpeedyBeeF405V3S_GUI
 
             passed_data[44] = BitConverter.ToUInt16(payload, 128);  // GPS_FIX
 
+            passed_data[45] = BitConverter.ToInt32(payload, 130);  // initialThrottleHold
+
+            passed_data[46] = BitConverter.ToInt32(payload, 134);  // _ALT.result
+
             if (cb_record.Checked == true)
             {
                 Check_Data_Log(PID_log_filePath, passed_data);
@@ -2030,6 +2048,9 @@ namespace SpeedyBeeF405V3S_GUI
             {
                 _alt_points.Add(time_count + 150, passed_data[3]);
                 _alt_reference_points.Add(time_count + 150, passed_data[42]);
+                _Throttle_Hold_points.Add(time_count + 150, passed_data[45]);
+                _alt_pidresult_points.Add(time_count + 150, passed_data[46]);
+
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }

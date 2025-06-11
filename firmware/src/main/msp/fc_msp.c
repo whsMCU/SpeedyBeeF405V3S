@@ -497,6 +497,10 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU16(dst, GpsNav.GPS_numSat);
 
           sbufWriteU16(dst, STATE(GPS_FIX));
+
+          sbufWriteU32(dst, initialThrottleHold);
+
+          sbufWriteU32(dst, _ALT.result);
         }
         break;
 
