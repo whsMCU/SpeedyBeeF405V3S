@@ -127,7 +127,7 @@ void rxConfig_Init(void)
 //	rxConfig.spektrum_sat_bind = 0;
 //	rxConfig.spektrum_sat_bind_autoreset = 1;
 	rxConfig.midrc = RX_MID_USEC;
-	rxConfig.mincheck = 1050;
+	rxConfig.mincheck = 1000;
 	rxConfig.maxcheck = 1900;
 
 //	rxConfig.rx_min_usec = RX_MIN_USEC;          // any of first 4 channels below this value will trigger rx loss detection

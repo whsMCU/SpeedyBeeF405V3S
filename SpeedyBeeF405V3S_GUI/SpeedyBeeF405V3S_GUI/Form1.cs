@@ -95,6 +95,8 @@ namespace SpeedyBeeF405V3S_GUI
         PointPairList _alt_reference_points = new PointPairList();
         LineItem _alt_reference_curve;
 
+        PointPairList _Throttle_points = new PointPairList();
+        LineItem _Throttle_curve;
         PointPairList _Throttle_Hold_points = new PointPairList();
         LineItem _Throttle_Hold_curve;
         PointPairList _alt_pidresult_points = new PointPairList();
@@ -1337,6 +1339,11 @@ namespace SpeedyBeeF405V3S_GUI
             _alt_pidresult_curve.Line.Width = 2;
             _alt_pidresult_points.Clear();
 
+            _Throttle_curve = _myPane.AddCurve("Throttle_Hold", _Throttle_points, Color.Red, SymbolType.None);
+            _Throttle_curve.Line.Width = 2;
+            _Throttle_points.Clear();
+
+
             zedGraphControl1.AxisChange();
             zedGraphControl1.Invalidate();
             zedGraphControl1.Refresh();
@@ -1918,8 +1925,8 @@ namespace SpeedyBeeF405V3S_GUI
             passed_data[3] = BitConverter.ToInt16(payload, 6) / 10;                  // Altitude_Cm
             passed_data[4] = BitConverter.ToInt16(payload, 8) / 10;                  // RC_ROLL
             passed_data[5] = BitConverter.ToInt16(payload, 10) / 10;                 // RC_PITCH
-            passed_data[6] = (BitConverter.ToInt16(payload, 12));                    // RC_YAW
-            passed_data[7] = ((BitConverter.ToInt16(payload, 14) / 10) - 1000) / 10; // RC_Throttole
+            passed_data[6] = BitConverter.ToInt16(payload, 12);                      // RC_YAW
+            passed_data[7] = (BitConverter.ToInt16(payload, 14) -1000) / 10;         // RC_Throttole
             passed_data[8] = BitConverter.ToInt32(payload, 16);     // posllh.lat
             passed_data[9] = BitConverter.ToInt32(payload, 20);     // posllh.lon
             passed_data[10] = BitConverter.ToInt16(payload, 24);    // batteryAverageCellVoltage
@@ -2050,6 +2057,7 @@ namespace SpeedyBeeF405V3S_GUI
                 _alt_reference_points.Add(time_count + 150, passed_data[42]);
                 _Throttle_Hold_points.Add(time_count + 150, passed_data[45]);
                 _alt_pidresult_points.Add(time_count + 150, passed_data[46]);
+                _Throttle_points.Add(time_count + 150, passed_data[7]*10);
 
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
