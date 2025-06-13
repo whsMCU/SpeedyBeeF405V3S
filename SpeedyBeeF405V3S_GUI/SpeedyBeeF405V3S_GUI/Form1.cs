@@ -1045,6 +1045,21 @@ namespace SpeedyBeeF405V3S_GUI
             }
         }
 
+        private enum Flight_Mode
+        {
+            ANGLE_MODE          = 1 << 0,
+            HORIZON_MODE        = 1 << 1,
+            MAG_MODE            = 1 << 2,
+            BARO_MODE           = 1 << 3,
+            GPS_HOME_MODE       = 1 << 4,
+            GPS_HOLD_MODE       = 1 << 5,
+            HEADFREE_MODE       = 1 << 6,
+            PASSTHRU_MODE       = 1 << 8,
+            RANGEFINDER_MODE    = 1 << 9,
+            FAILSAFE_MODE       = 1 << 10,
+            GPS_RESCUE_MODE     = 1 << 11
+        }
+
         private void timer_status_Tick(object sender, EventArgs e)
         {
             if (start == 0)
@@ -1058,8 +1073,8 @@ namespace SpeedyBeeF405V3S_GUI
                 pictureBox2.Visible = true;
             }
 
-            if (flight_mode == 1) textBox2.Text = "ANGLE_MODE";
-            if (flight_mode == 65) textBox2.Text = "HEADFREE_MODE";
+            if ((flight_mode & (int)Flight_Mode.ANGLE_MODE) !=0) textBox2.Text = "ANGLE_MODE";
+            if ((flight_mode & (int)Flight_Mode.HEADFREE_MODE) != 0) textBox2.Text = "HEADFREE_MODE";
 
             if (error == 0) textBox3.Text = "No error";
             if (error == 2) textBox3.Text = "RX_LOSS_DETECTED";

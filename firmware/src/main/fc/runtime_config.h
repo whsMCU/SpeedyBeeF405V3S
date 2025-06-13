@@ -88,7 +88,7 @@ typedef enum {
     HEADFREE_MODE   = (1 << 6),
 //    UNUSED_MODE     = (1 << 7), // old autotune
     PASSTHRU_MODE   = (1 << 8),
-//    RANGEFINDER_MODE= (1 << 9),
+    RANGEFINDER_MODE= (1 << 9),
     FAILSAFE_MODE   = (1 << 10),
     GPS_RESCUE_MODE = (1 << 11)
 } flightModeFlags_e;

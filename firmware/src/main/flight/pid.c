@@ -151,7 +151,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 
   static timeUs_t previousUpdateTimeUs;
   float dT = (float)US2S(currentTimeUs - previousUpdateTimeUs);
-  //debug[0] = currentTimeUs - previousUpdateTimeUs;
+  debug[0] = currentTimeUs - previousUpdateTimeUs;
   previousUpdateTimeUs = currentTimeUs;
   //debug[1] = bmi270.gyroADCf[Y];
   //debug[2] = _PITCH.in.result_d;
@@ -251,8 +251,7 @@ void updateAltHold(timeUs_t currentTimeUs)
   PID_Calculation(&_ALT, targetVel, (float)getEstimatedVario(), dT);
   _ALT.result = constrain(_ALT.result, -200, 200);
 
-  debug[0] = initialThrottleHold;
-  debug[1] = (int32_t)rcCommand[THROTTLE];
+  debug[1] = initialThrottleHold;
 
   if(FLIGHT_MODE(BARO_MODE))
   {

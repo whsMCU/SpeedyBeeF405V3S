@@ -514,6 +514,8 @@ static void imuCalculateEstimatedAttitude(timeUs_t currentTimeUs)
 void imuUpdateAttitude(timeUs_t currentTimeUs)
 {
 	imuCalculateEstimatedAttitude(currentTimeUs);
+
+	updatePositionEstimator();
 }
 #endif // USE_ACC
 

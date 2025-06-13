@@ -7,6 +7,10 @@
 
 #include "hw.h"
 
+#include "build/atomic.h"
+
+#include "drivers/nvic.h"
+
 #define DWT_LAR_UNLOCK_VALUE 0xC5ACCE55
 
 // cycles per microsecond
@@ -33,10 +37,13 @@ void cycleCounterInit(void)
 
 void HAL_SYSTICK_Callback(void)
 {
+  //ATOMIC_BLOCK(NVIC_PRIO_MAX)
+  //{
     sysTickUptime++;
     //sysTickValStamp = SysTick->VAL;
     //sysTickPending = 0;
     //(void)(SysTick->CTRL);
+  //}
 }
 
 uint32_t getCycleCounter(void)
@@ -75,6 +82,8 @@ uint32_t millis(void)
 
 uint32_t micros(void)
 {
+  //ATOMIC_BLOCK(NVIC_PRIO_MAX)
+  //{
 //	register uint32_t ms, cycle_cnt;
 //
 //	do {
@@ -82,7 +91,9 @@ uint32_t micros(void)
 //		cycle_cnt = SysTick->VAL;
 //	} while (ms != sysTickUptime);
 //	return (ms * 1000) + (usTicks * 1000 - cycle_cnt) / usTicks; //168
+  //}
 	return htim5.Instance->CNT;
+
 }
 
 void delayMicroseconds(uint32_t us)

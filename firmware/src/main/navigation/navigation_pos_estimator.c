@@ -52,6 +52,9 @@
 #include "sensors/gyro.h"
 //#include "sensors/pitotmeter.h"
 #include "sensors/opflow.h"
+#include "sensors/rangefinder.h"
+
+uint32_t newFlags = 0;
 
 navigationPosEstimator_t posEstimator;
 
@@ -500,46 +503,46 @@ float updateEPE(const float oldEPE, const float dt, const float newEPE, const fl
 //        return isImuHeadingValid() || positionEstimationConfig()->allow_dead_reckoning;
 //    }
 //}
-//
-//static uint32_t calculateCurrentValidityFlags(timeUs_t currentTimeUs)
-//{
-//    /* Figure out if we have valid position data from our data sources */
-//    uint32_t newFlags = 0;
-//
+
+static uint32_t calculateCurrentValidityFlags(timeUs_t currentTimeUs)
+{
+    /* Figure out if we have valid position data from our data sources */
+    uint32_t new_Flags = 0;
+
 //    if (sensors(SENSOR_GPS) && posControl.gpsOrigin.valid &&
 //        ((currentTimeUs - posEstimator.gps.lastUpdateTime) <= MS2US(INAV_GPS_TIMEOUT_MS)) &&
 //        (posEstimator.gps.eph < positionEstimationConfig()->max_eph_epv)) {
 //        if (posEstimator.gps.epv < positionEstimationConfig()->max_eph_epv) {
-//            newFlags |= EST_GPS_XY_VALID | EST_GPS_Z_VALID;
+//            new_Flags |= EST_GPS_XY_VALID | EST_GPS_Z_VALID;
 //        }
 //        else {
-//            newFlags |= EST_GPS_XY_VALID;
+//            new_Flags |= EST_GPS_XY_VALID;
 //        }
 //    }
-//
-//    if (sensors(SENSOR_BARO) && ((currentTimeUs - posEstimator.baro.lastUpdateTime) <= MS2US(INAV_BARO_TIMEOUT_MS))) {
-//        newFlags |= EST_BARO_VALID;
-//    }
-//
-//    if (sensors(SENSOR_RANGEFINDER) && ((currentTimeUs - posEstimator.surface.lastUpdateTime) <= MS2US(INAV_SURFACE_TIMEOUT_MS))) {
-//        newFlags |= EST_SURFACE_VALID;
-//    }
-//
-//    if (sensors(SENSOR_OPFLOW) && posEstimator.flow.isValid && ((currentTimeUs - posEstimator.flow.lastUpdateTime) <= MS2US(INAV_FLOW_TIMEOUT_MS))) {
-//        newFlags |= EST_FLOW_VALID;
-//    }
-//
+
+    if (sensors(SENSOR_BARO) && ((currentTimeUs - posEstimator.baro.lastUpdateTime) <= MS2US(INAV_BARO_TIMEOUT_MS))) {
+        new_Flags |= EST_BARO_VALID;
+    }
+
+    if (sensors(SENSOR_RANGEFINDER) && ((currentTimeUs - MS2US(rangefinder.lastValidResponseTimeMs)) <= MS2US(INAV_SURFACE_TIMEOUT_MS))) {
+        new_Flags |= EST_SURFACE_VALID;
+    }
+
+    if (sensors(SENSOR_OPFLOW) && opflow.isHwHealty && ((currentTimeUs - opflow.lastValidUpdate) <= MS2US(INAV_FLOW_TIMEOUT_MS))) {
+        new_Flags |= EST_FLOW_VALID;
+    }
+
 //    if (posEstimator.est.eph < positionEstimationConfig()->max_eph_epv) {
-//        newFlags |= EST_XY_VALID;
+//        new_Flags |= EST_XY_VALID;
 //    }
 //
 //    if (posEstimator.est.epv < positionEstimationConfig()->max_eph_epv) {
-//        newFlags |= EST_Z_VALID;
+//        new_Flags |= EST_Z_VALID;
 //    }
-//
-//    return newFlags;
-//}
-//
+
+    return new_Flags;
+}
+
 //static void estimationPredict(estimationContext_t * ctx)
 //{
 //    const float accWeight = navGetAccelerometerWeight();
@@ -720,13 +723,13 @@ float updateEPE(const float oldEPE, const float dt, const float newEPE, const fl
 //        }
 //    }
 //}
-//
-///**
-// * Calculate next estimate using IMU and apply corrections from reference sensors (GPS, BARO etc)
-// *  Function is called at main loop rate
-// */
-//static void updateEstimatedTopic(timeUs_t currentTimeUs)
-//{
+
+/**
+ * Calculate next estimate using IMU and apply corrections from reference sensors (GPS, BARO etc)
+ *  Function is called at main loop rate
+ */
+static void updateEstimatedTopic(timeUs_t currentTimeUs)
+{
 //    estimationContext_t ctx;
 //
 //    /* Calculate dT */
@@ -740,11 +743,11 @@ float updateEPE(const float oldEPE, const float dt, const float newEPE, const fl
 //        posEstimator.flags = 0;
 //        return;
 //    }
-//
+
 //    /* Calculate new EPH and EPV for the case we didn't update postion */
 //    ctx.newEPH = posEstimator.est.eph * ((posEstimator.est.eph <= positionEstimationConfig()->max_eph_epv) ? 1.0f + ctx.dt : 1.0f);
 //    ctx.newEPV = posEstimator.est.epv * ((posEstimator.est.epv <= positionEstimationConfig()->max_eph_epv) ? 1.0f + ctx.dt : 1.0f);
-//    ctx.newFlags = calculateCurrentValidityFlags(currentTimeUs);
+    newFlags = calculateCurrentValidityFlags(currentTimeUs);
 //    vectorZero(&ctx.estPosCorr);
 //    vectorZero(&ctx.estVelCorr);
 //    vectorZero(&ctx.accBiasCorr);
@@ -802,8 +805,8 @@ float updateEPE(const float oldEPE, const float dt, const float newEPE, const fl
 //
 //    // Keep flags for further usage
 //    posEstimator.flags = ctx.newFlags;
-//}
-//
+}
+
 ///**
 // * Examine estimation error and update navigation system if estimate is good enough
 // *  Function is called at main loop rate, but updates happen less frequently - at a fixed rate
@@ -912,31 +915,31 @@ void initializePositionEstimator(void)
     pt1FilterInit3(&posEstimator.surface.avgFilter, INAV_SURFACE_AVERAGE_HZ, 0.0f);
 }
 
-///**
-// * Update estimator
-// *  Update rate: loop rate (>100Hz)
-// */
-//void updatePositionEstimator(void)
-//{
+/**
+ * Update estimator
+ *  Update rate: loop rate (>100Hz)
+ */
+void updatePositionEstimator(void)
+{
 //    static bool isInitialized = false;
 //
 //    if (!isInitialized) {
 //        initializePositionEstimator();
 //        isInitialized = true;
 //    }
-//
-//    const timeUs_t currentTimeUs = micros();
-//
-//    /* Read updates from IMU, preprocess */
-//    updateIMUTopic(currentTimeUs);
-//
-//    /* Update estimate */
-//    updateEstimatedTopic(currentTimeUs);
-//
-//    /* Publish estimate */
-//    publishEstimatedTopic(currentTimeUs);
-//}
-//
+
+    const timeUs_t currentTimeUs = micros();
+
+    /* Read updates from IMU, preprocess */
+    //updateIMUTopic(currentTimeUs);
+
+    /* Update estimate */
+    updateEstimatedTopic(currentTimeUs);
+
+    /* Publish estimate */
+    //publishEstimatedTopic(currentTimeUs);
+}
+
 //bool navIsCalibrationComplete(void)
 //{
 //    return gravityCalibrationComplete();

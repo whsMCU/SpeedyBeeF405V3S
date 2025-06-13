@@ -449,6 +449,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
 
           sbufWriteU16(dst, flightModeFlags);
 
+
           sbufWriteU16(dst, failsafeFlags);
 
           sbufWriteU16(dst, ARMING_FLAG(ARMED));

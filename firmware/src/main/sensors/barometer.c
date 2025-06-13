@@ -87,6 +87,8 @@ void Baro_Init(void)
 
 	dps310Detect(&baro.dev);
 
+	sensorsSet(SENSOR_BARO);
+
   	#ifdef _USE_HW_CLI
 		cliAdd("dps310", cliDps310);
 	#endif
