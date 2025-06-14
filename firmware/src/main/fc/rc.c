@@ -27,11 +27,11 @@
 #include "common/axis.h"
 #include "common/utils.h"
 
-#include "config/config.h"
-#include "config/feature.h"
+//#include "config/config.h"
+//#include "config/feature.h"
 
 #include "fc/controlrate_profile.h"
-#include "fc/core.h"
+//#include "fc/core.h"
 #include "fc/rc.h"
 #include "fc/rc_controls.h"
 #include "fc/rc_modes.h"
@@ -39,9 +39,9 @@
 
 #include "flight/failsafe.h"
 #include "flight/imu.h"
-#include "flight/feedforward.h"
+//#include "flight/feedforward.h"
 //#include "flight/gps_rescue.h"
-#include "flight/pid_init.h"
+//#include "flight/pid_init.h"
 
 #include "rx/rx.h"
 
@@ -142,10 +142,9 @@ bool getRxRateValid(void)
 }
 #endif
 
-#define THROTTLE_LOOKUP_LENGTH 12
-static int16_t lookupThrottleRC[THROTTLE_LOOKUP_LENGTH];    // lookup table for expo & mid THROTTLE
+int16_t lookupThrottleRC[THROTTLE_LOOKUP_LENGTH];    // lookup table for expo & mid THROTTLE
 
-static int16_t rcLookupThrottle(int32_t tmp)
+int16_t rcLookupThrottle(int32_t tmp)
 {
     const int32_t tmp2 = tmp / 100;
     // [0;1000] -> expo -> [MINTHROTTLE;MAXTHROTTLE]
@@ -262,30 +261,30 @@ static void scaleRawSetpointToFpvCamAngle(void)
 #define THROTTLE_BUFFER_MAX 20
 #define THROTTLE_DELTA_MS 100
 
-static void checkForThrottleErrorResetState(uint16_t rxRefreshRate)
-{
-    static int index;
-    static int16_t rcCommandThrottlePrevious[THROTTLE_BUFFER_MAX];
-
-    const int rxRefreshRateMs = rxRefreshRate / 1000;
-    const int indexMax = constrain(THROTTLE_DELTA_MS / rxRefreshRateMs, 1, THROTTLE_BUFFER_MAX);
-    const int16_t throttleVelocityThreshold = (featureIsEnabled(FEATURE_3D)) ? currentPidProfile->itermThrottleThreshold / 2 : currentPidProfile->itermThrottleThreshold;
-
-    rcCommandThrottlePrevious[index++] = rcCommand[THROTTLE];
-    if (index >= indexMax) {
-        index = 0;
-    }
-
-    const int16_t rcCommandSpeed = rcCommand[THROTTLE] - rcCommandThrottlePrevious[index];
-
-    if (currentPidProfile->antiGravityMode == ANTI_GRAVITY_STEP) {
-        if (ABS(rcCommandSpeed) > throttleVelocityThreshold) {
-            pidSetItermAccelerator(CONVERT_PARAMETER_TO_FLOAT(currentPidProfile->itermAcceleratorGain));
-        } else {
-            pidSetItermAccelerator(0.0f);
-        }
-    }
-}
+//static void checkForThrottleErrorResetState(uint16_t rxRefreshRate)
+//{
+//    static int index;
+//    static int16_t rcCommandThrottlePrevious[THROTTLE_BUFFER_MAX];
+//
+//    const int rxRefreshRateMs = rxRefreshRate / 1000;
+//    const int indexMax = constrain(THROTTLE_DELTA_MS / rxRefreshRateMs, 1, THROTTLE_BUFFER_MAX);
+//    const int16_t throttleVelocityThreshold = (featureIsEnabled(FEATURE_3D)) ? currentPidProfile->itermThrottleThreshold / 2 : currentPidProfile->itermThrottleThreshold;
+//
+//    rcCommandThrottlePrevious[index++] = rcCommand[THROTTLE];
+//    if (index >= indexMax) {
+//        index = 0;
+//    }
+//
+//    const int16_t rcCommandSpeed = rcCommand[THROTTLE] - rcCommandThrottlePrevious[index];
+//
+//    if (currentPidProfile->antiGravityMode == ANTI_GRAVITY_STEP) {
+//        if (ABS(rcCommandSpeed) > throttleVelocityThreshold) {
+//            pidSetItermAccelerator(CONVERT_PARAMETER_TO_FLOAT(currentPidProfile->itermAcceleratorGain));
+//        } else {
+//            pidSetItermAccelerator(0.0f);
+//        }
+//    }
+//}
 
 void updateRcRefreshRate(uint32_t currentTimeUs)
 {
@@ -560,149 +559,149 @@ static void processRcSmoothingFilter(void)
 }
 #endif // USE_RC_SMOOTHING_FILTER
 
-void processRcCommand(void)
-{
-    if (isRxDataNew) {
-        newRxDataForFF = true;
-    }
-
-    if (isRxDataNew && pidAntiGravityEnabled()) {
-        checkForThrottleErrorResetState(currentRxRefreshRate);
-    }
-
-    if (isRxDataNew) {
-        for (int axis = FD_ROLL; axis <= FD_YAW; axis++) {
-
-#ifdef USE_FEEDFORWARD
-            isDuplicate[axis] = (oldRcCommand[axis] == rcCommand[axis]);
-            rcCommandDelta[axis] = (rcCommand[axis] - oldRcCommand[axis]);
-            oldRcCommand[axis] = rcCommand[axis];
-#endif
-
-            float angleRate;
-            
-#ifdef USE_GPS_RESCUE
-            if ((axis == FD_YAW) && FLIGHT_MODE(GPS_RESCUE_MODE)) {
-                // If GPS Rescue is active then override the setpointRate used in the
-                // pid controller with the value calculated from the desired heading logic.
-                angleRate = gpsRescueGetYawRate();
-                // Treat the stick input as centered to avoid any stick deflection base modifications (like acceleration limit)
-                rcDeflection[axis] = 0;
-                rcDeflectionAbs[axis] = 0;
-            } else
-#endif
-            {
-                // scale rcCommandf to range [-1.0, 1.0]
-                float rcCommandf;
-                if (axis == FD_YAW) {
-                    rcCommandf = rcCommand[axis] / rcCommandYawDivider;
-                } else {
-                    rcCommandf = rcCommand[axis] / rcCommandDivider;
-                }
-
-                rcDeflection[axis] = rcCommandf;
-                const float rcCommandfAbs = fabsf(rcCommandf);
-                rcDeflectionAbs[axis] = rcCommandfAbs;
-
-                angleRate = applyRates(axis, rcCommandf, rcCommandfAbs);
-
-            }
-            rawSetpoint[axis] = constrainf(angleRate, -1.0f * currentControlRateProfile->rate_limit[axis], 1.0f * currentControlRateProfile->rate_limit[axis]);
-            DEBUG_SET(DEBUG_ANGLERATE, axis, angleRate);
-        }
-        // adjust raw setpoint steps to camera angle (mixing Roll and Yaw)
-        if (rxConfig.fpvCamAngleDegrees && IS_RC_MODE_ACTIVE(BOXFPVANGLEMIX) && !FLIGHT_MODE(HEADFREE_MODE)) {
-            scaleRawSetpointToFpvCamAngle();
-        }
-    }
-
-#ifdef USE_RC_SMOOTHING_FILTER
-    processRcSmoothingFilter();
-#endif
-
-    isRxDataNew = false;
-}
-
-void updateRcCommands(void)
-{
-    isRxDataNew = true;
-
-    for (int axis = 0; axis < 3; axis++) {
-        // non coupled PID reduction scaler used in PID controller 1 and PID controller 2.
-
-        float tmp = MIN(ABS(rcData[axis] - rxConfig.midrc), 500);
-        if (axis == ROLL || axis == PITCH) {
-            if (tmp > rcControlsConfig.deadband) {
-                tmp -= rcControlsConfig.deadband;
-            } else {
-                tmp = 0;
-            }
-            rcCommand[axis] = tmp;
-        } else {
-            if (tmp > rcControlsConfig.yaw_deadband) {
-                tmp -= rcControlsConfig.yaw_deadband;
-            } else {
-                tmp = 0;
-            }
-            rcCommand[axis] = tmp * -GET_DIRECTION(rcControlsConfig.yaw_control_reversed);
-        }
-        if (rcData[axis] < rxConfig.midrc) {
-            rcCommand[axis] = -rcCommand[axis];
-        }
-    }
-
-    int32_t tmp;
-     if (featureIsEnabled(FEATURE_3D)) {
-         tmp = constrain(rcData[THROTTLE], PWM_RANGE_MIN, PWM_RANGE_MAX);
-         tmp = (uint32_t)(tmp - PWM_RANGE_MIN);
-     } else
-    {
-        tmp = constrain(rcData[THROTTLE], rxConfig.mincheck, PWM_RANGE_MAX);
-        tmp = (uint32_t)(tmp - rxConfig.mincheck) * PWM_RANGE_MIN / (PWM_RANGE_MAX - rxConfig.mincheck);
-    }
-
-     if (getLowVoltageCutoff()->enabled) {
-         tmp = tmp * getLowVoltageCutoff()->percentage / 100;
-     }
-
-    rcCommand[THROTTLE] = rcLookupThrottle(tmp);
-
-     if (featureIsEnabled(FEATURE_3D) && !failsafeIsActive()) {
-         if (!flight3DConfig.switched_mode3d) {
-             if (IS_RC_MODE_ACTIVE(BOX3D)) {
-                 fix12_t throttleScaler = qConstruct(rcCommand[THROTTLE] - 1000, 1000);
-                 rcCommand[THROTTLE] = rxConfig.midrc + qMultiply(throttleScaler, PWM_RANGE_MAX - rxConfig.midrc);
-             }
-         } else {
-             if (IS_RC_MODE_ACTIVE(BOX3D)) {
-                 reverseMotors = true;
-                 fix12_t throttleScaler = qConstruct(rcCommand[THROTTLE] - 1000, 1000);
-                 rcCommand[THROTTLE] = rxConfig.midrc + qMultiply(throttleScaler, PWM_RANGE_MIN - rxConfig.midrc);
-             } else {
-                 reverseMotors = false;
-                 fix12_t throttleScaler = qConstruct(rcCommand[THROTTLE] - 1000, 1000);
-                 rcCommand[THROTTLE] = rxConfig.midrc + qMultiply(throttleScaler, PWM_RANGE_MAX - rxConfig.midrc);
-             }
-         }
-     }
-     if (FLIGHT_MODE(HEADFREE_MODE)) {
-         static t_fp_vector_def  rcCommandBuff;
-
-         rcCommandBuff.X = rcCommand[ROLL];
-         rcCommandBuff.Y = rcCommand[PITCH];
-         if ((!FLIGHT_MODE(ANGLE_MODE) && (!FLIGHT_MODE(HORIZON_MODE)) && (!FLIGHT_MODE(GPS_RESCUE_MODE)))) {
-             rcCommandBuff.Z = rcCommand[YAW];
-         } else {
-             rcCommandBuff.Z = 0;
-         }
-         imuQuaternionHeadfreeTransformVectorEarthToBody(&rcCommandBuff);
-         rcCommand[ROLL] = rcCommandBuff.X;
-         rcCommand[PITCH] = rcCommandBuff.Y;
-         if ((!FLIGHT_MODE(ANGLE_MODE)&&(!FLIGHT_MODE(HORIZON_MODE)) && (!FLIGHT_MODE(GPS_RESCUE_MODE)))) {
-             rcCommand[YAW] = rcCommandBuff.Z;
-         }
-     }
-}
+//void processRcCommand(void)
+//{
+//    if (isRxDataNew) {
+//        newRxDataForFF = true;
+//    }
+//
+//    if (isRxDataNew && pidAntiGravityEnabled()) {
+//        checkForThrottleErrorResetState(currentRxRefreshRate);
+//    }
+//
+//    if (isRxDataNew) {
+//        for (int axis = FD_ROLL; axis <= FD_YAW; axis++) {
+//
+//#ifdef USE_FEEDFORWARD
+//            isDuplicate[axis] = (oldRcCommand[axis] == rcCommand[axis]);
+//            rcCommandDelta[axis] = (rcCommand[axis] - oldRcCommand[axis]);
+//            oldRcCommand[axis] = rcCommand[axis];
+//#endif
+//
+//            float angleRate;
+//
+//#ifdef USE_GPS_RESCUE
+//            if ((axis == FD_YAW) && FLIGHT_MODE(GPS_RESCUE_MODE)) {
+//                // If GPS Rescue is active then override the setpointRate used in the
+//                // pid controller with the value calculated from the desired heading logic.
+//                angleRate = gpsRescueGetYawRate();
+//                // Treat the stick input as centered to avoid any stick deflection base modifications (like acceleration limit)
+//                rcDeflection[axis] = 0;
+//                rcDeflectionAbs[axis] = 0;
+//            } else
+//#endif
+//            {
+//                // scale rcCommandf to range [-1.0, 1.0]
+//                float rcCommandf;
+//                if (axis == FD_YAW) {
+//                    rcCommandf = rcCommand[axis] / rcCommandYawDivider;
+//                } else {
+//                    rcCommandf = rcCommand[axis] / rcCommandDivider;
+//                }
+//
+//                rcDeflection[axis] = rcCommandf;
+//                const float rcCommandfAbs = fabsf(rcCommandf);
+//                rcDeflectionAbs[axis] = rcCommandfAbs;
+//
+//                angleRate = applyRates(axis, rcCommandf, rcCommandfAbs);
+//
+//            }
+//            rawSetpoint[axis] = constrainf(angleRate, -1.0f * currentControlRateProfile->rate_limit[axis], 1.0f * currentControlRateProfile->rate_limit[axis]);
+//            DEBUG_SET(DEBUG_ANGLERATE, axis, angleRate);
+//        }
+//        // adjust raw setpoint steps to camera angle (mixing Roll and Yaw)
+//        if (rxConfig.fpvCamAngleDegrees && IS_RC_MODE_ACTIVE(BOXFPVANGLEMIX) && !FLIGHT_MODE(HEADFREE_MODE)) {
+//            scaleRawSetpointToFpvCamAngle();
+//        }
+//    }
+//
+//#ifdef USE_RC_SMOOTHING_FILTER
+//    processRcSmoothingFilter();
+//#endif
+//
+//    isRxDataNew = false;
+//}
+//
+//void updateRcCommands(void)
+//{
+//    isRxDataNew = true;
+//
+//    for (int axis = 0; axis < 3; axis++) {
+//        // non coupled PID reduction scaler used in PID controller 1 and PID controller 2.
+//
+//        float tmp = MIN(ABS(rcData[axis] - rxConfig.midrc), 500);
+//        if (axis == ROLL || axis == PITCH) {
+//            if (tmp > rcControlsConfig.deadband) {
+//                tmp -= rcControlsConfig.deadband;
+//            } else {
+//                tmp = 0;
+//            }
+//            rcCommand[axis] = tmp;
+//        } else {
+//            if (tmp > rcControlsConfig.yaw_deadband) {
+//                tmp -= rcControlsConfig.yaw_deadband;
+//            } else {
+//                tmp = 0;
+//            }
+//            rcCommand[axis] = tmp * -GET_DIRECTION(rcControlsConfig.yaw_control_reversed);
+//        }
+//        if (rcData[axis] < rxConfig.midrc) {
+//            rcCommand[axis] = -rcCommand[axis];
+//        }
+//    }
+//
+//    int32_t tmp;
+//     if (featureIsEnabled(FEATURE_3D)) {
+//         tmp = constrain(rcData[THROTTLE], PWM_RANGE_MIN, PWM_RANGE_MAX);
+//         tmp = (uint32_t)(tmp - PWM_RANGE_MIN);
+//     } else
+//    {
+//        tmp = constrain(rcData[THROTTLE], rxConfig.mincheck, PWM_RANGE_MAX);
+//        tmp = (uint32_t)(tmp - rxConfig.mincheck) * PWM_RANGE_MIN / (PWM_RANGE_MAX - rxConfig.mincheck);
+//    }
+//
+//     if (getLowVoltageCutoff()->enabled) {
+//         tmp = tmp * getLowVoltageCutoff()->percentage / 100;
+//     }
+//
+//    rcCommand[THROTTLE] = rcLookupThrottle(tmp);
+//
+//     if (featureIsEnabled(FEATURE_3D) && !failsafeIsActive()) {
+//         if (!flight3DConfig.switched_mode3d) {
+//             if (IS_RC_MODE_ACTIVE(BOX3D)) {
+//                 fix12_t throttleScaler = qConstruct(rcCommand[THROTTLE] - 1000, 1000);
+//                 rcCommand[THROTTLE] = rxConfig.midrc + qMultiply(throttleScaler, PWM_RANGE_MAX - rxConfig.midrc);
+//             }
+//         } else {
+//             if (IS_RC_MODE_ACTIVE(BOX3D)) {
+//                 reverseMotors = true;
+//                 fix12_t throttleScaler = qConstruct(rcCommand[THROTTLE] - 1000, 1000);
+//                 rcCommand[THROTTLE] = rxConfig.midrc + qMultiply(throttleScaler, PWM_RANGE_MIN - rxConfig.midrc);
+//             } else {
+//                 reverseMotors = false;
+//                 fix12_t throttleScaler = qConstruct(rcCommand[THROTTLE] - 1000, 1000);
+//                 rcCommand[THROTTLE] = rxConfig.midrc + qMultiply(throttleScaler, PWM_RANGE_MAX - rxConfig.midrc);
+//             }
+//         }
+//     }
+//     if (FLIGHT_MODE(HEADFREE_MODE)) {
+//         static t_fp_vector_def  rcCommandBuff;
+//
+//         rcCommandBuff.X = rcCommand[ROLL];
+//         rcCommandBuff.Y = rcCommand[PITCH];
+//         if ((!FLIGHT_MODE(ANGLE_MODE) && (!FLIGHT_MODE(HORIZON_MODE)) && (!FLIGHT_MODE(GPS_RESCUE_MODE)))) {
+//             rcCommandBuff.Z = rcCommand[YAW];
+//         } else {
+//             rcCommandBuff.Z = 0;
+//         }
+//         imuQuaternionHeadfreeTransformVectorEarthToBody(&rcCommandBuff);
+//         rcCommand[ROLL] = rcCommandBuff.X;
+//         rcCommand[PITCH] = rcCommandBuff.Y;
+//         if ((!FLIGHT_MODE(ANGLE_MODE)&&(!FLIGHT_MODE(HORIZON_MODE)) && (!FLIGHT_MODE(GPS_RESCUE_MODE)))) {
+//             rcCommand[YAW] = rcCommandBuff.Z;
+//         }
+//     }
+//}
 
 void resetYawAxis(void)
 {

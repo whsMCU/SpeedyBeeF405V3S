@@ -27,11 +27,15 @@
 #define RC_SMOOTHING_AUTO_FACTOR_MAX 250
 #endif
 
+#define THROTTLE_LOOKUP_LENGTH 12
+extern int16_t lookupThrottleRC[THROTTLE_LOOKUP_LENGTH];
+
 void processRcCommand(void);
 float getSetpointRate(int axis);
 float getRcDeflection(int axis);
 float getRcDeflectionAbs(int axis);
-void updateRcCommands(void);
+int16_t rcLookupThrottle(int32_t tmp);
+//void updateRcCommands(void);
 void resetYawAxis(void);
 void initRcProcessing(void);
 bool isMotorsReversed(void);

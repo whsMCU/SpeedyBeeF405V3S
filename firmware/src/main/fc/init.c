@@ -186,6 +186,8 @@ void init(void)
 //
     rxInit();
 
+    initRcProcessing();
+
 #ifdef USE_GPS
     gpsInit();
 #endif
@@ -271,7 +273,7 @@ void Param_Config_Init(void)
 	rxChannelRangeConfigs_Init();
 	rxFailsafeChannelConfigs_Init();
 	batteryConfig_Init();
-//	controlRateProfiles_Init();
+	controlRateProfiles_Init();
 //	mixerConfig_Init();
 //	throttleCorrectionConfig_Init();
 //	featureConfig_Init();

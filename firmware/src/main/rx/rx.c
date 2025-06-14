@@ -43,6 +43,7 @@
 #include "fc/rc_adjustments.h"
 //#include "fc/rc_modes.h"
 #include "fc/stats.h"
+#include "fc/rc.h"
 #include "fc/runtime_config.h"
 
 #include "flight/failsafe.h"
@@ -266,16 +267,6 @@ bool rxIsReceivingSignal(void)
     return rxSignalReceived;
 }
 
-#define THROTTLE_LOOKUP_LENGTH 12
-static int16_t lookupThrottleRC[THROTTLE_LOOKUP_LENGTH];    // lookup table for expo & mid THROTTLE
-
-static int16_t rcLookupThrottle(int32_t tmp)
-{
-    const int32_t tmp2 = tmp / 100;
-    // [0;1000] -> expo -> [MINTHROTTLE;MAXTHROTTLE]
-    return lookupThrottleRC[tmp2] + (tmp - tmp2 * 100) * (lookupThrottleRC[tmp2 + 1] - lookupThrottleRC[tmp2]) / 100;
-}
-
 static void updateRcCommands(void)
 {
     //isRxDataNew = true;
@@ -309,7 +300,8 @@ static void updateRcCommands(void)
 		tmp = constrain(rcData[THROTTLE], rxConfig.mincheck, PWM_RANGE_MAX);
 		tmp = (uint32_t)(tmp - rxConfig.mincheck) * PWM_RANGE_MIN / (PWM_RANGE_MAX - rxConfig.mincheck);
 
-    rcCommand[THROTTLE] = tmp;
+		rcCommand[THROTTLE] = tmp;
+    rcCommand[THROTTLE] = rcLookupThrottle(tmp) - 1000.0f;
 
 	if (FLIGHT_MODE(HEADFREE_MODE)) {
 	 static t_fp_vector_def  rcCommandBuff;

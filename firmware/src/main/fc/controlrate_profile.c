@@ -27,7 +27,7 @@
 //#include "config/config_reset.h"
 
 
-#include "config/config.h"
+//#include "config/config.h"
 #include "fc/controlrate_profile.h"
 #include "fc/rc.h"
 #include "fc/rc_controls.h"
@@ -39,8 +39,8 @@ controlRateConfig_t controlRateProfiles[CONTROL_RATE_PROFILE_COUNT];
 void controlRateProfiles_Init(void)
 {
     for (int i = 0; i < CONTROL_RATE_PROFILE_COUNT; i++) {
-		controlRateProfiles[i].thrMid8 = 50;
-		controlRateProfiles[i].thrExpo8 = 0;
+		controlRateProfiles[i].thrMid8 = 5;
+		controlRateProfiles[i].thrExpo8 = 70;
 		controlRateProfiles[i].tpa_rate = 65;
 		controlRateProfiles[i].tpa_breakpoint = 1350;
 		controlRateProfiles[i].rates_type = RATES_TYPE_ACTUAL;
@@ -64,6 +64,7 @@ void controlRateProfiles_Init(void)
 		controlRateProfiles[i].levelExpo[FD_ROLL] = 0;
 		controlRateProfiles[i].levelExpo[FD_PITCH] = 0;
     }
+    currentControlRateProfile = &controlRateProfiles[0];
 }
 
 const ratesSettingsLimits_t ratesSettingLimits[RATES_TYPE_COUNT] = {
@@ -74,25 +75,25 @@ const ratesSettingsLimits_t ratesSettingLimits[RATES_TYPE_COUNT] = {
     [RATES_TYPE_QUICK]      = { 255, 200, 100 },
 };
 
-void loadControlRateProfile(void)
-{
-    currentControlRateProfile = &controlRateProfiles[systemConfig.activeRateProfile];
-}
-
-void changeControlRateProfile(uint8_t controlRateProfileIndex)
-{
-    if (controlRateProfileIndex < CONTROL_RATE_PROFILE_COUNT) {
-        systemConfig.activeRateProfile = controlRateProfileIndex;
-    }
-
-    loadControlRateProfile();
-    initRcProcessing();
-}
-
-void copyControlRateProfile(const uint8_t dstControlRateProfileIndex, const uint8_t srcControlRateProfileIndex) {
-    if ((dstControlRateProfileIndex < CONTROL_RATE_PROFILE_COUNT && srcControlRateProfileIndex < CONTROL_RATE_PROFILE_COUNT)
-        && dstControlRateProfileIndex != srcControlRateProfileIndex
-    ) {
-        memcpy(&controlRateProfiles[dstControlRateProfileIndex], &controlRateProfiles[srcControlRateProfileIndex], sizeof(controlRateConfig_t));
-    }
-}
+//void loadControlRateProfile(void)
+//{
+//    currentControlRateProfile = &controlRateProfiles[systemConfig.activeRateProfile];
+//}
+//
+//void changeControlRateProfile(uint8_t controlRateProfileIndex)
+//{
+//    if (controlRateProfileIndex < CONTROL_RATE_PROFILE_COUNT) {
+//        systemConfig.activeRateProfile = controlRateProfileIndex;
+//    }
+//
+//    loadControlRateProfile();
+//    initRcProcessing();
+//}
+//
+//void copyControlRateProfile(const uint8_t dstControlRateProfileIndex, const uint8_t srcControlRateProfileIndex) {
+//    if ((dstControlRateProfileIndex < CONTROL_RATE_PROFILE_COUNT && srcControlRateProfileIndex < CONTROL_RATE_PROFILE_COUNT)
+//        && dstControlRateProfileIndex != srcControlRateProfileIndex
+//    ) {
+//        memcpy(&controlRateProfiles[dstControlRateProfileIndex], &controlRateProfiles[srcControlRateProfileIndex], sizeof(controlRateConfig_t));
+//    }
+//}

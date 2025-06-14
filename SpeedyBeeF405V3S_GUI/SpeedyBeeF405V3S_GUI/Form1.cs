@@ -1073,13 +1073,13 @@ namespace SpeedyBeeF405V3S_GUI
                 pictureBox2.Visible = true;
             }
 
-            if ((flight_mode & (int)Flight_Mode.ANGLE_MODE) !=0) textBox2.Text = "ANGLE_MODE";
-            if ((flight_mode & (int)Flight_Mode.HEADFREE_MODE) != 0) textBox2.Text = "HEADFREE_MODE";
+            if ((flight_mode & (int)Flight_Mode.ANGLE_MODE) !=0) textBox2.Text = "ANGLE";
+            if ((flight_mode & (int)Flight_Mode.HEADFREE_MODE) != 0) textBox2.Text += ", HEADFREE";
 
             if (error == 0) textBox3.Text = "No error";
-            if (error == 2) textBox3.Text = "RX_LOSS_DETECTED";
-            if (error == 4) textBox3.Text = "RX_SWITCH";
-            if (error == 8) textBox3.Text = "Battery LOW";
+            if (error == 2) textBox3.Text += "RX_LOSS_DETECTED";
+            if (error == 4) textBox3.Text += "RX_SWITCH";
+            if (error == 8) textBox3.Text += "Battery LOW";
             //if (error == 2) textBox3.Text = "Program loop time";
 
             if ((passed_data[43] >= 6) && (passed_data[44] == 2)) // GPS_Num > 6 && GPS_FIX == 2
