@@ -320,6 +320,25 @@ static void updateRcCommands(void)
 		 rcCommand[YAW] = rcCommandBuff.Z;
 	 }
 	}
+
+//	for (int axis = ROLL; axis <= YAW; axis++)
+//	{
+//	  float angleRate;
+//
+//    // scale rcCommandf to range [-1.0, 1.0]
+//    float rcCommandf;
+//    if (axis == FD_YAW) {
+//        rcCommandf = rcCommand[axis] / rcCommandYawDivider;
+//    } else {
+//        rcCommandf = rcCommand[axis] / rcCommandDivider;
+//    }
+//
+//    const float rcCommandfAbs = fabsf(rcCommandf);
+//
+//    angleRate = applyRates(axis, rcCommandf, rcCommandfAbs);
+//
+//    rcCommand[axis] = constrainf(angleRate, -1.0f * currentControlRateProfile->rate_limit[axis], 1.0f * currentControlRateProfile->rate_limit[axis]);
+//	}
 }
 
 bool taskUpdateRxMainInProgress(void)
