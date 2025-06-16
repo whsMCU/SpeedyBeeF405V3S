@@ -2783,7 +2783,7 @@
             this.label69.Name = "label69";
             this.label69.Size = new System.Drawing.Size(95, 21);
             this.label69.TabIndex = 100;
-            this.label69.Text = "BodyRate[X]";
+            this.label69.Text = "BodyRate[Y]";
             // 
             // label76
             // 

@@ -100,6 +100,7 @@ typedef struct mspPort_s {
     uint16_t cmdMSP;
     uint8_t checksum1;
     uint8_t checksum2;
+    uint32_t error;
 } mspPort_t;
 
 

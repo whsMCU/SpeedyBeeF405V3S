@@ -246,6 +246,7 @@ static bool mspSerialProcessReceivedData(mspPort_t *mspPort, uint8_t c)
                 mspPort->c_state = MSP_COMMAND_RECEIVED;
             } else {
                 mspPort->c_state = MSP_IDLE;
+                mspPort->error++;
             }
             break;
     }
