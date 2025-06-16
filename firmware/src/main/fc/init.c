@@ -253,13 +253,6 @@ void Param_Config_Init(void)
 	//gpsConfig_Init();
 #endif
 
-#ifdef USE_OPFLOW
-	opflow_Init();
-#endif
-
-#ifdef USE_RANGEFINDER
-	rangefinder_Init();
-#endif
 	barometerConfig_Init();
 #ifdef USE_MAG
 	compassConfig_Init();
