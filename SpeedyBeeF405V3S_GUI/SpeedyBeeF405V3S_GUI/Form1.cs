@@ -249,7 +249,9 @@ namespace SpeedyBeeF405V3S_GUI
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
 
-                log = "DateTime, Arming_Flag, Flight_Mode, Roll, Pitch, Yaw, Alt, RollSetPoint, PitchSetPoint, Yaw SetPoint, Thorttle, yaw_heading_reference, altHold, lattitude, longitude, Sat_Num, gps_fix, Throttle_Hold_point, Alt_PID_Result, MOTOR[Right_Rear], MOTOR[Right_Front], MOTOR[Left_Rear], MOTOR[Left_Front], Debug[0], Debug[1], Debug[2], Debug[3]";
+                log = "DateTime, Arming_Flag, Flight_Mode, Roll, Pitch, Yaw, Alt, RollSetPoint, PitchSetPoint, Yaw SetPoint, Thorttle, yaw_heading_reference," +
+                    " altHold, lattitude, longitude, Sat_Num, gps_fix, Throttle_Hold_point, Alt_PID_Result, MOTOR[Right_Rear], MOTOR[Right_Front], MOTOR[Left_Rear], MOTOR[Left_Front]," +
+                    " Debug[0], Debug[1], Debug[2], Debug[3]";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
             }
@@ -269,6 +271,11 @@ namespace SpeedyBeeF405V3S_GUI
             }
         }
 
+        static float scaleRangef(float value, float oldMin, float oldMax, float newMin, float newMax)
+        {
+            return newMin + (value - oldMin) * (newMax - newMin) / (oldMax - oldMin);
+        }
+
         static void Check_Data_Log(string filePath, float[] data)
         {
             using (StreamWriter writer = new StreamWriter(filePath, append: true))
@@ -278,7 +285,10 @@ namespace SpeedyBeeF405V3S_GUI
                 data[1] /= 10;
                 data[4] /= 10;
                 data[5] /= 10;
-                string log = $"{DateTime.Now:HH:mm:ss.fff}, {data[13]}, {data[11]}, {data[0]}, {data[1]}, {data[2]}, {data[3]}, {data[4]}, {data[5]}, {data[6]}, {data[7]}, {data[41]}, {data[42]}, {data[8]}, {data[9]}, {data[43]}, {data[44]}, {data[45]}, {data[46]}, {data[14]}, {data[15]}, {data[16]}, {data[17]}, {data[18]}, {data[19]}, {data[20]}, {data[21]}";
+                string log = $"{DateTime.Now:HH:mm:ss.fff}, {data[13]}, {data[11]}, {data[0]}, {data[1]}, {data[2]}, {data[3]}, {data[4]}, {data[5]}, {data[6]}, {data[7]}," +
+                    $" {data[41]}, {data[42]}, {data[8]}, {data[9]}, {data[43]}, {data[44]}, {data[45]}, {data[46]}, {scaleRangef(data[14], 11000, 21000, 0, 100)}," +
+                    $" {scaleRangef(data[15], 11000, 21000, 0, 100)}, {scaleRangef(data[16], 11000, 21000, 0, 100)}, {scaleRangef(data[17], 11000, 21000, 0, 100)}," +
+                    $" {data[18]}, {data[19]}, {data[20]}, {data[21]}";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
             }
