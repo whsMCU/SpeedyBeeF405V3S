@@ -1364,7 +1364,7 @@ namespace SpeedyBeeF405V3S_GUI
             _alt_pidresult_curve.Line.Width = 2;
             _alt_pidresult_points.Clear();
 
-            _Throttle_curve = _myPane.AddCurve("Throttle_Hold", _Throttle_points, Color.Red, SymbolType.None);
+            _Throttle_curve = _myPane.AddCurve("Throttle", _Throttle_points, Color.Red, SymbolType.None);
             _Throttle_curve.Line.Width = 2;
             _Throttle_points.Clear();
 
