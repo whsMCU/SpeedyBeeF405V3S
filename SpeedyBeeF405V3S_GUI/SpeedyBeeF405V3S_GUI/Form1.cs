@@ -142,6 +142,7 @@ namespace SpeedyBeeF405V3S_GUI
             this.Text = "MCU Drone 제어프로그램";
             received_data = 2;
             textBox10.Text = (zoom - 14).ToString();
+            InitGauge();
             InitGmap();
             InitGraph();
             InitExcel();
@@ -162,7 +163,23 @@ namespace SpeedyBeeF405V3S_GUI
             };
         }
 
-        public void InitGmap()
+        public void InitGauge()
+        {
+            System.TimeSpan timeSpan = new System.TimeSpan(0, 0, 0, 0, 50);
+            Gauge_LF.AnimationsSpeed = timeSpan;
+            Gauge_LF.To = 100;
+
+            Gauge_LR.AnimationsSpeed = timeSpan;
+            Gauge_LR.To = 100;
+
+            Gauge_RF.AnimationsSpeed = timeSpan;
+            Gauge_RF.To = 100;
+
+            Gauge_RR.AnimationsSpeed = timeSpan;
+            Gauge_RR.To = 100;
+        }
+
+            public void InitGmap()
         {
             gMapControl1.MapProvider = GMapProviders.GoogleMap;
             PointLatLng p = new PointLatLng(35.1965882, 126.8295163);
@@ -175,7 +192,11 @@ namespace SpeedyBeeF405V3S_GUI
 
         public void InitExcel()
         {
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            try
+            {
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            }
+            catch { }
         }
         public void InitLogger(string filePath)
         {
@@ -2124,8 +2145,8 @@ namespace SpeedyBeeF405V3S_GUI
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
 
-            attitudeIndicatorInstrumentControl1.SetAttitudeIndicatorParameters(passed_data[0], passed_data[1]);
-            headingIndicatorInstrumentControl1.SetHeadingIndicatorParameters((int)passed_data[3]);
+            attitudeIndicatorInstrumentControl1.SetAttitudeIndicatorParameters(-passed_data[1]/10, passed_data[0]/10);
+            headingIndicatorInstrumentControl1.SetHeadingIndicatorParameters((int)passed_data[2]);
 
             lb_altitude.Text = passed_data[3].ToString();
             float_data[4] = passed_data[4] / 10;
@@ -2151,6 +2172,11 @@ namespace SpeedyBeeF405V3S_GUI
             lb_motor1.Text = passed_data[15].ToString();
             lb_motor2.Text = passed_data[16].ToString();
             lb_motor3.Text = passed_data[17].ToString();
+
+            Gauge_RR.Value = (int)scaleRangef(passed_data[14], 11000, 21000, 0, 100);
+            Gauge_RF.Value = (int)scaleRangef(passed_data[15], 11000, 21000, 0, 100);
+            Gauge_LR.Value = (int)scaleRangef(passed_data[16], 11000, 21000, 0, 100);
+            Gauge_LF.Value = (int)scaleRangef(passed_data[17], 11000, 21000, 0, 100);
 
             lb_debug0.Text = passed_data[18].ToString();
             lb_debug1.Text = passed_data[19].ToString();

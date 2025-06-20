@@ -64,20 +64,32 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.5.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="EPPlus, Version=7.7.0.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPPlus.7.7.0\lib\net462\EPPlus.dll</HintPath>
+    <Reference Include="EPPlus, Version=8.0.6.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.8.0.6\lib\net462\EPPlus.dll</HintPath>
     </Reference>
-    <Reference Include="EPPlus.Interfaces, Version=7.7.0.0, Culture=neutral, PublicKeyToken=a694d7f3b0907a61, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPPlus.Interfaces.7.7.0\lib\net462\EPPlus.Interfaces.dll</HintPath>
+    <Reference Include="EPPlus.Interfaces, Version=8.0.0.0, Culture=neutral, PublicKeyToken=a694d7f3b0907a61, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.Interfaces.8.0.0\lib\net462\EPPlus.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="EPPlus.System.Drawing, Version=7.7.0.0, Culture=neutral, PublicKeyToken=2308d35469c9bac0, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPPlus.System.Drawing.7.7.0\lib\net462\EPPlus.System.Drawing.dll</HintPath>
+    <Reference Include="EPPlus.System.Drawing, Version=8.0.0.0, Culture=neutral, PublicKeyToken=2308d35469c9bac0, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.System.Drawing.8.0.0\lib\net462\EPPlus.System.Drawing.dll</HintPath>
     </Reference>
     <Reference Include="GMap.NET.Core, Version=2.1.7.0, Culture=neutral, PublicKeyToken=b85b9027b614afef, processorArchitecture=MSIL">
       <HintPath>..\packages\GMap.NET.Core.2.1.7\lib\net48\GMap.NET.Core.dll</HintPath>
     </Reference>
     <Reference Include="GMap.NET.WindowsForms, Version=2.1.7.0, Culture=neutral, PublicKeyToken=b85b9027b614afef, processorArchitecture=MSIL">
       <HintPath>..\packages\GMap.NET.WinForms.2.1.7\lib\net48\GMap.NET.WindowsForms.dll</HintPath>
+    </Reference>
+    <Reference Include="LiveCharts, Version=0.9.7.0, Culture=neutral, PublicKeyToken=0bc1f845d1ebb8df, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiveCharts.0.9.7\lib\net45\LiveCharts.dll</HintPath>
+    </Reference>
+    <Reference Include="LiveCharts.WinForms, Version=0.9.7.1, Culture=neutral, PublicKeyToken=0bc1f845d1ebb8df, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiveCharts.WinForms.0.9.7.1\lib\net45\LiveCharts.WinForms.dll</HintPath>
+    </Reference>
+    <Reference Include="LiveCharts.Wpf, Version=0.9.7.0, Culture=neutral, PublicKeyToken=0bc1f845d1ebb8df, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiveCharts.Wpf.0.9.7\lib\net45\LiveCharts.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.Cryptography, Version=9.0.0.6, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.Cryptography.9.0.6\lib\net462\Microsoft.Bcl.Cryptography.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.IO.RecyclableMemoryStream, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.IO.RecyclableMemoryStream.3.0.1\lib\netstandard2.0\Microsoft.IO.RecyclableMemoryStream.dll</HintPath>
@@ -86,9 +98,10 @@
       <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    <Reference Include="System.Buffers, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.6.1\lib\net462\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ComponentModel.Annotations.5.0.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
@@ -96,8 +109,8 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.SqlClient, Version=4.6.1.6, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SqlClient.4.8.6\lib\net461\System.Data.SqlClient.dll</HintPath>
+    <Reference Include="System.Data.SqlClient, Version=4.6.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SqlClient.4.9.0\lib\net462\System.Data.SqlClient.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.SQLite, Version=1.0.119.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
       <HintPath>..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.119.0\lib\net46\System.Data.SQLite.dll</HintPath>
@@ -108,20 +121,30 @@
     <Reference Include="System.Data.SQLite.Linq, Version=1.0.119.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Data.SQLite.Linq.1.0.119.0\lib\net46\System.Data.SQLite.Linq.dll</HintPath>
     </Reference>
-    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    <Reference Include="System.Drawing.Common, Version=9.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Drawing.Common.9.0.6\lib\net462\System.Drawing.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Formats.Asn1, Version=9.0.0.6, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Formats.Asn1.9.0.6\lib\net462\System.Formats.Asn1.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.6.3\lib\net462\System.Memory.dll</HintPath>
     </Reference>
     <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    <Reference Include="System.Numerics.Vectors, Version=4.1.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.6.1\lib\net462\System.Numerics.Vectors.dll</HintPath>
     </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.1.2\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Security" />
+    <Reference Include="System.Security.Cryptography.Xml, Version=9.0.0.6, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Xml.9.0.6\lib\net462\System.Security.Cryptography.Xml.dll</HintPath>
+    </Reference>
     <Reference Include="System.Security.Principal.Windows, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Security.Principal.Windows.5.0.0\lib\net461\System.Security.Principal.Windows.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -131,6 +154,8 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
     <Reference Include="ZedGraph, Version=5.1.7.430, Culture=neutral, PublicKeyToken=02a83cbd123fcd60, processorArchitecture=MSIL">
       <HintPath>..\packages\ZedGraph.5.1.7\lib\net35-Client\ZedGraph.dll</HintPath>
     </Reference>
@@ -183,6 +208,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
+    <None Include="Plugins\jchartfx.tern.json" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -192,12 +218,191 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="Styles\Palettes\images\Thumbs.db" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="License-LGPL.txt" />
+    <Content Include="Plugins\jchartfx.visualstudio.js" />
+    <Content Include="Scripts\jchartfx.advanced.js" />
+    <Content Include="Scripts\jchartfx.animation.js" />
+    <Content Include="Scripts\jchartfx.annotation.js" />
+    <Content Include="Scripts\jchartfx.axistrend.js" />
+    <Content Include="Scripts\jchartfx.bullet.js" />
+    <Content Include="Scripts\jchartfx.coreBasic.js" />
+    <Content Include="Scripts\jchartfx.coreVector.js" />
+    <Content Include="Scripts\jchartfx.coreVector3d.js" />
+    <Content Include="Scripts\jchartfx.data.js" />
+    <Content Include="Scripts\jchartfx.density.js" />
+    <Content Include="Scripts\jchartfx.equalizer.js" />
+    <Content Include="Scripts\jchartfx.funnel.js" />
+    <Content Include="Scripts\jchartfx.gauge.js" />
+    <Content Include="Scripts\jchartfx.handdrawn.js" />
+    <Content Include="Scripts\jchartfx.heatmap.js" />
+    <Content Include="Scripts\jchartfx.highlow.js" />
+    <Content Include="Scripts\jchartfx.highlowclose.js" />
+    <Content Include="Scripts\jchartfx.maps.js" />
+    <Content Include="Scripts\jchartfx.overlaybubble.js" />
+    <Content Include="Scripts\jchartfx.pareto.js" />
+    <Content Include="Scripts\jchartfx.persistence.js" />
+    <Content Include="Scripts\jchartfx.pictograph.js" />
+    <Content Include="Scripts\jchartfx.pyramid.js" />
+    <Content Include="Scripts\jchartfx.radar.js" />
+    <Content Include="Scripts\jchartfx.rose.js" />
+    <Content Include="Scripts\jchartfx.sparkline.js" />
+    <Content Include="Scripts\jchartfx.statistical.js" />
+    <Content Include="Scripts\jchartfx.surface.js" />
+    <Content Include="Scripts\jchartfx.system.js" />
+    <Content Include="Scripts\jchartfx.treemap.js" />
+    <Content Include="Scripts\jchartfx.ui.js" />
+    <Content Include="Scripts\jchartfx.userInterface.js" />
+    <Content Include="Scripts\jchartfx.vector.js" />
+    <Content Include="Scripts\jchartfx.vectorTemplates.js" />
+    <Content Include="Scripts\motifs\images\BrushedMetal.jpg" />
+    <Content Include="Scripts\motifs\jchartfx.motif.aurora.js" />
+    <Content Include="Scripts\motifs\jchartfx.motif.blinds.js" />
+    <Content Include="Scripts\motifs\jchartfx.motif.block.js" />
+    <Content Include="Scripts\motifs\jchartfx.motif.darkrounded.js" />
+    <Content Include="Scripts\motifs\jchartfx.motif.face.js" />
+    <Content Include="Scripts\motifs\jchartfx.motif.glow.js" />
+    <Content Include="Scripts\motifs\jchartfx.motif.handdrawn.js" />
+    <Content Include="Scripts\motifs\jchartfx.motif.healthy.js" />
+    <Content Include="Scripts\motifs\jchartfx.motif.hook.js" />
+    <Content Include="Scripts\motifs\jchartfx.motif.jchartfx.js" />
+    <Content Include="Scripts\motifs\jchartfx.motif.js" />
+    <Content Include="Scripts\motifs\jchartfx.motif.lizard.js" />
+    <Content Include="Scripts\motifs\jchartfx.motif.material.js" />
+    <Content Include="Scripts\motifs\jchartfx.motif.metal.js" />
+    <Content Include="Scripts\motifs\jchartfx.motif.metro.js" />
+    <Content Include="Scripts\motifs\jchartfx.motif.relief.js" />
+    <Content Include="Scripts\motifs\jchartfx.motif.semantic.js" />
+    <Content Include="Scripts\motifs\jchartfx.motif.sunken.js" />
+    <Content Include="Scripts\motifs\jchartfx.motif.topbar.js" />
+    <Content Include="Scripts\motifs\jchartfx.motif.tree.js" />
+    <Content Include="Scripts\motifs\jchartfx.motif.vibrant.js" />
+    <Content Include="Scripts\motifs\jchartfx.motif.whitespace.js" />
+    <Content Include="Scripts\motifs\jchartfx.motif.wireframe.js" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.aurora.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.black-tie.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.blinds.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.blitzer.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.block.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.cupertino.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.dark-hive.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.dot-luv.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.eggplant.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.excite-bike.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.face.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.flick.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.glow.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.handdrawn.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.healthy.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.hook.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.hot-sneaks.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.humanity.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.jchartfx.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.le-frog.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.lizard.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.material.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.metal.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.metro.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.mint-choc.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.overcast.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.pepper-grinder.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.redmond.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.relief.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.semantic.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.smoothness.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.south-street.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.start.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.sunny.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.swanky-purse.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.topbar.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.tree.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.trontastic.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.ui-darkness.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.ui-lightness.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.vader.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.whitespace.css" />
+    <Content Include="Styles\Attributes\jchartfx.attributes.wireframe.css" />
+    <Content Include="Styles\jchartfx.userInterface.css" />
+    <Content Include="Styles\Palettes\images\background-metal1.png" />
+    <Content Include="Styles\Palettes\jchartfx.palette.adventure.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.alternate.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.aurora.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.autumn.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.black-n-blue.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.black-tie.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.blinds.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.blitzer.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.block.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.brown-sugar.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.chartfx5.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.chartfx6.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.chartfx7.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.classic.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.colorful.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.cupertino.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.dark-hive.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.darkpastels.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.dot-luv.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.earth-tones.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.eggplant.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.excite-bike.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.face.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.flick.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.glow.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.handdrawn.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.healthy.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.high-contrast.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.hook.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.hot-sneaks.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.humanity.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.le-frog.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.lilacs-in-mist.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.lite.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.lizard.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.material.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.mesa.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.metal.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.metro.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.mint-choc.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.mocha.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.modern-business.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.oceanica.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.overcast.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.pastels.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.pepper-grinder.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.pocket.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.professional.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.rainy-day.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.redmond.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.relief.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.sand-n-sky.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.semantic.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.simple.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.sky.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.slate.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.smoothness.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.snowy-pine.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.south-street.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.start.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.sunny.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.swanky-purse.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.topbar.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.tree.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.trontastic.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.ui-darkness.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.ui-lightness.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.vader.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.vivid.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.whitespace.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.windows.css" />
+    <Content Include="Styles\Palettes\jchartfx.palette.wireframe.css" />
     <None Include="Resources\AvionicsInstrumentIco.ico" />
     <None Include="Resources\VerticalSpeedNeedle.bmp" />
     <None Include="Resources\AirSpeedIndicator_Background.bmp" />
@@ -231,6 +436,9 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="Plugins\jchartfx.d.ts" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -239,7 +447,9 @@
     <Error Condition="!Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.5.1\build\EntityFramework.props'))" />
     <Error Condition="!Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.5.1\build\EntityFramework.targets'))" />
     <Error Condition="!Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.119.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.119.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets'))" />
+    <Error Condition="!Exists('..\packages\System.ValueTuple.4.6.1\build\net471\System.ValueTuple.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.ValueTuple.4.6.1\build\net471\System.ValueTuple.targets'))" />
   </Target>
   <Import Project="..\packages\EntityFramework.6.5.1\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.targets')" />
   <Import Project="..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.119.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets" Condition="Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.119.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" />
+  <Import Project="..\packages\System.ValueTuple.4.6.1\build\net471\System.ValueTuple.targets" Condition="Exists('..\packages\System.ValueTuple.4.6.1\build\net471\System.ValueTuple.targets')" />
 </Project>
