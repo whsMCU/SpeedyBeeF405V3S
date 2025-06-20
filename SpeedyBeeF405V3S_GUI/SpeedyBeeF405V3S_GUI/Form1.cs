@@ -19,7 +19,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using AvionicsInstrumentControlDemo;
 
 namespace SpeedyBeeF405V3S_GUI
 {

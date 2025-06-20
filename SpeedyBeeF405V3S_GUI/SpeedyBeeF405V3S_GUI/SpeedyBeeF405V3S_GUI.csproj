@@ -54,6 +54,10 @@
     <ApplicationIcon>Resources\AvionicsInstrumentIco.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AGauge, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\AGauge_V2.2.0.2\lib\AGauge.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.5.1\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -204,7 +208,6 @@
     <None Include="Resources\HeadingIndicator_Background.bmp" />
     <None Include="Resources\HeadingWeel.bmp" />
     <None Include="Resources\Horizon_Background.bmp" />
-    <None Include="Resources\Image1.bmp" />
     <None Include="Resources\Horizon_GroundSky.bmp" />
     <None Include="Resources\Indicator_Background.bmp" />
     <None Include="Resources\LongNeedleAltimeter.bmp" />

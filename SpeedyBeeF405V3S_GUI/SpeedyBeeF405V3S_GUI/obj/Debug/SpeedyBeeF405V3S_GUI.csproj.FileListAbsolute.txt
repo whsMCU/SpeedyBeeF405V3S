@@ -170,3 +170,4 @@ D:\Project\SpeedyBeeF405V3S\SpeedyBeeF405V3S_GUI\SpeedyBeeF405V3S_GUI\obj\Debug\
 D:\Project\SpeedyBeeF405V3S\SpeedyBeeF405V3S_GUI\SpeedyBeeF405V3S_GUI\obj\Debug\SpeedyBeeF405V3S_GUI.exe
 D:\Project\SpeedyBeeF405V3S\SpeedyBeeF405V3S_GUI\SpeedyBeeF405V3S_GUI\obj\Debug\SpeedyBeeF405V3S_GUI.pdb
 D:\Project\SpeedyBeeF405V3S\SpeedyBeeF405V3S_GUI\SpeedyBeeF405V3S_GUI\obj\Debug\SpeedyBeeF405V3S_GUI.exe.config
+C:\Users\jjins\Documents\Project\SpeedyBeeF405V3S\SpeedyBeeF405V3S_GUI\SpeedyBeeF405V3S_GUI\bin\Debug\AGauge.dll
