@@ -19,6 +19,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using AvionicsInstrumentControlDemo;
 
 namespace SpeedyBeeF405V3S_GUI
 {
@@ -2123,6 +2124,9 @@ namespace SpeedyBeeF405V3S_GUI
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
+
+            attitudeIndicatorInstrumentControl1.SetAttitudeIndicatorParameters(passed_data[0], passed_data[1]);
+            headingIndicatorInstrumentControl1.SetHeadingIndicatorParameters((int)passed_data[3]);
 
             lb_altitude.Text = passed_data[3].ToString();
             float_data[4] = passed_data[4] / 10;
