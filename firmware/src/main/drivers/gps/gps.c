@@ -15,6 +15,55 @@
 
 #include "sensors/compass.h"
 
+typedef struct PID_PARAM_ {
+  float kP;
+  float kI;
+  float kD;
+  float Imax;
+} PID_PARAM;
+
+PID_PARAM posholdPID_PARAM;
+PID_PARAM poshold_ratePID_PARAM;
+PID_PARAM navPID_PARAM;
+
+int32_t get_P(int32_t error, struct PID_PARAM_* pid) {
+  return (float)error * pid->kP;
+}
+
+int32_t get_I(int32_t error, float* dt, struct PID_* pid, struct PID_PARAM_* pid_param) {
+  pid->integrator += ((float)error * pid_param->kI) * *dt;
+  pid->integrator = constrain(pid->integrator,-pid_param->Imax,pid_param->Imax);
+  return pid->integrator;
+}
+
+int32_t get_D(int32_t input, float* dt, struct PID_* pid, struct PID_PARAM_* pid_param) { // dt in milliseconds
+  pid->derivative = (input - pid->last_input) / *dt;
+
+  /// Low pass filter cut frequency for derivative calculation.
+  float filter = 7.9577e-3; // Set to  "1 / ( 2 * PI * f_cut )";
+  // Examples for _filter:
+  // f_cut = 10 Hz -> _filter = 15.9155e-3
+  // f_cut = 15 Hz -> _filter = 10.6103e-3
+  // f_cut = 20 Hz -> _filter =  7.9577e-3
+  // f_cut = 25 Hz -> _filter =  6.3662e-3
+  // f_cut = 30 Hz -> _filter =  5.3052e-3
+
+  // discrete low pass filter, cuts out the
+  // high frequency noise that can drive the controller crazy
+  pid->derivative = pid->lastderivative + (*dt / ( filter + *dt)) * (pid->derivative - pid->lastderivative);
+  // update state
+  pid->last_input = input;
+  pid->lastderivative    = pid->derivative;
+  // add in derivative component
+  return pid_param->kD * pid->derivative;
+}
+
+void reset_PID(struct PID_* pid) {
+  pid->integrator = 0;
+  pid->last_input = 0;
+  pid->lastderivative = 0;
+}
+
 uint8_t gps_set_home_point_once;
 
 const unsigned char UBX_CFG_PRT[] = {
@@ -68,6 +117,20 @@ void gpsInit(void)
 	GpsNav.nav_mode = NAV_MODE_NONE;
 	GpsNav.GPS_wp_radius = GPS_WP_RADIUS;
 	gps_set_home_point_once = false;
+
+  posholdPID_PARAM.kP   = (float)0.11f;
+  posholdPID_PARAM.kI   = (float)0.0f;
+  posholdPID_PARAM.Imax = 2000;
+
+  poshold_ratePID_PARAM.kP   = (float)2.0f;
+  poshold_ratePID_PARAM.kI   = (float)0.08f;
+  poshold_ratePID_PARAM.kD   = (float)0.045f;
+  poshold_ratePID_PARAM.Imax = 2000;
+
+  navPID_PARAM.kP   = (float)1.4f;
+  navPID_PARAM.kI   = (float)0.2f;
+  navPID_PARAM.kD   = (float)0.08f;
+  navPID_PARAM.Imax = 2000;
 }
 
 //Apply moving average filter to GPS data
@@ -116,7 +179,7 @@ UbxNavStatus_t nav_status;
 static bool next_fix;
 
 uint32_t posllh_dt, posllh_tmp, sat_dt, sat_tmp, status_dt, status_tmp;
-
+#define GPS_FILTERING
 void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t length) {
     if (cls == 0x01 && id == 0x02) {  // NAV-POSLLH
         if (length < 28) return;
@@ -358,9 +421,9 @@ void GPS_reset_nav(void) {
     GpsNav.nav_rated[i] = 0;
     GpsNav.nav[i] = 0;
 
-//    reset_PID(&posholdPID[i]);
-//    reset_PID(&poshold_ratePID[i]);
-//    reset_PID(&navPID[i]);
+    reset_PID(&GpsNav.posholdPID[i]);
+    reset_PID(&GpsNav.poshold_ratePID[i]);
+    reset_PID(&GpsNav.navPID[i]);
     GpsNav.nav_mode = NAV_MODE_NONE;
   }
 }
@@ -373,25 +436,24 @@ static void GPS_calc_poshold() {
   int32_t target_speed;
   uint8_t axis;
 
-//  for (axis=0;axis<2;axis++) {
-//    target_speed = get_P(error[axis], &posholdPID_PARAM); // calculate desired speed from lat/lon error
-//    target_speed = constrain(target_speed,-100,100);      // Constrain the target speed in poshold mode to 1m/s it helps avoid runaways..
-//    rate_error[axis] = target_speed - actual_speed[axis]; // calc the speed error
-//
-//    nav[axis]      =
-//        get_P(rate_error[axis],                                               &poshold_ratePID_PARAM)
-//       +get_I(rate_error[axis] + error[axis], &dTnav, &poshold_ratePID[axis], &poshold_ratePID_PARAM);
-//
-//    d = get_D(error[axis],                    &dTnav, &poshold_ratePID[axis], &poshold_ratePID_PARAM);
-//
-//    d = constrain(d, -2000, 2000);
-//    // get rid of noise
-//    if(abs(actual_speed[axis]) < 50) d = 0;
-//
-//    nav[axis] +=d;
-//    nav[axis]  = constrain(nav[axis], -NAV_BANK_MAX, NAV_BANK_MAX);
-//    navPID[axis].integrator = poshold_ratePID[axis].integrator;
-//  }
+  for (axis=0;axis<2;axis++) {
+    target_speed = get_P(GpsNav.error[axis], &posholdPID_PARAM); // calculate desired speed from lat/lon error
+    target_speed = constrain(target_speed,-100,100);      // Constrain the target speed in poshold mode to 1m/s it helps avoid runaways..
+    GpsNav.rate_error[axis] = target_speed - GpsNav.actual_speed[axis]; // calc the speed error
+
+    GpsNav.nav[axis] = get_P(GpsNav.rate_error[axis], &poshold_ratePID_PARAM)
+       + get_I(GpsNav.rate_error[axis] + GpsNav.error[axis], &GpsNav.dTnav, &GpsNav.poshold_ratePID[axis], &poshold_ratePID_PARAM);
+
+    d = get_D(GpsNav.error[axis], &GpsNav.dTnav, &GpsNav.poshold_ratePID[axis], &poshold_ratePID_PARAM);
+
+    d = constrain(d, -2000, 2000);
+    // get rid of noise
+    if(abs(GpsNav.actual_speed[axis]) < 50) d = 0;
+
+    GpsNav.nav[axis] +=d;
+    GpsNav.nav[axis]  = constrain(GpsNav.nav[axis], -NAV_BANK_MAX, NAV_BANK_MAX);
+    GpsNav.navPID[axis].integrator = GpsNav.poshold_ratePID[axis].integrator;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -494,62 +556,65 @@ void GPS_calculateDistanceAndDirectionToHome(void)
 
 void gpsUpdate(uint32_t currentTimeUs)
 {
-  if(FLIGHT_MODE(GPS_HOME_MODE) && ARMING_FLAG(ARMED))    //if home is not set set home position to WP#0 and activate it
+  if(STATE(GPS_FIX) && GpsNav.GPS_numSat >= 5)
   {
-    GPS_reset_home_position();
-  }
+    if(!FLIGHT_MODE(GPS_HOME_MODE) && ARMING_FLAG(ARMED))    //if home is not set set home position to WP#0 and activate it
+    {
+      GPS_reset_home_position();
+    }
 
-  //dTnav calculation
-  //Time for calculating x,y speed and navigation pids
-  static uint32_t nav_loopTimer;
-  GpsNav.dTnav = (float)(millis() - nav_loopTimer)/ 1000.0f;
-  nav_loopTimer = millis();
-  // prevent runup from bad GPS
-  GpsNav.dTnav = MIN(GpsNav.dTnav, 1.0f);
+    //dTnav calculation
+    //Time for calculating x,y speed and navigation pids
+    static uint32_t nav_loopTimer;
+    GpsNav.dTnav = (float)(millis() - nav_loopTimer)/ 1000.0f;
+    nav_loopTimer = millis();
+    // prevent runup from bad GPS
+    GpsNav.dTnav = MIN(GpsNav.dTnav, 1.0f);
 
-  GPS_calculateDistanceAndDirectionToHome();
+    GPS_calculateDistanceAndDirectionToHome();
 
-//  if (ARMING_FLAG(ARMED)) {
-//      GPS_calculateDistanceFlownVerticalSpeed(false);
-//  }
+  //  if (ARMING_FLAG(ARMED)) {
+  //      GPS_calculateDistanceFlownVerticalSpeed(false);
+  //  }
 
-  //calculate the current velocity based on gps coordinates continously to get a valid speed at the moment when we start navigating
-  GPS_calc_velocity();
+    //calculate the current velocity based on gps coordinates continously to get a valid speed at the moment when we start navigating
+    GPS_calc_velocity();
 
-  if (STATE(GPS_HOLD_MODE) || STATE(GPS_HOME_MODE)){    //ok we are navigating
-    //do gps nav calculations here, these are common for nav and poshold
-    #if defined(GPS_LEAD_FILTER)
-      GPS_distance_cm_bearing(&GPS_coord_lead[LAT],&GPS_coord_lead[LON],&GPS_WP[LAT],&GPS_WP[LON],&wp_distance,&target_bearing);
-      GPS_calc_location_error(&GPS_WP[LAT],&GPS_WP[LON],&GPS_coord_lead[LAT],&GPS_coord_lead[LON]);
-    #else
-      GPS_distance_cm_bearing(&GpsNav.GPS_coord[LAT],&GpsNav.GPS_coord[LON],&GpsNav.GPS_WP[LAT],&GpsNav.GPS_WP[LON],&GpsNav.wp_distance,&GpsNav.target_bearing);
-      GPS_calc_location_error(&GpsNav.GPS_WP[LAT],&GpsNav.GPS_WP[LON],&GpsNav.GPS_coord[LAT],&GpsNav.GPS_coord[LON]);
-    #endif
-    switch (GpsNav.nav_mode) {
-      case NAV_MODE_POSHOLD:
-        //Desired output is in nav_lat and nav_lon where 1deg inclination is 100
-        GPS_calc_poshold();
-        break;
-      case NAV_MODE_WP:
-        int16_t speed = GPS_calc_desired_speed(NAV_SPEED_MAX, NAV_SLOW_NAV);      //slow navigation
-        // use error as the desired rate towards the target
-        //Desired output is in nav_lat and nav_lon where 1deg inclination is 100
-        GPS_calc_nav_rate(speed);
+    if (STATE(GPS_HOLD_MODE) || STATE(GPS_HOME_MODE)){    //ok we are navigating
+      //do gps nav calculations here, these are common for nav and poshold
+      #if defined(GPS_LEAD_FILTER)
+        GPS_distance_cm_bearing(&GPS_coord_lead[LAT],&GPS_coord_lead[LON],&GPS_WP[LAT],&GPS_WP[LON],&wp_distance,&target_bearing);
+        GPS_calc_location_error(&GPS_WP[LAT],&GPS_WP[LON],&GPS_coord_lead[LAT],&GPS_coord_lead[LON]);
+      #else
+        GPS_distance_cm_bearing(&GpsNav.GPS_coord[LAT],&GpsNav.GPS_coord[LON],&GpsNav.GPS_WP[LAT],&GpsNav.GPS_WP[LON],&GpsNav.wp_distance,&GpsNav.target_bearing);
+        GPS_calc_location_error(&GpsNav.GPS_WP[LAT],&GpsNav.GPS_WP[LON],&GpsNav.GPS_coord[LAT],&GpsNav.GPS_coord[LON]);
+      #endif
+      switch (GpsNav.nav_mode) {
+        case NAV_MODE_POSHOLD:
+          //Desired output is in nav_lat and nav_lon where 1deg inclination is 100
+          GPS_calc_poshold();
+          break;
+        case NAV_MODE_WP:
+          int16_t speed = GPS_calc_desired_speed(NAV_SPEED_MAX, NAV_SLOW_NAV);      //slow navigation
+          // use error as the desired rate towards the target
+          //Desired output is in nav_lat and nav_lon where 1deg inclination is 100
+          GPS_calc_nav_rate(speed);
 
-        //Tail control
-        if (NAV_CONTROLS_HEADING) {
-          if (NAV_TAIL_FIRST) {
-            magHold = wrap_18000(GpsNav.nav_bearing-18000)/100;
-          } else {
-            magHold = GpsNav.nav_bearing/100;
+          //Tail control
+          if (NAV_CONTROLS_HEADING) {
+            if (NAV_TAIL_FIRST) {
+              magHold = wrap_18000(GpsNav.nav_bearing-18000)/100;
+            } else {
+              magHold = GpsNav.nav_bearing/100;
+            }
           }
-        }
-        // Are we there yet ?(within 2 meters of the destination)
-        if ((GpsNav.wp_distance <= GpsNav.GPS_wp_radius) || check_missed_wp()){         //if yes switch to poshold mode
-          GpsNav.nav_mode = NAV_MODE_POSHOLD;
-          if (NAV_SET_TAKEOFF_HEADING) { magHold = GpsNav.nav_takeoff_bearing; }
-        }
-        break;
+          // Are we there yet ?(within 2 meters of the destination)
+          if ((GpsNav.wp_distance <= GpsNav.GPS_wp_radius) || check_missed_wp()){         //if yes switch to poshold mode
+            GpsNav.nav_mode = NAV_MODE_POSHOLD;
+            if (NAV_SET_TAKEOFF_HEADING) { magHold = GpsNav.nav_takeoff_bearing; }
+          }
+          break;
+      }
     }
   }
 }

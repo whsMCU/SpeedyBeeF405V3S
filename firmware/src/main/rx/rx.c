@@ -650,16 +650,16 @@ void processRxModes(uint32_t currentTimeUs)
 	  DISABLE_FLIGHT_MODE(BARO_MODE);
 	}
 
-#ifdef USE_GPS1
+#ifdef USE_GPS
   static uint8_t GPSNavReset = 1;
-  if (STATE(GPS_FIX) && GpsNav.GPS_numSat >= 6 ) {
+  if (STATE(GPS_FIX) && GpsNav.GPS_numSat >= 5 ) {
     if (rcData[SC] >= 1500) {  // if both GPS_HOME & GPS_HOLD are checked => GPS_HOME is the priority
       if (!FLIGHT_MODE(GPS_HOME_MODE))  {
         ENABLE_FLIGHT_MODE(GPS_HOME_MODE);
         DISABLE_FLIGHT_MODE(GPS_HOLD_MODE);
         GPSNavReset = 0;
         GPS_set_next_wp(&GpsNav.GPS_home[LAT],&GpsNav.GPS_home[LON]);
-        GpsNav.nav_mode    = NAV_MODE_WP;
+        GpsNav.nav_mode = NAV_MODE_WP;
       }
     } else {
       DISABLE_FLIGHT_MODE(GPS_HOME_MODE);

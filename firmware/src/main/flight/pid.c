@@ -157,7 +157,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   //debug[2] = _PITCH.in.result_d;
   //debug[3] = _PITCH.in.result;
 
-#ifdef USE_GPS1
+#ifdef USE_GPS
   if ( (FLIGHT_MODE(GPS_HOME_MODE) || FLIGHT_MODE(GPS_HOLD_MODE)) && STATE(GPS_FIX_HOME) ) {
     float sin_yaw_y = sin(heading*0.0174532925f);
     float cos_yaw_x = cos(heading*0.0174532925f);
@@ -176,7 +176,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   }
 #endif
 
-  PID_Calculation(&_ROLL.out, rcCommand[ROLL], imu_roll, dT);
+  PID_Calculation(&_ROLL.out, rcCommand[ROLL] + GpsNav.GPS_angle[ROLL], imu_roll, dT);
   PID_Calculation(&_ROLL.in, _ROLL.out.result, bmi270.gyroADCf[X], dT);
 
   if(_PID_Test.pid_test_flag == 1)
@@ -184,7 +184,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     PID_Calculation(&_PITCH.out, _PID_Test.pid_test_deg, imu_pitch, dT);
   }else
   {
-    PID_Calculation(&_PITCH.out, rcCommand[PITCH], imu_pitch, dT);
+    PID_Calculation(&_PITCH.out, rcCommand[PITCH] + GpsNav.GPS_angle[PITCH], imu_pitch, dT);
   }
   PID_Calculation(&_PITCH.in, _PITCH.out.result, bmi270.gyroADCf[Y], dT);
 

@@ -69,6 +69,14 @@ typedef struct {
   uint16_t fraction3[2];
 } GpsNavFilter_t;
 
+typedef struct PID_ {
+  float   integrator; // integrator value
+  int32_t last_input; // last input for derivative
+  float   lastderivative; // last derivative for low-pass filter
+  float   output;
+  float   derivative;
+} GPS_PID_t;
+
 typedef struct {
   GpsNavFilter_t GPS_filter;
   uint8_t nav_mode;
@@ -95,10 +103,16 @@ typedef struct {
   int32_t nav_bearing;                        // with the addition of Crosstrack error in degrees * 100
   int32_t original_target_bearing;          // deg * 100, The original angle to the next_WP when the next_WP was set Also used to check when we pass a WP
   uint16_t waypoint_speed_gov;              // used for slow speed wind up when start navigation;
+  int16_t rate_error[2];
   int32_t error[2];
   float  dTnav;                             // Delta Time in milliseconds for navigation computations, updated with every good GPS read
   int16_t actual_speed[2];
   int32_t altCm;                            // altitude in 0.01m
+
+  GPS_PID_t posholdPID[2];
+  GPS_PID_t poshold_ratePID[2];
+  GPS_PID_t navPID[2];
+
 } GpsNav_t;
 
 extern GpsNav_t GpsNav;
