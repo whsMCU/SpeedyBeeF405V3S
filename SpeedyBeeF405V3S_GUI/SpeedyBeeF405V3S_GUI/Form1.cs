@@ -25,7 +25,7 @@ namespace SpeedyBeeF405V3S_GUI
     public partial class Form1 : Form
     {
         private static System.Timers.Timer AHRS_Timer;
-        float[] passed_data = new float[50];
+        float[] passed_data = new float[100];
         float[] float_data = new float[10];
         float[] float_data_pid = new float[18];
         UTF8 UTF8 = new UTF8();
@@ -272,7 +272,7 @@ namespace SpeedyBeeF405V3S_GUI
 
                 log = "DateTime, Arming_Flag, Flight_Mode, Roll, Pitch, Yaw, Alt, RollSetPoint, PitchSetPoint, Yaw SetPoint, Thorttle, yaw_heading_reference," +
                     " altHold, lattitude, longitude, Sat_Num, gps_fix, Throttle_Hold_point, Alt_PID_Result, MOTOR[Right_Rear], MOTOR[Right_Front], MOTOR[Left_Rear], MOTOR[Left_Front]," +
-                    " Debug[0], Debug[1], Debug[2], Debug[3]";
+                    " BAT_V, BAT_A, BAT_mAh, Debug[0], Debug[1], Debug[2], Debug[3]";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
             }
@@ -309,7 +309,7 @@ namespace SpeedyBeeF405V3S_GUI
                 string log = $"{DateTime.Now:HH:mm:ss.fff}, {data[13]}, {data[11]}, {data[0]}, {data[1]}, {data[2]}, {data[3]}, {data[4]}, {data[5]}, {data[6]}, {data[7]}," +
                     $" {data[41]}, {data[42]}, {data[8]}, {data[9]}, {data[43]}, {data[44]}, {data[45]}, {data[46]}, {scaleRangef(data[14], 11000, 21000, 0, 100)}," +
                     $" {scaleRangef(data[15], 11000, 21000, 0, 100)}, {scaleRangef(data[16], 11000, 21000, 0, 100)}, {scaleRangef(data[17], 11000, 21000, 0, 100)}," +
-                    $" {data[18]}, {data[19]}, {data[20]}, {data[21]}";
+                    $" {data[10]/100}, {data[47]/100}, {data[48]},{data[18]}, {data[19]}, {data[20]}, {data[21]}";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
             }
@@ -1975,7 +1975,7 @@ namespace SpeedyBeeF405V3S_GUI
             passed_data[7] = BitConverter.ToInt16(payload, 14) / 10;                 // RC_Throttole
             passed_data[8] = BitConverter.ToInt32(payload, 16);     // posllh.lat
             passed_data[9] = BitConverter.ToInt32(payload, 20);     // posllh.lon
-            passed_data[10] = BitConverter.ToInt16(payload, 24);    // batteryAverageCellVoltage
+            passed_data[10] = BitConverter.ToInt16(payload, 24);    // batteryVoltage
             passed_data[11] = BitConverter.ToUInt16(payload, 26);   // flightMode_Flags
             passed_data[12] = BitConverter.ToInt16(payload, 28);    // failsafe_Flags
             passed_data[13] = BitConverter.ToInt16(payload, 30);    // ARMING_Flags
@@ -2026,6 +2026,9 @@ namespace SpeedyBeeF405V3S_GUI
             passed_data[45] = BitConverter.ToInt32(payload, 130);  // initialThrottleHold
 
             passed_data[46] = BitConverter.ToInt32(payload, 134);  // _ALT.result
+
+            passed_data[47] = BitConverter.ToInt32(payload, 138);  // BAT_A
+            passed_data[48] = BitConverter.ToInt32(payload, 142);  // BAT_mAh
 
             if (cb_record.Checked == true)
             {
@@ -2157,8 +2160,10 @@ namespace SpeedyBeeF405V3S_GUI
             lb_rc_throttle.Text = passed_data[7].ToString();
             lb_lat.Text = passed_data[8].ToString();
             lb_long.Text = passed_data[9].ToString();
-            lb_bat.Text = ((passed_data[10] * 4) / 100).ToString();
-            battery_bar_level = (int)(passed_data[10] * 4) / 10;
+            lb_bat_V.Text = (passed_data[10] / 100).ToString();
+            lb_bat_A.Text = (passed_data[47] / 100).ToString("F1", CultureInfo.InvariantCulture);
+            lb_bat_mAh.Text = (passed_data[48]).ToString();
+            battery_bar_level = (int)(passed_data[10]) / 10;
 
             flight_mode = (UInt16)passed_data[11];
 
@@ -2228,7 +2233,6 @@ namespace SpeedyBeeF405V3S_GUI
             }
             return true;
         }
-
         bool Msp_pid_data(byte[] payload)
         {
             DateTime date_time = DateTime.Now;

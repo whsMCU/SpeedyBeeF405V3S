@@ -445,7 +445,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU32(dst, GpsNav.GPS_coord[LAT]);
           sbufWriteU32(dst, GpsNav.GPS_coord[LON]);
 
-          sbufWriteU16(dst, getBatteryAverageCellVoltage());
+          sbufWriteU16(dst, getBatteryVoltage());
 
           sbufWriteU16(dst, flightModeFlags);
 
@@ -502,6 +502,10 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU32(dst, initialThrottleHold);
 
           sbufWriteU32(dst, _ALT.result);
+
+          sbufWriteU32(dst, getAmperage()); // send amperage in 0.01 A steps
+
+          sbufWriteU32(dst, getMAhDrawn()); // milliamp hours drawn from battery
         }
         break;
 

@@ -42,6 +42,7 @@
 #include "fc/runtime_config.h"
 
 #include "sensors/compass.h"
+#include "sensors/opflow.h"
 
 DoublePID _ROLL;
 DoublePID _PITCH;
@@ -52,6 +53,8 @@ PID _YAW_Rate;
 PID _ALT;
 
 PID_Test _PID_Test;
+
+static void updatePosHold(timeUs_t currentTimeUs);
 
 void pidInit(void)
 {
@@ -96,6 +99,10 @@ void pidInit(void)
   _ALT.ki = 0;
   _ALT.kd = 0;
   _ALT.integral_windup = 200;
+
+  opflow.poshold.KP = 1.0f;
+  opflow.poshold.KI = 1.8f;
+  opflow.poshold.KD = 0.15f;
 
   _PID_Test.pid_test_flag = 0;
   _PID_Test.pid_test_throttle = 0;
@@ -157,7 +164,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   //debug[2] = _PITCH.in.result_d;
   //debug[3] = _PITCH.in.result;
 
-#ifdef USE_GPS
+#ifdef USE_GPS1
   if ( (FLIGHT_MODE(GPS_HOME_MODE) || FLIGHT_MODE(GPS_HOLD_MODE)) && STATE(GPS_FIX_HOME) ) {
     float sin_yaw_y = sin(heading*0.0174532925f);
     float cos_yaw_x = cos(heading*0.0174532925f);
@@ -175,6 +182,8 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     GpsNav.GPS_angle[PITCH] = 0;
   }
 #endif
+
+  updatePosHold(currentTimeUs);
 
   PID_Calculation(&_ROLL.out, rcCommand[ROLL] + GpsNav.GPS_angle[ROLL], imu_roll, dT);
   PID_Calculation(&_ROLL.in, _ROLL.out.result, bmi270.gyroADCf[X], dT);
@@ -289,4 +298,60 @@ void updateAltHold(timeUs_t currentTimeUs)
   }
   debug[2] = (int32_t)_ALT.result;
   debug[3] = (int32_t)rcCommand[THROTTLE];
+}
+
+void updatePosHold(timeUs_t currentTimeUs)
+{
+  UNUSED(currentTimeUs);
+  opflow_poshold_t *poshold = &opflow.poshold;
+
+  static uint32_t pre_time = 0;
+  uint32_t now_time = micros();
+  poshold->dt = now_time - pre_time;
+  pre_time = now_time;
+
+  poshold->Pixel[X] = poshold->Pixel[X] + opflow.flowRate[X] * poshold->dt;
+  poshold->Pixel[Y] = poshold->Pixel[Y] + opflow.flowRate[Y] * poshold->dt;
+
+  if(rcData[THROTTLE] < 1030)
+  {
+    poshold->Pixel[X] = 0;
+    poshold->Pixel[Y] = 0;
+  }
+
+  poshold->target_Pixel[X] = 0;
+  poshold->target_Pixel[Y] = 0;
+  poshold->error_Pixel[X] = poshold->target_Pixel[X] - poshold->Pixel[X];
+  poshold->error_Pixel[Y] = poshold->target_Pixel[Y] - poshold->Pixel[Y];
+
+  poshold->target_Angle[Y] = poshold->KP * poshold->error_Pixel[X];
+  poshold->target_Angle[X] = poshold->KP * poshold->error_Pixel[Y];
+
+  poshold->target_Angle[Y] += poshold->KD * -opflow.flowRate[X];
+  poshold->target_Angle[X] += poshold->KD * -opflow.flowRate[Y];
+
+  poshold->target_Angle[Y] += poshold->KD * -opflow.flowRate[X];
+  poshold->target_Angle[X] += poshold->KD * -opflow.flowRate[Y];
+
+  poshold->integral_Pixel[X] += poshold->KI * poshold->error_Pixel[X] * poshold->dt;
+  poshold->integral_Pixel[Y] += poshold->KI * poshold->error_Pixel[Y] * poshold->dt;
+
+  if(rcData[THROTTLE] < 1030)
+  {
+    poshold->integral_Pixel[X] = 0;
+    poshold->integral_Pixel[Y] = 0;
+  }
+
+  poshold->target_Angle[Y] += poshold->integral_Pixel[X];
+  poshold->target_Angle[X] += poshold->integral_Pixel[Y];
+
+  if(rcData[THROTTLE] < 1030)
+  {
+    poshold->target_Angle[X] = 0;
+    poshold->target_Angle[Y] = 0;
+  }
+
+  constrain(poshold->target_Angle[X],-30,30);
+  constrain(poshold->target_Angle[Y],-30,30);
+
 }

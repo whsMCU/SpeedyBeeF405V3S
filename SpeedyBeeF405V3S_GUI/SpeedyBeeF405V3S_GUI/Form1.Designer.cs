@@ -150,7 +150,7 @@
             this.pictureBox4 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.lb_bat = new System.Windows.Forms.Label();
+            this.lb_bat_V = new System.Windows.Forms.Label();
             this.panel7 = new System.Windows.Forms.Panel();
             this.panel6 = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
@@ -236,6 +236,10 @@
             this.timer_status = new System.Windows.Forms.Timer(this.components);
             this.flight_timer = new System.Windows.Forms.Timer(this.components);
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.Gauge_RR = new LiveCharts.WinForms.SolidGauge();
+            this.Gauge_RF = new LiveCharts.WinForms.SolidGauge();
+            this.Gauge_LR = new LiveCharts.WinForms.SolidGauge();
+            this.Gauge_LF = new LiveCharts.WinForms.SolidGauge();
             this.lb_motor3 = new System.Windows.Forms.Label();
             this.lb_motor2 = new System.Windows.Forms.Label();
             this.lb_motor1 = new System.Windows.Forms.Label();
@@ -256,6 +260,8 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
+            this.headingIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.HeadingIndicatorInstrumentControl();
+            this.attitudeIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.AttitudeIndicatorInstrumentControl();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label62 = new System.Windows.Forms.Label();
             this.lb_route_distance = new System.Windows.Forms.Label();
@@ -330,12 +336,10 @@
             this.bt_ReScan = new System.Windows.Forms.Button();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.tb_msp_error = new System.Windows.Forms.TextBox();
-            this.Gauge_RR = new LiveCharts.WinForms.SolidGauge();
-            this.Gauge_RF = new LiveCharts.WinForms.SolidGauge();
-            this.Gauge_LR = new LiveCharts.WinForms.SolidGauge();
-            this.Gauge_LF = new LiveCharts.WinForms.SolidGauge();
-            this.headingIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.HeadingIndicatorInstrumentControl();
-            this.attitudeIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.AttitudeIndicatorInstrumentControl();
+            this.label90 = new System.Windows.Forms.Label();
+            this.lb_bat_A = new System.Windows.Forms.Label();
+            this.label92 = new System.Windows.Forms.Label();
+            this.lb_bat_mAh = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -953,6 +957,7 @@
             this.panel4.Controls.Add(this.label3);
             this.panel4.Controls.Add(this.textBox2);
             this.panel4.Controls.Add(this.textBox3);
+            this.panel4.Controls.Add(this.lb_fail);
             this.panel4.Location = new System.Drawing.Point(13, 506);
             this.panel4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.panel4.Name = "panel4";
@@ -1097,19 +1102,22 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.label92);
+            this.panel2.Controls.Add(this.lb_bat_mAh);
+            this.panel2.Controls.Add(this.label90);
+            this.panel2.Controls.Add(this.lb_bat_A);
             this.panel2.Controls.Add(this.lb_gps_fix);
             this.panel2.Controls.Add(this.label56);
             this.panel2.Controls.Add(this.label79);
             this.panel2.Controls.Add(this.label57);
             this.panel2.Controls.Add(this.lb_sat_num);
-            this.panel2.Controls.Add(this.lb_fail);
             this.panel2.Controls.Add(this.lb_armed);
             this.panel2.Controls.Add(this.pictureBox6);
             this.panel2.Controls.Add(this.pictureBox5);
             this.panel2.Controls.Add(this.pictureBox4);
             this.panel2.Controls.Add(this.pictureBox2);
             this.panel2.Controls.Add(this.pictureBox1);
-            this.panel2.Controls.Add(this.lb_bat);
+            this.panel2.Controls.Add(this.lb_bat_V);
             this.panel2.Controls.Add(this.panel7);
             this.panel2.Controls.Add(this.textBox10);
             this.panel2.Controls.Add(this.bt_zoom_p);
@@ -1146,7 +1154,7 @@
             // 
             this.label79.AutoSize = true;
             this.label79.Font = new System.Drawing.Font("굴림", 10F);
-            this.label79.Location = new System.Drawing.Point(8, 412);
+            this.label79.Location = new System.Drawing.Point(8, 366);
             this.label79.Name = "label79";
             this.label79.Size = new System.Drawing.Size(49, 14);
             this.label79.TabIndex = 90;
@@ -1156,7 +1164,7 @@
             // 
             this.label57.AutoSize = true;
             this.label57.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label57.Location = new System.Drawing.Point(47, 426);
+            this.label57.Location = new System.Drawing.Point(47, 380);
             this.label57.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label57.Name = "label57";
             this.label57.Size = new System.Drawing.Size(20, 21);
@@ -1176,7 +1184,7 @@
             // lb_fail
             // 
             this.lb_fail.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_fail.Location = new System.Drawing.Point(4, 369);
+            this.lb_fail.Location = new System.Drawing.Point(255, 32);
             this.lb_fail.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_fail.Name = "lb_fail";
             this.lb_fail.Size = new System.Drawing.Size(64, 19);
@@ -1246,15 +1254,15 @@
             this.pictureBox1.TabIndex = 51;
             this.pictureBox1.TabStop = false;
             // 
-            // lb_bat
+            // lb_bat_V
             // 
-            this.lb_bat.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_bat.Location = new System.Drawing.Point(6, 426);
-            this.lb_bat.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lb_bat.Name = "lb_bat";
-            this.lb_bat.Size = new System.Drawing.Size(64, 19);
-            this.lb_bat.TabIndex = 48;
-            this.lb_bat.Text = "-";
+            this.lb_bat_V.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_bat_V.Location = new System.Drawing.Point(6, 380);
+            this.lb_bat_V.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_bat_V.Name = "lb_bat_V";
+            this.lb_bat_V.Size = new System.Drawing.Size(64, 19);
+            this.lb_bat_V.TabIndex = 48;
+            this.lb_bat_V.Text = "-";
             // 
             // panel7
             // 
@@ -2107,6 +2115,42 @@
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "MOTOR";
             // 
+            // Gauge_RR
+            // 
+            this.Gauge_RR.Font = new System.Drawing.Font("굴림", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.Gauge_RR.Location = new System.Drawing.Point(126, 88);
+            this.Gauge_RR.Name = "Gauge_RR";
+            this.Gauge_RR.Size = new System.Drawing.Size(50, 50);
+            this.Gauge_RR.TabIndex = 163;
+            this.Gauge_RR.Text = "solidGauge4";
+            // 
+            // Gauge_RF
+            // 
+            this.Gauge_RF.Font = new System.Drawing.Font("굴림", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.Gauge_RF.Location = new System.Drawing.Point(122, 11);
+            this.Gauge_RF.Name = "Gauge_RF";
+            this.Gauge_RF.Size = new System.Drawing.Size(50, 50);
+            this.Gauge_RF.TabIndex = 162;
+            this.Gauge_RF.Text = "solidGauge3";
+            // 
+            // Gauge_LR
+            // 
+            this.Gauge_LR.Font = new System.Drawing.Font("굴림", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.Gauge_LR.Location = new System.Drawing.Point(24, 88);
+            this.Gauge_LR.Name = "Gauge_LR";
+            this.Gauge_LR.Size = new System.Drawing.Size(50, 50);
+            this.Gauge_LR.TabIndex = 161;
+            this.Gauge_LR.Text = "solidGauge2";
+            // 
+            // Gauge_LF
+            // 
+            this.Gauge_LF.Font = new System.Drawing.Font("굴림", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.Gauge_LF.Location = new System.Drawing.Point(28, 11);
+            this.Gauge_LF.Name = "Gauge_LF";
+            this.Gauge_LF.Size = new System.Drawing.Size(50, 50);
+            this.Gauge_LF.TabIndex = 160;
+            this.Gauge_LF.Text = "solidGauge1";
+            // 
             // lb_motor3
             // 
             this.lb_motor3.AutoSize = true;
@@ -2330,6 +2374,22 @@
             this.groupBox10.TabIndex = 87;
             this.groupBox10.TabStop = false;
             this.groupBox10.Text = "ATTITUDE";
+            // 
+            // headingIndicatorInstrumentControl1
+            // 
+            this.headingIndicatorInstrumentControl1.Location = new System.Drawing.Point(153, 19);
+            this.headingIndicatorInstrumentControl1.Name = "headingIndicatorInstrumentControl1";
+            this.headingIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 142);
+            this.headingIndicatorInstrumentControl1.TabIndex = 1;
+            this.headingIndicatorInstrumentControl1.Text = "headingIndicatorInstrumentControl1";
+            // 
+            // attitudeIndicatorInstrumentControl1
+            // 
+            this.attitudeIndicatorInstrumentControl1.Location = new System.Drawing.Point(5, 18);
+            this.attitudeIndicatorInstrumentControl1.Name = "attitudeIndicatorInstrumentControl1";
+            this.attitudeIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 143);
+            this.attitudeIndicatorInstrumentControl1.TabIndex = 0;
+            this.attitudeIndicatorInstrumentControl1.Text = "attitudeIndicatorInstrumentControl1";
             // 
             // tabPage2
             // 
@@ -3198,57 +3258,47 @@
             this.tb_msp_error.TabIndex = 93;
             this.tb_msp_error.Text = "-";
             // 
-            // Gauge_RR
+            // label90
             // 
-            this.Gauge_RR.Font = new System.Drawing.Font("굴림", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.Gauge_RR.Location = new System.Drawing.Point(126, 88);
-            this.Gauge_RR.Name = "Gauge_RR";
-            this.Gauge_RR.Size = new System.Drawing.Size(50, 50);
-            this.Gauge_RR.TabIndex = 163;
-            this.Gauge_RR.Text = "solidGauge4";
+            this.label90.AutoSize = true;
+            this.label90.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label90.Location = new System.Drawing.Point(47, 401);
+            this.label90.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label90.Name = "label90";
+            this.label90.Size = new System.Drawing.Size(20, 21);
+            this.label90.TabIndex = 94;
+            this.label90.Text = "A";
             // 
-            // Gauge_RF
+            // lb_bat_A
             // 
-            this.Gauge_RF.Font = new System.Drawing.Font("굴림", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.Gauge_RF.Location = new System.Drawing.Point(122, 11);
-            this.Gauge_RF.Name = "Gauge_RF";
-            this.Gauge_RF.Size = new System.Drawing.Size(50, 50);
-            this.Gauge_RF.TabIndex = 162;
-            this.Gauge_RF.Text = "solidGauge3";
+            this.lb_bat_A.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_bat_A.Location = new System.Drawing.Point(6, 401);
+            this.lb_bat_A.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_bat_A.Name = "lb_bat_A";
+            this.lb_bat_A.Size = new System.Drawing.Size(64, 19);
+            this.lb_bat_A.TabIndex = 93;
+            this.lb_bat_A.Text = "-";
             // 
-            // Gauge_LR
+            // label92
             // 
-            this.Gauge_LR.Font = new System.Drawing.Font("굴림", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.Gauge_LR.Location = new System.Drawing.Point(24, 88);
-            this.Gauge_LR.Name = "Gauge_LR";
-            this.Gauge_LR.Size = new System.Drawing.Size(50, 50);
-            this.Gauge_LR.TabIndex = 161;
-            this.Gauge_LR.Text = "solidGauge2";
+            this.label92.AutoSize = true;
+            this.label92.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label92.Location = new System.Drawing.Point(27, 423);
+            this.label92.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label92.Name = "label92";
+            this.label92.Size = new System.Drawing.Size(43, 21);
+            this.label92.TabIndex = 96;
+            this.label92.Text = "mAh";
             // 
-            // Gauge_LF
+            // lb_bat_mAh
             // 
-            this.Gauge_LF.Font = new System.Drawing.Font("굴림", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.Gauge_LF.Location = new System.Drawing.Point(28, 11);
-            this.Gauge_LF.Name = "Gauge_LF";
-            this.Gauge_LF.Size = new System.Drawing.Size(50, 50);
-            this.Gauge_LF.TabIndex = 160;
-            this.Gauge_LF.Text = "solidGauge1";
-            // 
-            // headingIndicatorInstrumentControl1
-            // 
-            this.headingIndicatorInstrumentControl1.Location = new System.Drawing.Point(153, 19);
-            this.headingIndicatorInstrumentControl1.Name = "headingIndicatorInstrumentControl1";
-            this.headingIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 142);
-            this.headingIndicatorInstrumentControl1.TabIndex = 1;
-            this.headingIndicatorInstrumentControl1.Text = "headingIndicatorInstrumentControl1";
-            // 
-            // attitudeIndicatorInstrumentControl1
-            // 
-            this.attitudeIndicatorInstrumentControl1.Location = new System.Drawing.Point(5, 18);
-            this.attitudeIndicatorInstrumentControl1.Name = "attitudeIndicatorInstrumentControl1";
-            this.attitudeIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 143);
-            this.attitudeIndicatorInstrumentControl1.TabIndex = 0;
-            this.attitudeIndicatorInstrumentControl1.Text = "attitudeIndicatorInstrumentControl1";
+            this.lb_bat_mAh.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_bat_mAh.Location = new System.Drawing.Point(6, 423);
+            this.lb_bat_mAh.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_bat_mAh.Name = "lb_bat_mAh";
+            this.lb_bat_mAh.Size = new System.Drawing.Size(64, 19);
+            this.lb_bat_mAh.TabIndex = 95;
+            this.lb_bat_mAh.Text = "-";
             // 
             // Form1
             // 
@@ -3362,7 +3412,7 @@
         private System.Windows.Forms.PictureBox pictureBox4;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Label lb_bat;
+        private System.Windows.Forms.Label lb_bat_V;
         private System.Windows.Forms.Panel panel7;
         private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.Panel panel5;
@@ -3581,6 +3631,10 @@
         private LiveCharts.WinForms.SolidGauge Gauge_RF;
         private LiveCharts.WinForms.SolidGauge Gauge_LR;
         private LiveCharts.WinForms.SolidGauge Gauge_LF;
+        private System.Windows.Forms.Label label90;
+        private System.Windows.Forms.Label lb_bat_A;
+        private System.Windows.Forms.Label label92;
+        private System.Windows.Forms.Label lb_bat_mAh;
     }
 }
 

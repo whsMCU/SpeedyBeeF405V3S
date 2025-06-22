@@ -650,7 +650,7 @@ void processRxModes(uint32_t currentTimeUs)
 	  DISABLE_FLIGHT_MODE(BARO_MODE);
 	}
 
-#ifdef USE_GPS
+#ifdef USE_GPS1
   static uint8_t GPSNavReset = 1;
   if (STATE(GPS_FIX) && GpsNav.GPS_numSat >= 5 ) {
     if (rcData[SC] >= 1500) {  // if both GPS_HOME & GPS_HOLD are checked => GPS_HOME is the priority

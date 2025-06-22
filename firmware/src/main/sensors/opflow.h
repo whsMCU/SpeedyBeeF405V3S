@@ -49,6 +49,18 @@ typedef struct opticalFlowConfig_s  {
 
 extern opticalFlowConfig_t opticalFlowConfig;
 
+typedef struct {
+  float target_Pixel[2];
+  float error_Pixel[2];
+  float integral_Pixel[2];
+  float Pixel[2];
+  float target_Angle[2];
+  float dt;
+  float KP;
+  float KI;
+  float KD;
+} opflow_poshold_t;
+
 typedef struct opflow_s {
     opflowDev_t dev;
 
@@ -62,6 +74,8 @@ typedef struct opflow_s {
     timeUs_t        gyroBodyRateTimeUs;
 
     uint8_t         rawQuality;
+
+    opflow_poshold_t poshold;
 } opflow_t;
 
 extern opflow_t opflow;
