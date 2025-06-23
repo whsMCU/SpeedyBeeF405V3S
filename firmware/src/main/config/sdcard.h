@@ -19,7 +19,9 @@ enum
   PID_yaw_heading,
   PID_yaw_rate,
   ACC_offset,
-  PID_ALT
+  PID_ALT,
+  PID_ALT_Range,
+  PID_POS_Opflow
 };
 
 bool loadFromSDCard(void);

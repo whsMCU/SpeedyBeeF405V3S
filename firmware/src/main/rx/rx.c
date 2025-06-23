@@ -55,6 +55,9 @@
 #include "rx/crsf.h"
 #include "scheduler/tasks.h"
 
+#include "sensors/opflow.h"
+#include "sensors/rangefinder.h"
+
 const char rcChannelLetters[] = "AERT12345678abcdefgh";
 
 static uint16_t rssi = 0;                  // range: [0;1023]
@@ -240,6 +243,7 @@ void rxInit(void)
     rxRuntimeState.rcFrameStatusFn = nullFrameStatus;
     rxRuntimeState.rcProcessFrameFn = nullProcessFrame;
     rxRuntimeState.lastRcFrameTimeUs = 0;
+    rxRuntimeState.rcCommand_updated = false;
     rcSampleIndex = 0;
 
     for (int i = 0; i < MAX_SUPPORTED_RC_CHANNEL_COUNT; i++) {
@@ -320,6 +324,8 @@ static void updateRcCommands(void)
 		 rcCommand[YAW] = rcCommandBuff.Z;
 	 }
 	}
+
+	rxRuntimeState.rcCommand_updated = true;
 
 //	for (int axis = ROLL; axis <= YAW; axis++)
 //	{
@@ -635,7 +641,7 @@ void processRxModes(uint32_t currentTimeUs)
 	}
 	ENABLE_FLIGHT_MODE(ANGLE_MODE);
 
-	if(rcData[SB] >= 1500)
+	if(rcData[SC] >= 1500)
 	{
     if(!FLIGHT_MODE(BARO_MODE))
     {
@@ -650,6 +656,40 @@ void processRxModes(uint32_t currentTimeUs)
 	  DISABLE_FLIGHT_MODE(BARO_MODE);
 	}
 
+  if(rcData[SB] >= 1500)
+  {
+    if(!FLIGHT_MODE(RANGEFINDER_MODE))
+    {
+      ENABLE_FLIGHT_MODE(RANGEFINDER_MODE);
+      rangefinder.althold.target_Height = rangefinder.calculatedAltitude;
+      if(rangefinder.althold.target_Height > 150)
+      {
+        rangefinder.althold.target_Height = 150.f;
+      }
+
+      rangefinder.althold.integral_Height = 0;
+      rangefinder.althold.result = 0;
+    }
+  }else
+  {
+    DISABLE_FLIGHT_MODE(RANGEFINDER_MODE);
+  }
+
+  if(rcData[SB] >= 1900)
+  {
+    if(!FLIGHT_MODE(OPFLOW_HOLD_MODE))
+    {
+      ENABLE_FLIGHT_MODE(OPFLOW_HOLD_MODE);
+      opflow.poshold.integral_Pixel[X] = 0;
+      opflow.poshold.integral_Pixel[Y] = 0;
+      opflow.poshold.target_Angle[X] = 0;
+      opflow.poshold.target_Angle[Y] = 0;
+    }
+  }else
+  {
+    DISABLE_FLIGHT_MODE(OPFLOW_HOLD_MODE);
+  }
+
 #ifdef USE_GPS1
   static uint8_t GPSNavReset = 1;
   if (STATE(GPS_FIX) && GpsNav.GPS_numSat >= 5 ) {
@@ -663,7 +703,7 @@ void processRxModes(uint32_t currentTimeUs)
       }
     } else {
       DISABLE_FLIGHT_MODE(GPS_HOME_MODE);
-      if ((rcData[SB] >= 1950) && abs(rcCommand[ROLL])< AP_MODE && abs(rcCommand[PITCH]) < AP_MODE) {
+      if ((rcData[SC] >= 1950) && abs(rcCommand[ROLL])< AP_MODE && abs(rcCommand[PITCH]) < AP_MODE) {
         if (!FLIGHT_MODE(GPS_HOLD_MODE)) {
           ENABLE_FLIGHT_MODE(GPS_HOLD_MODE);
           GPSNavReset = 0;

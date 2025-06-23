@@ -17,6 +17,9 @@
 #include "sensors/gyro.h"
 #include "flight/pid.h"
 
+#include "sensors/opflow.h"
+#include "sensors/rangefinder.h"
+
 const char *defaultSDCardConfigFilename = "config.ini";
 
 static bool write_ini_roll_in(const char * ini_name)
@@ -507,6 +510,128 @@ static bool write_ini_alt(const char * ini_name)
       return ret;
 }
 
+static bool write_ini_alt_range(const char * ini_name)
+{
+  void *dictionary;
+  FIL ini_file;
+  FRESULT fp_ret;
+  int ret = 0;
+
+  char str[20];
+
+  if (!ini_name) {
+      fprintf(stderr, "Invalid argurment\n");
+      return -1;
+  }
+
+  dictionary = iniparser_load(ini_name);
+  if (!dictionary) {
+      fprintf(stderr, "cannot parse file: %s\n", ini_name);
+      return -1 ;
+  }
+
+  /* set key/value pair */
+  sprintf(str, "%.1f", rangefinder.althold.KP);
+  ret = iniparser_set(dictionary, "pid:alt.range.kp", str);
+  if (ret < 0) {
+      fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
+      ret = -1;
+      goto free_dict;
+  }
+
+  sprintf(str, "%.1f", rangefinder.althold.KI);
+  ret = iniparser_set(dictionary, "pid:alt.range.ki", str);
+  if (ret < 0) {
+      fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
+      ret = -1;
+      goto free_dict;
+  }
+
+  sprintf(str, "%.1f", rangefinder.althold.KD);
+  ret = iniparser_set(dictionary, "pid:alt.range.kd", str);
+  if (ret < 0) {
+      fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
+      ret = -1;
+      goto free_dict;
+  }
+
+  fp_ret = f_open(&ini_file, ini_name, FA_READ | FA_WRITE);
+
+  if (fp_ret != FR_OK) {
+      fprintf(stderr, "iniparser: cannot create example.ini\n");
+      ret = -1;
+      goto free_dict;
+  }
+
+  iniparser_dump_ini(dictionary, &ini_file);
+  f_close(&ini_file);
+
+  free_dict:
+      iniparser_freedict(dictionary);
+      return ret;
+}
+
+static bool write_ini_pos_opflow(const char * ini_name)
+{
+  void *dictionary;
+  FIL ini_file;
+  FRESULT fp_ret;
+  int ret = 0;
+
+  char str[20];
+
+  if (!ini_name) {
+      fprintf(stderr, "Invalid argurment\n");
+      return -1;
+  }
+
+  dictionary = iniparser_load(ini_name);
+  if (!dictionary) {
+      fprintf(stderr, "cannot parse file: %s\n", ini_name);
+      return -1 ;
+  }
+
+  /* set key/value pair */
+  sprintf(str, "%.1f", opflow.poshold.KP);
+  ret = iniparser_set(dictionary, "pid:pos.opflow.kp", str);
+  if (ret < 0) {
+      fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
+      ret = -1;
+      goto free_dict;
+  }
+
+  sprintf(str, "%.1f", opflow.poshold.KI);
+  ret = iniparser_set(dictionary, "pid:pos.opflow.ki", str);
+  if (ret < 0) {
+      fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
+      ret = -1;
+      goto free_dict;
+  }
+
+  sprintf(str, "%.1f", opflow.poshold.KD);
+  ret = iniparser_set(dictionary, "pid:pos.opflow.kd", str);
+  if (ret < 0) {
+      fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
+      ret = -1;
+      goto free_dict;
+  }
+
+  fp_ret = f_open(&ini_file, ini_name, FA_READ | FA_WRITE);
+
+  if (fp_ret != FR_OK) {
+      fprintf(stderr, "iniparser: cannot create example.ini\n");
+      ret = -1;
+      goto free_dict;
+  }
+
+  iniparser_dump_ini(dictionary, &ini_file);
+  f_close(&ini_file);
+
+  free_dict:
+      iniparser_freedict(dictionary);
+      return ret;
+}
+
 static bool parse_ini(const char * ini_name)
 {
   dictionary  *   ini ;
@@ -579,6 +704,20 @@ static bool parse_ini(const char * ini_name)
   _ALT.ki = d;
   d = iniparser_getdouble(ini, "pid:alt.kd", 0.0);
   _ALT.kd = d;
+
+  d = iniparser_getdouble(ini, "pid:alt.range.kp", 0.0);
+  rangefinder.althold.KP = d;
+  d = iniparser_getdouble(ini, "pid:alt.range.ki", 0.0);
+  rangefinder.althold.KI = d;
+  d = iniparser_getdouble(ini, "pid:alt.range.kd", 0.0);
+  rangefinder.althold.KD = d;
+
+  d = iniparser_getdouble(ini, "pid:pos.opflow.kp", 0.0);
+  opflow.poshold.KP = d;
+  d = iniparser_getdouble(ini, "pid:pos.opflow.ki", 0.0);
+  opflow.poshold.KI = d;
+  d = iniparser_getdouble(ini, "pid:pos.opflow.kd ", 0.0);
+  opflow.poshold.KD = d;
 
   return true;
 }
@@ -661,6 +800,14 @@ bool writeSDCard(uint8_t type)
       break;
     case PID_ALT:
       result = write_ini_alt(defaultSDCardConfigFilename);
+      break;
+
+    case PID_ALT_Range:
+      result = write_ini_alt_range(defaultSDCardConfigFilename);
+      break;
+
+    case PID_POS_Opflow:
+      result = write_ini_pos_opflow(defaultSDCardConfigFilename);
       break;
   }
 

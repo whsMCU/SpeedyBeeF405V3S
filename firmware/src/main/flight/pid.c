@@ -43,6 +43,7 @@
 
 #include "sensors/compass.h"
 #include "sensors/opflow.h"
+#include "sensors/rangefinder.h"
 
 DoublePID _ROLL;
 DoublePID _PITCH;
@@ -54,7 +55,10 @@ PID _ALT;
 
 PID_Test _PID_Test;
 
+static void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs);
+//#ifdef USE_OPFLOW
 static void updatePosHold(timeUs_t currentTimeUs);
+//#endif
 
 void pidInit(void)
 {
@@ -100,9 +104,15 @@ void pidInit(void)
   _ALT.kd = 0;
   _ALT.integral_windup = 200;
 
+  rangefinder.althold.KP = 1.0f;
+  rangefinder.althold.KI = 0.3f;
+  rangefinder.althold.KD = 0.4f;
+  rangefinder.althold.integral_windup = 200;
+
   opflow.poshold.KP = 1.0f;
   opflow.poshold.KI = 1.8f;
   opflow.poshold.KD = 0.15f;
+  opflow.poshold.integral_windup = 300;
 
   _PID_Test.pid_test_flag = 0;
   _PID_Test.pid_test_throttle = 0;
@@ -183,7 +193,11 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   }
 #endif
 
+  updateAltHold_RANGEFINDER(currentTimeUs);
+
+  //#ifdef USE_OPFLOW
   updatePosHold(currentTimeUs);
+  //#endif
 
   PID_Calculation(&_ROLL.out, rcCommand[ROLL] + GpsNav.GPS_angle[ROLL], imu_roll, dT);
   PID_Calculation(&_ROLL.in, _ROLL.out.result, bmi270.gyroADCf[X], dT);
@@ -299,59 +313,108 @@ void updateAltHold(timeUs_t currentTimeUs)
   debug[2] = (int32_t)_ALT.result;
   debug[3] = (int32_t)rcCommand[THROTTLE];
 }
-
+//#ifdef USE_OPFLOW
 void updatePosHold(timeUs_t currentTimeUs)
 {
   UNUSED(currentTimeUs);
   opflow_poshold_t *poshold = &opflow.poshold;
-
-  static uint32_t pre_time = 0;
-  uint32_t now_time = micros();
-  poshold->dt = now_time - pre_time;
-  pre_time = now_time;
-
-  poshold->Pixel[X] = poshold->Pixel[X] + opflow.flowRate[X] * poshold->dt;
-  poshold->Pixel[Y] = poshold->Pixel[Y] + opflow.flowRate[Y] * poshold->dt;
-
-  if(rcData[THROTTLE] < 1030)
+  if(FLIGHT_MODE(OPFLOW_HOLD_MODE) && abs(rcCommand[ROLL]) < 1 && abs(rcCommand[PITCH]) < 1)
   {
-    poshold->Pixel[X] = 0;
-    poshold->Pixel[Y] = 0;
+    static uint32_t pre_time = 0;
+    uint32_t now_time = micros();
+    poshold->dt = (float)US2S(now_time - pre_time);
+    pre_time = now_time;
+
+    poshold->Pixel[X] = poshold->Pixel[X] + opflow.flowRate[X] * poshold->dt;
+    poshold->Pixel[Y] = poshold->Pixel[Y] + opflow.flowRate[Y] * poshold->dt;
+
+    if(rcData[THROTTLE] < 1030)
+    {
+      poshold->Pixel[X] = 0;
+      poshold->Pixel[Y] = 0;
+    }
+
+    poshold->target_Pixel[X] = 0;
+    poshold->target_Pixel[Y] = 0;
+    poshold->error_Pixel[X] = poshold->target_Pixel[X] - poshold->Pixel[X];
+    poshold->error_Pixel[Y] = poshold->target_Pixel[Y] - poshold->Pixel[Y];
+
+    poshold->target_Angle[Y] = -poshold->KP * poshold->error_Pixel[X];
+    poshold->target_Angle[X] = -poshold->KP * poshold->error_Pixel[Y];
+
+    poshold->target_Angle[Y] += -poshold->KD * -opflow.flowRate[X];
+    poshold->target_Angle[X] += -poshold->KD * -opflow.flowRate[Y];
+
+    poshold->integral_Pixel[X] += -poshold->KI * poshold->error_Pixel[X] * poshold->dt;
+    poshold->integral_Pixel[Y] += -poshold->KI * poshold->error_Pixel[Y] * poshold->dt;
+
+    if(poshold->integral_Pixel[X] > poshold->integral_windup) poshold->integral_Pixel[X] = poshold->integral_windup;
+    else if(poshold->integral_Pixel[X] < -poshold->integral_windup) poshold->integral_Pixel[X] = -poshold->integral_windup;
+
+    if(poshold->integral_Pixel[Y] > poshold->integral_windup) poshold->integral_Pixel[Y] = poshold->integral_windup;
+    else if(poshold->integral_Pixel[Y] < -poshold->integral_windup) poshold->integral_Pixel[Y] = -poshold->integral_windup;
+
+
+    if(rcData[THROTTLE] < 1030)
+    {
+      poshold->integral_Pixel[X] = 0;
+      poshold->integral_Pixel[Y] = 0;
+    }
+
+    poshold->target_Angle[Y] += poshold->integral_Pixel[X];
+    poshold->target_Angle[X] += poshold->integral_Pixel[Y];
+
+    if(rcData[THROTTLE] < 1030)
+    {
+      poshold->target_Angle[X] = 0;
+      poshold->target_Angle[Y] = 0;
+    }
+
+    constrain(poshold->target_Angle[X],-30,30);
+    constrain(poshold->target_Angle[Y],-30,30);
+
+    rcCommand[ROLL] = poshold->target_Angle[X];
+    rcCommand[PITCH] = poshold->target_Angle[Y];
   }
+}
+//#endif
 
-  poshold->target_Pixel[X] = 0;
-  poshold->target_Pixel[Y] = 0;
-  poshold->error_Pixel[X] = poshold->target_Pixel[X] - poshold->Pixel[X];
-  poshold->error_Pixel[Y] = poshold->target_Pixel[Y] - poshold->Pixel[Y];
-
-  poshold->target_Angle[Y] = poshold->KP * poshold->error_Pixel[X];
-  poshold->target_Angle[X] = poshold->KP * poshold->error_Pixel[Y];
-
-  poshold->target_Angle[Y] += poshold->KD * -opflow.flowRate[X];
-  poshold->target_Angle[X] += poshold->KD * -opflow.flowRate[Y];
-
-  poshold->target_Angle[Y] += poshold->KD * -opflow.flowRate[X];
-  poshold->target_Angle[X] += poshold->KD * -opflow.flowRate[Y];
-
-  poshold->integral_Pixel[X] += poshold->KI * poshold->error_Pixel[X] * poshold->dt;
-  poshold->integral_Pixel[Y] += poshold->KI * poshold->error_Pixel[Y] * poshold->dt;
-
-  if(rcData[THROTTLE] < 1030)
+void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
+{
+  UNUSED(currentTimeUs);
+  rangefinder_althold_t *althold = &rangefinder.althold;
+  if(FLIGHT_MODE(RANGEFINDER_MODE))
   {
-    poshold->integral_Pixel[X] = 0;
-    poshold->integral_Pixel[Y] = 0;
+    static uint32_t pre_time = 0;
+    uint32_t now_time = micros();
+    althold->dt = (float)US2S(now_time - pre_time);
+    pre_time = now_time;
+
+    althold->error_Height = (althold->target_Height <= 5.0) ? 0 : (althold->target_Height - rangefinder.calculatedAltitude);
+
+    althold->derivative_Height += -(rangefinder.calculatedAltitude - althold->pre_Height) / althold->dt;
+    althold->pre_Height = rangefinder.calculatedAltitude;
+
+
+    althold->integral_Height += althold->KI * althold->error_Height * althold->dt;
+
+    if(althold->integral_Height > althold->integral_windup) althold->integral_Height = althold->integral_windup;
+    else if(althold->integral_Height < -althold->integral_windup) althold->integral_Height = -althold->integral_windup;
+
+    althold->result = (althold->KP * althold->error_Height) + (althold->KI * althold->integral_Height) + (althold->KD * althold->derivative_Height);
+
+    if(rcData[THROTTLE] < 1030)
+    {
+      althold->integral_Height = 0;
+      althold->result = 0;
+    }
+
+    constrain(althold->result, 0, 500);
+    if(rxRuntimeState.rcCommand_updated == true)
+    {
+      rxRuntimeState.rcCommand_updated = false;
+      rcCommand[THROTTLE] += althold->result;
+    }
+
   }
-
-  poshold->target_Angle[Y] += poshold->integral_Pixel[X];
-  poshold->target_Angle[X] += poshold->integral_Pixel[Y];
-
-  if(rcData[THROTTLE] < 1030)
-  {
-    poshold->target_Angle[X] = 0;
-    poshold->target_Angle[Y] = 0;
-  }
-
-  constrain(poshold->target_Angle[X],-30,30);
-  constrain(poshold->target_Angle[Y],-30,30);
-
 }

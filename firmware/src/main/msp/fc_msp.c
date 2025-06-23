@@ -506,6 +506,8 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU32(dst, getAmperage()); // send amperage in 0.01 A steps
 
           sbufWriteU32(dst, getMAhDrawn()); // milliamp hours drawn from battery
+
+          sbufWriteU32(dst, rangefinder.althold.target_Height);
         }
         break;
 
@@ -1333,6 +1335,14 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         sbufWriteU32(dst, (int32_t)(_ALT.kp * 10.0f));
         sbufWriteU32(dst, (int32_t)(_ALT.ki * 10.0f));
         sbufWriteU32(dst, (int32_t)(_ALT.kd * 10.0f));
+
+        sbufWriteU32(dst, (int32_t)(rangefinder.althold.KP * 10.0f));
+        sbufWriteU32(dst, (int32_t)(rangefinder.althold.KI * 10.0f));
+        sbufWriteU32(dst, (int32_t)(rangefinder.althold.KD * 10.0f));
+
+        sbufWriteU32(dst, (int32_t)(opflow.poshold.KP * 10.0f));
+        sbufWriteU32(dst, (int32_t)(opflow.poshold.KI * 10.0f));
+        sbufWriteU32(dst, (int32_t)(opflow.poshold.KD * 10.0f));
       }
         break;
 
@@ -2324,6 +2334,19 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         u.b = sbufReadU32(src);
         _ALT.kd = (float)u.f;
 
+        u.b = sbufReadU32(src);
+        rangefinder.althold.KP = (float)u.f;
+        u.b = sbufReadU32(src);
+        rangefinder.althold.KI = (float)u.f;
+        u.b = sbufReadU32(src);
+        rangefinder.althold.KD = (float)u.f;
+
+        u.b = sbufReadU32(src);
+        opflow.poshold.KP = (float)u.f;
+        u.b = sbufReadU32(src);
+        opflow.poshold.KI = (float)u.f;
+        u.b = sbufReadU32(src);
+        opflow.poshold.KD = (float)u.f;
         break;
 
     case MSP_SET_INAV_PID:
@@ -2337,6 +2360,8 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
           writeSDCard(PID_yaw_rate);
           writeSDCard(ACC_offset);
           writeSDCard(PID_ALT);
+          writeSDCard(PID_ALT_Range);
+          writeSDCard(PID_POS_Opflow);
         }
         break;
 

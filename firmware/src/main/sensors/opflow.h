@@ -53,6 +53,7 @@ typedef struct {
   float target_Pixel[2];
   float error_Pixel[2];
   float integral_Pixel[2];
+  float integral_windup;
   float Pixel[2];
   float target_Angle[2];
   float dt;
