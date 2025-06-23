@@ -572,7 +572,7 @@ namespace SpeedyBeeF405V3S_GUI
             {
                 pid_send_flag = false;
                 drone_status_flag = true;
-                byte[] pid_buff = new byte[84];
+                byte[] pid_buff = new byte[108];
                 float float_buff;
                 byte[] tmp = new byte[4];
                 try
@@ -1153,6 +1153,7 @@ namespace SpeedyBeeF405V3S_GUI
             }
 
             if ((flight_mode & (int)Flight_Mode.ANGLE_MODE) !=0) textBox2.Text = "ANGLE";
+            if ((flight_mode & (int)Flight_Mode.BARO_MODE) != 0) textBox2.Text += ", BARO_HOLD";
             if ((flight_mode & (int)Flight_Mode.HEADFREE_MODE) != 0) textBox2.Text += ", HEADFREE";
             if ((flight_mode & (int)Flight_Mode.GPS_HOLD_MODE) != 0) textBox2.Text += ", GPS_HOLD";
             if ((flight_mode & (int)Flight_Mode.RANGEFINDER_MODE) != 0) textBox2.Text += ", RANGEFINDER_HOLD";

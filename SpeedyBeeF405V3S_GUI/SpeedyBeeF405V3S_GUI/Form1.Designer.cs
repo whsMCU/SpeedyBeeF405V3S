@@ -281,14 +281,13 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
-            this.headingIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.HeadingIndicatorInstrumentControl();
-            this.attitudeIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.AttitudeIndicatorInstrumentControl();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label62 = new System.Windows.Forms.Label();
             this.lb_route_distance = new System.Windows.Forms.Label();
             this.label61 = new System.Windows.Forms.Label();
             this.gMapControl1 = new GMap.NET.WindowsForms.GMapControl();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.rb_alt_range_setpoint = new System.Windows.Forms.RadioButton();
             this.rb_alt_setpoint = new System.Windows.Forms.RadioButton();
             this.lb_PID_Test_Target_Time = new System.Windows.Forms.Label();
             this.lb_PID_Test_Progress_Time = new System.Windows.Forms.Label();
@@ -354,11 +353,12 @@
             this.lb_accTrim_X = new System.Windows.Forms.Label();
             this.bt_mag_cal = new System.Windows.Forms.Button();
             this.bt_acc_cal = new System.Windows.Forms.Button();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
             this.bt_ReScan = new System.Windows.Forms.Button();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.tb_msp_error = new System.Windows.Forms.TextBox();
-            this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.rb_alt_range_setpoint = new System.Windows.Forms.RadioButton();
+            this.headingIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.HeadingIndicatorInstrumentControl();
+            this.attitudeIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.AttitudeIndicatorInstrumentControl();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -970,11 +970,11 @@
             // 
             // panel4
             // 
+            this.panel4.Controls.Add(this.textBox2);
             this.panel4.Controls.Add(this.label77);
             this.panel4.Controls.Add(this.tb_rx_error);
             this.panel4.Controls.Add(this.label1);
             this.panel4.Controls.Add(this.label3);
-            this.panel4.Controls.Add(this.textBox2);
             this.panel4.Controls.Add(this.textBox3);
             this.panel4.Controls.Add(this.lb_fail);
             this.panel4.Location = new System.Drawing.Point(13, 506);
@@ -998,7 +998,7 @@
             // 
             this.tb_rx_error.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.tb_rx_error.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_rx_error.Location = new System.Drawing.Point(118, 54);
+            this.tb_rx_error.Location = new System.Drawing.Point(103, 54);
             this.tb_rx_error.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tb_rx_error.Name = "tb_rx_error";
             this.tb_rx_error.ReadOnly = true;
@@ -1031,12 +1031,12 @@
             // textBox2
             // 
             this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox2.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox2.Location = new System.Drawing.Point(119, 8);
+            this.textBox2.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox2.Location = new System.Drawing.Point(104, 8);
             this.textBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox2.Name = "textBox2";
             this.textBox2.ReadOnly = true;
-            this.textBox2.Size = new System.Drawing.Size(386, 22);
+            this.textBox2.Size = new System.Drawing.Size(386, 18);
             this.textBox2.TabIndex = 7;
             this.textBox2.Text = "-";
             // 
@@ -1044,7 +1044,7 @@
             // 
             this.textBox3.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox3.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox3.Location = new System.Drawing.Point(119, 29);
+            this.textBox3.Location = new System.Drawing.Point(104, 29);
             this.textBox3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox3.Name = "textBox3";
             this.textBox3.ReadOnly = true;
@@ -1566,21 +1566,21 @@
             // 
             // tb_ALT_Range_D
             // 
-            this.tb_ALT_Range_D.Location = new System.Drawing.Point(258, 250);
+            this.tb_ALT_Range_D.Location = new System.Drawing.Point(264, 250);
             this.tb_ALT_Range_D.Name = "tb_ALT_Range_D";
             this.tb_ALT_Range_D.Size = new System.Drawing.Size(45, 21);
             this.tb_ALT_Range_D.TabIndex = 170;
             // 
             // tb_ALT_Range_I
             // 
-            this.tb_ALT_Range_I.Location = new System.Drawing.Point(187, 250);
+            this.tb_ALT_Range_I.Location = new System.Drawing.Point(193, 250);
             this.tb_ALT_Range_I.Name = "tb_ALT_Range_I";
             this.tb_ALT_Range_I.Size = new System.Drawing.Size(45, 21);
             this.tb_ALT_Range_I.TabIndex = 169;
             // 
             // tb_ALT_Range_P
             // 
-            this.tb_ALT_Range_P.Location = new System.Drawing.Point(116, 250);
+            this.tb_ALT_Range_P.Location = new System.Drawing.Point(122, 250);
             this.tb_ALT_Range_P.Name = "tb_ALT_Range_P";
             this.tb_ALT_Range_P.Size = new System.Drawing.Size(45, 21);
             this.tb_ALT_Range_P.TabIndex = 168;
@@ -1644,21 +1644,21 @@
             // 
             // tb_POS_Opflow_D
             // 
-            this.tb_POS_Opflow_D.Location = new System.Drawing.Point(258, 288);
+            this.tb_POS_Opflow_D.Location = new System.Drawing.Point(264, 288);
             this.tb_POS_Opflow_D.Name = "tb_POS_Opflow_D";
             this.tb_POS_Opflow_D.Size = new System.Drawing.Size(45, 21);
             this.tb_POS_Opflow_D.TabIndex = 161;
             // 
             // tb_POS_Opflow_I
             // 
-            this.tb_POS_Opflow_I.Location = new System.Drawing.Point(187, 288);
+            this.tb_POS_Opflow_I.Location = new System.Drawing.Point(193, 288);
             this.tb_POS_Opflow_I.Name = "tb_POS_Opflow_I";
             this.tb_POS_Opflow_I.Size = new System.Drawing.Size(45, 21);
             this.tb_POS_Opflow_I.TabIndex = 160;
             // 
             // tb_POS_Opflow_P
             // 
-            this.tb_POS_Opflow_P.Location = new System.Drawing.Point(116, 288);
+            this.tb_POS_Opflow_P.Location = new System.Drawing.Point(122, 288);
             this.tb_POS_Opflow_P.Name = "tb_POS_Opflow_P";
             this.tb_POS_Opflow_P.Size = new System.Drawing.Size(45, 21);
             this.tb_POS_Opflow_P.TabIndex = 159;
@@ -1722,21 +1722,21 @@
             // 
             // tb_ALT_D
             // 
-            this.tb_ALT_D.Location = new System.Drawing.Point(258, 217);
+            this.tb_ALT_D.Location = new System.Drawing.Point(264, 217);
             this.tb_ALT_D.Name = "tb_ALT_D";
             this.tb_ALT_D.Size = new System.Drawing.Size(45, 21);
             this.tb_ALT_D.TabIndex = 152;
             // 
             // tb_ALT_I
             // 
-            this.tb_ALT_I.Location = new System.Drawing.Point(187, 217);
+            this.tb_ALT_I.Location = new System.Drawing.Point(193, 217);
             this.tb_ALT_I.Name = "tb_ALT_I";
             this.tb_ALT_I.Size = new System.Drawing.Size(45, 21);
             this.tb_ALT_I.TabIndex = 151;
             // 
             // tb_ALT_P
             // 
-            this.tb_ALT_P.Location = new System.Drawing.Point(116, 217);
+            this.tb_ALT_P.Location = new System.Drawing.Point(122, 217);
             this.tb_ALT_P.Name = "tb_ALT_P";
             this.tb_ALT_P.Size = new System.Drawing.Size(45, 21);
             this.tb_ALT_P.TabIndex = 150;
@@ -1766,7 +1766,7 @@
             // 
             // bt_pid_copy
             // 
-            this.bt_pid_copy.Location = new System.Drawing.Point(323, 101);
+            this.bt_pid_copy.Location = new System.Drawing.Point(323, 155);
             this.bt_pid_copy.Name = "bt_pid_copy";
             this.bt_pid_copy.Size = new System.Drawing.Size(81, 41);
             this.bt_pid_copy.TabIndex = 147;
@@ -2016,21 +2016,21 @@
             // 
             // tb_Y_R_D
             // 
-            this.tb_Y_R_D.Location = new System.Drawing.Point(258, 184);
+            this.tb_Y_R_D.Location = new System.Drawing.Point(264, 184);
             this.tb_Y_R_D.Name = "tb_Y_R_D";
             this.tb_Y_R_D.Size = new System.Drawing.Size(45, 21);
             this.tb_Y_R_D.TabIndex = 119;
             // 
             // tb_Y_R_I
             // 
-            this.tb_Y_R_I.Location = new System.Drawing.Point(187, 184);
+            this.tb_Y_R_I.Location = new System.Drawing.Point(193, 184);
             this.tb_Y_R_I.Name = "tb_Y_R_I";
             this.tb_Y_R_I.Size = new System.Drawing.Size(45, 21);
             this.tb_Y_R_I.TabIndex = 118;
             // 
             // tb_Y_R_P
             // 
-            this.tb_Y_R_P.Location = new System.Drawing.Point(116, 184);
+            this.tb_Y_R_P.Location = new System.Drawing.Point(122, 184);
             this.tb_Y_R_P.Name = "tb_Y_R_P";
             this.tb_Y_R_P.Size = new System.Drawing.Size(45, 21);
             this.tb_Y_R_P.TabIndex = 117;
@@ -2059,28 +2059,28 @@
             // 
             // tb_Y_A_D
             // 
-            this.tb_Y_A_D.Location = new System.Drawing.Point(258, 160);
+            this.tb_Y_A_D.Location = new System.Drawing.Point(264, 160);
             this.tb_Y_A_D.Name = "tb_Y_A_D";
             this.tb_Y_A_D.Size = new System.Drawing.Size(45, 21);
             this.tb_Y_A_D.TabIndex = 114;
             // 
             // tb_Y_A_I
             // 
-            this.tb_Y_A_I.Location = new System.Drawing.Point(187, 160);
+            this.tb_Y_A_I.Location = new System.Drawing.Point(193, 160);
             this.tb_Y_A_I.Name = "tb_Y_A_I";
             this.tb_Y_A_I.Size = new System.Drawing.Size(45, 21);
             this.tb_Y_A_I.TabIndex = 113;
             // 
             // tb_Y_A_P
             // 
-            this.tb_Y_A_P.Location = new System.Drawing.Point(116, 160);
+            this.tb_Y_A_P.Location = new System.Drawing.Point(122, 160);
             this.tb_Y_A_P.Name = "tb_Y_A_P";
             this.tb_Y_A_P.Size = new System.Drawing.Size(45, 21);
             this.tb_Y_A_P.TabIndex = 112;
             // 
             // tb_P_O_D
             // 
-            this.tb_P_O_D.Location = new System.Drawing.Point(258, 125);
+            this.tb_P_O_D.Location = new System.Drawing.Point(264, 125);
             this.tb_P_O_D.Name = "tb_P_O_D";
             this.tb_P_O_D.Size = new System.Drawing.Size(45, 21);
             this.tb_P_O_D.TabIndex = 111;
@@ -2088,7 +2088,7 @@
             // 
             // tb_P_O_I
             // 
-            this.tb_P_O_I.Location = new System.Drawing.Point(187, 125);
+            this.tb_P_O_I.Location = new System.Drawing.Point(193, 125);
             this.tb_P_O_I.Name = "tb_P_O_I";
             this.tb_P_O_I.Size = new System.Drawing.Size(45, 21);
             this.tb_P_O_I.TabIndex = 110;
@@ -2096,7 +2096,7 @@
             // 
             // tb_P_O_P
             // 
-            this.tb_P_O_P.Location = new System.Drawing.Point(116, 125);
+            this.tb_P_O_P.Location = new System.Drawing.Point(122, 125);
             this.tb_P_O_P.Name = "tb_P_O_P";
             this.tb_P_O_P.Size = new System.Drawing.Size(45, 21);
             this.tb_P_O_P.TabIndex = 109;
@@ -2126,7 +2126,7 @@
             // 
             // tb_P_I_D
             // 
-            this.tb_P_I_D.Location = new System.Drawing.Point(258, 101);
+            this.tb_P_I_D.Location = new System.Drawing.Point(264, 101);
             this.tb_P_I_D.Name = "tb_P_I_D";
             this.tb_P_I_D.Size = new System.Drawing.Size(45, 21);
             this.tb_P_I_D.TabIndex = 106;
@@ -2134,7 +2134,7 @@
             // 
             // tb_P_I_I
             // 
-            this.tb_P_I_I.Location = new System.Drawing.Point(187, 101);
+            this.tb_P_I_I.Location = new System.Drawing.Point(193, 101);
             this.tb_P_I_I.Name = "tb_P_I_I";
             this.tb_P_I_I.Size = new System.Drawing.Size(45, 21);
             this.tb_P_I_I.TabIndex = 105;
@@ -2142,7 +2142,7 @@
             // 
             // tb_P_I_P
             // 
-            this.tb_P_I_P.Location = new System.Drawing.Point(116, 101);
+            this.tb_P_I_P.Location = new System.Drawing.Point(122, 101);
             this.tb_P_I_P.Name = "tb_P_I_P";
             this.tb_P_I_P.Size = new System.Drawing.Size(45, 21);
             this.tb_P_I_P.TabIndex = 104;
@@ -2150,7 +2150,7 @@
             // 
             // tb_R_O_D
             // 
-            this.tb_R_O_D.Location = new System.Drawing.Point(258, 66);
+            this.tb_R_O_D.Location = new System.Drawing.Point(264, 66);
             this.tb_R_O_D.Name = "tb_R_O_D";
             this.tb_R_O_D.Size = new System.Drawing.Size(45, 21);
             this.tb_R_O_D.TabIndex = 103;
@@ -2158,7 +2158,7 @@
             // 
             // tb_R_O_I
             // 
-            this.tb_R_O_I.Location = new System.Drawing.Point(187, 66);
+            this.tb_R_O_I.Location = new System.Drawing.Point(193, 66);
             this.tb_R_O_I.Name = "tb_R_O_I";
             this.tb_R_O_I.Size = new System.Drawing.Size(45, 21);
             this.tb_R_O_I.TabIndex = 102;
@@ -2166,7 +2166,7 @@
             // 
             // tb_R_O_P
             // 
-            this.tb_R_O_P.Location = new System.Drawing.Point(116, 66);
+            this.tb_R_O_P.Location = new System.Drawing.Point(122, 66);
             this.tb_R_O_P.Name = "tb_R_O_P";
             this.tb_R_O_P.Size = new System.Drawing.Size(45, 21);
             this.tb_R_O_P.TabIndex = 101;
@@ -2259,7 +2259,7 @@
             // 
             // tb_R_I_D
             // 
-            this.tb_R_I_D.Location = new System.Drawing.Point(258, 42);
+            this.tb_R_I_D.Location = new System.Drawing.Point(264, 42);
             this.tb_R_I_D.Name = "tb_R_I_D";
             this.tb_R_I_D.Size = new System.Drawing.Size(45, 21);
             this.tb_R_I_D.TabIndex = 50;
@@ -2277,7 +2277,7 @@
             // 
             // tb_R_I_I
             // 
-            this.tb_R_I_I.Location = new System.Drawing.Point(187, 42);
+            this.tb_R_I_I.Location = new System.Drawing.Point(193, 42);
             this.tb_R_I_I.Name = "tb_R_I_I";
             this.tb_R_I_I.Size = new System.Drawing.Size(45, 21);
             this.tb_R_I_I.TabIndex = 48;
@@ -2295,7 +2295,7 @@
             // 
             // tb_R_I_P
             // 
-            this.tb_R_I_P.Location = new System.Drawing.Point(116, 42);
+            this.tb_R_I_P.Location = new System.Drawing.Point(122, 42);
             this.tb_R_I_P.Name = "tb_R_I_P";
             this.tb_R_I_P.Size = new System.Drawing.Size(45, 21);
             this.tb_R_I_P.TabIndex = 46;
@@ -2484,7 +2484,7 @@
             // 
             this.label21.AutoSize = true;
             this.label21.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label21.Location = new System.Drawing.Point(7, 128);
+            this.label21.Location = new System.Drawing.Point(4, 128);
             this.label21.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(79, 21);
@@ -2506,7 +2506,7 @@
             // 
             this.label17.AutoSize = true;
             this.label17.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label17.Location = new System.Drawing.Point(7, 96);
+            this.label17.Location = new System.Drawing.Point(4, 96);
             this.label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(79, 21);
@@ -2528,7 +2528,7 @@
             // 
             this.label14.AutoSize = true;
             this.label14.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(7, 61);
+            this.label14.Location = new System.Drawing.Point(4, 61);
             this.label14.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(79, 21);
@@ -2550,7 +2550,7 @@
             // 
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(7, 28);
+            this.label12.Location = new System.Drawing.Point(4, 28);
             this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(79, 21);
@@ -2599,22 +2599,6 @@
             this.groupBox10.TabIndex = 87;
             this.groupBox10.TabStop = false;
             this.groupBox10.Text = "ATTITUDE";
-            // 
-            // headingIndicatorInstrumentControl1
-            // 
-            this.headingIndicatorInstrumentControl1.Location = new System.Drawing.Point(153, 19);
-            this.headingIndicatorInstrumentControl1.Name = "headingIndicatorInstrumentControl1";
-            this.headingIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 142);
-            this.headingIndicatorInstrumentControl1.TabIndex = 1;
-            this.headingIndicatorInstrumentControl1.Text = "headingIndicatorInstrumentControl1";
-            // 
-            // attitudeIndicatorInstrumentControl1
-            // 
-            this.attitudeIndicatorInstrumentControl1.Location = new System.Drawing.Point(5, 18);
-            this.attitudeIndicatorInstrumentControl1.Name = "attitudeIndicatorInstrumentControl1";
-            this.attitudeIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 143);
-            this.attitudeIndicatorInstrumentControl1.TabIndex = 0;
-            this.attitudeIndicatorInstrumentControl1.Text = "attitudeIndicatorInstrumentControl1";
             // 
             // tabPage2
             // 
@@ -2733,6 +2717,17 @@
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "그래프";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // rb_alt_range_setpoint
+            // 
+            this.rb_alt_range_setpoint.AutoSize = true;
+            this.rb_alt_range_setpoint.Location = new System.Drawing.Point(112, 488);
+            this.rb_alt_range_setpoint.Name = "rb_alt_range_setpoint";
+            this.rb_alt_range_setpoint.Size = new System.Drawing.Size(138, 16);
+            this.rb_alt_range_setpoint.TabIndex = 86;
+            this.rb_alt_range_setpoint.Text = "Alt_Range / Setpoint";
+            this.rb_alt_range_setpoint.UseVisualStyleBackColor = true;
+            this.rb_alt_range_setpoint.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rb_alt_range_setpoint_MouseDown);
             // 
             // rb_alt_setpoint
             // 
@@ -3450,6 +3445,16 @@
             this.bt_acc_cal.UseVisualStyleBackColor = true;
             this.bt_acc_cal.Click += new System.EventHandler(this.bt_acc_cal_Click);
             // 
+            // tabPage5
+            // 
+            this.tabPage5.Location = new System.Drawing.Point(4, 22);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage5.Size = new System.Drawing.Size(725, 569);
+            this.tabPage5.TabIndex = 4;
+            this.tabPage5.Text = "실험실";
+            this.tabPage5.UseVisualStyleBackColor = true;
+            // 
             // bt_ReScan
             // 
             this.bt_ReScan.Location = new System.Drawing.Point(12, 36);
@@ -3484,26 +3489,21 @@
             this.tb_msp_error.TabIndex = 93;
             this.tb_msp_error.Text = "-";
             // 
-            // tabPage5
+            // headingIndicatorInstrumentControl1
             // 
-            this.tabPage5.Location = new System.Drawing.Point(4, 22);
-            this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(725, 569);
-            this.tabPage5.TabIndex = 4;
-            this.tabPage5.Text = "실험실";
-            this.tabPage5.UseVisualStyleBackColor = true;
+            this.headingIndicatorInstrumentControl1.Location = new System.Drawing.Point(153, 19);
+            this.headingIndicatorInstrumentControl1.Name = "headingIndicatorInstrumentControl1";
+            this.headingIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 142);
+            this.headingIndicatorInstrumentControl1.TabIndex = 1;
+            this.headingIndicatorInstrumentControl1.Text = "headingIndicatorInstrumentControl1";
             // 
-            // rb_alt_range_setpoint
+            // attitudeIndicatorInstrumentControl1
             // 
-            this.rb_alt_range_setpoint.AutoSize = true;
-            this.rb_alt_range_setpoint.Location = new System.Drawing.Point(112, 488);
-            this.rb_alt_range_setpoint.Name = "rb_alt_range_setpoint";
-            this.rb_alt_range_setpoint.Size = new System.Drawing.Size(138, 16);
-            this.rb_alt_range_setpoint.TabIndex = 86;
-            this.rb_alt_range_setpoint.Text = "Alt_Range / Setpoint";
-            this.rb_alt_range_setpoint.UseVisualStyleBackColor = true;
-            this.rb_alt_range_setpoint.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rb_alt_range_setpoint_MouseDown);
+            this.attitudeIndicatorInstrumentControl1.Location = new System.Drawing.Point(5, 18);
+            this.attitudeIndicatorInstrumentControl1.Name = "attitudeIndicatorInstrumentControl1";
+            this.attitudeIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 143);
+            this.attitudeIndicatorInstrumentControl1.TabIndex = 0;
+            this.attitudeIndicatorInstrumentControl1.Text = "attitudeIndicatorInstrumentControl1";
             // 
             // Form1
             // 

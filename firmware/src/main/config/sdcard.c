@@ -716,7 +716,7 @@ static bool parse_ini(const char * ini_name)
   opflow.poshold.KP = d;
   d = iniparser_getdouble(ini, "pid:pos.opflow.ki", 0.0);
   opflow.poshold.KI = d;
-  d = iniparser_getdouble(ini, "pid:pos.opflow.kd ", 0.0);
+  d = iniparser_getdouble(ini, "pid:pos.opflow.kd", 0.0);
   opflow.poshold.KD = d;
 
   return true;
@@ -801,11 +801,9 @@ bool writeSDCard(uint8_t type)
     case PID_ALT:
       result = write_ini_alt(defaultSDCardConfigFilename);
       break;
-
     case PID_ALT_Range:
       result = write_ini_alt_range(defaultSDCardConfigFilename);
       break;
-
     case PID_POS_Opflow:
       result = write_ini_pos_opflow(defaultSDCardConfigFilename);
       break;
