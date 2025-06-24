@@ -88,7 +88,6 @@ static void ledUpdate(uint32_t currentTimeUs)
         if(ARMING_FLAG(ARMED))
         {
         	ledOn(ST1);
-        	uint8_t temp[1];
         }
         else
         {
@@ -256,7 +255,7 @@ task_attribute_t task_attributes[TASK_COUNT] = {
 #endif
 
 #ifdef USE_OPFLOW
-    [TASK_OPFLOW] = DEFINE_TASK("OPFLOW", taskUpdateOpticalFlow, TASK_PERIOD_HZ(10)),
+    [TASK_OPFLOW] = DEFINE_TASK("OPFLOW", taskUpdateOpticalFlow, TASK_PERIOD_HZ(100)),
 #endif
 };
 

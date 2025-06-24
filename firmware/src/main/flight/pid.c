@@ -56,9 +56,9 @@ PID _ALT;
 PID_Test _PID_Test;
 
 static void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs);
-//#ifdef USE_OPFLOW
+
 static void updatePosHold(timeUs_t currentTimeUs);
-//#endif
+
 
 void pidInit(void)
 {
@@ -195,9 +195,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 
   updateAltHold_RANGEFINDER(currentTimeUs);
 
-  //#ifdef USE_OPFLOW
   updatePosHold(currentTimeUs);
-  //#endif
 
   PID_Calculation(&_ROLL.out, rcCommand[ROLL] + GpsNav.GPS_angle[ROLL], imu_roll, dT);
   PID_Calculation(&_ROLL.in, _ROLL.out.result, bmi270.gyroADCf[X], dT);
@@ -310,10 +308,9 @@ void updateAltHold(timeUs_t currentTimeUs)
       rcCommand[THROTTLE] = initialThrottleHold + _ALT.result;
     #endif
   }
-  debug[2] = (int32_t)_ALT.result;
-  debug[3] = (int32_t)rcCommand[THROTTLE];
+
 }
-//#ifdef USE_OPFLOW
+
 void updatePosHold(timeUs_t currentTimeUs)
 {
   UNUSED(currentTimeUs);
@@ -324,6 +321,7 @@ void updatePosHold(timeUs_t currentTimeUs)
     uint32_t now_time = micros();
     poshold->dt = (float)US2S(now_time - pre_time);
     pre_time = now_time;
+    debug[2] = poshold->dt / 1e-6f;
 
     poshold->Pixel[X] = poshold->Pixel[X] + opflow.flowRate[X] * poshold->dt;
     poshold->Pixel[Y] = poshold->Pixel[Y] + opflow.flowRate[Y] * poshold->dt;
@@ -377,7 +375,6 @@ void updatePosHold(timeUs_t currentTimeUs)
     rcCommand[PITCH] = poshold->target_Angle[Y];
   }
 }
-//#endif
 
 void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
 {
@@ -389,10 +386,13 @@ void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
     uint32_t now_time = micros();
     althold->dt = (float)US2S(now_time - pre_time);
     pre_time = now_time;
+    debug[3] = althold->dt / 1e-6f;
 
     althold->error_Height = (althold->target_Height <= 5.0) ? 0 : (althold->target_Height - rangefinder.calculatedAltitude);
 
-    althold->derivative_Height = -(rangefinder.calculatedAltitude - althold->pre_Height) / althold->dt;
+    althold->proportional_Height = althold->KP * althold->error_Height;
+
+    althold->derivative_Height = althold->KD * (-(rangefinder.calculatedAltitude - althold->pre_Height) / althold->dt);
     althold->pre_Height = rangefinder.calculatedAltitude;
 
 
@@ -401,13 +401,13 @@ void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
     if(althold->integral_Height > althold->integral_windup) althold->integral_Height = althold->integral_windup;
     else if(althold->integral_Height < -althold->integral_windup) althold->integral_Height = -althold->integral_windup;
 
-    althold->result = (althold->KP * althold->error_Height) + (althold->KI * althold->integral_Height) + (althold->KD * althold->derivative_Height);
+    althold->result = althold->proportional_Height + althold->integral_Height + althold->derivative_Height;
 
-    if(rcData[THROTTLE] < 1030)
-    {
-      althold->integral_Height = 0;
-      althold->result = 0;
-    }
+//    if(rcData[THROTTLE] < 1030)
+//    {
+//      althold->integral_Height = 0;
+//      althold->result = 0;
+//    }
 
     constrain(althold->result, 0, 500);
     if(rxRuntimeState.rcCommand_updated == true)

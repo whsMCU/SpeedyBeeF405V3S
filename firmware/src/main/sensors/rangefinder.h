@@ -45,6 +45,7 @@ typedef struct {
   float target_Height;
   float error_Height;
   float pre_Height;
+  float proportional_Height;
   float integral_Height;
   float integral_windup;
   float derivative_Height;

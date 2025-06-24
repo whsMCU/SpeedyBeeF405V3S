@@ -3872,7 +3872,7 @@ bool mspFCProcessInOutCommand(uint16_t cmdMSP, sbuf_t *dst, sbuf_t *src, mspResu
 
 static mspResult_e mspProcessSensorCommand(uint16_t cmdMSP, sbuf_t *src)
 {
-    UNUSED(src);
+    //UNUSED(src);
 
     switch (cmdMSP) {
 #if defined(USE_RANGEFINDER_MSP)
