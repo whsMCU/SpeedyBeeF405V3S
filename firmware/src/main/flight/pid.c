@@ -392,7 +392,7 @@ void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
 
     althold->error_Height = (althold->target_Height <= 5.0) ? 0 : (althold->target_Height - rangefinder.calculatedAltitude);
 
-    althold->derivative_Height += -(rangefinder.calculatedAltitude - althold->pre_Height) / althold->dt;
+    althold->derivative_Height = -(rangefinder.calculatedAltitude - althold->pre_Height) / althold->dt;
     althold->pre_Height = rangefinder.calculatedAltitude;
 
 

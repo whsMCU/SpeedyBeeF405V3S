@@ -125,11 +125,11 @@
             this.label24 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.textBox2 = new System.Windows.Forms.TextBox();
             this.label77 = new System.Windows.Forms.Label();
             this.tb_rx_error = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.lb_fail = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
@@ -281,6 +281,8 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
+            this.headingIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.HeadingIndicatorInstrumentControl();
+            this.attitudeIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.AttitudeIndicatorInstrumentControl();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label62 = new System.Windows.Forms.Label();
             this.lb_route_distance = new System.Windows.Forms.Label();
@@ -357,8 +359,6 @@
             this.bt_ReScan = new System.Windows.Forms.Button();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.tb_msp_error = new System.Windows.Forms.TextBox();
-            this.headingIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.HeadingIndicatorInstrumentControl();
-            this.attitudeIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.AttitudeIndicatorInstrumentControl();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -983,6 +983,18 @@
             this.panel4.Size = new System.Drawing.Size(327, 89);
             this.panel4.TabIndex = 73;
             // 
+            // textBox2
+            // 
+            this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox2.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox2.Location = new System.Drawing.Point(104, 8);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.ReadOnly = true;
+            this.textBox2.Size = new System.Drawing.Size(386, 18);
+            this.textBox2.TabIndex = 7;
+            this.textBox2.Text = "-";
+            // 
             // label77
             // 
             this.label77.AutoSize = true;
@@ -1027,18 +1039,6 @@
             this.label3.Size = new System.Drawing.Size(45, 21);
             this.label3.TabIndex = 11;
             this.label3.Text = "Error";
-            // 
-            // textBox2
-            // 
-            this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox2.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox2.Location = new System.Drawing.Point(104, 8);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.ReadOnly = true;
-            this.textBox2.Size = new System.Drawing.Size(386, 18);
-            this.textBox2.TabIndex = 7;
-            this.textBox2.Text = "-";
             // 
             // textBox3
             // 
@@ -2600,6 +2600,22 @@
             this.groupBox10.TabStop = false;
             this.groupBox10.Text = "ATTITUDE";
             // 
+            // headingIndicatorInstrumentControl1
+            // 
+            this.headingIndicatorInstrumentControl1.Location = new System.Drawing.Point(153, 19);
+            this.headingIndicatorInstrumentControl1.Name = "headingIndicatorInstrumentControl1";
+            this.headingIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 142);
+            this.headingIndicatorInstrumentControl1.TabIndex = 1;
+            this.headingIndicatorInstrumentControl1.Text = "headingIndicatorInstrumentControl1";
+            // 
+            // attitudeIndicatorInstrumentControl1
+            // 
+            this.attitudeIndicatorInstrumentControl1.Location = new System.Drawing.Point(5, 18);
+            this.attitudeIndicatorInstrumentControl1.Name = "attitudeIndicatorInstrumentControl1";
+            this.attitudeIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 143);
+            this.attitudeIndicatorInstrumentControl1.TabIndex = 0;
+            this.attitudeIndicatorInstrumentControl1.Text = "attitudeIndicatorInstrumentControl1";
+            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.label62);
@@ -3489,27 +3505,11 @@
             this.tb_msp_error.TabIndex = 93;
             this.tb_msp_error.Text = "-";
             // 
-            // headingIndicatorInstrumentControl1
-            // 
-            this.headingIndicatorInstrumentControl1.Location = new System.Drawing.Point(153, 19);
-            this.headingIndicatorInstrumentControl1.Name = "headingIndicatorInstrumentControl1";
-            this.headingIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 142);
-            this.headingIndicatorInstrumentControl1.TabIndex = 1;
-            this.headingIndicatorInstrumentControl1.Text = "headingIndicatorInstrumentControl1";
-            // 
-            // attitudeIndicatorInstrumentControl1
-            // 
-            this.attitudeIndicatorInstrumentControl1.Location = new System.Drawing.Point(5, 18);
-            this.attitudeIndicatorInstrumentControl1.Name = "attitudeIndicatorInstrumentControl1";
-            this.attitudeIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 143);
-            this.attitudeIndicatorInstrumentControl1.TabIndex = 0;
-            this.attitudeIndicatorInstrumentControl1.Text = "attitudeIndicatorInstrumentControl1";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1184, 761);
+            this.ClientSize = new System.Drawing.Size(1184, 681);
             this.Controls.Add(this.textBox5);
             this.Controls.Add(this.tb_msp_error);
             this.Controls.Add(this.bt_ReScan);
