@@ -67,7 +67,7 @@ rangefinder_t rangefinder;
 rangefinderConfig_t rangefinderConfig;
 
 #define SETTING_RANGEFINDER_HARDWARE_DEFAULT 0
-#define SETTING_RANGEFINDER_MEDIAN_FILTER_DEFAULT 0
+#define SETTING_RANGEFINDER_MEDIAN_FILTER_DEFAULT 1
 
 void rangefinder_Init(void)
 {

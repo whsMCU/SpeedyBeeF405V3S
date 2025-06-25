@@ -305,7 +305,7 @@ static void updateRcCommands(void)
 		tmp = (uint32_t)(tmp - rxConfig.mincheck) * PWM_RANGE_MIN / (PWM_RANGE_MAX - rxConfig.mincheck);
 
 		rcCommand[THROTTLE] = tmp;
-    rcCommand[THROTTLE] = rcLookupThrottle(tmp) - 1000.0f;
+    //rcCommand[THROTTLE] = rcLookupThrottle(tmp) - 1000.0f;
 
 	if (FLIGHT_MODE(HEADFREE_MODE)) {
 	 static t_fp_vector_def  rcCommandBuff;

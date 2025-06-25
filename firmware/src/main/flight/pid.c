@@ -170,9 +170,6 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   float dT = (float)US2S(currentTimeUs - previousUpdateTimeUs);
   debug[0] = currentTimeUs - previousUpdateTimeUs;
   previousUpdateTimeUs = currentTimeUs;
-  //debug[1] = bmi270.gyroADCf[Y];
-  //debug[2] = _PITCH.in.result_d;
-  //debug[3] = _PITCH.in.result;
 
 #ifdef USE_GPS1
   if ( (FLIGHT_MODE(GPS_HOME_MODE) || FLIGHT_MODE(GPS_HOLD_MODE)) && STATE(GPS_FIX_HOME) ) {
@@ -403,11 +400,21 @@ void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
 
     althold->result = althold->proportional_Height + althold->integral_Height + althold->derivative_Height;
 
-//    if(rcData[THROTTLE] < 1030)
-//    {
-//      althold->integral_Height = 0;
-//      althold->result = 0;
-//    }
+    if(althold->result >= 50 && althold->result <= -50)
+    {
+      debug[3] = althold->dt / 1e-6f;
+    }
+
+    if(rcCommand[THROTTLE] <= 150)
+    {
+      debug[3] = althold->dt / 1e-6f;
+    }
+
+    if(rcData[THROTTLE] < 1030)
+    {
+      althold->integral_Height = 0;
+      althold->result = 0;
+    }
 
     constrain(althold->result, 0, 500);
     if(rxRuntimeState.rcCommand_updated == true)

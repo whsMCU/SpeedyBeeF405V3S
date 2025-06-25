@@ -205,34 +205,32 @@ void scheduler(void)
     uint32_t currentTimeUs;
     task_t *selectedTask = NULL;
 
+    currentTimeUs = micros();
 	// Update task dynamic priorities
 	for (task_t *task = queueFirst(); task != NULL; task = queueNext()) {
-		currentTimeUs = micros();
 		if((currentTimeUs - task->lastExecutedAtUs) >= task->attribute->desiredPeriodUs) {
-		  selectedTask = task;
-			if (selectedTask) {
-				currentTask = selectedTask;
-				selectedTask->taskPeriodTimeUs = currentTimeUs - selectedTask->lastExecutedAtUs;
-        selectedTask->lastExecutedAtUs = currentTimeUs;
+		  currentTask = task;
+		  task->taskPeriodTimeUs = currentTimeUs - selectedTask->lastExecutedAtUs;
+		  task->lastExecutedAtUs = currentTimeUs;
 
-				// Execute task
-				const uint32_t currentTimeBeforeTaskCallUs = micros();
-				selectedTask->attribute->taskFunc(currentTimeBeforeTaskCallUs);
-				taskExecutionTimeUs = micros() - currentTimeBeforeTaskCallUs;
-				taskTotalExecutionTime += taskExecutionTimeUs;
+      // Execute task
+      const uint32_t currentTimeBeforeTaskCallUs = micros();
+      task->attribute->taskFunc(currentTimeBeforeTaskCallUs);
+      taskExecutionTimeUs = micros() - currentTimeBeforeTaskCallUs;
+      taskTotalExecutionTime += taskExecutionTimeUs;
 
-				selectedTask->taskLatestDeltaTimeUs = cmpTimeUs(currentTimeUs, selectedTask->lastStatsAtUs);
-				selectedTask->lastStatsAtUs = currentTimeUs;
+      task->taskLatestDeltaTimeUs = cmpTimeUs(currentTimeUs, task->lastStatsAtUs);
+      task->lastStatsAtUs = currentTimeUs;
 
-				selectedTask->taskExecutionTimeUs = micros() - currentTimeBeforeTaskCallUs;
-				selectedTask->taskExcutedEndUs = currentTimeBeforeTaskCallUs;
-		    selectedTask->totalExecutionTimeUs += taskExecutionTimeUs;   // time consumed by scheduler + task
-			}
+      task->taskExecutionTimeUs = taskExecutionTimeUs;
+      task->taskExcutedEndUs = currentTimeBeforeTaskCallUs;
+      task->totalExecutionTimeUs += taskExecutionTimeUs;   // time consumed by scheduler + task
 		}
 	}
 
+	int count = 0;
   rxRuntimeState.uartAvalable = uartAvailable(_DEF_UART2);
-  while(uartAvailable(_DEF_UART2))
+  while(uartAvailable(_DEF_UART2) && count++ < 32)
   {
     crsfDataReceive(uartRead(_DEF_UART2), (void*) &rxRuntimeState);
   }
