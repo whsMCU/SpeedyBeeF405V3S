@@ -63,6 +63,10 @@ static task_t *currentTask = NULL;
 
 uint16_t averageSystemLoadPercent = 0;
 
+static uint32_t execCountLastSec = 0;
+static uint32_t totalLatenessUs = 0;
+static uint32_t lateTaskCount = 0;
+
 static int taskQueuePos = 0;
 static int taskQueueSize = 0;
 
@@ -140,8 +144,19 @@ void taskSystemLoad(uint32_t currentTimeUs)
     // Calculate system load
     if (deltaTime) {
         averageSystemLoadPercent = 100 * taskTotalExecutionTime / deltaTime;
+
+//        printf("[LOAD] CPU: %3d%% | TaskExec: %lu | Late: %lu (%lu us)\n",
+//            averageSystemLoadPercent,
+//            execCountLastSec,
+//            lateTaskCount,
+//            totalLatenessUs);
+
         taskTotalExecutionTime = 0;
         lastExecutedAtUs = currentTimeUs;
+
+        execCountLastSec = 0;
+        lateTaskCount = 0;
+        totalLatenessUs = 0;
     } else {
         //schedulerIgnoreTaskExecTime();
     }
@@ -197,6 +212,26 @@ void schedulerInit(void)
     queueAdd(getTask(TASK_SYSTEM));
 }
 
+static int compareTaskPriority(const void *a, const void *b) {
+    const task_t *taskA = *(const task_t **)a;
+    const task_t *taskB = *(const task_t **)b;
+    uint32_t now = micros();
+
+    // 우선순위 먼저 비교
+    if (taskA->attribute->staticPriority != taskB->attribute->staticPriority) {
+        return (int)taskA->attribute->staticPriority - (int)taskB->attribute->staticPriority;
+    }
+
+    // overdue 시간 비교 (같은 우선순위 내에서만)
+    int32_t overdueA = now - taskA->lastExecutedAtUs - taskA->attribute->desiredPeriodUs;
+    int32_t overdueB = now - taskB->lastExecutedAtUs - taskB->attribute->desiredPeriodUs;
+    return (overdueB - overdueA);
+}
+
+static void sortTaskQueue(void) {
+    qsort(taskQueueArray, taskQueueSize, sizeof(task_t *), compareTaskPriority);
+}
+
 void scheduler(void)
 {
     static uint32_t scheduleCount = 0;
@@ -206,12 +241,19 @@ void scheduler(void)
     task_t *selectedTask = NULL;
 
     currentTimeUs = micros();
+
+    sortTaskQueue();
+
 	// Update task dynamic priorities
 	for (task_t *task = queueFirst(); task != NULL; task = queueNext()) {
+
+	  int32_t overdue = currentTimeUs - task->lastExecutedAtUs - task->attribute->desiredPeriodUs;
+
 		if((currentTimeUs - task->lastExecutedAtUs) >= task->attribute->desiredPeriodUs) {
 		  currentTask = task;
 		  task->taskPeriodTimeUs = currentTimeUs - selectedTask->lastExecutedAtUs;
 		  task->lastExecutedAtUs = currentTimeUs;
+		  task->missedCount = 0;
 
       // Execute task
       const uint32_t currentTimeBeforeTaskCallUs = micros();
@@ -225,6 +267,21 @@ void scheduler(void)
       task->taskExecutionTimeUs = taskExecutionTimeUs;
       task->taskExcutedEndUs = currentTimeBeforeTaskCallUs;
       task->totalExecutionTimeUs += taskExecutionTimeUs;   // time consumed by scheduler + task
+
+      // lateness 분석
+      if (overdue > 0) {
+          totalLatenessUs += overdue;
+          lateTaskCount++;
+      }
+      execCountLastSec++;
+		}else {
+      // aging 적용
+      if (task->missedCount < 255) task->missedCount++;
+      if (task->missedCount >= TASK_AGE_EXPEDITE_COUNT) {
+          task->attribute->desiredPeriodUs = MAX(
+              (int)(task->attribute->desiredPeriodUs * TASK_AGE_EXPEDITE_SCALE),
+              SCHEDULER_DELAY_LIMIT);
+      }
 		}
 	}
 

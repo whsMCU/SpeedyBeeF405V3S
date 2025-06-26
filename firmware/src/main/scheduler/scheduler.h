@@ -66,6 +66,16 @@
 
 
 typedef enum {
+    TASK_PRIORITY_MAX = 0,
+    TASK_PRIORITY_REALTIME, // Task will be run outside the scheduler logic
+    TASK_PRIORITY_HIGH,
+    TASK_PRIORITY_MEDIUM_HIGH,
+    TASK_PRIORITY_MEDIUM,
+    TASK_PRIORITY_LOW,
+    TASK_PRIORITY_LOWEST,
+} taskPriority_e;
+
+typedef enum {
     /* Actual tasks */
     TASK_SYSTEM = 0,
 //    TASK_MAIN,
@@ -134,6 +144,7 @@ typedef struct {
     const char * taskName;
     void (*taskFunc)(uint32_t currentTimeUs);
     int32_t desiredPeriodUs;        // target period of execution
+    const int8_t staticPriority;        // dynamicPriority grows in steps of this size
 } task_attribute_t;
 
 typedef struct {
@@ -149,6 +160,7 @@ typedef struct {
   uint32_t taskExcutedEndUs;
   uint32_t totalExecutionTimeUs;      // total time consumed by task since boot
   timeUs_t lastStatsAtUs;             // time of last stats gathering for rate calculation
+  uint32_t missedCount;
 } task_t;
 
 
