@@ -54,11 +54,12 @@ PID _YAW_Rate;
 PID _ALT;
 
 PID_Test _PID_Test;
-
+#ifdef USE_RANGEFINDER
 static void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs);
-
+#endif
+#ifdef USE_OPFLOW
 static void updatePosHold(timeUs_t currentTimeUs);
-
+#endif
 
 void pidInit(void)
 {
@@ -190,10 +191,12 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   }
 #endif
 
-  updateAltHold_RANGEFINDER(currentTimeUs);
-
+  #ifdef USE_RANGEFINDER
+    updateAltHold_RANGEFINDER(currentTimeUs);
+  #endif
+  #ifdef USE_OPFLOW
   updatePosHold(currentTimeUs);
-
+  #endif
   PID_Calculation(&_ROLL.out, rcCommand[ROLL] + GpsNav.GPS_angle[ROLL], imu_roll, dT);
   PID_Calculation(&_ROLL.in, _ROLL.out.result, bmi270.gyroADCf[X], dT);
 
@@ -308,6 +311,7 @@ void updateAltHold(timeUs_t currentTimeUs)
 
 }
 
+#ifdef USE_OPFLOW
 void updatePosHold(timeUs_t currentTimeUs)
 {
   UNUSED(currentTimeUs);
@@ -318,7 +322,6 @@ void updatePosHold(timeUs_t currentTimeUs)
     uint32_t now_time = micros();
     poshold->dt = (float)US2S(now_time - pre_time);
     pre_time = now_time;
-    debug[2] = poshold->dt / 1e-6f;
 
     poshold->Pixel[X] = poshold->Pixel[X] + opflow.flowRate[X] * poshold->dt;
     poshold->Pixel[Y] = poshold->Pixel[Y] + opflow.flowRate[Y] * poshold->dt;
@@ -372,7 +375,9 @@ void updatePosHold(timeUs_t currentTimeUs)
     rcCommand[PITCH] = poshold->target_Angle[Y];
   }
 }
+#endif
 
+#ifdef USE_RANGEFINDER
 void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
 {
   UNUSED(currentTimeUs);
@@ -400,15 +405,6 @@ void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
 
     althold->result = althold->proportional_Height + althold->integral_Height + althold->derivative_Height;
 
-    if(althold->result >= 50 && althold->result <= -50)
-    {
-      debug[3] = althold->dt / 1e-6f;
-    }
-
-    if(rcCommand[THROTTLE] <= 150)
-    {
-      debug[3] = althold->dt / 1e-6f;
-    }
 
     if(rcData[THROTTLE] < 1030)
     {
@@ -425,3 +421,4 @@ void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
 
   }
 }
+#endif
