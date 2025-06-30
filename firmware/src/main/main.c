@@ -22,6 +22,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "scheduler/tasks.h"
+
+#include "nvic.h"
 //
 //#include "config/config.h"
 //
@@ -55,8 +57,12 @@ void hwInit(void);
 int main(void)
 {
 
-   SystemClock_Config();
-  //cycleCounterInit();
+  SystemClock_Config();
+
+  // Configure NVIC preempt/priority groups
+  HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITY_GROUPING);
+
+  cycleCounterInit();
 
   hwInit();
 

@@ -54,13 +54,14 @@
 #include "fc/board_info.h"
 #include "fc/dispatch.h"
 #include "fc/init.h"
+#include "fc/rc.h"
 //#include "fc/core.h"
 //#include "fc/rc_modes.h"
 #include "fc/rc_controls.h"
 #include "fc/rc_adjustments.h"
 #include "fc/runtime_config.h"
 #include "fc/stats.h"
-//#include "fc/controlrate_profile.h"
+#include "fc/controlrate_profile.h"
 
 #include "scheduler/tasks.h"
 

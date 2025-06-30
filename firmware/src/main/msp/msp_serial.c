@@ -80,6 +80,7 @@ static bool mspSerialProcessReceivedData(mspPort_t *mspPort, uint8_t c)
             if (c == '$') {
                 mspPort->mspVersion = MSP_V1;
                 mspPort->c_state = MSP_HEADER_START;
+                mspPort->pre_dt = micros();
             }
             else {
                 return false;
@@ -166,6 +167,7 @@ static bool mspSerialProcessReceivedData(mspPort_t *mspPort, uint8_t c)
                 mspPort->c_state = MSP_COMMAND_RECEIVED;
                 msp_delta_time = micros() - msp_pre_time;
                 msp_pre_time = micros();
+                mspPort->dt1 = micros()-mspPort->pre_dt;
             } else {
                 msp_error++;
                 mspPort->c_state = MSP_IDLE;
@@ -244,6 +246,22 @@ static bool mspSerialProcessReceivedData(mspPort_t *mspPort, uint8_t c)
         case MSP_CHECKSUM_V2_NATIVE:
             if (mspPort->checksum2 == c) {
                 mspPort->c_state = MSP_COMMAND_RECEIVED;
+                if(mspPort->dataSize == 5)
+                  {
+                    mspPort->dt1 = micros()-mspPort->pre_dt;
+                    if(mspPort->dt1 >= 5000)
+                    {
+                      mspPort->c_state = MSP_COMMAND_RECEIVED;
+                    }
+                  }
+                if(mspPort->dataSize == 9)
+                  {
+                    mspPort->dt2 = micros()-mspPort->pre_dt;
+                    if(mspPort->dt2 >= 5000)
+                    {
+                      mspPort->c_state = MSP_COMMAND_RECEIVED;
+                    }
+                  }
             } else {
                 mspPort->c_state = MSP_IDLE;
                 mspPort->error++;

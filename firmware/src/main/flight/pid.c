@@ -172,6 +172,10 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   debug[0] = currentTimeUs - previousUpdateTimeUs;
   previousUpdateTimeUs = currentTimeUs;
 
+  if(debug[0] <= 900)
+  {
+    debug[1]++;
+  }
 #ifdef USE_GPS1
   if ( (FLIGHT_MODE(GPS_HOME_MODE) || FLIGHT_MODE(GPS_HOLD_MODE)) && STATE(GPS_FIX_HOME) ) {
     float sin_yaw_y = sin(heading*0.0174532925f);
@@ -271,8 +275,6 @@ void updateAltHold(timeUs_t currentTimeUs)
   float targetVel = constrain(AltHold - getEstimatedAltitudeCm(), -100, 100);
   PID_Calculation(&_ALT, targetVel, (float)getEstimatedVario(), dT);
   _ALT.result = constrain(_ALT.result, -200, 200);
-
-  debug[1] = initialThrottleHold;
 
   if(FLIGHT_MODE(BARO_MODE))
   {
