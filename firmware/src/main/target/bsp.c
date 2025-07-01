@@ -11,7 +11,7 @@
 
 #include "drivers/nvic.h"
 
-//#define DWT_LAR_UNLOCK_VALUE 0xC5ACCE55
+#define DWT_LAR_UNLOCK_VALUE 0xC5ACCE55
 
 // cycles per microsecond
 static uint32_t usTicks = 0;
@@ -28,9 +28,8 @@ void cycleCounterInit(void)
 
   CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
 
-//#define DWT_LAR
-//  __O uint32_t *DWTLAR = (uint32_t *)(DWT_BASE + 0x0FB0);
-//  *(DWTLAR) = DWT_LAR_UNLOCK_VALUE;
+  __O uint32_t *DWTLAR = (uint32_t *)(DWT_BASE + 0x0FB0);
+  *(DWTLAR) = DWT_LAR_UNLOCK_VALUE;
 
   DWT->CYCCNT = 0;
   DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
