@@ -23,7 +23,7 @@
 /* USER CODE BEGIN Includes */
 #include "scheduler/tasks.h"
 
-#include "nvic.h"
+#include "drivers/nvic.h"
 //
 //#include "config/config.h"
 //
@@ -59,7 +59,9 @@ int main(void)
   HAL_Init();
 
   SystemClock_Config();
-  //SystemCoreClockUpdate();
+
+  // Configure NVIC preempt/priority groups
+  HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITY_GROUPING);
 
   cycleCounterInit();
 
