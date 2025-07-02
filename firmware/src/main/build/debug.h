@@ -20,8 +20,9 @@
 
 #pragma once
 
-#define DEBUG16_VALUE_COUNT 4
 #include "hw.h"
+
+#define DEBUG16_VALUE_COUNT 4
 extern int32_t debug[DEBUG16_VALUE_COUNT];
 extern uint8_t debugMode;
 

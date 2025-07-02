@@ -80,21 +80,21 @@ uint32_t microsISR(void)
 // Return system uptime in microseconds (rollover in 70minutes)
 uint32_t micros(void)
 {
-  register uint32_t ms, cycle_cnt;
-
-  // Call microsISR() in interrupt and elevated (non-zero) BASEPRI context
-
+//  register uint32_t ms, cycle_cnt;
+//
+//  // Call microsISR() in interrupt and elevated (non-zero) BASEPRI context
+//
 //  if ((SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk) || (__get_BASEPRI())) {
 //      return microsISR();
 //  }
+//
+//  do {
+//    ms = sysTickUptime;
+//    cycle_cnt = SysTick->VAL;
+//  } while (ms != sysTickUptime);
+//  return (ms * 1000) + (usTicks * 1000 - cycle_cnt) / usTicks; //168
 
-  do {
-    ms = sysTickUptime;
-    cycle_cnt = SysTick->VAL;
-  } while (ms != sysTickUptime);
-  return (ms * 1000) + (usTicks * 1000 - cycle_cnt) / usTicks; //168
-
-  //return htim5.Instance->CNT;
+  return htim5.Instance->CNT;
 }
 
 uint32_t getCycleCounter(void)
