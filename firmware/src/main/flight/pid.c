@@ -310,19 +310,24 @@ void updateAltHold(timeUs_t currentTimeUs)
 }
 
 #ifdef USE_OPFLOW
+#define FLOW_LPF_ALPHA 0.2f  // 0.0 ~ 1.0 (낮을수록 부드러움)
 void updatePosHold(timeUs_t currentTimeUs)
 {
-  UNUSED(currentTimeUs);
   opflow_poshold_t *poshold = &opflow.poshold;
   if(FLIGHT_MODE(OPFLOW_HOLD_MODE) && abs(rcCommand[ROLL]) < 1 && abs(rcCommand[PITCH]) < 1)
   {
     static uint32_t pre_time = 0;
-    uint32_t now_time = micros();
+    uint32_t now_time = currentTimeUs;
     poshold->dt = (float)US2S(now_time - pre_time);
     pre_time = now_time;
 
-    poshold->Pixel[X] = poshold->Pixel[X] + opflow.flowRate[X] * poshold->dt;
-    poshold->Pixel[Y] = poshold->Pixel[Y] + opflow.flowRate[Y] * poshold->dt;
+    static float filteredFlowRate[2] = {0, 0};
+    for (int i = 0; i < 2; i++) {
+        filteredFlowRate[i] = filteredFlowRate[i] * (1 - FLOW_LPF_ALPHA) + opflow.flowRate[i] * FLOW_LPF_ALPHA;
+    }
+
+    poshold->Pixel[X] = poshold->Pixel[X] + filteredFlowRate[X] * poshold->dt;
+    poshold->Pixel[Y] = poshold->Pixel[Y] + filteredFlowRate[Y] * poshold->dt;
 
     if(rcData[THROTTLE] < 1030)
     {
@@ -338,8 +343,8 @@ void updatePosHold(timeUs_t currentTimeUs)
     poshold->target_Angle[Y] = -poshold->KP * poshold->error_Pixel[X];
     poshold->target_Angle[X] = -poshold->KP * poshold->error_Pixel[Y];
 
-    poshold->target_Angle[Y] += -poshold->KD * -opflow.flowRate[X];
-    poshold->target_Angle[X] += -poshold->KD * -opflow.flowRate[Y];
+    poshold->target_Angle[Y] += -poshold->KD * -filteredFlowRate[X];
+    poshold->target_Angle[X] += -poshold->KD * -filteredFlowRate[Y];
 
     poshold->integral_Pixel[X] += -poshold->KI * poshold->error_Pixel[X] * poshold->dt;
     poshold->integral_Pixel[Y] += -poshold->KI * poshold->error_Pixel[Y] * poshold->dt;
@@ -366,8 +371,8 @@ void updatePosHold(timeUs_t currentTimeUs)
       poshold->target_Angle[Y] = 0;
     }
 
-    constrain(poshold->target_Angle[X],-30,30);
-    constrain(poshold->target_Angle[Y],-30,30);
+    poshold->target_Angle[X] = constrain(poshold->target_Angle[X], -30, 30);
+    poshold->target_Angle[Y] = constrain(poshold->target_Angle[Y], -30, 30);
 
     rcCommand[ROLL] = poshold->target_Angle[X];
     rcCommand[PITCH] = poshold->target_Angle[Y];
@@ -376,23 +381,36 @@ void updatePosHold(timeUs_t currentTimeUs)
 #endif
 
 #ifdef USE_RANGEFINDER
+#define MAX_DERIVATIVE 5.0f
 void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
 {
-  UNUSED(currentTimeUs);
   rangefinder_althold_t *althold = &rangefinder.althold;
   if(FLIGHT_MODE(RANGEFINDER_MODE))
   {
     static uint32_t pre_time = 0;
-    uint32_t now_time = micros();
+    float derivative = 0;
+    uint32_t now_time = currentTimeUs;
     althold->dt = (float)US2S(now_time - pre_time);
     pre_time = now_time;
     debug[3] = althold->dt / 1e-6f;
+
+//    // 1. 스로틀 기반 상승속도 입력
+//    float throttleStick = (float)(rcData[THROTTLE] - 1500) / 500.0f;  // -1.0 ~ 1.0
+//    float climbRate = throttleStick * 10.0f; // 최대 10 cm/s
+//
+//    // 2. target_Height 갱신
+//    althold->target_Height += climbRate * althold->dt;
+//
+//    // 3. PID 제어
+//    althold->error_Height = althold->target_Height - rangefinder.calculatedAltitude;
 
     althold->error_Height = (althold->target_Height <= 5.0) ? 0 : (althold->target_Height - rangefinder.calculatedAltitude);
 
     althold->proportional_Height = althold->KP * althold->error_Height;
 
-    althold->derivative_Height = althold->KD * (-(rangefinder.calculatedAltitude - althold->pre_Height) / althold->dt);
+    derivative = -(rangefinder.calculatedAltitude - althold->pre_Height) / althold->dt;
+    if (fabsf(derivative) > MAX_DERIVATIVE) derivative = 0;
+    althold->derivative_Height = althold->KD * derivative;
     althold->pre_Height = rangefinder.calculatedAltitude;
 
 
@@ -410,7 +428,7 @@ void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
       althold->result = 0;
     }
 
-    constrain(althold->result, 0, 500);
+    althold->result = constrain(althold->result, -300, 300);
     if(rxRuntimeState.rcCommand_updated == true)
     {
       rxRuntimeState.rcCommand_updated = false;
