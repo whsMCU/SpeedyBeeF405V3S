@@ -172,10 +172,6 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   debug[0] = currentTimeUs - previousUpdateTimeUs;
   previousUpdateTimeUs = currentTimeUs;
 
-  if(debug[0] <= 900)
-  {
-    debug[1]++;
-  }
 #ifdef USE_GPS1
   if ( (FLIGHT_MODE(GPS_HOME_MODE) || FLIGHT_MODE(GPS_HOLD_MODE)) && STATE(GPS_FIX_HOME) ) {
     float sin_yaw_y = sin(heading*0.0174532925f);
@@ -407,7 +403,7 @@ void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
 
     althold->result = althold->proportional_Height + althold->integral_Height + althold->derivative_Height;
 
-
+    debug[1] = althold->result;
     if(rcData[THROTTLE] < 1030)
     {
       althold->integral_Height = 0;
@@ -419,6 +415,7 @@ void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
     {
       rxRuntimeState.rcCommand_updated = false;
       rcCommand[THROTTLE] += althold->result;
+      debug[2] = rcCommand[THROTTLE];
     }
 
   }
