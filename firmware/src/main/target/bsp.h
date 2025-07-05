@@ -29,6 +29,7 @@ uint32_t clockMicrosToCycles(uint32_t micros);
 void delay(uint32_t ms);
 uint32_t millis(void);
 uint32_t micros(void);
+uint64_t micros64(void);
 void delayMicroseconds(uint32_t us);
 
 #endif /* SRC_BSP_BSP_H_ */

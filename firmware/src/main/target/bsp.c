@@ -37,6 +37,8 @@ void cycleCounterInit(void)
 
 static volatile int sysTickPending = 0;
 
+volatile uint32_t high32 = 0;
+
 void HAL_SYSTICK_Callback(void)
 {
   ATOMIC_BLOCK(NVIC_PRIO_MAX)
@@ -46,6 +48,14 @@ void HAL_SYSTICK_Callback(void)
     sysTickPending = 0;
     (void)(SysTick->CTRL);
   }
+
+  // 1ms마다 호출되도록 설정된 상태여야 함
+//  static uint32_t lastCycle = 0;
+//  uint32_t currentCycle = DWT->CYCCNT;
+//  if (currentCycle < lastCycle) {
+//      high32++;
+//  }
+//  lastCycle = currentCycle;
 }
 
 // Return system uptime in microseconds (rollover in 70minutes)
@@ -95,6 +105,21 @@ uint32_t micros(void)
 //  return (ms * 1000) + (usTicks * 1000 - cycle_cnt) / usTicks; //168
 
   return htim5.Instance->CNT;
+}
+
+uint64_t micros64(void)
+{
+    uint32_t cycleLow = DWT->CYCCNT;
+    uint32_t high = high32;
+
+    // 오버플로우 방지 더블 체크
+    if (DWT->CYCCNT < cycleLow) {
+        high++;
+        cycleLow = DWT->CYCCNT;
+    }
+
+    uint64_t totalCycles = ((uint64_t)high << 32) | cycleLow;
+    return totalCycles / (SystemCoreClock / 1000000ULL);
 }
 
 uint32_t getCycleCounter(void)

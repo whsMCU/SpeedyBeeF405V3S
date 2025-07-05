@@ -253,7 +253,9 @@ void Param_Config_Init(void)
 #ifdef USE_GPS
 	//gpsConfig_Init();
 #endif
-
+#ifdef USE_OPFLOW
+	opflow_Init();
+#endif
 	barometerConfig_Init();
 #ifdef USE_MAG
 	compassConfig_Init();

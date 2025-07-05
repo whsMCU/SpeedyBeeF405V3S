@@ -2309,7 +2309,7 @@
             // timer_status
             // 
             this.timer_status.Enabled = true;
-            this.timer_status.Interval = 50;
+            this.timer_status.Interval = 25;
             this.timer_status.Tick += new System.EventHandler(this.timer_status_Tick);
             // 
             // flight_timer
