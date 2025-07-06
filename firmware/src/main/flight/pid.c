@@ -169,7 +169,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 
   static timeUs_t previousUpdateTimeUs;
   float dT = (float)US2S(currentTimeUs - previousUpdateTimeUs);
-  debug[0] = currentTimeUs - previousUpdateTimeUs;
+  //debug[0] = currentTimeUs - previousUpdateTimeUs;
   previousUpdateTimeUs = currentTimeUs;
 
 #ifdef USE_GPS1
@@ -392,7 +392,7 @@ void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
     uint32_t now_time = currentTimeUs;
     althold->dt = (float)US2S(now_time - pre_time);
     pre_time = now_time;
-    debug[3] = althold->dt / 1e-6f;
+    //debug[3] = althold->dt / 1e-6f;
 
 //    // 1. 스로틀 기반 상승속도 입력
 //    float throttleStick = (float)(rcData[THROTTLE] - 1500) / 500.0f;  // -1.0 ~ 1.0
@@ -421,7 +421,7 @@ void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
 
     althold->result = althold->proportional_Height + althold->integral_Height + althold->derivative_Height;
 
-    debug[1] = althold->result;
+    //debug[1] = althold->result;
     if(rcData[THROTTLE] < 1030)
     {
       althold->integral_Height = 0;
@@ -433,8 +433,13 @@ void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
     {
       rxRuntimeState.rcCommand_updated = false;
       rcCommand[THROTTLE] += althold->result;
-      debug[2] = rcCommand[THROTTLE];
+      //debug[2] = rcCommand[THROTTLE];
     }
+
+    DEBUG_SET(DEBUG_RANGEFINDER, 0, (althold->proportional_Height));
+    DEBUG_SET(DEBUG_RANGEFINDER, 1, (althold->integral_Height));
+    DEBUG_SET(DEBUG_RANGEFINDER, 2, (althold->result));
+    DEBUG_SET(DEBUG_RANGEFINDER, 3, (rcCommand[THROTTLE]));
 
   }
 }
