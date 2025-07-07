@@ -67,53 +67,53 @@ void pidInit(void)
   _ROLL.in.kp = 10;
   _ROLL.in.ki = 0;
   _ROLL.in.kd = 0;
-  _ROLL.in.integral_windup = 500;
+  _ROLL.in.integral_windup = 1000;
 
   _ROLL.out.pidName = "ROLL_OUT";
   _ROLL.out.kp = 10;
   _ROLL.out.ki = 0;
   _ROLL.out.kd = 0;
-  _ROLL.out.integral_windup = 500;
+  _ROLL.out.integral_windup = 1000;
 
   _PITCH.in.pidName = "PITCH_IN";
   _PITCH.in.kp = 10;
   _PITCH.in.ki = 0;
   _PITCH.in.kd = 0;
-  _PITCH.in.integral_windup = 500;
+  _PITCH.in.integral_windup = 1000;
 
   _PITCH.out.pidName = "PITCH_OUT";
   _PITCH.out.kp = 10;
   _PITCH.out.ki = 0;
   _PITCH.out.kd = 0;
-  _PITCH.out.integral_windup = 500;
+  _PITCH.out.integral_windup = 1000;
 
   _YAW_Heading.pidName = "YAW_Heading";
   _YAW_Heading.kp = 10;
   _YAW_Heading.ki = 0;
   _YAW_Heading.kd = 0;
-  _YAW_Heading.integral_windup = 500;
+  _YAW_Heading.integral_windup = 1000;
 
   _YAW_Rate.pidName = "YAW_Rate";
   _YAW_Rate.kp = 10;
   _YAW_Rate.ki = 0;
   _YAW_Rate.kd = 0;
-  _YAW_Rate.integral_windup = 500;
+  _YAW_Rate.integral_windup = 1000;
 
   _ALT.pidName = "ALT";
   _ALT.kp = 5;
   _ALT.ki = 0;
   _ALT.kd = 0;
-  _ALT.integral_windup = 200;
+  _ALT.integral_windup = 500;
 
   rangefinder.althold.KP = 1.0f;
   rangefinder.althold.KI = 0.3f;
   rangefinder.althold.KD = 0.4f;
-  rangefinder.althold.integral_windup = 200;
+  rangefinder.althold.integral_windup = 500;
 
   opflow.poshold.KP = 1.0f;
   opflow.poshold.KI = 1.8f;
   opflow.poshold.KD = 0.15f;
-  opflow.poshold.integral_windup = 300;
+  opflow.poshold.integral_windup = 500;
 
   _PID_Test.pid_test_flag = 0;
   _PID_Test.pid_test_throttle = 0;
