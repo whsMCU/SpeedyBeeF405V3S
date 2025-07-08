@@ -2532,6 +2532,13 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         }
         break;
 
+    case MSP_DEBUG_MENU:
+      if(!ARMING_FLAG(ARMED))
+      {
+        debugMode = (uint8_t)sbufReadU8(src);
+      }
+      break;
+
 #ifdef USE_OPFLOW
     case MSP2_INAV_OPFLOW_CALIBRATION:
 //        if (!ARMING_FLAG(ARMED))

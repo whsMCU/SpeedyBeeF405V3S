@@ -283,6 +283,7 @@
 #define MSP_SET_SENSOR_ALIGNMENT 220    //in message          set the orientation of the acc,gyro,mag
 #define MSP_SET_LED_STRIP_MODECOLOR 221 //in  message         Set LED strip mode_color settings
 
+#define MSP_DEBUG_MENU              240    //in message          no param
 // #define MSP_BIND                 240    //in message          no param
 // #define MSP_ALARMS               242
 

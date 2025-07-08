@@ -53,6 +53,8 @@ namespace SpeedyBeeF405V3S_GUI
         bool pid_test_flag = false;
         bool pid_test_flag_temp = false;
         bool pid_test_request_flag = false;
+        bool debug_flag = false;
+        int debugValue = 0;
         int pid_test_time = 0;
         int pid_test_setting_time_temp = 0;
         int pid_test_setting_deg_temp = 0;
@@ -140,6 +142,20 @@ namespace SpeedyBeeF405V3S_GUI
         PointPairList _debug_3_points = new PointPairList();
         LineItem _debug_3_curve;
 
+        class Item
+        {
+            public string Text { get; set; }
+            public int Value { get; set; }
+        }
+
+        List<Item> items = new List<Item>()
+        {
+            new Item() { Text = "DEBUG_NONE", Value = 0 },
+            new Item() { Text = "DEBUG_PIDLOOP", Value = 5 },
+            new Item() { Text = "DEBUG_RANGEFINDER", Value = 27 },
+            new Item() { Text = "DEBUG_FLOW_RAW", Value = 71 },
+        };
+
         public Form1()
         {
             InitializeComponent();
@@ -147,6 +163,11 @@ namespace SpeedyBeeF405V3S_GUI
             this.Text = "MCU Drone 제어프로그램";
             received_data = 2;
             textBox10.Text = (zoom - 14).ToString();
+            comboBox_Debug.DataSource = items;
+            comboBox_Debug.DisplayMember = "Text";
+            comboBox_Debug.ValueMember = "Value";
+            comboBox_Debug.SelectedIndex = 0;
+            comboBox_Debug.DropDownStyle = ComboBoxStyle.DropDownList;
             InitGauge();
             InitGmap();
             InitGraph();
@@ -544,6 +565,20 @@ namespace SpeedyBeeF405V3S_GUI
                     mspProtocol.SendMspCommand(101);
                 }
                 catch { Console.WriteLine("STATUS DATA Requset Error"); }
+            }
+
+            if (debug_flag == true)
+            {
+                debug_flag = false;
+                drone_status_flag = true;
+
+                try
+                {
+                    byte[] debugBuff = BitConverter.GetBytes(debugValue);
+                    mspProtocol.SendMspCommand(240, debugBuff);
+                    Console.WriteLine($"Debug Request: {debugValue}");
+                }
+                catch { Console.WriteLine("Debug Requset Error"); }
             }
 
             if (pid_recive_flag == true)
@@ -2332,6 +2367,17 @@ namespace SpeedyBeeF405V3S_GUI
                 zedGraphControl1.Refresh();
             }
             return true;
+        }
+
+        private void comboBox_Debug_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            debug_flag = true;
+            if (comboBox_Debug.SelectedItem is Item selectedItem)
+            {
+                string text = selectedItem.Text;
+                int value = selectedItem.Value;
+                debugValue = value;
+            }
         }
 
         bool Msp_pid_data(byte[] payload)

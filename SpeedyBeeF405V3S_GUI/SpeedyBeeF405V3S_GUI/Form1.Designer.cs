@@ -281,8 +281,6 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
-            this.headingIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.HeadingIndicatorInstrumentControl();
-            this.attitudeIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.AttitudeIndicatorInstrumentControl();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label62 = new System.Windows.Forms.Label();
             this.lb_route_distance = new System.Windows.Forms.Label();
@@ -359,6 +357,9 @@
             this.bt_ReScan = new System.Windows.Forms.Button();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.tb_msp_error = new System.Windows.Forms.TextBox();
+            this.comboBox_Debug = new System.Windows.Forms.ComboBox();
+            this.headingIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.HeadingIndicatorInstrumentControl();
+            this.attitudeIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.AttitudeIndicatorInstrumentControl();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -2600,22 +2601,6 @@
             this.groupBox10.TabStop = false;
             this.groupBox10.Text = "ATTITUDE";
             // 
-            // headingIndicatorInstrumentControl1
-            // 
-            this.headingIndicatorInstrumentControl1.Location = new System.Drawing.Point(153, 19);
-            this.headingIndicatorInstrumentControl1.Name = "headingIndicatorInstrumentControl1";
-            this.headingIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 142);
-            this.headingIndicatorInstrumentControl1.TabIndex = 1;
-            this.headingIndicatorInstrumentControl1.Text = "headingIndicatorInstrumentControl1";
-            // 
-            // attitudeIndicatorInstrumentControl1
-            // 
-            this.attitudeIndicatorInstrumentControl1.Location = new System.Drawing.Point(5, 18);
-            this.attitudeIndicatorInstrumentControl1.Name = "attitudeIndicatorInstrumentControl1";
-            this.attitudeIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 143);
-            this.attitudeIndicatorInstrumentControl1.TabIndex = 0;
-            this.attitudeIndicatorInstrumentControl1.Text = "attitudeIndicatorInstrumentControl1";
-            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.label62);
@@ -2694,6 +2679,7 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.comboBox_Debug);
             this.tabPage3.Controls.Add(this.rb_alt_range_setpoint);
             this.tabPage3.Controls.Add(this.rb_alt_setpoint);
             this.tabPage3.Controls.Add(this.lb_PID_Test_Target_Time);
@@ -2906,7 +2892,7 @@
             // rb_debug
             // 
             this.rb_debug.AutoSize = true;
-            this.rb_debug.Location = new System.Drawing.Point(313, 400);
+            this.rb_debug.Location = new System.Drawing.Point(13, 511);
             this.rb_debug.Name = "rb_debug";
             this.rb_debug.Size = new System.Drawing.Size(59, 16);
             this.rb_debug.TabIndex = 12;
@@ -2950,7 +2936,7 @@
             // cb_autoscale
             // 
             this.cb_autoscale.AutoSize = true;
-            this.cb_autoscale.Location = new System.Drawing.Point(313, 445);
+            this.cb_autoscale.Location = new System.Drawing.Point(325, 401);
             this.cb_autoscale.Name = "cb_autoscale";
             this.cb_autoscale.Size = new System.Drawing.Size(85, 16);
             this.cb_autoscale.TabIndex = 8;
@@ -2960,7 +2946,7 @@
             // rb_none
             // 
             this.rb_none.AutoSize = true;
-            this.rb_none.Location = new System.Drawing.Point(313, 422);
+            this.rb_none.Location = new System.Drawing.Point(13, 533);
             this.rb_none.Name = "rb_none";
             this.rb_none.Size = new System.Drawing.Size(53, 16);
             this.rb_none.TabIndex = 7;
@@ -3505,6 +3491,31 @@
             this.tb_msp_error.TabIndex = 93;
             this.tb_msp_error.Text = "-";
             // 
+            // comboBox_Debug
+            // 
+            this.comboBox_Debug.FormattingEnabled = true;
+            this.comboBox_Debug.Location = new System.Drawing.Point(101, 510);
+            this.comboBox_Debug.Name = "comboBox_Debug";
+            this.comboBox_Debug.Size = new System.Drawing.Size(121, 20);
+            this.comboBox_Debug.TabIndex = 87;
+            this.comboBox_Debug.SelectedIndexChanged += new System.EventHandler(this.comboBox_Debug_SelectedIndexChanged);
+            // 
+            // headingIndicatorInstrumentControl1
+            // 
+            this.headingIndicatorInstrumentControl1.Location = new System.Drawing.Point(153, 19);
+            this.headingIndicatorInstrumentControl1.Name = "headingIndicatorInstrumentControl1";
+            this.headingIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 142);
+            this.headingIndicatorInstrumentControl1.TabIndex = 1;
+            this.headingIndicatorInstrumentControl1.Text = "headingIndicatorInstrumentControl1";
+            // 
+            // attitudeIndicatorInstrumentControl1
+            // 
+            this.attitudeIndicatorInstrumentControl1.Location = new System.Drawing.Point(5, 18);
+            this.attitudeIndicatorInstrumentControl1.Name = "attitudeIndicatorInstrumentControl1";
+            this.attitudeIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 143);
+            this.attitudeIndicatorInstrumentControl1.TabIndex = 0;
+            this.attitudeIndicatorInstrumentControl1.Text = "attitudeIndicatorInstrumentControl1";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -3859,6 +3870,7 @@
         private System.Windows.Forms.TextBox tb_POS_Opflow_P;
         private System.Windows.Forms.TabPage tabPage5;
         private System.Windows.Forms.RadioButton rb_alt_range_setpoint;
+        private System.Windows.Forms.ComboBox comboBox_Debug;
     }
 }
 
