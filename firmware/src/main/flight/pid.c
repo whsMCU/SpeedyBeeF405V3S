@@ -209,6 +209,11 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   }
   PID_Calculation(&_PITCH.in, _PITCH.out.result, bmi270.gyroADCf[Y], dT);
 
+  DEBUG_SET(DEBUG_PIDLOOP, 0, (_PITCH.in.result_p));
+  DEBUG_SET(DEBUG_PIDLOOP, 1, (_PITCH.in.result_i));
+  DEBUG_SET(DEBUG_PIDLOOP, 2, (_PITCH.in.result_d));
+  DEBUG_SET(DEBUG_PIDLOOP, 3, (_PITCH.in.result));
+
   if((rcData[THROTTLE] < 1030 || !ARMING_FLAG(ARMED))&& _PID_Test.pid_test_flag == 0)
   {
 	  Reset_All_PID_Integrator();
