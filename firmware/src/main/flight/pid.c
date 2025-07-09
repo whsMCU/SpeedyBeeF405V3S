@@ -169,7 +169,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 
   static timeUs_t previousUpdateTimeUs;
   float dT = (float)US2S(currentTimeUs - previousUpdateTimeUs);
-  //debug[0] = currentTimeUs - previousUpdateTimeUs;
+  DEBUG_SET(DEBUG_NONE, 0, (currentTimeUs - previousUpdateTimeUs));
   previousUpdateTimeUs = currentTimeUs;
 
 #ifdef USE_GPS1
