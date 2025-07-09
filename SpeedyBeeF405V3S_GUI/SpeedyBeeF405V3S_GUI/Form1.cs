@@ -2377,6 +2377,102 @@ namespace SpeedyBeeF405V3S_GUI
                 string text = selectedItem.Text;
                 int value = selectedItem.Value;
                 debugValue = value;
+                if(debug_flag == true)
+                {
+                    if (value == 0) // NONE
+                    {
+                        _myPane.CurveList.Clear();
+                        _myPane.YAxis.Scale.MinAuto = true;
+                        _myPane.YAxis.Scale.MaxAuto = true;
+
+                        _debug_0_curve = _myPane.AddCurve("DEBUG_[0]", _debug_0_points, Color.Blue, SymbolType.None);
+                        _debug_0_curve.Line.Width = 2;
+                        _debug_0_curve.Clear();
+                        _debug_1_curve = _myPane.AddCurve("DEBUG_[1]", _debug_1_points, Color.Red, SymbolType.None);
+                        _debug_1_curve.Line.Width = 2;
+                        _debug_1_curve.Clear();
+                        _debug_2_curve = _myPane.AddCurve("DEBUG_[2]", _debug_2_points, Color.Green, SymbolType.None);
+                        _debug_2_curve.Line.Width = 2;
+                        _debug_2_curve.Clear();
+                        _debug_3_curve = _myPane.AddCurve("DEBUG_[3]", _debug_3_points, Color.Black, SymbolType.None);
+                        _debug_3_curve.Line.Width = 2;
+                        _debug_3_curve.Clear();
+
+                        zedGraphControl1.AxisChange();
+                        zedGraphControl1.Invalidate();
+                        zedGraphControl1.Refresh();
+
+                    }
+                    else if (value == 5) // PID
+                    {
+                        _myPane.CurveList.Clear();
+                        _myPane.YAxis.Scale.MinAuto = true;
+                        _myPane.YAxis.Scale.MaxAuto = true;
+
+                        _debug_0_curve = _myPane.AddCurve("PITCH.in.result_P", _debug_0_points, Color.Blue, SymbolType.None);
+                        _debug_0_curve.Line.Width = 2;
+                        _debug_0_curve.Clear();
+                        _debug_1_curve = _myPane.AddCurve("PITCH.in.result_I", _debug_1_points, Color.Red, SymbolType.None);
+                        _debug_1_curve.Line.Width = 2;
+                        _debug_1_curve.Clear();
+                        _debug_2_curve = _myPane.AddCurve("PITCH.in.result_D", _debug_2_points, Color.Green, SymbolType.None);
+                        _debug_2_curve.Line.Width = 2;
+                        _debug_2_curve.Clear();
+                        _debug_3_curve = _myPane.AddCurve("PITCH.in.result", _debug_3_points, Color.Black, SymbolType.None);
+                        _debug_3_curve.Line.Width = 2;
+                        _debug_3_curve.Clear();
+
+                        zedGraphControl1.AxisChange();
+                        zedGraphControl1.Invalidate();
+                        zedGraphControl1.Refresh();
+                    }
+                    else if(value == 27) // RANGEFINDER
+                    {
+                        _myPane.CurveList.Clear();
+                        _myPane.YAxis.Scale.MinAuto = true;
+                        _myPane.YAxis.Scale.MaxAuto = true;
+
+                        _debug_0_curve = _myPane.AddCurve("Range_result_P", _debug_0_points, Color.Blue, SymbolType.None);
+                        _debug_0_curve.Line.Width = 2;
+                        _debug_0_curve.Clear();
+                        _debug_1_curve = _myPane.AddCurve("Range_result_I", _debug_1_points, Color.Red, SymbolType.None);
+                        _debug_1_curve.Line.Width = 2;
+                        _debug_1_curve.Clear();
+                        _debug_2_curve = _myPane.AddCurve("Range_result_D", _debug_2_points, Color.Green, SymbolType.None);
+                        _debug_2_curve.Line.Width = 2;
+                        _debug_2_curve.Clear();
+                        _debug_3_curve = _myPane.AddCurve("rcCommand[THROTTLE]", _debug_3_points, Color.Black, SymbolType.None);
+                        _debug_3_curve.Line.Width = 2;
+                        _debug_3_curve.Clear();
+
+                        zedGraphControl1.AxisChange();
+                        zedGraphControl1.Invalidate();
+                        zedGraphControl1.Refresh();
+                    }
+                    else if(value == 71) // FLOW_RAW
+                    {
+                        _myPane.CurveList.Clear();
+                        _myPane.YAxis.Scale.MinAuto = true;
+                        _myPane.YAxis.Scale.MaxAuto = true;
+
+                        _debug_0_curve = _myPane.AddCurve("DEBUG_[0]", _debug_0_points, Color.Blue, SymbolType.None);
+                        _debug_0_curve.Line.Width = 2;
+                        _debug_0_curve.Clear();
+                        _debug_1_curve = _myPane.AddCurve("DEBUG_[1]", _debug_1_points, Color.Red, SymbolType.None);
+                        _debug_1_curve.Line.Width = 2;
+                        _debug_1_curve.Clear();
+                        _debug_2_curve = _myPane.AddCurve("DEBUG_[2]", _debug_2_points, Color.Green, SymbolType.None);
+                        _debug_2_curve.Line.Width = 2;
+                        _debug_2_curve.Clear();
+                        _debug_3_curve = _myPane.AddCurve("DEBUG_[3]", _debug_3_points, Color.Black, SymbolType.None);
+                        _debug_3_curve.Line.Width = 2;
+                        _debug_3_curve.Clear();
+
+                        zedGraphControl1.AxisChange();
+                        zedGraphControl1.Invalidate();
+                        zedGraphControl1.Refresh();
+                    }
+                }
             }
         }
 
