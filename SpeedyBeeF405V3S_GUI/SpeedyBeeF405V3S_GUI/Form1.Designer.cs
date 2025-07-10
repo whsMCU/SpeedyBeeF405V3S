@@ -281,12 +281,15 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
+            this.headingIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.HeadingIndicatorInstrumentControl();
+            this.attitudeIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.AttitudeIndicatorInstrumentControl();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label62 = new System.Windows.Forms.Label();
             this.lb_route_distance = new System.Windows.Forms.Label();
             this.label61 = new System.Windows.Forms.Label();
             this.gMapControl1 = new GMap.NET.WindowsForms.GMapControl();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.comboBox_Debug = new System.Windows.Forms.ComboBox();
             this.rb_alt_range_setpoint = new System.Windows.Forms.RadioButton();
             this.rb_alt_setpoint = new System.Windows.Forms.RadioButton();
             this.lb_PID_Test_Target_Time = new System.Windows.Forms.Label();
@@ -357,9 +360,14 @@
             this.bt_ReScan = new System.Windows.Forms.Button();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.tb_msp_error = new System.Windows.Forms.TextBox();
-            this.comboBox_Debug = new System.Windows.Forms.ComboBox();
-            this.headingIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.HeadingIndicatorInstrumentControl();
-            this.attitudeIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.AttitudeIndicatorInstrumentControl();
+            this.label100 = new System.Windows.Forms.Label();
+            this.lb_debug6 = new System.Windows.Forms.Label();
+            this.label102 = new System.Windows.Forms.Label();
+            this.lb_debug5 = new System.Windows.Forms.Label();
+            this.label104 = new System.Windows.Forms.Label();
+            this.lb_debug4 = new System.Windows.Forms.Label();
+            this.label98 = new System.Windows.Forms.Label();
+            this.lb_debug7 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -1414,7 +1422,7 @@
             // 
             this.lb_debug0.AutoSize = true;
             this.lb_debug0.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_debug0.Location = new System.Drawing.Point(119, 28);
+            this.lb_debug0.Location = new System.Drawing.Point(119, 13);
             this.lb_debug0.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_debug0.Name = "lb_debug0";
             this.lb_debug0.Size = new System.Drawing.Size(16, 21);
@@ -2466,6 +2474,14 @@
             // 
             // groupBox6
             // 
+            this.groupBox6.Controls.Add(this.label98);
+            this.groupBox6.Controls.Add(this.lb_debug7);
+            this.groupBox6.Controls.Add(this.label100);
+            this.groupBox6.Controls.Add(this.lb_debug6);
+            this.groupBox6.Controls.Add(this.label102);
+            this.groupBox6.Controls.Add(this.lb_debug5);
+            this.groupBox6.Controls.Add(this.label104);
+            this.groupBox6.Controls.Add(this.lb_debug4);
             this.groupBox6.Controls.Add(this.label21);
             this.groupBox6.Controls.Add(this.lb_debug3);
             this.groupBox6.Controls.Add(this.label17);
@@ -2485,7 +2501,7 @@
             // 
             this.label21.AutoSize = true;
             this.label21.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label21.Location = new System.Drawing.Point(4, 128);
+            this.label21.Location = new System.Drawing.Point(4, 72);
             this.label21.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(79, 21);
@@ -2496,7 +2512,7 @@
             // 
             this.lb_debug3.AutoSize = true;
             this.lb_debug3.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_debug3.Location = new System.Drawing.Point(119, 129);
+            this.lb_debug3.Location = new System.Drawing.Point(119, 73);
             this.lb_debug3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_debug3.Name = "lb_debug3";
             this.lb_debug3.Size = new System.Drawing.Size(16, 21);
@@ -2507,7 +2523,7 @@
             // 
             this.label17.AutoSize = true;
             this.label17.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label17.Location = new System.Drawing.Point(4, 96);
+            this.label17.Location = new System.Drawing.Point(4, 52);
             this.label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(79, 21);
@@ -2518,7 +2534,7 @@
             // 
             this.lb_debug2.AutoSize = true;
             this.lb_debug2.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_debug2.Location = new System.Drawing.Point(119, 96);
+            this.lb_debug2.Location = new System.Drawing.Point(119, 52);
             this.lb_debug2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_debug2.Name = "lb_debug2";
             this.lb_debug2.Size = new System.Drawing.Size(16, 21);
@@ -2529,7 +2545,7 @@
             // 
             this.label14.AutoSize = true;
             this.label14.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(4, 61);
+            this.label14.Location = new System.Drawing.Point(4, 32);
             this.label14.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(79, 21);
@@ -2540,7 +2556,7 @@
             // 
             this.lb_debug1.AutoSize = true;
             this.lb_debug1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_debug1.Location = new System.Drawing.Point(119, 61);
+            this.lb_debug1.Location = new System.Drawing.Point(119, 32);
             this.lb_debug1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_debug1.Name = "lb_debug1";
             this.lb_debug1.Size = new System.Drawing.Size(16, 21);
@@ -2551,7 +2567,7 @@
             // 
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(4, 28);
+            this.label12.Location = new System.Drawing.Point(4, 13);
             this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(79, 21);
@@ -2600,6 +2616,22 @@
             this.groupBox10.TabIndex = 87;
             this.groupBox10.TabStop = false;
             this.groupBox10.Text = "ATTITUDE";
+            // 
+            // headingIndicatorInstrumentControl1
+            // 
+            this.headingIndicatorInstrumentControl1.Location = new System.Drawing.Point(153, 19);
+            this.headingIndicatorInstrumentControl1.Name = "headingIndicatorInstrumentControl1";
+            this.headingIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 142);
+            this.headingIndicatorInstrumentControl1.TabIndex = 1;
+            this.headingIndicatorInstrumentControl1.Text = "headingIndicatorInstrumentControl1";
+            // 
+            // attitudeIndicatorInstrumentControl1
+            // 
+            this.attitudeIndicatorInstrumentControl1.Location = new System.Drawing.Point(5, 18);
+            this.attitudeIndicatorInstrumentControl1.Name = "attitudeIndicatorInstrumentControl1";
+            this.attitudeIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 143);
+            this.attitudeIndicatorInstrumentControl1.TabIndex = 0;
+            this.attitudeIndicatorInstrumentControl1.Text = "attitudeIndicatorInstrumentControl1";
             // 
             // tabPage2
             // 
@@ -2719,6 +2751,15 @@
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "그래프";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // comboBox_Debug
+            // 
+            this.comboBox_Debug.FormattingEnabled = true;
+            this.comboBox_Debug.Location = new System.Drawing.Point(101, 510);
+            this.comboBox_Debug.Name = "comboBox_Debug";
+            this.comboBox_Debug.Size = new System.Drawing.Size(121, 20);
+            this.comboBox_Debug.TabIndex = 87;
+            this.comboBox_Debug.SelectedIndexChanged += new System.EventHandler(this.comboBox_Debug_SelectedIndexChanged);
             // 
             // rb_alt_range_setpoint
             // 
@@ -3491,30 +3532,93 @@
             this.tb_msp_error.TabIndex = 93;
             this.tb_msp_error.Text = "-";
             // 
-            // comboBox_Debug
+            // label100
             // 
-            this.comboBox_Debug.FormattingEnabled = true;
-            this.comboBox_Debug.Location = new System.Drawing.Point(101, 510);
-            this.comboBox_Debug.Name = "comboBox_Debug";
-            this.comboBox_Debug.Size = new System.Drawing.Size(121, 20);
-            this.comboBox_Debug.TabIndex = 87;
-            this.comboBox_Debug.SelectedIndexChanged += new System.EventHandler(this.comboBox_Debug_SelectedIndexChanged);
+            this.label100.AutoSize = true;
+            this.label100.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label100.Location = new System.Drawing.Point(5, 132);
+            this.label100.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label100.Name = "label100";
+            this.label100.Size = new System.Drawing.Size(79, 21);
+            this.label100.TabIndex = 99;
+            this.label100.Text = "DEBUG[6]";
             // 
-            // headingIndicatorInstrumentControl1
+            // lb_debug6
             // 
-            this.headingIndicatorInstrumentControl1.Location = new System.Drawing.Point(153, 19);
-            this.headingIndicatorInstrumentControl1.Name = "headingIndicatorInstrumentControl1";
-            this.headingIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 142);
-            this.headingIndicatorInstrumentControl1.TabIndex = 1;
-            this.headingIndicatorInstrumentControl1.Text = "headingIndicatorInstrumentControl1";
+            this.lb_debug6.AutoSize = true;
+            this.lb_debug6.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_debug6.Location = new System.Drawing.Point(120, 132);
+            this.lb_debug6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_debug6.Name = "lb_debug6";
+            this.lb_debug6.Size = new System.Drawing.Size(16, 21);
+            this.lb_debug6.TabIndex = 98;
+            this.lb_debug6.Text = "-";
             // 
-            // attitudeIndicatorInstrumentControl1
+            // label102
             // 
-            this.attitudeIndicatorInstrumentControl1.Location = new System.Drawing.Point(5, 18);
-            this.attitudeIndicatorInstrumentControl1.Name = "attitudeIndicatorInstrumentControl1";
-            this.attitudeIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 143);
-            this.attitudeIndicatorInstrumentControl1.TabIndex = 0;
-            this.attitudeIndicatorInstrumentControl1.Text = "attitudeIndicatorInstrumentControl1";
+            this.label102.AutoSize = true;
+            this.label102.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label102.Location = new System.Drawing.Point(5, 112);
+            this.label102.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label102.Name = "label102";
+            this.label102.Size = new System.Drawing.Size(79, 21);
+            this.label102.TabIndex = 97;
+            this.label102.Text = "DEBUG[5]";
+            // 
+            // lb_debug5
+            // 
+            this.lb_debug5.AutoSize = true;
+            this.lb_debug5.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_debug5.Location = new System.Drawing.Point(120, 112);
+            this.lb_debug5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_debug5.Name = "lb_debug5";
+            this.lb_debug5.Size = new System.Drawing.Size(16, 21);
+            this.lb_debug5.TabIndex = 96;
+            this.lb_debug5.Text = "-";
+            // 
+            // label104
+            // 
+            this.label104.AutoSize = true;
+            this.label104.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label104.Location = new System.Drawing.Point(4, 92);
+            this.label104.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label104.Name = "label104";
+            this.label104.Size = new System.Drawing.Size(79, 21);
+            this.label104.TabIndex = 95;
+            this.label104.Text = "DEBUG[4]";
+            // 
+            // lb_debug4
+            // 
+            this.lb_debug4.AutoSize = true;
+            this.lb_debug4.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_debug4.Location = new System.Drawing.Point(119, 92);
+            this.lb_debug4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_debug4.Name = "lb_debug4";
+            this.lb_debug4.Size = new System.Drawing.Size(16, 21);
+            this.lb_debug4.TabIndex = 94;
+            this.lb_debug4.Text = "-";
+            // 
+            // label98
+            // 
+            this.label98.AutoSize = true;
+            this.label98.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label98.Location = new System.Drawing.Point(5, 152);
+            this.label98.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label98.Name = "label98";
+            this.label98.Size = new System.Drawing.Size(79, 21);
+            this.label98.TabIndex = 101;
+            this.label98.Text = "DEBUG[7]";
+            // 
+            // lb_debug7
+            // 
+            this.lb_debug7.AutoSize = true;
+            this.lb_debug7.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_debug7.Location = new System.Drawing.Point(120, 152);
+            this.lb_debug7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_debug7.Name = "lb_debug7";
+            this.lb_debug7.Size = new System.Drawing.Size(16, 21);
+            this.lb_debug7.TabIndex = 100;
+            this.lb_debug7.Text = "-";
             // 
             // Form1
             // 
@@ -3871,6 +3975,14 @@
         private System.Windows.Forms.TabPage tabPage5;
         private System.Windows.Forms.RadioButton rb_alt_range_setpoint;
         private System.Windows.Forms.ComboBox comboBox_Debug;
+        private System.Windows.Forms.Label label98;
+        private System.Windows.Forms.Label lb_debug7;
+        private System.Windows.Forms.Label label100;
+        private System.Windows.Forms.Label lb_debug6;
+        private System.Windows.Forms.Label label102;
+        private System.Windows.Forms.Label lb_debug5;
+        private System.Windows.Forms.Label label104;
+        private System.Windows.Forms.Label lb_debug4;
     }
 }
 

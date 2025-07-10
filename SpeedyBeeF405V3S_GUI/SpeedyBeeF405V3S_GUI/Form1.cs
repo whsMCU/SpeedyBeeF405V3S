@@ -141,6 +141,14 @@ namespace SpeedyBeeF405V3S_GUI
         LineItem _debug_2_curve;
         PointPairList _debug_3_points = new PointPairList();
         LineItem _debug_3_curve;
+        PointPairList _debug_4_points = new PointPairList();
+        LineItem _debug_4_curve;
+        PointPairList _debug_5_points = new PointPairList();
+        LineItem _debug_5_curve;
+        PointPairList _debug_6_points = new PointPairList();
+        LineItem _debug_6_curve;
+        PointPairList _debug_7_points = new PointPairList();
+        LineItem _debug_7_curve;
 
         class Item
         {
@@ -298,7 +306,7 @@ namespace SpeedyBeeF405V3S_GUI
 
                 log = "DateTime, Arming_Flag, Flight_Mode, Roll, Pitch, Yaw, Alt, RollSetPoint, PitchSetPoint, Yaw SetPoint, Thorttle, yaw_heading_reference," +
                     " altHold, lattitude, longitude, Sat_Num, gps_fix, Throttle_Hold_point, Alt_PID_Result, MOTOR[Right_Rear], MOTOR[Right_Front], MOTOR[Left_Rear], MOTOR[Left_Front]," +
-                    " BAT_V, BAT_A, BAT_mAh, Alt_Range(CM), Alt_Range_Hold(CM), Debug[0], Debug[1], Debug[2], Debug[3]";
+                    " BAT_V, BAT_A, BAT_mAh, Alt_Range(CM), Alt_Range_Hold(CM), Debug[0], Debug[1], Debug[2], Debug[3], Debug[4], Debug[5], Debug[6], Debug[7]";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
             }
@@ -335,7 +343,7 @@ namespace SpeedyBeeF405V3S_GUI
                 string log = $"{DateTime.Now:HH:mm:ss.fff}, {data[13]}, {data[11]}, {data[0]}, {data[1]}, {data[2]}, {data[3]}, {data[4]}, {data[5]}, {data[6]}, {data[7]}," +
                     $" {data[41]}, {data[42]}, {data[8]}, {data[9]}, {data[43]}, {data[44]}, {data[45]}, {data[46]}, {scaleRangef(data[14], 11000, 21000, 0, 100)}," +
                     $" {scaleRangef(data[15], 11000, 21000, 0, 100)}, {scaleRangef(data[16], 11000, 21000, 0, 100)}, {scaleRangef(data[17], 11000, 21000, 0, 100)}," +
-                    $" {data[10]/100}, {data[47]/100}, {data[48]}, {data[38]}, {data[49]}, {data[18]}, {data[19]}, {data[20]}, {data[21]}";
+                    $" {data[10]/100}, {data[47]/100}, {data[48]}, {data[38]}, {data[49]}, {data[18]}, {data[19]}, {data[20]}, {data[21]}, {data[50]}, {data[51]}, {data[52]}, {data[53]}";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
             }
@@ -1607,6 +1615,18 @@ namespace SpeedyBeeF405V3S_GUI
             _debug_3_curve = _myPane.AddCurve("DEBUG_[3]", _debug_3_points, Color.Black, SymbolType.None);
             _debug_3_curve.Line.Width = 2;
             _debug_3_curve.Clear();
+            _debug_4_curve = _myPane.AddCurve("DEBUG_[4]", _debug_4_points, Color.Gray, SymbolType.None);
+            _debug_4_curve.Line.Width = 2;
+            _debug_4_curve.Clear();
+            _debug_5_curve = _myPane.AddCurve("DEBUG_[5]", _debug_5_points, Color.Brown, SymbolType.None);
+            _debug_5_curve.Line.Width = 2;
+            _debug_5_curve.Clear();
+            _debug_6_curve = _myPane.AddCurve("DEBUG_[6]", _debug_6_points, Color.Violet, SymbolType.None);
+            _debug_6_curve.Line.Width = 2;
+            _debug_6_curve.Clear();
+            _debug_7_curve = _myPane.AddCurve("DEBUG_[7]", _debug_7_points, Color.Orange, SymbolType.None);
+            _debug_7_curve.Line.Width = 2;
+            _debug_7_curve.Clear();
 
             zedGraphControl1.AxisChange();
             zedGraphControl1.Invalidate();
@@ -2154,6 +2174,11 @@ namespace SpeedyBeeF405V3S_GUI
 
             passed_data[49] = BitConverter.ToInt32(payload, 146);  // ALT_Range_Hold
 
+            passed_data[50] = BitConverter.ToInt32(payload, 150);    // Debug[4]
+            passed_data[51] = BitConverter.ToInt32(payload, 154);    // Debug[5]
+            passed_data[52] = BitConverter.ToInt32(payload, 158);    // Debug[6]
+            passed_data[53] = BitConverter.ToInt32(payload, 162);    // Debug[7]
+
             if (cb_record.Checked == true)
             {
                 Check_Data_Log(PID_log_filePath, passed_data);
@@ -2279,6 +2304,10 @@ namespace SpeedyBeeF405V3S_GUI
                 _debug_1_points.Add(time_count + 150, passed_data[19]);
                 _debug_2_points.Add(time_count + 150, passed_data[20]);
                 _debug_3_points.Add(time_count + 150, passed_data[21]);
+                _debug_4_points.Add(time_count + 150, passed_data[50]);
+                _debug_5_points.Add(time_count + 150, passed_data[51]);
+                _debug_6_points.Add(time_count + 150, passed_data[52]);
+                _debug_7_points.Add(time_count + 150, passed_data[53]);
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
@@ -2322,6 +2351,10 @@ namespace SpeedyBeeF405V3S_GUI
             lb_debug1.Text = passed_data[19].ToString();
             lb_debug2.Text = passed_data[20].ToString();
             lb_debug3.Text = passed_data[21].ToString();
+            lb_debug4.Text = passed_data[50].ToString();
+            lb_debug5.Text = passed_data[51].ToString();
+            lb_debug6.Text = passed_data[52].ToString();
+            lb_debug7.Text = passed_data[53].ToString();
 
             lb_gyro_X.Text = passed_data[22].ToString("0.00");
             lb_gyro_Y.Text = passed_data[23].ToString("0.00");
@@ -2377,102 +2410,6 @@ namespace SpeedyBeeF405V3S_GUI
                 string text = selectedItem.Text;
                 int value = selectedItem.Value;
                 debugValue = value;
-                if(debug_flag == true)
-                {
-                    if (value == 0) // NONE
-                    {
-                        _myPane.CurveList.Clear();
-                        _myPane.YAxis.Scale.MinAuto = true;
-                        _myPane.YAxis.Scale.MaxAuto = true;
-
-                        _debug_0_curve = _myPane.AddCurve("DEBUG_[0]", _debug_0_points, Color.Blue, SymbolType.None);
-                        _debug_0_curve.Line.Width = 2;
-                        _debug_0_curve.Clear();
-                        _debug_1_curve = _myPane.AddCurve("DEBUG_[1]", _debug_1_points, Color.Red, SymbolType.None);
-                        _debug_1_curve.Line.Width = 2;
-                        _debug_1_curve.Clear();
-                        _debug_2_curve = _myPane.AddCurve("DEBUG_[2]", _debug_2_points, Color.Green, SymbolType.None);
-                        _debug_2_curve.Line.Width = 2;
-                        _debug_2_curve.Clear();
-                        _debug_3_curve = _myPane.AddCurve("DEBUG_[3]", _debug_3_points, Color.Black, SymbolType.None);
-                        _debug_3_curve.Line.Width = 2;
-                        _debug_3_curve.Clear();
-
-                        zedGraphControl1.AxisChange();
-                        zedGraphControl1.Invalidate();
-                        zedGraphControl1.Refresh();
-
-                    }
-                    else if (value == 5) // PID
-                    {
-                        _myPane.CurveList.Clear();
-                        _myPane.YAxis.Scale.MinAuto = true;
-                        _myPane.YAxis.Scale.MaxAuto = true;
-
-                        _debug_0_curve = _myPane.AddCurve("PITCH.in.result_P", _debug_0_points, Color.Blue, SymbolType.None);
-                        _debug_0_curve.Line.Width = 2;
-                        _debug_0_curve.Clear();
-                        _debug_1_curve = _myPane.AddCurve("PITCH.in.result_I", _debug_1_points, Color.Red, SymbolType.None);
-                        _debug_1_curve.Line.Width = 2;
-                        _debug_1_curve.Clear();
-                        _debug_2_curve = _myPane.AddCurve("PITCH.in.result_D", _debug_2_points, Color.Green, SymbolType.None);
-                        _debug_2_curve.Line.Width = 2;
-                        _debug_2_curve.Clear();
-                        _debug_3_curve = _myPane.AddCurve("PITCH.in.result", _debug_3_points, Color.Black, SymbolType.None);
-                        _debug_3_curve.Line.Width = 2;
-                        _debug_3_curve.Clear();
-
-                        zedGraphControl1.AxisChange();
-                        zedGraphControl1.Invalidate();
-                        zedGraphControl1.Refresh();
-                    }
-                    else if(value == 27) // RANGEFINDER
-                    {
-                        _myPane.CurveList.Clear();
-                        _myPane.YAxis.Scale.MinAuto = true;
-                        _myPane.YAxis.Scale.MaxAuto = true;
-
-                        _debug_0_curve = _myPane.AddCurve("Range_result_P", _debug_0_points, Color.Blue, SymbolType.None);
-                        _debug_0_curve.Line.Width = 2;
-                        _debug_0_curve.Clear();
-                        _debug_1_curve = _myPane.AddCurve("Range_result_I", _debug_1_points, Color.Red, SymbolType.None);
-                        _debug_1_curve.Line.Width = 2;
-                        _debug_1_curve.Clear();
-                        _debug_2_curve = _myPane.AddCurve("Range_result_D", _debug_2_points, Color.Green, SymbolType.None);
-                        _debug_2_curve.Line.Width = 2;
-                        _debug_2_curve.Clear();
-                        _debug_3_curve = _myPane.AddCurve("rcCommand[THROTTLE]", _debug_3_points, Color.Black, SymbolType.None);
-                        _debug_3_curve.Line.Width = 2;
-                        _debug_3_curve.Clear();
-
-                        zedGraphControl1.AxisChange();
-                        zedGraphControl1.Invalidate();
-                        zedGraphControl1.Refresh();
-                    }
-                    else if(value == 71) // FLOW_RAW
-                    {
-                        _myPane.CurveList.Clear();
-                        _myPane.YAxis.Scale.MinAuto = true;
-                        _myPane.YAxis.Scale.MaxAuto = true;
-
-                        _debug_0_curve = _myPane.AddCurve("DEBUG_[0]", _debug_0_points, Color.Blue, SymbolType.None);
-                        _debug_0_curve.Line.Width = 2;
-                        _debug_0_curve.Clear();
-                        _debug_1_curve = _myPane.AddCurve("DEBUG_[1]", _debug_1_points, Color.Red, SymbolType.None);
-                        _debug_1_curve.Line.Width = 2;
-                        _debug_1_curve.Clear();
-                        _debug_2_curve = _myPane.AddCurve("DEBUG_[2]", _debug_2_points, Color.Green, SymbolType.None);
-                        _debug_2_curve.Line.Width = 2;
-                        _debug_2_curve.Clear();
-                        _debug_3_curve = _myPane.AddCurve("DEBUG_[3]", _debug_3_points, Color.Black, SymbolType.None);
-                        _debug_3_curve.Line.Width = 2;
-                        _debug_3_curve.Clear();
-
-                        zedGraphControl1.AxisChange();
-                        zedGraphControl1.Invalidate();
-                        zedGraphControl1.Refresh();
-                    }
-                }
             }
         }
 

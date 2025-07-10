@@ -508,6 +508,11 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU32(dst, getMAhDrawn()); // milliamp hours drawn from battery
 
           sbufWriteU32(dst, rangefinder.althold.target_Height);
+
+          sbufWriteU32(dst, debug[4]);
+          sbufWriteU32(dst, debug[5]);
+          sbufWriteU32(dst, debug[6]);
+          sbufWriteU32(dst, debug[7]);
         }
         break;
 
