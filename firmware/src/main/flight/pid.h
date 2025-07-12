@@ -37,7 +37,7 @@ typedef struct _PID{
   float ki;     // 적분 게인
   float kd;     // 미분 게인
   float error;
-  float prev_error; // 이전 오차값
+  float prev_measured; // 이전 오차값
   float integral;   // 적분 값
   float derivative;
   float derivative_filter;
@@ -70,7 +70,7 @@ extern PID _ALT;
 extern PID_Test _PID_Test;
 
 
-void PID_Calculation(PID* axis, float set_point, float measured, float dt);
+void PID_Calculation(PID* axis, float set_point, float measured1, float measured2, float dt);
 void Reset_All_PID_Integrator(void);
 
 void pidInit(void);

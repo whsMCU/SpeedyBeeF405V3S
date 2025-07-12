@@ -120,9 +120,9 @@ void pidInit(void)
   _PID_Test.pid_test_deg = 0;
 }
 
-void PID_Calculation(PID* axis, float set_point, float measured, float dt)
+void PID_Calculation(PID* axis, float set_point, float measured1, float measured2, float dt)
 {
-  axis->error = set_point - measured;
+  axis->error = set_point - measured1;
 
   if (strcmp(axis->pidName, "YAW_Heading") == 0)
   {
@@ -133,10 +133,17 @@ void PID_Calculation(PID* axis, float set_point, float measured, float dt)
   axis->integral += axis->error * dt;
   if(axis->integral > axis->integral_windup) axis->integral = axis->integral_windup;
   else if(axis->integral < -axis->integral_windup) axis->integral = -axis->integral_windup;
-  axis->derivative = -(measured - axis->prev_error) / dt;
-  axis->prev_error = measured;
 
-  axis->derivative_filter = axis->derivative_filter * 0.5f + axis->derivative * 0.5f;
+  if (strcmp(axis->pidName, "ROLL_OUT") == 0 || strcmp(axis->pidName, "PITCH_OUT") == 0 || strcmp(axis->pidName, "YAW_Heading") == 0)
+  {
+    axis->derivative = -measured2;
+    axis->derivative_filter = axis->derivative_filter * 0.4f + axis->derivative * 0.6f;
+  }else{
+    axis->derivative = -(measured1 - axis->prev_measured) / dt;
+    axis->prev_measured = measured1;
+
+    axis->derivative_filter = axis->derivative_filter * 0.5f + axis->derivative * 0.5f;
+  }
 
   axis->result_p = axis->kp * axis->error;
   axis->result_i = axis->ki * axis->integral;
@@ -197,17 +204,17 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   #ifdef USE_OPFLOW
   updatePosHold(currentTimeUs);
   #endif
-  PID_Calculation(&_ROLL.out, rcCommand[ROLL] + GpsNav.GPS_angle[ROLL], imu_roll, dT);
-  PID_Calculation(&_ROLL.in, _ROLL.out.result, bmi270.gyroADCf[X], dT);
+  PID_Calculation(&_ROLL.out, rcCommand[ROLL] + GpsNav.GPS_angle[ROLL], imu_roll, bmi270.gyroADCf[X], dT);
+  PID_Calculation(&_ROLL.in, _ROLL.out.result, bmi270.gyroADCf[X], 0, dT);
 
   if(_PID_Test.pid_test_flag == 1)
   {
-    PID_Calculation(&_PITCH.out, _PID_Test.pid_test_deg, imu_pitch, dT);
+    PID_Calculation(&_PITCH.out, _PID_Test.pid_test_deg, imu_pitch, bmi270.gyroADCf[Y], dT);
   }else
   {
-    PID_Calculation(&_PITCH.out, rcCommand[PITCH] + GpsNav.GPS_angle[PITCH], imu_pitch, dT);
+    PID_Calculation(&_PITCH.out, rcCommand[PITCH] + GpsNav.GPS_angle[PITCH], imu_pitch, bmi270.gyroADCf[Y], dT);
   }
-  PID_Calculation(&_PITCH.in, _PITCH.out.result, bmi270.gyroADCf[Y], dT);
+  PID_Calculation(&_PITCH.in, _PITCH.out.result, bmi270.gyroADCf[Y], 0, dT);
 
   DEBUG_SET(DEBUG_PIDLOOP, 1, (_PITCH.out.result_p));
   DEBUG_SET(DEBUG_PIDLOOP, 2, (_PITCH.out.result_i));
@@ -227,7 +234,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   {
 	  yaw_heading_reference = imu_yaw;
 
-	  PID_Calculation(&_YAW_Rate, rcCommand[YAW], -bmi270.gyroADCf[Z], dT);//left -, right +
+	  PID_Calculation(&_YAW_Rate, rcCommand[YAW], -bmi270.gyroADCf[Z], 0, dT);//left -, right +
 
 	  if(_PID_Test.pid_test_flag == 1)
 	  {
@@ -245,7 +252,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   }
   else
   {
-	  PID_Calculation(&_YAW_Heading, yaw_heading_reference, imu_yaw, dT);
+	  PID_Calculation(&_YAW_Heading, yaw_heading_reference, imu_yaw, -bmi270.gyroADCf[Z], dT);
     if(_PID_Test.pid_test_flag == 1)
     {
       LF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result + _ROLL.in.result - _YAW_Heading.result;
@@ -278,7 +285,7 @@ void updateAltHold(timeUs_t currentTimeUs)
   previousUpdateTimeUs = currentTimeUs;
 
   float targetVel = constrain(AltHold - getEstimatedAltitudeCm(), -100, 100);
-  PID_Calculation(&_ALT, targetVel, (float)getEstimatedVario(), dT);
+  PID_Calculation(&_ALT, targetVel, (float)getEstimatedVario(), 0, dT);
   _ALT.result = constrain(_ALT.result, -200, 200);
 
   if(FLIGHT_MODE(BARO_MODE))
