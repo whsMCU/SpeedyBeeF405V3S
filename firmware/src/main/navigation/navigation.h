@@ -491,6 +491,8 @@ void updatePositionEstimator_OpticalFlowTopic(timeUs_t currentTimeUs);
 void updatePositionEstimator_SurfaceTopic(timeUs_t currentTimeUs, float newSurfaceAlt);
 void updatePositionEstimator_PitotTopic(timeUs_t currentTimeUs);
 
+void updateEstimatedTopic(timeUs_t currentTimeUs);
+
 /* Navigation system updates */
 void updateWaypointsAndNavigationMode(void);
 void updatePositionEstimator(void);

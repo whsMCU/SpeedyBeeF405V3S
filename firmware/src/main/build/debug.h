@@ -101,6 +101,7 @@ typedef enum {
     DEBUG_RX_EXPRESSLRS_PHASELOCK,
     DEBUG_RX_STATE_TIME,
     DEBUG_FLOW_RAW,
+    DEBUG_FLOW,
     DEBUG_COUNT
 } debugType_e;
 

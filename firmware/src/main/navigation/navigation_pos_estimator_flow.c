@@ -74,7 +74,7 @@ static void imuTransformVectorBodyToEarth(fpVector3_t * v)
 bool estimationCalculateCorrection_XY_FLOW(estimationContext_t * ctx)
 {
 #if defined(USE_RANGEFINDER) && defined(USE_OPFLOW)
-    if (!((ctx->newFlags & EST_FLOW_VALID) && (ctx->newFlags & EST_SURFACE_VALID) && (ctx->newFlags & EST_Z_VALID))) {
+    if (!((ctx->newFlags & EST_FLOW_VALID) && (ctx->newFlags & EST_SURFACE_VALID))) { //&& (ctx->newFlags & EST_Z_VALID))
         return false;
     }
 
@@ -96,36 +96,36 @@ bool estimationCalculateCorrection_XY_FLOW(estimationContext_t * ctx)
     // At this point flowVel will hold linear velocities in earth frame
     imuTransformVectorBodyToEarth(&flowVel);
 
-    // Calculate velocity correction
-    const float flowVelXInnov = flowVel.x - posEstimator.est.vel.x;
-    const float flowVelYInnov = flowVel.y - posEstimator.est.vel.y;
-
-    ctx->estVelCorr.x = flowVelXInnov * positionEstimationConfig.w_xy_flow_v * ctx->dt;
-    ctx->estVelCorr.y = flowVelYInnov * positionEstimationConfig.w_xy_flow_v * ctx->dt;
+//    // Calculate velocity correction
+//    const float flowVelXInnov = flowVel.x - posEstimator.est.vel.x;
+//    const float flowVelYInnov = flowVel.y - posEstimator.est.vel.y;
+//
+//    ctx->estVelCorr.x = flowVelXInnov * positionEstimationConfig.w_xy_flow_v * ctx->dt;
+//    ctx->estVelCorr.y = flowVelYInnov * positionEstimationConfig.w_xy_flow_v * ctx->dt;
 
     // Calculate position correction if possible/allowed
-    if ((ctx->newFlags & EST_GPS_XY_VALID)) {
-        // If GPS is valid - reset flow estimated coordinates to GPS
-        posEstimator.est.flowCoordinates[X] = posEstimator.gps.pos.x;
-        posEstimator.est.flowCoordinates[Y] = posEstimator.gps.pos.y;
-    }
-    else if (positionEstimationConfig.allow_dead_reckoning) {
+//    if ((ctx->newFlags & EST_GPS_XY_VALID)) {
+//        // If GPS is valid - reset flow estimated coordinates to GPS
+//        posEstimator.est.flowCoordinates[X] = posEstimator.gps.pos.x;
+//        posEstimator.est.flowCoordinates[Y] = posEstimator.gps.pos.y;
+//    }
+//    else if (positionEstimationConfig.allow_dead_reckoning) {
         posEstimator.est.flowCoordinates[X] += flowVel.x * ctx->dt;
         posEstimator.est.flowCoordinates[Y] += flowVel.y * ctx->dt;
 
-        const float flowResidualX = posEstimator.est.flowCoordinates[X] - posEstimator.est.pos.x;
-        const float flowResidualY = posEstimator.est.flowCoordinates[Y] - posEstimator.est.pos.y;
+//        const float flowResidualX = posEstimator.est.flowCoordinates[X] - posEstimator.est.pos.x;
+//        const float flowResidualY = posEstimator.est.flowCoordinates[Y] - posEstimator.est.pos.y;
 
-        ctx->estPosCorr.x = flowResidualX * positionEstimationConfig.w_xy_flow_p * ctx->dt;
-        ctx->estPosCorr.y = flowResidualY * positionEstimationConfig.w_xy_flow_p * ctx->dt;
+//        ctx->estPosCorr.x = flowResidualX * positionEstimationConfig.w_xy_flow_p * ctx->dt;
+//        ctx->estPosCorr.y = flowResidualY * positionEstimationConfig.w_xy_flow_p * ctx->dt;
+//
+//        ctx->newEPH = updateEPE(posEstimator.est.eph, ctx->dt, calc_length_pythagorean_2D(flowResidualX, flowResidualY), positionEstimationConfig.w_xy_flow_p);
+//    }
 
-        ctx->newEPH = updateEPE(posEstimator.est.eph, ctx->dt, calc_length_pythagorean_2D(flowResidualX, flowResidualY), positionEstimationConfig.w_xy_flow_p);
-    }
-
-//    DEBUG_SET(DEBUG_FLOW, 0, RADIANS_TO_DEGREES(posEstimator.flow.flowRate[X]));
-//    DEBUG_SET(DEBUG_FLOW, 1, RADIANS_TO_DEGREES(posEstimator.flow.flowRate[Y]));
-//    DEBUG_SET(DEBUG_FLOW, 2, posEstimator.est.flowCoordinates[X]);
-//    DEBUG_SET(DEBUG_FLOW, 3, posEstimator.est.flowCoordinates[Y]);
+    DEBUG_SET(DEBUG_FLOW, 0, RADIANS_TO_DEGREES(posEstimator.flow.flowRate[X]));
+    DEBUG_SET(DEBUG_FLOW, 1, RADIANS_TO_DEGREES(posEstimator.flow.flowRate[Y]));
+    DEBUG_SET(DEBUG_FLOW, 2, posEstimator.est.flowCoordinates[X]);
+    DEBUG_SET(DEBUG_FLOW, 3, posEstimator.est.flowCoordinates[Y]);
 
     return true;
 #else

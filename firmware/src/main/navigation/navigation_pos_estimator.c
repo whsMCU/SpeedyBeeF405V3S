@@ -54,8 +54,6 @@
 #include "sensors/opflow.h"
 #include "sensors/rangefinder.h"
 
-uint32_t newFlags = 0;
-
 navigationPosEstimator_t posEstimator;
 
 positionEstimationConfig_t positionEstimationConfig;
@@ -524,11 +522,11 @@ static uint32_t calculateCurrentValidityFlags(timeUs_t currentTimeUs)
         new_Flags |= EST_BARO_VALID;
     }
 
-    if (sensors(SENSOR_RANGEFINDER) && ((currentTimeUs - MS2US(rangefinder.lastValidResponseTimeMs)) <= MS2US(INAV_SURFACE_TIMEOUT_MS))) {
+    if (sensors(SENSOR_RANGEFINDER) && ((currentTimeUs - posEstimator.surface.lastUpdateTime) <= MS2US(INAV_SURFACE_TIMEOUT_MS))) {
         new_Flags |= EST_SURFACE_VALID;
     }
 
-    if (sensors(SENSOR_OPFLOW) && opflow.isHwHealty && ((currentTimeUs - opflow.lastValidUpdate) <= MS2US(INAV_FLOW_TIMEOUT_MS))) {
+    if (sensors(SENSOR_OPFLOW) && opflow.isHwHealty && ((currentTimeUs - posEstimator.flow.lastUpdateTime) <= MS2US(INAV_FLOW_TIMEOUT_MS))) {
         new_Flags |= EST_FLOW_VALID;
     }
 
@@ -728,14 +726,14 @@ static uint32_t calculateCurrentValidityFlags(timeUs_t currentTimeUs)
  * Calculate next estimate using IMU and apply corrections from reference sensors (GPS, BARO etc)
  *  Function is called at main loop rate
  */
-static void updateEstimatedTopic(timeUs_t currentTimeUs)
+void updateEstimatedTopic(timeUs_t currentTimeUs)
 {
-//    estimationContext_t ctx;
-//
-//    /* Calculate dT */
-//    ctx.dt = US2S(currentTimeUs - posEstimator.est.lastUpdateTime);
-//    posEstimator.est.lastUpdateTime = currentTimeUs;
-//
+    estimationContext_t ctx;
+
+    /* Calculate dT */
+    ctx.dt = US2S(currentTimeUs - posEstimator.est.lastUpdateTime);
+    posEstimator.est.lastUpdateTime = currentTimeUs;
+
 //    /* If IMU is not ready we can't estimate anything */
 //    if (!isImuReady()) {
 //        posEstimator.est.eph = positionEstimationConfig()->max_eph_epv + 0.001f;
@@ -743,11 +741,11 @@ static void updateEstimatedTopic(timeUs_t currentTimeUs)
 //        posEstimator.flags = 0;
 //        return;
 //    }
-
+//
 //    /* Calculate new EPH and EPV for the case we didn't update postion */
 //    ctx.newEPH = posEstimator.est.eph * ((posEstimator.est.eph <= positionEstimationConfig()->max_eph_epv) ? 1.0f + ctx.dt : 1.0f);
 //    ctx.newEPV = posEstimator.est.epv * ((posEstimator.est.epv <= positionEstimationConfig()->max_eph_epv) ? 1.0f + ctx.dt : 1.0f);
-    newFlags = calculateCurrentValidityFlags(currentTimeUs);
+    ctx.newFlags = calculateCurrentValidityFlags(currentTimeUs);
 //    vectorZero(&ctx.estPosCorr);
 //    vectorZero(&ctx.estVelCorr);
 //    vectorZero(&ctx.accBiasCorr);
@@ -766,7 +764,7 @@ static void updateEstimatedTopic(timeUs_t currentTimeUs)
 //    // FIXME: Handle transition from FLOW to GPS and back - seamlessly fly indoor/outdoor
 //    const bool estXYCorrectOk =
 //        estimationCalculateCorrection_XY_GPS(&ctx) ||
-//        estimationCalculateCorrection_XY_FLOW(&ctx);
+        estimationCalculateCorrection_XY_FLOW(&ctx);
 //
 //    // If we can't apply correction or accuracy is off the charts - decay velocity to zero
 //    if (!estXYCorrectOk || ctx.newEPH > positionEstimationConfig()->max_eph_epv) {

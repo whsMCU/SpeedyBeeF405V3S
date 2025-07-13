@@ -44,6 +44,7 @@
 #include "sensors/compass.h"
 #include "sensors/opflow.h"
 #include "sensors/rangefinder.h"
+#include "navigation/navigation.h"
 
 DoublePID _ROLL;
 DoublePID _PITCH;
@@ -178,6 +179,9 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   float dT = (float)US2S(currentTimeUs - previousUpdateTimeUs);
   DEBUG_SET(DEBUG_PIDLOOP, 0, (currentTimeUs - previousUpdateTimeUs));
   previousUpdateTimeUs = currentTimeUs;
+
+  /* Update estimate */
+  updateEstimatedTopic(currentTimeUs);
 
 #ifdef USE_GPS1
   if ( (FLIGHT_MODE(GPS_HOME_MODE) || FLIGHT_MODE(GPS_HOLD_MODE)) && STATE(GPS_FIX_HOME) ) {
