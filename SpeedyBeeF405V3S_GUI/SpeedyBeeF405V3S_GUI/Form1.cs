@@ -159,9 +159,12 @@ namespace SpeedyBeeF405V3S_GUI
         List<Item> items = new List<Item>()
         {
             new Item() { Text = "DEBUG_NONE", Value = 0 },
+            new Item() { Text = "DEBUG_ACCELEROMETER", Value = 4 },
             new Item() { Text = "DEBUG_PIDLOOP", Value = 5 },
+            new Item() { Text = "DEBUG_GYRO_RAW", Value = 20 },
             new Item() { Text = "DEBUG_RANGEFINDER", Value = 27 },
             new Item() { Text = "DEBUG_FLOW_RAW", Value = 71 },
+            new Item() { Text = "DEBUG_IMU", Value = 73 },
         };
 
         public Form1()

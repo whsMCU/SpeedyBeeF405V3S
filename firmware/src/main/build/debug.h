@@ -102,6 +102,7 @@ typedef enum {
     DEBUG_RX_STATE_TIME,
     DEBUG_FLOW_RAW,
     DEBUG_FLOW,
+    DEBUG_IMU,
     DEBUG_COUNT
 } debugType_e;
 

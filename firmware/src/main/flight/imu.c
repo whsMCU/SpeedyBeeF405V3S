@@ -453,7 +453,6 @@ static void imuCalculateEstimatedAttitude(timeUs_t currentTimeUs)
 
     const timeDelta_t deltaT = currentTimeUs - previousIMUUpdateTime;
     previousIMUUpdateTime = currentTimeUs;
-    //debug[0] = deltaT;
 
 #ifdef USE_MAG
     if (compassIsHealthy()) {
@@ -500,6 +499,14 @@ static void imuCalculateEstimatedAttitude(timeUs_t currentTimeUs)
     if (accGetAccumulationAverage(accAverage)) {
         useAcc = imuIsAccelerometerHealthy(accAverage);
     }
+
+    DEBUG_SET(DEBUG_IMU, 0, (deltaT));
+    DEBUG_SET(DEBUG_IMU, 1, (gyroAverage[X]));
+    DEBUG_SET(DEBUG_IMU, 2, (gyroAverage[Y]));
+    DEBUG_SET(DEBUG_IMU, 3, (gyroAverage[Z]));
+    DEBUG_SET(DEBUG_IMU, 4, (accAverage[X]));
+    DEBUG_SET(DEBUG_IMU, 5, (accAverage[Y]));
+    DEBUG_SET(DEBUG_IMU, 6, (accAverage[Z]));
 
     imuMahonyAHRSupdate(deltaT * 1e-6f,
                         DEGREES_TO_RADIANS(gyroAverage[X]), DEGREES_TO_RADIANS(gyroAverage[Y]), DEGREES_TO_RADIANS(gyroAverage[Z]),

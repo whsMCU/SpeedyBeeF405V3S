@@ -220,14 +220,13 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   }
   PID_Calculation(&_PITCH.in, _PITCH.out.result, bmi270.gyroADCf[Y], 0, dT);
 
-  DEBUG_SET(DEBUG_PIDLOOP, 1, (_PITCH.out.result_p));
-  DEBUG_SET(DEBUG_PIDLOOP, 2, (_PITCH.out.result_i));
-  DEBUG_SET(DEBUG_PIDLOOP, 3, (_PITCH.out.result));
+  DEBUG_SET(DEBUG_PIDLOOP, 1, (_PID_Test.pid_test_deg));
+  DEBUG_SET(DEBUG_PIDLOOP, 2, (_PITCH.out.result_p));
+  DEBUG_SET(DEBUG_PIDLOOP, 3, (_PITCH.out.result_i));
   DEBUG_SET(DEBUG_PIDLOOP, 4, (_PITCH.in.result_p));
   DEBUG_SET(DEBUG_PIDLOOP, 5, (_PITCH.in.result_i));
   DEBUG_SET(DEBUG_PIDLOOP, 6, (_PITCH.in.result_d));
   DEBUG_SET(DEBUG_PIDLOOP, 7, (_PITCH.in.result));
-
 
   if((rcData[THROTTLE] < 1030 || !ARMING_FLAG(ARMED))&& _PID_Test.pid_test_flag == 0)
   {

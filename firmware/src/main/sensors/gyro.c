@@ -200,9 +200,9 @@ static float applyGyrorMedianFilter(int axis, float newGyroReading)
 
 void taskGyroUpdate(timeUs_t currentTimeUs)
 {
-//  static timeUs_t previousIMUUpdateTime;
-//  const timeDelta_t deltaT = currentTimeUs - previousIMUUpdateTime;
-//  previousIMUUpdateTime = currentTimeUs;
+  static timeUs_t previousIMUUpdateTime;
+  const timeDelta_t deltaT = currentTimeUs - previousIMUUpdateTime;
+  previousIMUUpdateTime = currentTimeUs;
 	UNUSED(currentTimeUs);
 	gyroUpdateSensor();
 	bmi270.gyroADC[X] = bmi270.gyroADC[X] * bmi270.scale;
@@ -216,6 +216,11 @@ void taskGyroUpdate(timeUs_t currentTimeUs)
   for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
     bmi270.gyroADCf[axis] = bmi270.lowpass2FilterApplyFn((filter_t *)&bmi270.lowpass2Filter[axis], bmi270.gyroADCf[axis]);
   }
+
+  DEBUG_SET(DEBUG_GYRO_RAW, 0, (deltaT));
+  DEBUG_SET(DEBUG_GYRO_RAW, 1, (bmi270.gyroADCf[X]));
+  DEBUG_SET(DEBUG_GYRO_RAW, 2, (bmi270.gyroADCf[Y]));
+  DEBUG_SET(DEBUG_GYRO_RAW, 3, (bmi270.gyroADCf[Z]));
 
   for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
       // integrate using trapezium rule to avoid bias
@@ -340,10 +345,10 @@ void performAcclerationCalibration(rollAndPitchTrims_t *rollAndPitchTrims)
 
 void taskAccUpdate(timeUs_t currentTimeUs)
 {
-  //static timeUs_t previousIMUUpdateTime;
-  //const timeDelta_t deltaT = currentTimeUs - previousIMUUpdateTime;
-  //previousIMUUpdateTime = currentTimeUs;
-  //debug[2] = deltaT;
+  static timeUs_t previousIMUUpdateTime;
+  const timeDelta_t deltaT = currentTimeUs - previousIMUUpdateTime;
+  previousIMUUpdateTime = currentTimeUs;
+
 	UNUSED(currentTimeUs);
 	if (!bmi270SpiAccRead(&bmi270)) {
 			return;
@@ -355,25 +360,29 @@ void taskAccUpdate(timeUs_t currentTimeUs)
 			bmi270.accADC[axis] = bmi270.accADCRaw[axis];
 	}
 
-    if (!accIsCalibrationComplete()) {
-        performAcclerationCalibration(&bmi270.rollAndPitchTrims);
-    }
+  DEBUG_SET(DEBUG_ACCELEROMETER, 0, (deltaT));
+  DEBUG_SET(DEBUG_ACCELEROMETER, 1, (bmi270.accADC[X]));
+  DEBUG_SET(DEBUG_ACCELEROMETER, 2, (bmi270.accADC[Y]));
+  DEBUG_SET(DEBUG_ACCELEROMETER, 3, (bmi270.accADC[Z]));
 
-    applyAccelerationTrims(&bmi270.accelerationTrims);
+  if (!accIsCalibrationComplete()) {
+      performAcclerationCalibration(&bmi270.rollAndPitchTrims);
+  }
 
-    for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-      bmi270.accADC[axis] = (bmi270.accADC[axis] * 0.9) + (bmi270.accPrevious[axis] * 0.1);
-      bmi270.accPrevious[axis] = bmi270.accADC[axis];
-    }
+  applyAccelerationTrims(&bmi270.accelerationTrims);
 
+  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+    bmi270.accADC[axis] = (bmi270.accADC[axis] * 0.9) + (bmi270.accPrevious[axis] * 0.1);
+    bmi270.accPrevious[axis] = bmi270.accADC[axis];
+  }
 
-    for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-      bmi270.accADCf[axis] = laggedMovingAverageUpdate(&accAvg[axis].filter, (float)bmi270.accADC[axis]);
-    }
-    // Calculate acceleration readings in G's
-    for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-      bmi270.accADCf[axis] = ((bmi270.accADCf[axis] * bmi270.acc_1G_rec) - 1.0f) * GRAVITY_CMSS;
-    }
+  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+    bmi270.accADCf[axis] = laggedMovingAverageUpdate(&accAvg[axis].filter, (float)bmi270.accADC[axis]);
+  }
+  // Calculate acceleration readings in G's
+  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+    bmi270.accADCf[axis] = ((bmi270.accADCf[axis] * bmi270.acc_1G_rec) - 1.0f) * GRAVITY_CMSS;
+  }
 
   ++bmi270.acc_accumulatedMeasurementCount;
   for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
