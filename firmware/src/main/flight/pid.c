@@ -206,7 +206,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     updateAltHold_RANGEFINDER(currentTimeUs);
   #endif
   #ifdef USE_OPFLOW
-  updatePosHold(currentTimeUs);
+    updatePosHold(currentTimeUs);
   #endif
   PID_Calculation(&_ROLL.out, rcCommand[ROLL] + GpsNav.GPS_angle[ROLL], imu_roll, bmi270.gyroADCf[X], dT);
   PID_Calculation(&_ROLL.in, _ROLL.out.result, bmi270.gyroADCf[X], 0, dT);
@@ -242,16 +242,16 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 
 	  if(_PID_Test.pid_test_flag == 1)
 	  {
-	    LF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result + _ROLL.in.result - _YAW_Rate.result;
-	    LR = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 + _PITCH.in.result + _ROLL.in.result + _YAW_Rate.result;
-	    RR = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 + _PITCH.in.result - _ROLL.in.result - _YAW_Rate.result;
-	    RF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result - _ROLL.in.result + _YAW_Rate.result;
+	    LF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result;// + _ROLL.in.result - _YAW_Rate.result;
+	    LR = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 + _PITCH.in.result;// + _ROLL.in.result + _YAW_Rate.result;
+	    RR = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 + _PITCH.in.result;// - _ROLL.in.result - _YAW_Rate.result;
+	    RF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result;// - _ROLL.in.result + _YAW_Rate.result;
 	  }else
 	  {
-	    LF = 10500 + 500 + rcCommand[THROTTLE] * 10 - _PITCH.in.result + _ROLL.in.result - _YAW_Rate.result;
-	    LR = 10500 + 500 + rcCommand[THROTTLE] * 10 + _PITCH.in.result + _ROLL.in.result + _YAW_Rate.result;
-	    RR = 10500 + 500 + rcCommand[THROTTLE] * 10 + _PITCH.in.result - _ROLL.in.result - _YAW_Rate.result;
-	    RF = 10500 + 500 + rcCommand[THROTTLE] * 10 - _PITCH.in.result - _ROLL.in.result + _YAW_Rate.result;
+	    LF = 10500 + 500 + rcCommand[THROTTLE] * 10 - _PITCH.in.result;// + _ROLL.in.result - _YAW_Rate.result;
+	    LR = 10500 + 500 + rcCommand[THROTTLE] * 10 + _PITCH.in.result;// + _ROLL.in.result + _YAW_Rate.result;
+	    RR = 10500 + 500 + rcCommand[THROTTLE] * 10 + _PITCH.in.result;// - _ROLL.in.result - _YAW_Rate.result;
+	    RF = 10500 + 500 + rcCommand[THROTTLE] * 10 - _PITCH.in.result;// - _ROLL.in.result + _YAW_Rate.result;
 	  }
   }
   else
@@ -259,16 +259,16 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 	  PID_Calculation(&_YAW_Heading, yaw_heading_reference, imu_yaw, -bmi270.gyroADCf[Z], dT);
     if(_PID_Test.pid_test_flag == 1)
     {
-      LF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result + _ROLL.in.result - _YAW_Heading.result;
-      LR = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 + _PITCH.in.result + _ROLL.in.result + _YAW_Heading.result;
-      RR = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 + _PITCH.in.result - _ROLL.in.result - _YAW_Heading.result;
-      RF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result - _ROLL.in.result + _YAW_Heading.result;
+      LF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result;// + _ROLL.in.result - _YAW_Heading.result;
+      LR = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 + _PITCH.in.result;// + _ROLL.in.result + _YAW_Heading.result;
+      RR = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 + _PITCH.in.result;// - _ROLL.in.result - _YAW_Heading.result;
+      RF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result;// - _ROLL.in.result + _YAW_Heading.result;
     }else
     {
-      LF = 10500 + 500 + rcCommand[THROTTLE] * 10 - _PITCH.in.result + _ROLL.in.result - _YAW_Heading.result;
-      LR = 10500 + 500 + rcCommand[THROTTLE] * 10 + _PITCH.in.result + _ROLL.in.result + _YAW_Heading.result;
-      RR = 10500 + 500 + rcCommand[THROTTLE] * 10 + _PITCH.in.result - _ROLL.in.result - _YAW_Heading.result;
-      RF = 10500 + 500 + rcCommand[THROTTLE] * 10 - _PITCH.in.result - _ROLL.in.result + _YAW_Heading.result;
+      LF = 10500 + 500 + rcCommand[THROTTLE] * 10 - _PITCH.in.result;// + _ROLL.in.result - _YAW_Heading.result;
+      LR = 10500 + 500 + rcCommand[THROTTLE] * 10 + _PITCH.in.result;// + _ROLL.in.result + _YAW_Heading.result;
+      RR = 10500 + 500 + rcCommand[THROTTLE] * 10 + _PITCH.in.result;// - _ROLL.in.result - _YAW_Heading.result;
+      RF = 10500 + 500 + rcCommand[THROTTLE] * 10 - _PITCH.in.result;// - _ROLL.in.result + _YAW_Heading.result;
     }
   }
 
