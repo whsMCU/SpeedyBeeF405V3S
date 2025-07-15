@@ -2196,18 +2196,30 @@ namespace SpeedyBeeF405V3S_GUI
             if (rb_roll.Checked == true)
             {
                 _roll_angle_points.Add(time_count + 150, passed_data[0] / 10);
+                if(_roll_angle_points.Count > 1000)
+                {
+                   _roll_angle_points.RemoveAt(0);
+                }
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
             if (rb_pitch.Checked == true)
             {
                 _pitch_angle_points.Add(time_count + 150, passed_data[1] / 10);
+                if (_pitch_angle_points.Count > 1000)
+                {
+                    _pitch_angle_points.RemoveAt(0);
+                }
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
             if (rb_yaw.Checked == true)
             {
                 _yaw_angle_points.Add(time_count + 150, passed_data[2]);
+                if (_yaw_angle_points.Count > 1000)
+                {
+                    _yaw_angle_points.RemoveAt(0);
+                }
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
@@ -2216,6 +2228,11 @@ namespace SpeedyBeeF405V3S_GUI
             {
                 _roll_angle_points.Add(time_count + 150, passed_data[0] / 10);
                 _pitch_angle_points.Add(time_count + 150, passed_data[1] / 10);
+                if (_roll_angle_points.Count > 1000)
+                {
+                    _roll_angle_points.RemoveAt(0);
+                    _pitch_angle_points.RemoveAt(0);
+                }
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
@@ -2224,6 +2241,11 @@ namespace SpeedyBeeF405V3S_GUI
             {
                 _roll_angle_points.Add(time_count + 150, passed_data[0] / 10);
                 _rc_roll_points.Add(time_count + 150, passed_data[4] / 10);
+                if (_roll_angle_points.Count > 1000)
+                {
+                    _roll_angle_points.RemoveAt(0);
+                    _rc_roll_points.RemoveAt(0);
+                }
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
@@ -2239,6 +2261,11 @@ namespace SpeedyBeeF405V3S_GUI
                     _rc_pitch_points.Add(time_count + 150, passed_data[5] / 10);
                 }
                 _pitch_angle_points.Add(time_count + 150, passed_data[1] / 10);
+                if (_rc_pitch_points.Count > 1000)
+                {
+                    _rc_pitch_points.RemoveAt(0);
+                    _pitch_angle_points.RemoveAt(0);
+                }
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
@@ -2248,6 +2275,12 @@ namespace SpeedyBeeF405V3S_GUI
                 _yaw_angle_points.Add(time_count + 150, passed_data[2]);
                 _rc_yaw_points.Add(time_count + 150, passed_data[6]);
                 _yaw_reference_points.Add(time_count + 150, passed_data[41]);
+                if (_yaw_angle_points.Count > 1000)
+                {
+                    _yaw_angle_points.RemoveAt(0);
+                    _rc_yaw_points.RemoveAt(0);
+                    _yaw_reference_points.RemoveAt(0);
+                }
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
@@ -2260,6 +2293,15 @@ namespace SpeedyBeeF405V3S_GUI
                 _alt_pidresult_points.Add(time_count + 150, passed_data[46]);
                 _Throttle_points.Add(time_count + 150, passed_data[7]*10);
 
+                if (_alt_points.Count > 1000)
+                {
+                    _alt_points.RemoveAt(0);
+                    _alt_reference_points.RemoveAt(0);
+                    _Throttle_Hold_points.RemoveAt(0);
+                    _alt_pidresult_points.RemoveAt(0);
+                    _Throttle_points.RemoveAt(0);
+                }
+
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
@@ -2271,6 +2313,14 @@ namespace SpeedyBeeF405V3S_GUI
                 _alt_range_Hold_points.Add(time_count + 150, passed_data[49]);
                 _Throttle_points.Add(time_count + 150, passed_data[7] * 10);
 
+                if (_alt_points.Count > 1000)
+                {
+                    _alt_points.RemoveAt(0);
+                    _alt_range_points.RemoveAt(0);
+                    _alt_range_Hold_points.RemoveAt(0);
+                    _Throttle_points.RemoveAt(0);
+                }
+
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
@@ -2278,6 +2328,12 @@ namespace SpeedyBeeF405V3S_GUI
             if (rb_altitude.Checked == true)
             {
                 _altitude_points.Add(time_count + 150, passed_data[3]);
+
+                if (_altitude_points.Count > 1000)
+                {
+                    _altitude_points.RemoveAt(0);
+                }
+
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
@@ -2287,6 +2343,14 @@ namespace SpeedyBeeF405V3S_GUI
                 _gyro_x_points.Add(time_count + 150, passed_data[22]);
                 _gyro_y_points.Add(time_count + 150, passed_data[23]);
                 _gyro_z_points.Add(time_count + 150, passed_data[24]);
+
+                if (_gyro_x_points.Count > 1000)
+                {
+                    _gyro_x_points.RemoveAt(0);
+                    _gyro_y_points.RemoveAt(0);
+                    _gyro_z_points.RemoveAt(0);
+                }
+
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
@@ -2297,6 +2361,15 @@ namespace SpeedyBeeF405V3S_GUI
                 _motor_1_points.Add(time_count + 150, passed_data[15]);
                 _motor_2_points.Add(time_count + 150, passed_data[16]);
                 _motor_3_points.Add(time_count + 150, passed_data[17]);
+
+                if (_motor_0_points.Count > 1000)
+                {
+                    _motor_0_points.RemoveAt(0);
+                    _motor_1_points.RemoveAt(0);
+                    _motor_2_points.RemoveAt(0);
+                    _motor_3_points.RemoveAt(0);
+                }
+
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
@@ -2311,6 +2384,19 @@ namespace SpeedyBeeF405V3S_GUI
                 _debug_5_points.Add(time_count + 150, passed_data[51]);
                 _debug_6_points.Add(time_count + 150, passed_data[52]);
                 _debug_7_points.Add(time_count + 150, passed_data[53]);
+
+                if (_debug_0_points.Count > 1000)
+                {
+                    _debug_0_points.RemoveAt(0);
+                    _debug_1_points.RemoveAt(0);
+                    _debug_2_points.RemoveAt(0);
+                    _debug_3_points.RemoveAt(0);
+                    _debug_4_points.RemoveAt(0);
+                    _debug_5_points.RemoveAt(0);
+                    _debug_6_points.RemoveAt(0);
+                    _debug_7_points.RemoveAt(0);
+                }
+
                 _myPane.XAxis.Scale.Min = time_count;
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }

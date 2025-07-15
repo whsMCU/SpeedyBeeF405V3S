@@ -175,7 +175,7 @@ static void gyroUpdateSensor()
     	bmi270.gyroADC[Y] = bmi270.gyroADCRaw[Y] - bmi270.gyroZero[Y];
     	bmi270.gyroADC[Z] = bmi270.gyroADCRaw[Z] - bmi270.gyroZero[Z];
 
-			alignSensorViaRotation(bmi270.gyroADC, CW180_DEG_FLIP);
+			alignSensorViaRotation(bmi270.gyroADC, CW0_DEG);
 
     }else {
         performGyroCalibration(&bmi270, gyroMovementCalibrationThreshold);
@@ -364,7 +364,7 @@ void taskAccUpdate(timeUs_t currentTimeUs)
     bmi270.accPrevious[axis] = bmi270.accADC[axis];
   }
 
-	alignSensorViaRotation(bmi270.accADC, CW0_DEG_FLIP);
+	alignSensorViaRotation(bmi270.accADC, CW0_DEG);
 
   DEBUG_SET(DEBUG_ACCELEROMETER, 0, (deltaT));
   DEBUG_SET(DEBUG_ACCELEROMETER, 1, (bmi270.accADC[X]));
