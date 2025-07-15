@@ -45,6 +45,7 @@
 #include "sensors/gyro.h"
 #include "sensors/gyro_init.h"
 #include "sensors/opflow.h"
+#include "sensors/boardalignment.h"
 
 #include "drivers/accgyro/accgyro_spi_bmi270.h"
 
@@ -173,11 +174,9 @@ static void gyroUpdateSensor()
     	bmi270.gyroADC[X] = bmi270.gyroADCRaw[X] - bmi270.gyroZero[X];
     	bmi270.gyroADC[Y] = bmi270.gyroADCRaw[Y] - bmi270.gyroZero[Y];
     	bmi270.gyroADC[Z] = bmi270.gyroADCRaw[Z] - bmi270.gyroZero[Z];
-//		if (gyroSensor->gyroDev.gyroAlign == ALIGN_CUSTOM) {
-//			alignSensorViaMatrix(gyroSensor->gyroDev.gyroADC, &gyroSensor->gyroDev.rotationMatrix);
-//		} else {
-//			alignSensorViaRotation(gyroSensor->gyroDev.gyroADC, gyroSensor->gyroDev.gyroAlign);
-//		}
+
+			alignSensorViaRotation(bmi270.gyroADC, CW180_DEG_FLIP);
+
     }else {
         performGyroCalibration(&bmi270, gyroMovementCalibrationThreshold);
     }
@@ -360,6 +359,13 @@ void taskAccUpdate(timeUs_t currentTimeUs)
 			bmi270.accADC[axis] = bmi270.accADCRaw[axis];
 	}
 
+  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+    bmi270.accADC[axis] = (bmi270.accADC[axis] * 0.9) + (bmi270.accPrevious[axis] * 0.1);
+    bmi270.accPrevious[axis] = bmi270.accADC[axis];
+  }
+
+	alignSensorViaRotation(bmi270.accADC, CW0_DEG_FLIP);
+
   DEBUG_SET(DEBUG_ACCELEROMETER, 0, (deltaT));
   DEBUG_SET(DEBUG_ACCELEROMETER, 1, (bmi270.accADC[X]));
   DEBUG_SET(DEBUG_ACCELEROMETER, 2, (bmi270.accADC[Y]));
@@ -370,11 +376,6 @@ void taskAccUpdate(timeUs_t currentTimeUs)
   }
 
   applyAccelerationTrims(&bmi270.accelerationTrims);
-
-  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-    bmi270.accADC[axis] = (bmi270.accADC[axis] * 0.9) + (bmi270.accPrevious[axis] * 0.1);
-    bmi270.accPrevious[axis] = bmi270.accADC[axis];
-  }
 
   for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
     bmi270.accADCf[axis] = laggedMovingAverageUpdate(&accAvg[axis].filter, (float)bmi270.accADC[axis]);
