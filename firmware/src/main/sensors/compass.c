@@ -86,7 +86,7 @@ bool compassDetect(magDev_t *magDev, sensor_align_e *alignment)
 
     if (qmc5883lDetect(magDev)) {
 
-      *alignment = MAG_QMC5883;//MAG_QMC5883L_ALIGN;
+      *alignment = CW270_DEG_FLIP;
 
       magHardware = MAG_QMC5883;
       sensorsSet(SENSOR_MAG);

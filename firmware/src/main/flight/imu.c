@@ -459,7 +459,7 @@ static void imuCalculateEstimatedAttitude(timeUs_t currentTimeUs)
     if (compassIsHealthy()) {
         useMag = true;
     }
-    useMag = false;
+    //useMag = false;
 #endif
 
 #if defined(USE_GPS)
