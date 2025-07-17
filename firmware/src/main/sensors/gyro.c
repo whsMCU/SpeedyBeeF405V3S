@@ -228,7 +228,6 @@ void taskGyroUpdate(timeUs_t currentTimeUs)
   }
   bmi270.gyro_accumulatedMeasurementCount++;
 #ifdef USE_OPFLOW
-
   // getTaskDeltaTime() returns delta time frozen at the moment of entering the scheduler. currentTime is frozen at the very same point.
   // To make busy-waiting timeout work we need to account for time spent within busy-waiting loop
   const timeDelta_t currentDeltaTime = getTaskDeltaTimeUs(TASK_SELF);

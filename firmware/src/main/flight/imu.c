@@ -459,7 +459,6 @@ static void imuCalculateEstimatedAttitude(timeUs_t currentTimeUs)
     if (compassIsHealthy()) {
         useMag = true;
     }
-    //useMag = false;
 #endif
 
 #if defined(USE_GPS)
@@ -478,45 +477,28 @@ static void imuCalculateEstimatedAttitude(timeUs_t currentTimeUs)
 //    }
 #endif
 
-#if defined(SIMULATOR_BUILD) && !defined(USE_IMU_CALC)
-    UNUSED(imuMahonyAHRSupdate);
-    UNUSED(imuIsAccelerometerHealthy);
-    UNUSED(useAcc);
-    UNUSED(useMag);
-    UNUSED(useCOG);
-    UNUSED(canUseGPSHeading);
-    UNUSED(courseOverGround);
-    UNUSED(deltaT);
-    UNUSED(imuCalcKpGain);
-#else
+  float gyroAverage[XYZ_AXIS_COUNT];
+  gyroGetAccumulationAverage(gyroAverage);
 
-#if defined(SIMULATOR_BUILD) && defined(SIMULATOR_IMU_SYNC)
-//  printf("[imu]deltaT = %u, imuDeltaT = %u, currentTimeUs = %u, micros64_real = %lu\n", deltaT, imuDeltaT, currentTimeUs, micros64_real());
-    deltaT = imuDeltaT;
-#endif
-    float gyroAverage[XYZ_AXIS_COUNT];
-    gyroGetAccumulationAverage(gyroAverage);
+  if (accGetAccumulationAverage(accAverage)) {
+      useAcc = imuIsAccelerometerHealthy(accAverage);
+  }
 
-    if (accGetAccumulationAverage(accAverage)) {
-        useAcc = imuIsAccelerometerHealthy(accAverage);
-    }
+  DEBUG_SET(DEBUG_IMU, 0, (deltaT));
+  DEBUG_SET(DEBUG_IMU, 1, (gyroAverage[X]));
+  DEBUG_SET(DEBUG_IMU, 2, (gyroAverage[Y]));
+  DEBUG_SET(DEBUG_IMU, 3, (gyroAverage[Z]));
+  DEBUG_SET(DEBUG_IMU, 4, (accAverage[X]));
+  DEBUG_SET(DEBUG_IMU, 5, (accAverage[Y]));
+  DEBUG_SET(DEBUG_IMU, 6, (accAverage[Z]));
 
-    DEBUG_SET(DEBUG_IMU, 0, (deltaT));
-    DEBUG_SET(DEBUG_IMU, 1, (gyroAverage[X]));
-    DEBUG_SET(DEBUG_IMU, 2, (gyroAverage[Y]));
-    DEBUG_SET(DEBUG_IMU, 3, (gyroAverage[Z]));
-    DEBUG_SET(DEBUG_IMU, 4, (accAverage[X]));
-    DEBUG_SET(DEBUG_IMU, 5, (accAverage[Y]));
-    DEBUG_SET(DEBUG_IMU, 6, (accAverage[Z]));
+  imuMahonyAHRSupdate(deltaT * 1e-6f,
+                      DEGREES_TO_RADIANS(gyroAverage[X]), DEGREES_TO_RADIANS(gyroAverage[Y]), DEGREES_TO_RADIANS(gyroAverage[Z]),
+                      useAcc, accAverage[X], accAverage[Y], accAverage[Z],
+                      useMag,
+                      useCOG, courseOverGround,  imuCalcKpGain(currentTimeUs, useAcc, gyroAverage));
 
-    imuMahonyAHRSupdate(deltaT * 1e-6f,
-                        DEGREES_TO_RADIANS(gyroAverage[X]), DEGREES_TO_RADIANS(gyroAverage[Y]), DEGREES_TO_RADIANS(gyroAverage[Z]),
-                        useAcc, accAverage[X], accAverage[Y], accAverage[Z],
-                        useMag,
-                        useCOG, courseOverGround,  imuCalcKpGain(currentTimeUs, useAcc, gyroAverage));
-
-    imuUpdateEulerAngles();
-#endif
+  imuUpdateEulerAngles();
 }
 
 void imuUpdateAttitude(timeUs_t currentTimeUs)
