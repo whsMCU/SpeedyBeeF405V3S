@@ -3,12 +3,12 @@
   "WorkspaceRootPath": "D:\\STM32CubeIDE\\SpeedyBeeF405V3S\\SpeedyBeeF405V3S_GUI\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{4E757116-2404-4773-B93A-03B298585EEF}|SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI.csproj|d:\\stm32cubeide\\speedybeef405v3s\\speedybeef405v3s_gui\\speedybeef405v3s_gui\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4E757116-2404-4773-B93A-03B298585EEF}|SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI.csproj|solutionrelative:speedybeef405v3s_gui\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{4E757116-2404-4773-B93A-03B298585EEF}|SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI.csproj|D:\\STM32CubeIDE\\SpeedyBeeF405V3S\\SpeedyBeeF405V3S_GUI\\speedybeef405v3s_gui\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{4E757116-2404-4773-B93A-03B298585EEF}|SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI.csproj|solutionrelative:speedybeef405v3s_gui\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4E757116-2404-4773-B93A-03B298585EEF}|SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI.csproj|d:\\stm32cubeide\\speedybeef405v3s\\speedybeef405v3s_gui\\speedybeef405v3s_gui\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4E757116-2404-4773-B93A-03B298585EEF}|SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI.csproj|solutionrelative:speedybeef405v3s_gui\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4E757116-2404-4773-B93A-03B298585EEF}|SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI.csproj|D:\\STM32CubeIDE\\SpeedyBeeF405V3S\\SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI\\Class\\MspProtocol.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -26,7 +26,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 281,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
@@ -38,31 +38,33 @@
               "RelativeToolTip": "SpeedyBeeF405V3S_GUI\\Form1.Designer.cs",
               "ViewState": "AQIAAD4AAAAAAAAAAABQwEEAAAAIAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-20T13:06:04.869Z"
+              "WhenOpened": "2025-06-20T13:06:04.869Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Form1.cs",
               "DocumentMoniker": "D:\\STM32CubeIDE\\SpeedyBeeF405V3S\\SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI\\Form1.cs",
               "RelativeDocumentMoniker": "SpeedyBeeF405V3S_GUI\\Form1.cs",
               "ToolTip": "D:\\STM32CubeIDE\\SpeedyBeeF405V3S\\SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI\\Form1.cs",
               "RelativeToolTip": "SpeedyBeeF405V3S_GUI\\Form1.cs",
-              "ViewState": "AQIAAJkJAAAAAAAAAAAqwFwJAAAcAAAA",
+              "ViewState": "AQIAADkBAAAAAAAAAAAAAFMBAAANAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-09-20T12:45:57.848Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "Form1.cs [\uB514\uC790\uC778]",
               "DocumentMoniker": "D:\\STM32CubeIDE\\SpeedyBeeF405V3S\\SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI\\Form1.cs",
               "RelativeDocumentMoniker": "SpeedyBeeF405V3S_GUI\\Form1.cs",
               "ToolTip": "D:\\STM32CubeIDE\\SpeedyBeeF405V3S\\SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI\\Form1.cs [\uB514\uC790\uC778]",
               "RelativeToolTip": "SpeedyBeeF405V3S_GUI\\Form1.cs [\uB514\uC790\uC778]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-20T12:41:13.006Z"
+              "WhenOpened": "2024-09-20T12:41:13.006Z",
+              "EditorCaption": " [\uB514\uC790\uC778]"
             },
             {
               "$type": "Document",
@@ -74,7 +76,8 @@
               "RelativeToolTip": "SpeedyBeeF405V3S_GUI\\Class\\MspProtocol.cs",
               "ViewState": "AQIAAFYAAAAAAAAAAAAswGcAAAAmAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-27T12:55:05.12Z"
+              "WhenOpened": "2025-04-27T12:55:05.12Z",
+              "EditorCaption": ""
             }
           ]
         }

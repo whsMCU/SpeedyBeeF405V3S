@@ -87,6 +87,11 @@ const unsigned char UBX_CFG_MSG_STATUS[] = {
   0x00, 0x00, 0x00, 0x00, 0x14, 0xC5
 };
 
+const unsigned char UBX_CFG_MSG_PVT[] = {
+  0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0x01, 0x07, 0x00, 0x01,
+  0x00, 0x00, 0x00, 0x00, 0x18, 0xE1
+};
+
 const unsigned char UBX_CFG_RATE[] = {
 	0xB5, 0x62, 0x06, 0x08, 0x06, 0x00, 0xC8, 0x00, 0x01, 0x00,
 	0x01, 0x00, 0xDE, 0x6A
@@ -109,6 +114,8 @@ void gpsInit(void)
   uartWrite(_DEF_UART6, (uint8_t*)&UBX_CFG_MSG_SAT[0], sizeof(UBX_CFG_MSG_SAT));
   HAL_Delay(100);
   uartWrite(_DEF_UART6, (uint8_t*)&UBX_CFG_MSG_STATUS[0], sizeof(UBX_CFG_MSG_SAT));
+  HAL_Delay(100);
+  uartWrite(_DEF_UART6, (uint8_t*)&UBX_CFG_MSG_PVT[0], sizeof(UBX_CFG_MSG_PVT));
   HAL_Delay(100);
 	uartWrite(_DEF_UART6, (uint8_t*)&UBX_CFG_RATE[0], sizeof(UBX_CFG_RATE));
 	HAL_Delay(100);
@@ -176,6 +183,8 @@ GpsNav_t GpsNav;
 UbxNavPosllh_t posllh;
 UbxNavSat_t sat;
 UbxNavStatus_t nav_status;
+nav_pvt_t pvt;
+
 static bool next_fix;
 
 uint32_t posllh_dt, posllh_tmp, sat_dt, sat_tmp, status_dt, status_tmp;
@@ -226,7 +235,7 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
             p += 12;
             // 여기서 위성 정보 활용 가능 (신호 세기, PRN 등)
         }
-        GpsNav.GPS_numSat = sat.numSvs;
+        //GpsNav.GPS_numSat = sat.numSvs;
 
     } else if (cls == 0x01 && id == 0x03) { // NAV-STATUS
         if (length < 16) return;
@@ -247,7 +256,47 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
           DISABLE_STATE(GPS_FIX);
         }
         gpsSetFixState(next_fix);
+    } else if (cls == 0x01 && id == 0x07) { // NAV-PVT
+      if (length < 92) return;  // 최소 메시지 길이 확인
+
+      pvt.iTOW = (payload[0]) | (payload[1]<<8) | (payload[2]<<16) | (payload[3]<<24);
+      pvt.year = (uint16_t)(payload[4] | payload[5]<<8);
+      pvt.month = payload[6];
+      pvt.day = payload[7];
+      pvt.hour = payload[8];
+      pvt.min = payload[9];
+      pvt.sec = payload[10];
+      pvt.valid = payload[11];
+      pvt.tAcc = (int32_t)(payload[12] | (payload[13]<<8) | (payload[14]<<16) | (payload[15]<<24));
+      pvt.nano = (int32_t)(payload[16] | (payload[17]<<8) | (payload[18]<<16) | (payload[19]<<24));
+      pvt.fixType = payload[20];
+      pvt.numSV = payload[23];
+      pvt.lon = (int32_t)(payload[24] | (payload[25]<<8) | (payload[26]<<16) | (payload[27]<<24));
+      pvt.lat = (int32_t)(payload[28] | (payload[29]<<8) | (payload[30]<<16) | (payload[31]<<24));
+      pvt.height = (int32_t)(payload[32] | (payload[33]<<8) | (payload[34]<<16) | (payload[35]<<24));
+      pvt.hMSL = (int32_t)(payload[36] | (payload[37]<<8) | (payload[38]<<16) | (payload[39]<<24));
+      pvt.hAcc = (uint32_t)(payload[40] | (payload[41]<<8) | (payload[42]<<16) | (payload[43]<<24));
+      pvt.vAcc = (uint32_t)(payload[44] | (payload[45]<<8) | (payload[46]<<16) | (payload[47]<<24));
+      pvt.gSpeed = (int32_t)(payload[60] | (payload[61]<<8) | (payload[62]<<16) | (payload[63]<<24));
+      pvt.headMot = (int32_t)(payload[64] | (payload[65]<<8) | (payload[66]<<16) | (payload[67]<<24));
+      pvt.pDOP = (uint16_t)(payload[76] | (payload[77]<<8));
     }
+    GpsNav.GPS_numSat = pvt.numSV;
+
+#ifdef USE_RTC_TIME
+        //set clock, when gps time is available
+        if (!rtcHasTime() && (_buffer.pvt.valid & NAV_VALID_DATE) && (_buffer.pvt.valid & NAV_VALID_TIME)) {
+            dateTime_t dt;
+            dt.year = _buffer.pvt.year;
+            dt.month = _buffer.pvt.month;
+            dt.day = _buffer.pvt.day;
+            dt.hours = _buffer.pvt.hour;
+            dt.minutes = _buffer.pvt.min;
+            dt.seconds = _buffer.pvt.sec;
+            dt.millis = (_buffer.pvt.nano > 0) ? _buffer.pvt.nano / 1000 : 0; //up to 5ms of error
+            rtcSetDateTime(&dt);
+        }
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -277,15 +326,15 @@ static void GPS_calc_velocity(){
 
   if (init) {
     float tmp = 1.0/GpsNav.dTnav;
-    GpsNav.actual_speed[_X] = (float)(GpsNav.GPS_coord[LON] - last[LON]) *  GPS_scaleLonDown * tmp;
-    GpsNav.actual_speed[_Y] = (float)(GpsNav.GPS_coord[LAT]  - last[LAT])  * tmp;
+    GpsNav.actual_speed[GPS_X] = (float)(GpsNav.GPS_coord[LON] - last[LON]) *  GPS_scaleLonDown * tmp;
+    GpsNav.actual_speed[GPS_Y] = (float)(GpsNav.GPS_coord[LAT]  - last[LAT])  * tmp;
 
 #if !defined(GPS_LEAD_FILTER)
-    GpsNav.actual_speed[_X] = (GpsNav.actual_speed[_X] + speed_old[_X]) / 2;
-    GpsNav.actual_speed[_Y] = (GpsNav.actual_speed[_Y] + speed_old[_Y]) / 2;
+    GpsNav.actual_speed[GPS_X] = (GpsNav.actual_speed[GPS_X] + speed_old[GPS_X]) / 2;
+    GpsNav.actual_speed[GPS_Y] = (GpsNav.actual_speed[GPS_Y] + speed_old[GPS_Y]) / 2;
 
-    speed_old[_X] = GpsNav.actual_speed[_X];
-    speed_old[_Y] = GpsNav.actual_speed[_Y];
+    speed_old[GPS_X] = GpsNav.actual_speed[GPS_X];
+    speed_old[GPS_Y] = GpsNav.actual_speed[GPS_Y];
 
 #endif
   }
@@ -295,8 +344,8 @@ static void GPS_calc_velocity(){
   last[LAT] = GpsNav.GPS_coord[LAT];
 
 #if defined(GPS_LEAD_FILTER)
-  GPS_coord_lead[LON] = xLeadFilter.get_position(GpsNav.GPS_coord[LON], GpsNav.actual_speed[_X], GPS_LAG);
-  GPS_coord_lead[LAT] = yLeadFilter.get_position(GpsNav.GPS_coord[LAT], GpsNav.actual_speed[_Y], GPS_LAG);
+  GPS_coord_lead[LON] = xLeadFilter.get_position(GpsNav.GPS_coord[LON], GpsNav.actual_speed[GPS_X], GPS_LAG);
+  GPS_coord_lead[LAT] = yLeadFilter.get_position(GpsNav.GPS_coord[LAT], GpsNav.actual_speed[GPS_Y], GPS_LAG);
 #endif
 
 }

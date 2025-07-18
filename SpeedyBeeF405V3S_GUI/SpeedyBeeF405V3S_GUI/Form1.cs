@@ -344,7 +344,7 @@ namespace SpeedyBeeF405V3S_GUI
                 data[4] /= 10;
                 data[5] /= 10;
                 string log = $"{DateTime.Now:HH:mm:ss.fff}, {data[13]}, {data[11]}, {data[0]}, {data[1]}, {data[2]}, {data[3]}, {data[4]}, {data[5]}, {data[6]}, {data[7]}," +
-                    $" {data[41]}, {data[42]}, {data[8]}, {data[9]}, {data[43]}, {data[44]}, {data[45]}, {data[46]}, {scaleRangef(data[14], 11000, 21000, 0, 100)}," +
+                    $" {data[41]}, {data[42]}, {(double)data[8]/10000000}, {(double)data[9]/10000000}, {data[43]}, {data[44]}, {data[45]}, {data[46]}, {scaleRangef(data[14], 11000, 21000, 0, 100)}," +
                     $" {scaleRangef(data[15], 11000, 21000, 0, 100)}, {scaleRangef(data[16], 11000, 21000, 0, 100)}, {scaleRangef(data[17], 11000, 21000, 0, 100)}," +
                     $" {data[10]/100}, {data[47]/100}, {data[48]}, {data[38]}, {data[49]}, {data[18]}, {data[19]}, {data[20]}, {data[21]}, {data[50]}, {data[51]}, {data[52]}, {data[53]}";
                 writer.WriteLine(log);
@@ -2411,8 +2411,8 @@ namespace SpeedyBeeF405V3S_GUI
             lb_rc_pitch.Text = float_data[5].ToString("F1", CultureInfo.InvariantCulture);
             lb_rc_yaw.Text = passed_data[6].ToString();
             lb_rc_throttle.Text = passed_data[7].ToString();
-            lb_lat.Text = passed_data[8].ToString();
-            lb_long.Text = passed_data[9].ToString();
+            lb_lat.Text = ((double)passed_data[8]/10000000).ToString("F7");
+            lb_long.Text = ((double)passed_data[9]/10000000).ToString("F7");
             lb_bat_V.Text = (passed_data[10] / 100).ToString();
             lb_bat_A.Text = (passed_data[47] / 100).ToString("F1", CultureInfo.InvariantCulture);
             lb_bat_mAh.Text = (passed_data[48]).ToString();

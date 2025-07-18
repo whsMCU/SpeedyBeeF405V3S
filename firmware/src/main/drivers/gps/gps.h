@@ -19,8 +19,9 @@ typedef enum {
   NAV_MODE_WP
 } nav_mode_e;
 
-#define _X 1
-#define _Y 0
+#define GPS_DEGREES_DIVIDER 10000000L
+#define GPS_X 1
+#define GPS_Y 0
 
 #define GPS_LAG 0.5f                          //UBLOX GPS has a smaller lag than MTK and other
 
@@ -160,8 +161,45 @@ typedef struct {
     uint32_t msss;     // Time since startup/reset to last fix (ms)
 } UbxNavStatus_t;
 
+typedef struct {
+  uint32_t iTOW;        // GPS Time of Week (ms)
+  uint16_t year;        // Year (UTC)
+  uint8_t  month;       // Month (1-12, UTC)
+  uint8_t  day;         // Day (1-31, UTC)
+  uint8_t  hour;        // Hour (0-23, UTC)
+  uint8_t  min;         // Minute (0-59, UTC)
+  uint8_t  sec;         // Second (0-60, UTC, leap seconds)
+  uint8_t  valid;       // Validity Flags (bitfield)
+  uint32_t tAcc;        // Time accuracy (ns)
+  int32_t  nano;        // Fraction of second (ns)
+  uint8_t  fixType;     // GNSS Fix Type
+  uint8_t  flags;       // Fix status flags (bitfield)
+  uint8_t  flags2;      // Additional flags
+  uint8_t  numSV;       // Number of satellites used
+  int32_t  lon;         // Longitude (1e-7 deg)
+  int32_t  lat;         // Latitude (1e-7 deg)
+  int32_t  height;      // Height above ellipsoid (mm)
+  int32_t  hMSL;        // Height above mean sea level (mm)
+  uint32_t hAcc;        // Horizontal accuracy (mm)
+  uint32_t vAcc;        // Vertical accuracy (mm)
+  int32_t  velN;        // NED North velocity (mm/s)
+  int32_t  velE;        // NED East velocity (mm/s)
+  int32_t  velD;        // NED Down velocity (mm/s)
+  int32_t  gSpeed;      // Ground speed (mm/s)
+  int32_t  headMot;     // Heading of motion (1e-5 deg)
+  uint32_t sAcc;        // Speed accuracy estimate (mm/s)
+  uint32_t headAcc;     // Heading accuracy estimate (1e-5 deg)
+  uint16_t pDOP;        // Position DOP (0.01 scale)
+  uint8_t  reserved1[6];// Reserved
+  int32_t  headVeh;     // Heading of vehicle (1e-5 deg)
+  int16_t  magDec;      // Magnetic declination (1e-2 deg)
+  uint16_t magAcc;      // Magnetic declination accuracy (1e-2 deg)
+} nav_pvt_t;
+
 extern UbxNavPosllh_t posllh;
 extern UbxNavSat_t sat;
+
+extern nav_pvt_t pvt;
 
 extern UbxNavStatus_t nav_status;
 
