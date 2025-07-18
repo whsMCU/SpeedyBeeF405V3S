@@ -1211,7 +1211,7 @@ namespace SpeedyBeeF405V3S_GUI
             if (error == 8) textBox3.Text += "Battery LOW";
             //if (error == 2) textBox3.Text = "Program loop time";
 
-            if ((passed_data[43] >= 6) && (passed_data[44] == 2)) // GPS_Num > 6 && GPS_FIX == 2
+            if ((passed_data[43] >= 5) && (passed_data[44] == 2)) // GPS_Num > 6 && GPS_FIX == 2
             {
                 pictureBox4.Visible = false;
                 pictureBox5.Visible = false;
