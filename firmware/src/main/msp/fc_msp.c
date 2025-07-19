@@ -513,6 +513,10 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU32(dst, debug[5]);
           sbufWriteU32(dst, debug[6]);
           sbufWriteU32(dst, debug[7]);
+
+          sbufWriteU16(dst, pvt.year);
+          sbufWriteU16(dst, pvt.month);
+          sbufWriteU32(dst, ((pvt.day) | (pvt.hour<<8) | (pvt.min<<16) | (pvt.sec<<24)));
         }
         break;
 

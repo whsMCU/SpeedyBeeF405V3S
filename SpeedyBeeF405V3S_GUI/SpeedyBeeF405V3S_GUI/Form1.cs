@@ -2182,6 +2182,17 @@ namespace SpeedyBeeF405V3S_GUI
             passed_data[52] = BitConverter.ToInt32(payload, 158);    // Debug[6]
             passed_data[53] = BitConverter.ToInt32(payload, 162);    // Debug[7]
 
+            passed_data[54] = BitConverter.ToUInt16(payload, 166);    // year
+            passed_data[55] = BitConverter.ToUInt16(payload, 168);    // month
+
+            uint packedTime = BitConverter.ToUInt32(payload, 170); // day, hour, min, sec
+            passed_data[56] = (float)(packedTime & 0xFF);           // day
+            passed_data[57] = (float)((packedTime >> 8) & 0xFF);    // hour
+            passed_data[58] = (float)((packedTime >> 16) & 0xFF);   // min
+            passed_data[59] = (float)((packedTime >> 24) & 0xFF);   // sec
+            
+            lb_gps_time.Text = $"{(int)passed_data[54]:D4}-{(int)passed_data[55]:D2}-{(int)passed_data[56]:D2} {(int)passed_data[57]:D2}:{(int)passed_data[58]:D2}:{(int)passed_data[59]:D2}";
+                       
             if (cb_record.Checked == true)
             {
                 Check_Data_Log(PID_log_filePath, passed_data);

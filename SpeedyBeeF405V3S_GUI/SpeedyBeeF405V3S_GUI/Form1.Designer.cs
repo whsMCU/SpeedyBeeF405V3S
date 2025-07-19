@@ -289,6 +289,8 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
+            this.headingIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.HeadingIndicatorInstrumentControl();
+            this.attitudeIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.AttitudeIndicatorInstrumentControl();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label62 = new System.Windows.Forms.Label();
             this.lb_route_distance = new System.Windows.Forms.Label();
@@ -366,8 +368,9 @@
             this.bt_ReScan = new System.Windows.Forms.Button();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.tb_msp_error = new System.Windows.Forms.TextBox();
-            this.headingIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.HeadingIndicatorInstrumentControl();
-            this.attitudeIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.AttitudeIndicatorInstrumentControl();
+            this.label99 = new System.Windows.Forms.Label();
+            this.label101 = new System.Windows.Forms.Label();
+            this.lb_gps_time = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -1073,6 +1076,9 @@
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.lb_gps_time);
+            this.panel3.Controls.Add(this.label101);
+            this.panel3.Controls.Add(this.label99);
             this.panel3.Controls.Add(this.label81);
             this.panel3.Controls.Add(this.lb_fc_load);
             this.panel3.Controls.Add(this.label55);
@@ -1129,11 +1135,11 @@
             this.textBox11.BackColor = System.Drawing.SystemColors.Control;
             this.textBox11.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox11.Font = new System.Drawing.Font("Microsoft Sans Serif", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox11.Location = new System.Drawing.Point(99, 9);
+            this.textBox11.Location = new System.Drawing.Point(139, 3);
             this.textBox11.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox11.Name = "textBox11";
             this.textBox11.ReadOnly = true;
-            this.textBox11.Size = new System.Drawing.Size(488, 33);
+            this.textBox11.Size = new System.Drawing.Size(372, 33);
             this.textBox11.TabIndex = 0;
             this.textBox11.Text = "MCU Drone Flight Monitor";
             this.textBox11.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -2705,6 +2711,22 @@
             this.groupBox10.TabStop = false;
             this.groupBox10.Text = "ATTITUDE";
             // 
+            // headingIndicatorInstrumentControl1
+            // 
+            this.headingIndicatorInstrumentControl1.Location = new System.Drawing.Point(153, 19);
+            this.headingIndicatorInstrumentControl1.Name = "headingIndicatorInstrumentControl1";
+            this.headingIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 142);
+            this.headingIndicatorInstrumentControl1.TabIndex = 1;
+            this.headingIndicatorInstrumentControl1.Text = "headingIndicatorInstrumentControl1";
+            // 
+            // attitudeIndicatorInstrumentControl1
+            // 
+            this.attitudeIndicatorInstrumentControl1.Location = new System.Drawing.Point(5, 18);
+            this.attitudeIndicatorInstrumentControl1.Name = "attitudeIndicatorInstrumentControl1";
+            this.attitudeIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 143);
+            this.attitudeIndicatorInstrumentControl1.TabIndex = 0;
+            this.attitudeIndicatorInstrumentControl1.Text = "attitudeIndicatorInstrumentControl1";
+            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.label62);
@@ -3604,21 +3626,36 @@
             this.tb_msp_error.TabIndex = 93;
             this.tb_msp_error.Text = "-";
             // 
-            // headingIndicatorInstrumentControl1
+            // label99
             // 
-            this.headingIndicatorInstrumentControl1.Location = new System.Drawing.Point(153, 19);
-            this.headingIndicatorInstrumentControl1.Name = "headingIndicatorInstrumentControl1";
-            this.headingIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 142);
-            this.headingIndicatorInstrumentControl1.TabIndex = 1;
-            this.headingIndicatorInstrumentControl1.Text = "headingIndicatorInstrumentControl1";
+            this.label99.AutoSize = true;
+            this.label99.Font = new System.Drawing.Font("굴림", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label99.Location = new System.Drawing.Point(497, 34);
+            this.label99.Name = "label99";
+            this.label99.Size = new System.Drawing.Size(99, 16);
+            this.label99.TabIndex = 93;
+            this.label99.Text = "Flight Time : ";
             // 
-            // attitudeIndicatorInstrumentControl1
+            // label101
             // 
-            this.attitudeIndicatorInstrumentControl1.Location = new System.Drawing.Point(5, 18);
-            this.attitudeIndicatorInstrumentControl1.Name = "attitudeIndicatorInstrumentControl1";
-            this.attitudeIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 143);
-            this.attitudeIndicatorInstrumentControl1.TabIndex = 0;
-            this.attitudeIndicatorInstrumentControl1.Text = "attitudeIndicatorInstrumentControl1";
+            this.label101.AutoSize = true;
+            this.label101.Font = new System.Drawing.Font("굴림", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label101.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label101.Location = new System.Drawing.Point(4, 33);
+            this.label101.Name = "label101";
+            this.label101.Size = new System.Drawing.Size(92, 16);
+            this.label101.TabIndex = 94;
+            this.label101.Text = "GPS Time : ";
+            // 
+            // lb_gps_time
+            // 
+            this.lb_gps_time.Font = new System.Drawing.Font("Consolas", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_gps_time.Location = new System.Drawing.Point(86, 30);
+            this.lb_gps_time.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_gps_time.Name = "lb_gps_time";
+            this.lb_gps_time.Size = new System.Drawing.Size(238, 25);
+            this.lb_gps_time.TabIndex = 95;
+            this.lb_gps_time.Text = "2025-01-01 00:00:00";
             // 
             // Form1
             // 
@@ -3983,6 +4020,9 @@
         private System.Windows.Forms.Label lb_debug5;
         private System.Windows.Forms.Label label104;
         private System.Windows.Forms.Label lb_debug4;
+        private System.Windows.Forms.Label label99;
+        private System.Windows.Forms.Label lb_gps_time;
+        private System.Windows.Forms.Label label101;
     }
 }
 
