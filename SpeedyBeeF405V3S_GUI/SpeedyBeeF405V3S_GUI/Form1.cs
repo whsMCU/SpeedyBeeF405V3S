@@ -19,6 +19,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using static GMap.NET.Entity.OpenStreetMapRouteEntity;
 
 namespace SpeedyBeeF405V3S_GUI
 {
@@ -61,6 +62,9 @@ namespace SpeedyBeeF405V3S_GUI
         int pid_test_setting_time = 0;
         int pid_test_setting_deg = 0;
         int pid_test_setting_throttle = 0;
+
+        double lat = 35.1965882;
+        double lng = 126.8295163;
 
         enum pidState_e
         {
@@ -387,6 +391,42 @@ namespace SpeedyBeeF405V3S_GUI
                 gMapControl1.Zoom--;
             }
         }
+        private void AddMarker(double lat, double lng)
+        {
+            // 위치 설정
+            PointLatLng point = new PointLatLng(lat, lng);
+
+            // 클릭한 위치에 마커 추가
+            marker = new GMarkerGoogle(point, GMarkerGoogleType.red);
+            marker.ToolTipText = $"위도: {point.Lat}, 경도: {point.Lng}";
+            //marker.ToolTipMode = MarkerTooltipMode.Always;
+            marker.ToolTipMode = MarkerTooltipMode.OnMouseOver;
+            marker.ToolTip.TextPadding = new Size(10, 10);
+            marker.ToolTip.Fill = new SolidBrush(Color.DimGray);
+            marker.ToolTip.Foreground = new SolidBrush(Color.White);
+            //gMarker.ToolTip.Offset = new Point(10, -30);
+            marker.ToolTip.Stroke = new Pen(Color.Transparent, .0f);
+
+            // 마커를 GMapControl의 Overlay에 추가
+            markersOverlay.Markers.Add(marker);
+            gMapControl1.Overlays.Add(markersOverlay);
+
+            map_points.Add(point);
+            GMapRoute route = new GMapRoute(map_points, "route");
+            route.Stroke = new Pen(Color.Red, 2);
+            markersOverlay.Routes.Add(route);
+            gMapControl1.Overlays.Add(markersOverlay);
+            lb_route_distance.Text = route.Distance.ToString();
+
+            // 지도 중심 이동 (선택사항)
+            gMapControl1.Position = point;
+
+            // 지도 새로고침
+            //gMapControl1.Refresh();
+            //gMapControl1.Zoom++;
+            //gMapControl1.Zoom--;
+        }
+
         public void RemoveMarker(GMapMarker gMarker)
         {
             markersOverlay.Markers.Remove(gMarker);
@@ -1280,6 +1320,8 @@ namespace SpeedyBeeF405V3S_GUI
             {
                 record_indicator_off();
             }
+
+            //AddMarker(((double)passed_data[8] / 10000000), ((double)passed_data[9] / 10000000));
         }
 
         private void bt_pid_recive_Click(object sender, EventArgs e)
@@ -2192,7 +2234,7 @@ namespace SpeedyBeeF405V3S_GUI
             passed_data[59] = (float)((packedTime >> 24) & 0xFF);   // sec
             
             lb_gps_time.Text = $"{(int)passed_data[54]:D4}-{(int)passed_data[55]:D2}-{(int)passed_data[56]:D2} {(int)passed_data[57]:D2}:{(int)passed_data[58]:D2}:{(int)passed_data[59]:D2}";
-                       
+
             if (cb_record.Checked == true)
             {
                 Check_Data_Log(PID_log_filePath, passed_data);
