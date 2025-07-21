@@ -313,7 +313,7 @@ namespace SpeedyBeeF405V3S_GUI
 
                 log = "DateTime, Arming_Flag, Flight_Mode, Roll, Pitch, Yaw, Alt, RollSetPoint, PitchSetPoint, Yaw SetPoint, Thorttle, yaw_heading_reference," +
                     " altHold, lattitude, longitude, Sat_Num, gps_fix, Throttle_Hold_point, Alt_PID_Result, MOTOR[Right_Rear], MOTOR[Right_Front], MOTOR[Left_Rear], MOTOR[Left_Front]," +
-                    " BAT_V, BAT_A, BAT_mAh, Alt_Range(CM), Alt_Range_Hold(CM), Debug[0], Debug[1], Debug[2], Debug[3], Debug[4], Debug[5], Debug[6], Debug[7]";
+                    " BAT_V, BAT_A, BAT_mAh, Alt_Range(CM), Alt_Range_Hold(CM), GPS_HEADING(deg), Debug[0], Debug[1], Debug[2], Debug[3], Debug[4], Debug[5], Debug[6], Debug[7]";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
             }
@@ -350,7 +350,7 @@ namespace SpeedyBeeF405V3S_GUI
                 string log = $"{DateTime.Now:HH:mm:ss.fff}, {data[13]}, {data[11]}, {data[0]}, {data[1]}, {data[2]}, {data[3]}, {data[4]}, {data[5]}, {data[6]}, {data[7]}," +
                     $" {data[41]}, {data[42]}, {(double)data[8]/10000000}, {(double)data[9]/10000000}, {data[43]}, {data[44]}, {data[45]}, {data[46]}, {scaleRangef(data[14], 11000, 21000, 0, 100)}," +
                     $" {scaleRangef(data[15], 11000, 21000, 0, 100)}, {scaleRangef(data[16], 11000, 21000, 0, 100)}, {scaleRangef(data[17], 11000, 21000, 0, 100)}," +
-                    $" {data[10]/100}, {data[47]/100}, {data[48]}, {data[38]}, {data[49]}, {data[18]}, {data[19]}, {data[20]}, {data[21]}, {data[50]}, {data[51]}, {data[52]}, {data[53]}";
+                    $" {data[10]/100}, {data[47]/100}, {data[48]}, {data[38]}, {data[49]}, {data[60]}, {data[18]}, {data[19]}, {data[20]}, {data[21]}, {data[50]}, {data[51]}, {data[52]}, {data[53]}";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
             }
@@ -2234,6 +2234,8 @@ namespace SpeedyBeeF405V3S_GUI
             passed_data[59] = (float)((packedTime >> 24) & 0xFF);   // sec
             
             lb_gps_time.Text = $"{(int)passed_data[54]:D4}-{(int)passed_data[55]:D2}-{(int)passed_data[56]:D2} {(int)passed_data[57]:D2}:{(int)passed_data[58]:D2}:{(int)passed_data[59]:D2}";
+
+            passed_data[60] = BitConverter.ToInt32(payload, 174);    // GPS_Heading
 
             if (cb_record.Checked == true)
             {

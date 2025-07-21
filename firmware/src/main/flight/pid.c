@@ -151,6 +151,8 @@ void PID_Calculation(PID* axis, float set_point, float measured1, float measured
   axis->result_d = axis->kd * axis->derivative_filter;
 
   axis->result = axis->result_p + axis->result_i + axis->result_d;
+  if(axis->result > 5000) axis->result = 5000;
+  if(axis->result > -5000) axis->result = -5000;
 }
 
 void Reset_All_PID_Integrator(void)

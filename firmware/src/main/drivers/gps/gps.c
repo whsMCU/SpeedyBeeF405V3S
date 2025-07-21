@@ -280,8 +280,10 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
       pvt.gSpeed = (int32_t)(payload[60] | (payload[61]<<8) | (payload[62]<<16) | (payload[63]<<24));
       pvt.headMot = (int32_t)(payload[64] | (payload[65]<<8) | (payload[66]<<16) | (payload[67]<<24));
       pvt.pDOP = (uint16_t)(payload[76] | (payload[77]<<8));
+      pvt.headVeh = (int32_t)(payload[84] | (payload[85]<<8) | (payload[86]<<16) | (payload[87]<<24));
     }
     GpsNav.GPS_numSat = pvt.numSV;
+    GpsNav.GPS_headVeh = pvt.headVeh;
 
 #ifdef USE_RTC_TIME
         //set clock, when gps time is available
