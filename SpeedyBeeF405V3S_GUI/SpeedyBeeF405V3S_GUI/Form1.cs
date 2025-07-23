@@ -2295,7 +2295,7 @@ namespace SpeedyBeeF405V3S_GUI
             if (rb_roll_setpoint.Checked == true)
             {
                 _roll_angle_points.Add(time_count + 150, passed_data[0] / 10);
-                _rc_roll_points.Add(time_count + 150, passed_data[4] / 10);
+                _rc_roll_points.Add(time_count + 150, passed_data[4]);
                 if (_roll_angle_points.Count > 1000)
                 {
                     _roll_angle_points.RemoveAt(0);
@@ -2315,7 +2315,7 @@ namespace SpeedyBeeF405V3S_GUI
                 {
                     _rc_pitch_points.Add(time_count + 150, passed_data[5] / 10);
                 }
-                _pitch_angle_points.Add(time_count + 150, passed_data[1] / 10);
+                _pitch_angle_points.Add(time_count + 150, passed_data[1]);
                 if (_rc_pitch_points.Count > 1000)
                 {
                     _rc_pitch_points.RemoveAt(0);
