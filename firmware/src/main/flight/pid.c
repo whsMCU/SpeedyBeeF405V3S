@@ -68,37 +68,37 @@ void pidInit(void)
   _ROLL.in.kp = 10;
   _ROLL.in.ki = 0;
   _ROLL.in.kd = 0;
-  _ROLL.in.integral_windup = 1000;
+  _ROLL.in.integral_windup = 500;
 
   _ROLL.out.pidName = "ROLL_OUT";
   _ROLL.out.kp = 10;
   _ROLL.out.ki = 0;
   _ROLL.out.kd = 0;
-  _ROLL.out.integral_windup = 1000;
+  _ROLL.out.integral_windup = 500;
 
   _PITCH.in.pidName = "PITCH_IN";
   _PITCH.in.kp = 10;
   _PITCH.in.ki = 0;
   _PITCH.in.kd = 0;
-  _PITCH.in.integral_windup = 1000;
+  _PITCH.in.integral_windup = 500;
 
   _PITCH.out.pidName = "PITCH_OUT";
   _PITCH.out.kp = 10;
   _PITCH.out.ki = 0;
   _PITCH.out.kd = 0;
-  _PITCH.out.integral_windup = 1000;
+  _PITCH.out.integral_windup = 500;
 
   _YAW_Heading.pidName = "YAW_Heading";
   _YAW_Heading.kp = 10;
   _YAW_Heading.ki = 0;
   _YAW_Heading.kd = 0;
-  _YAW_Heading.integral_windup = 1000;
+  _YAW_Heading.integral_windup = 500;
 
   _YAW_Rate.pidName = "YAW_Rate";
   _YAW_Rate.kp = 10;
   _YAW_Rate.ki = 0;
   _YAW_Rate.kd = 0;
-  _YAW_Rate.integral_windup = 1000;
+  _YAW_Rate.integral_windup = 500;
 
   _ALT.pidName = "ALT";
   _ALT.kp = 5;
@@ -152,7 +152,7 @@ void PID_Calculation(PID* axis, float set_point, float measured1, float measured
 
   axis->result = axis->result_p + axis->result_i + axis->result_d;
   if(axis->result > 5000) axis->result = 5000;
-  if(axis->result > -5000) axis->result = -5000;
+  if(axis->result < -5000) axis->result = -5000;
 }
 
 void Reset_All_PID_Integrator(void)
@@ -223,12 +223,20 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   PID_Calculation(&_PITCH.in, _PITCH.out.result, bmi270.gyroADCf[Y], 0, dT);
 
   DEBUG_SET(DEBUG_PIDLOOP, 1, (_PID_Test.pid_test_deg));
-  DEBUG_SET(DEBUG_PIDLOOP, 2, (_PITCH.out.result_p));
-  DEBUG_SET(DEBUG_PIDLOOP, 3, (_PITCH.out.result_i));
-  DEBUG_SET(DEBUG_PIDLOOP, 4, (_PITCH.in.result_p));
-  DEBUG_SET(DEBUG_PIDLOOP, 5, (_PITCH.in.result_i));
-  DEBUG_SET(DEBUG_PIDLOOP, 6, (_PITCH.in.result_d));
-  DEBUG_SET(DEBUG_PIDLOOP, 7, (_PITCH.in.result));
+  DEBUG_SET(DEBUG_PIDLOOP, 2, (imu_pitch));
+  DEBUG_SET(DEBUG_PIDLOOP, 3, (_PITCH.out.error));
+  DEBUG_SET(DEBUG_PIDLOOP, 4, (_PITCH.out.result_p));
+  DEBUG_SET(DEBUG_PIDLOOP, 5, (_PITCH.out.result_i));
+  DEBUG_SET(DEBUG_PIDLOOP, 6, (_PITCH.out.result_d));
+  DEBUG_SET(DEBUG_PIDLOOP, 7, (_PITCH.out.result));
+  DEBUG_SET(DEBUG_PIDLOOP, 8, (bmi270.gyroADCf[Y]));
+  DEBUG_SET(DEBUG_PIDLOOP, 9, (_PITCH.in.error));
+  DEBUG_SET(DEBUG_PIDLOOP, 10, (_PITCH.in.result_p));
+  DEBUG_SET(DEBUG_PIDLOOP, 11, (_PITCH.in.result_i));
+  DEBUG_SET(DEBUG_PIDLOOP, 12, (_PITCH.in.result_d));
+  DEBUG_SET(DEBUG_PIDLOOP, 13, (_PITCH.in.result));
+  DEBUG_SET(DEBUG_PIDLOOP, 14, (_PITCH.in.derivative));
+  DEBUG_SET(DEBUG_PIDLOOP, 15, (_PITCH.in.derivative_filter));
 
   if((rcData[THROTTLE] < 1030 || !ARMING_FLAG(ARMED))&& _PID_Test.pid_test_flag == 0)
   {
