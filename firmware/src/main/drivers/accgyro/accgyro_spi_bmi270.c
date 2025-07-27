@@ -323,17 +323,17 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     if(GPIO_Pin==GPIO_PIN_4)
     {
     	bmi270.exit_callback_dt = micros() - pre_time;
-        pre_time = bmi270.exit_callback_dt;
-        // Ideally we'd use a timer to capture such information, but unfortunately the port used for EXTI interrupt does
-        // not have an associated timer
-        uint32_t nowCycles = micros();
-        bmi270.gyroSyncEXTI = bmi270.gyroLastEXTI + bmi270.gyroDmaMaxDuration;
-        bmi270.gyroLastEXTI = nowCycles;
+      pre_time = micros();
+      // Ideally we'd use a timer to capture such information, but unfortunately the port used for EXTI interrupt does
+      // not have an associated timer
+      uint32_t nowCycles = micros();
+      bmi270.gyroSyncEXTI = bmi270.gyroLastEXTI + bmi270.gyroDmaMaxDuration;
+      bmi270.gyroLastEXTI = nowCycles;
 
-        if (bmi270.gyroModeSPI == GYRO_EXTI_INT_DMA) {// && spiRx_flag(dev)
-        	SPI_ByteReadWrite_DMA(dev, bmi270.txBuf, bmi270.rxBuf, 14);
-        }
-        bmi270.detectedEXTI++;
+      if (bmi270.gyroModeSPI == GYRO_EXTI_INT_DMA) {// && spiRx_flag(dev)
+        SPI_ByteReadWrite_DMA(dev, bmi270.txBuf, bmi270.rxBuf, 14);
+      }
+      bmi270.detectedEXTI++;
     }
 
 }

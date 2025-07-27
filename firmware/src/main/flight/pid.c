@@ -140,6 +140,7 @@ void PID_Calculation(PID* axis, float set_point, float measured1, float measured
     axis->derivative = -measured2;
     axis->derivative_filter = axis->derivative_filter * 0.4f + axis->derivative * 0.6f;
   }else{
+    axis->measured = measured1;
     axis->derivative = -(measured1 - axis->prev_measured) / dt;
     axis->prev_measured = measured1;
 
@@ -179,7 +180,6 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 
   static timeUs_t previousUpdateTimeUs;
   float dT = (float)US2S(currentTimeUs - previousUpdateTimeUs);
-  DEBUG_SET(DEBUG_PIDLOOP, 0, (currentTimeUs - previousUpdateTimeUs));
   previousUpdateTimeUs = currentTimeUs;
 
   /* Update estimate */
@@ -222,19 +222,20 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   }
   PID_Calculation(&_PITCH.in, _PITCH.out.result, bmi270.gyroADCf[Y], 0, dT);
 
-  DEBUG_SET(DEBUG_PIDLOOP, 1, (_PID_Test.pid_test_deg));
-  DEBUG_SET(DEBUG_PIDLOOP, 2, (imu_pitch));
-  DEBUG_SET(DEBUG_PIDLOOP, 3, (_PITCH.out.error));
-  DEBUG_SET(DEBUG_PIDLOOP, 4, (_PITCH.out.result_p));
-  DEBUG_SET(DEBUG_PIDLOOP, 5, (_PITCH.out.result_i));
-  DEBUG_SET(DEBUG_PIDLOOP, 6, (_PITCH.out.result_d));
-  DEBUG_SET(DEBUG_PIDLOOP, 7, (_PITCH.out.result));
-  DEBUG_SET(DEBUG_PIDLOOP, 8, (bmi270.gyroADCf[Y]));
-  DEBUG_SET(DEBUG_PIDLOOP, 9, (_PITCH.in.error));
-  DEBUG_SET(DEBUG_PIDLOOP, 10, (_PITCH.in.result_p));
-  DEBUG_SET(DEBUG_PIDLOOP, 11, (_PITCH.in.result_i));
-  DEBUG_SET(DEBUG_PIDLOOP, 12, (_PITCH.in.result_d));
-  DEBUG_SET(DEBUG_PIDLOOP, 13, (_PITCH.in.result));
+  DEBUG_SET(DEBUG_PIDLOOP, 0, (_PID_Test.pid_test_deg));
+  DEBUG_SET(DEBUG_PIDLOOP, 1, (imu_pitch));
+  DEBUG_SET(DEBUG_PIDLOOP, 2, (_PITCH.out.error));
+  DEBUG_SET(DEBUG_PIDLOOP, 3, (_PITCH.out.result_p));
+  DEBUG_SET(DEBUG_PIDLOOP, 4, (_PITCH.out.result_i));
+  DEBUG_SET(DEBUG_PIDLOOP, 5, (_PITCH.out.result));
+  DEBUG_SET(DEBUG_PIDLOOP, 6, (bmi270.gyroADCf[Y]));
+  DEBUG_SET(DEBUG_PIDLOOP, 7, (_PITCH.in.error));
+  DEBUG_SET(DEBUG_PIDLOOP, 8, (_PITCH.in.result_p));
+  DEBUG_SET(DEBUG_PIDLOOP, 9, (_PITCH.in.result_i));
+  DEBUG_SET(DEBUG_PIDLOOP, 10, (_PITCH.in.result_d));
+  DEBUG_SET(DEBUG_PIDLOOP, 11, (_PITCH.in.result));
+  DEBUG_SET(DEBUG_PIDLOOP, 12, (_PITCH.in.prev_measured));
+  DEBUG_SET(DEBUG_PIDLOOP, 13, (_PITCH.in.measured));
   DEBUG_SET(DEBUG_PIDLOOP, 14, (_PITCH.in.derivative));
   DEBUG_SET(DEBUG_PIDLOOP, 15, (_PITCH.in.derivative_filter));
 

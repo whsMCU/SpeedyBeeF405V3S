@@ -37,6 +37,7 @@ typedef struct _PID{
   float ki;     // 적분 게인
   float kd;     // 미분 게인
   float error;
+  float measured;
   float prev_measured; // 이전 오차값
   float integral;   // 적분 값
   float derivative;
