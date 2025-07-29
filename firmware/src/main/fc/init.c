@@ -158,7 +158,7 @@ void init(void)
 	adcInternalInit();
 #endif
 
-    // Finally initialize the gyro filtering
+  // Finally initialize the gyro filtering
 	//gyroInitFilters();
 
 	//mixerInitProfile();

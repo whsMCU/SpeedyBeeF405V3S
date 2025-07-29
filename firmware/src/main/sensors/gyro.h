@@ -25,6 +25,8 @@
 #include "common/time.h"
 #include "common/utils.h"
 
+#include "flight/dyn_notch_filter.h"
+
 #include "drivers/accgyro/accgyro.h"
 #include "drivers/sensor.h"
 
@@ -72,6 +74,11 @@ typedef struct gyro_s {
     float gyro_accumulatedMeasurements[XYZ_AXIS_COUNT];
     float gyroPrevious[XYZ_AXIS_COUNT];
     int gyro_accumulatedMeasurementCount;
+
+    uint8_t sampleCount;               // gyro sensor sample counter
+    float sampleSum[XYZ_AXIS_COUNT];   // summed samples used for downsampling
+    bool downsampleFilterEnabled;      // if true then downsample using gyro lowpass 2, otherwise use averaging
+
     gyroCalibration_t calibration;
 
     // lowpass gyro soft filter
@@ -81,6 +88,20 @@ typedef struct gyro_s {
     // lowpass2 gyro soft filter
     filterApplyFnPtr lowpass2FilterApplyFn;
     gyroLowpassFilter_t lowpass2Filter[XYZ_AXIS_COUNT];
+
+    // notch filters
+    uint16_t gyro_soft_notch_hz_1;
+    uint16_t gyro_soft_notch_cutoff_1;
+    uint16_t gyro_soft_notch_hz_2;
+    uint16_t gyro_soft_notch_cutoff_2;
+
+    dynNotchConfig_t dynNotchConfig;
+
+    filterApplyFnPtr notchFilter1ApplyFn;
+    biquadFilter_t notchFilter1[XYZ_AXIS_COUNT];
+
+    filterApplyFnPtr notchFilter2ApplyFn;
+    biquadFilter_t notchFilter2[XYZ_AXIS_COUNT];
 
     uint8_t *txBuf, *rxBuf;
     float gyroZero[XYZ_AXIS_COUNT];

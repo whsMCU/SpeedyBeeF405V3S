@@ -987,7 +987,7 @@ int8_t calculateThrottlePercent(void)
     uint8_t ret = 0;
     int channelData = constrain(rcData[THROTTLE], PWM_RANGE_MIN, PWM_RANGE_MAX);
 
-    ret = constrain(((channelData - rxConfig.mincheck) * 100) / (PWM_RANGE_MAX - rxConfig.mincheck), 0, 100);
+    ret = ABS(constrain(((channelData - rxConfig.mincheck) * 100) / (PWM_RANGE_MAX - rxConfig.mincheck), 0, 100));
     return ret;
 }
 

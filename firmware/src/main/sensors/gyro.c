@@ -51,6 +51,18 @@
 
 imu_t bmi270;
 
+static bool overflowDetected;
+#ifdef USE_GYRO_OVERFLOW_CHECK
+static timeUs_t overflowTimeUs;
+#endif
+
+#ifdef USE_YAW_SPIN_RECOVERY
+static bool yawSpinRecoveryEnabled;
+static int yawSpinRecoveryThreshold;
+static bool yawSpinDetected;
+static timeUs_t yawSpinTimeUs;
+#endif
+
 uint8_t activePidLoopDenom = 1;
 
 static bool firstArmingCalibrationWasStarted = false;
@@ -211,22 +223,27 @@ void taskGyroUpdate(timeUs_t currentTimeUs)
   for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
     bmi270.gyroADCf[axis] = applyGyrorMedianFilter(axis, bmi270.gyroADC[axis]);
   }
-
-  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-    bmi270.gyroADCf[axis] = bmi270.lowpass2FilterApplyFn((filter_t *)&bmi270.lowpass2Filter[axis], bmi270.gyroADCf[axis]);
+  DEBUG_SET(DEBUG_NONE, 0, (bmi270.gyroADCf[Y]));
+  if (bmi270.downsampleFilterEnabled) {
+      // using gyro lowpass 2 filter for downsampling
+    bmi270.sampleSum[X] = bmi270.lowpass2FilterApplyFn((filter_t *)&bmi270.lowpass2Filter[X], bmi270.gyroADCf[X]);
+    bmi270.sampleSum[Y] = bmi270.lowpass2FilterApplyFn((filter_t *)&bmi270.lowpass2Filter[Y], bmi270.gyroADCf[Y]);
+    bmi270.sampleSum[Z] = bmi270.lowpass2FilterApplyFn((filter_t *)&bmi270.lowpass2Filter[Z], bmi270.gyroADCf[Z]);
+  } else {
+      // using simple averaging for downsampling
+    bmi270.sampleSum[X] += bmi270.gyroADCf[X];
+    bmi270.sampleSum[Y] += bmi270.gyroADCf[Y];
+    bmi270.sampleSum[Z] += bmi270.gyroADCf[Z];
+    bmi270.sampleCount++;
   }
+
+  DEBUG_SET(DEBUG_NONE, 1, (bmi270.sampleSum[Y]));
 
   DEBUG_SET(DEBUG_GYRO_RAW, 0, (deltaT));
   DEBUG_SET(DEBUG_GYRO_RAW, 1, (bmi270.gyroADCf[X]));
   DEBUG_SET(DEBUG_GYRO_RAW, 2, (bmi270.gyroADCf[Y]));
   DEBUG_SET(DEBUG_GYRO_RAW, 3, (bmi270.gyroADCf[Z]));
 
-  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-      // integrate using trapezium rule to avoid bias
-  		bmi270.gyro_accumulatedMeasurements[axis] += 0.5f * (bmi270.gyroPrevious[axis] + bmi270.gyroADCf[axis]) * bmi270.targetLooptime;
-  		bmi270.gyroPrevious[axis] = bmi270.gyroADCf[axis];
-  }
-  bmi270.gyro_accumulatedMeasurementCount++;
 #ifdef USE_OPFLOW
   // getTaskDeltaTime() returns delta time frozen at the moment of entering the scheduler. currentTime is frozen at the very same point.
   // To make busy-waiting timeout work we need to account for time spent within busy-waiting loop
@@ -236,6 +253,76 @@ void taskGyroUpdate(timeUs_t currentTimeUs)
         opflowGyroUpdateCallback(currentDeltaTime);
     }
 #endif
+}
+
+void filterGyro(void)
+{
+    for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+
+      // downsample the individual gyro samples
+        float gyroADCf = 0;
+        if (bmi270.downsampleFilterEnabled) {
+            // using gyro lowpass 2 filter for downsampling
+            gyroADCf = bmi270.sampleSum[axis];
+        } else {
+            // using simple average for downsampling
+            if (bmi270.sampleCount) {
+                gyroADCf = bmi270.sampleSum[axis] / bmi270.sampleCount;
+            }
+            bmi270.sampleSum[axis] = 0;
+        }
+
+#ifdef USE_RPM_FILTER
+        gyroADCf = rpmFilterGyro(axis, gyroADCf);
+#endif
+
+        // apply static notch filters and software lowpass filters
+        gyroADCf = bmi270.notchFilter1ApplyFn((filter_t *)&bmi270.notchFilter1[axis], gyroADCf);
+        gyroADCf = bmi270.notchFilter2ApplyFn((filter_t *)&bmi270.notchFilter2[axis], gyroADCf);
+        gyroADCf = bmi270.lowpassFilterApplyFn((filter_t *)&bmi270.lowpassFilter[axis], gyroADCf);
+
+#ifdef USE_DYN_NOTCH_FILTER
+        if (isDynNotchActive()) {
+            dynNotchPush(axis, gyroADCf);
+            gyroADCf = dynNotchFilter(axis, gyroADCf);
+        }
+#endif
+        bmi270.gyroADCf[axis] = gyroADCf;
+    }
+    DEBUG_SET(DEBUG_NONE, 2, (bmi270.gyroADCf[Y]));
+    bmi270.sampleCount = 0;
+}
+
+void gyroFiltering(timeUs_t currentTimeUs)
+{
+  filterGyro();
+
+#ifdef USE_DYN_NOTCH_FILTER
+    if (isDynNotchActive()) {
+        dynNotchUpdate();
+    }
+#endif
+
+#ifdef USE_GYRO_OVERFLOW_CHECK
+    if (gyroConfig()->checkOverflow && !gyro.gyroHasOverflowProtection) {
+        checkForOverflow(currentTimeUs);
+    }
+#endif
+
+#ifdef USE_YAW_SPIN_RECOVERY
+    if (yawSpinRecoveryEnabled) {
+        checkForYawSpin(currentTimeUs);
+    }
+#endif
+
+    if (!overflowDetected) {
+      for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+          // integrate using trapezium rule to avoid bias
+          bmi270.gyro_accumulatedMeasurements[axis] += 0.5f * (bmi270.gyroPrevious[axis] + bmi270.gyroADCf[axis]) * bmi270.targetLooptime;
+          bmi270.gyroPrevious[axis] = bmi270.gyroADCf[axis];
+      }
+      bmi270.gyro_accumulatedMeasurementCount++;
+    }
 }
 
 bool gyroGetAccumulationAverage(float *accumulationAverage)
@@ -256,7 +343,6 @@ bool gyroGetAccumulationAverage(float *accumulationAverage)
         return false;
     }
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define CALIBRATING_ACC_CYCLES              400

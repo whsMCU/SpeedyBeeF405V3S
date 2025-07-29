@@ -43,11 +43,8 @@
 #include "common/sdft.h"
 #include "common/utils.h"
 
-#include "config/feature.h"
-
-#include "fc/core.h"
-
 #include "sensors/gyro.h"
+#include "rx/rx.h"
 
 #include "flight/dyn_notch_filter.h"
 
@@ -231,9 +228,9 @@ void dynNotchUpdate(void)
         for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
             sampleAvg[axis] = sampleAccumulator[axis] * sampleCountRcp;
             sampleAccumulator[axis] = 0;
-            if (axis == gyro.gyroDebugAxis) {
-                DEBUG_SET(DEBUG_FFT, 2, lrintf(sampleAvg[axis]));
-            }
+//            if (axis == gyro.gyroDebugAxis) {
+//                DEBUG_SET(DEBUG_FFT, 2, lrintf(sampleAvg[axis]));
+//            }
         }
 
         // We need DYN_NOTCH_CALC_TICKS ticks to update all axes with newly sampled value
@@ -375,18 +372,18 @@ static void dynNotchProcess(void)
                 }
             }
 
-            if(calculateThrottlePercentAbs() > DYN_NOTCH_OSD_MIN_THROTTLE) {
+            if(calculateThrottlePercent() > DYN_NOTCH_OSD_MIN_THROTTLE) {
                 for (int p = 0; p < dynNotch.count; p++) {
                     dynNotch.maxCenterFreq = MAX(dynNotch.maxCenterFreq, dynNotch.centerFreq[state.axis][p]);
                 }
             }
 
-            if (state.axis == gyro.gyroDebugAxis) {
-                for (int p = 0; p < dynNotch.count && p < 3; p++) {
-                    DEBUG_SET(DEBUG_FFT_FREQ, p, lrintf(dynNotch.centerFreq[state.axis][p]));
-                }
-                DEBUG_SET(DEBUG_DYN_LPF, 1, lrintf(dynNotch.centerFreq[state.axis][0]));
-            }
+//            if (state.axis == gyro.gyroDebugAxis) {
+//                for (int p = 0; p < dynNotch.count && p < 3; p++) {
+//                    DEBUG_SET(DEBUG_FFT_FREQ, p, lrintf(dynNotch.centerFreq[state.axis][p]));
+//                }
+//                DEBUG_SET(DEBUG_DYN_LPF, 1, lrintf(dynNotch.centerFreq[state.axis][0]));
+//            }
 
             DEBUG_SET(DEBUG_FFT_TIME, 1, micros() - startTime);
 

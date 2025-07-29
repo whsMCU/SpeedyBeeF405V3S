@@ -80,7 +80,7 @@ typedef enum {
     TASK_SYSTEM = 0,
 //    TASK_MAIN,
     TASK_GYRO,
-//    TASK_FILTER,
+    TASK_FILTER,
     TASK_PID,
     TASK_ACCEL,
     TASK_ATTITUDE,

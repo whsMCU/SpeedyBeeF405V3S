@@ -36,9 +36,10 @@
 
 #include "fc/runtime_config.h"
 
+#include "flight/dyn_notch_filter.h"
+
 #include "drivers/accgyro/accgyro_spi_bmi270.h"
 //#include "drivers/accgyro/gyro_sync.h"
-
 
 #include "sensors/gyro.h"
 #include "sensors/sensors.h"
@@ -61,6 +62,17 @@ void gyroConfig_init(void)
   bmi270.targetLooptime = 312;
   bmi270.sampleRateHz = 3200;
   bmi270.scale = GYRO_SCALE_2000DPS;
+  bmi270.downsampleFilterEnabled = true;
+
+  bmi270.gyro_soft_notch_hz_1 = 0;
+  bmi270.gyro_soft_notch_cutoff_1 = 0;
+  bmi270.gyro_soft_notch_hz_2 = 0;
+  bmi270.gyro_soft_notch_cutoff_2 = 0;
+
+  bmi270.dynNotchConfig.dyn_notch_count = 3;
+  bmi270.dynNotchConfig.dyn_notch_max_hz = 600;
+  bmi270.dynNotchConfig.dyn_notch_min_hz = 150;
+  bmi270.dynNotchConfig.dyn_notch_q = 300;
 
   bmi270.accSampleRateHz = 800;
   bmi270.acc_1G = 512 * 4;
@@ -71,6 +83,50 @@ void gyroConfig_init(void)
   bmi270.accelerationTrims.values.roll = 21;
   bmi270.accelerationTrims.values.pitch = -55;
   bmi270.accelerationTrims.values.yaw = -6;
+}
+
+static uint16_t calculateNyquistAdjustedNotchHz(uint16_t notchHz, uint16_t notchCutoffHz)
+{
+    const uint32_t gyroFrequencyNyquist = 1000000 / 2 / bmi270.targetLooptime;
+    if (notchHz > gyroFrequencyNyquist) {
+        if (notchCutoffHz < gyroFrequencyNyquist) {
+            notchHz = gyroFrequencyNyquist;
+        } else {
+            notchHz = 0;
+        }
+    }
+
+    return notchHz;
+}
+
+static void gyroInitFilterNotch1(uint16_t notchHz, uint16_t notchCutoffHz)
+{
+    bmi270.notchFilter1ApplyFn = nullFilterApply;
+
+    notchHz = calculateNyquistAdjustedNotchHz(notchHz, notchCutoffHz);
+
+    if (notchHz != 0 && notchCutoffHz != 0) {
+        bmi270.notchFilter1ApplyFn = (filterApplyFnPtr)biquadFilterApply;
+        const float notchQ = filterGetNotchQ(notchHz, notchCutoffHz);
+        for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+            biquadFilterInit(&bmi270.notchFilter1[axis], notchHz, bmi270.targetLooptime, notchQ, FILTER_NOTCH, 1.0f);
+        }
+    }
+}
+
+static void gyroInitFilterNotch2(uint16_t notchHz, uint16_t notchCutoffHz)
+{
+    bmi270.notchFilter2ApplyFn = nullFilterApply;
+
+    notchHz = calculateNyquistAdjustedNotchHz(notchHz, notchCutoffHz);
+
+    if (notchHz != 0 && notchCutoffHz != 0) {
+      bmi270.notchFilter2ApplyFn = (filterApplyFnPtr)biquadFilterApply;
+        const float notchQ = filterGetNotchQ(notchHz, notchCutoffHz);
+        for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+            biquadFilterInit(&bmi270.notchFilter2[axis], notchHz, bmi270.targetLooptime, notchQ, FILTER_NOTCH, 1.0f);
+        }
+    }
 }
 
 bool gyroInit(void)
@@ -108,6 +164,16 @@ bool gyroInit(void)
   for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
       pt1FilterInit(&lowpassFilter[axis].pt1FilterState, gain);
   }
+
+  gyroInitFilterNotch1(bmi270.gyro_soft_notch_hz_1, bmi270.gyro_soft_notch_cutoff_1);
+  gyroInitFilterNotch2(bmi270.gyro_soft_notch_hz_2, bmi270.gyro_soft_notch_cutoff_2);
+
+#ifdef USE_DYN_LPF
+    dynLpfFilterInit();
+#endif
+#ifdef USE_DYN_NOTCH_FILTER
+    dynNotchInit(&bmi270.dynNotchConfig, bmi270.targetLooptime);
+#endif
 
   return true;
 }

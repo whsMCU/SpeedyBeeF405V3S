@@ -147,6 +147,12 @@ void taskUpdateOpticalFlow(timeUs_t currentTimeUs)
 }
 #endif
 
+void taskFiltering(timeUs_t currentTimeUs)
+{
+    gyroFiltering(currentTimeUs);
+
+}
+
 #ifdef USE_TELEMETRY
 
 #define GYRO_TEMP_READ_DELAY_US 3e6    // Only read the gyro temp every 3 seconds
@@ -201,7 +207,7 @@ task_attribute_t task_attributes[TASK_COUNT] = {
     [TASK_BATTERY_CURRENT] = DEFINE_TASK("BATTERY_CURRENT", batteryUpdateCurrentMeter, TASK_PERIOD_HZ(50), TASK_PRIORITY_MEDIUM),
 
     [TASK_GYRO] = DEFINE_TASK("GYRO", taskGyroUpdate, TASK_GYROPID_DESIRED_PERIOD, TASK_PRIORITY_REALTIME),
-//    [TASK_FILTER] = DEFINE_TASK("FILTER", NULL, NULL, taskFiltering, TASK_GYROPID_DESIRED_PERIOD, TASK_PRIORITY_REALTIME),
+    [TASK_FILTER] = DEFINE_TASK("FILTER", taskFiltering, TASK_GYROPID_DESIRED_PERIOD, TASK_PRIORITY_REALTIME),
     [TASK_PID] = DEFINE_TASK("PID", taskMainPidLoop, TASK_PERIOD_HZ(1000), TASK_PRIORITY_REALTIME),
 
 #ifdef USE_ACC
@@ -302,9 +308,9 @@ void tasksInit(void)
 
 
 	rescheduleTask(TASK_GYRO, bmi270.sampleLooptime);
-	//rescheduleTask(TASK_FILTER, gyro.targetLooptime);
+	rescheduleTask(TASK_FILTER, bmi270.targetLooptime);
 	setTaskEnabled(TASK_GYRO, true);
-	//setTaskEnabled(TASK_FILTER, true);
+	setTaskEnabled(TASK_FILTER, true);
 	setTaskEnabled(TASK_PID, true);
 
 
