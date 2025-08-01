@@ -97,7 +97,7 @@ LoopFillZerobss:
     bl __libc_init_array
 /* Call the application's entry point.*/
   bl  main
-  bx  lr    
+  bx  lr
 .size  Reset_Handler, .-Reset_Handler
 
 /**
@@ -475,7 +475,6 @@ g_pfnVectors:
                         
    .weak      I2C3_EV_IRQHandler   
    .thumb_set I2C3_EV_IRQHandler,Default_Handler
-                        
    .weak      I2C3_ER_IRQHandler   
    .thumb_set I2C3_ER_IRQHandler,Default_Handler
                         

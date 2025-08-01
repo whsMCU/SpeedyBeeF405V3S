@@ -95,7 +95,8 @@
 #define USE_RX_RSSI_DBM
 #define USE_RX_LINK_QUALITY_INFO
 
-//#define USE_DYN_NOTCH_FILTER
+#define USE_FAST_DATA
+#define USE_DYN_NOTCH_FILTER
 
 //#define USE_TELEMETRY
 //#define USE_TELEMETRY_CRSF
@@ -106,6 +107,14 @@
 #define USE_PERSISTENT_STATS
 
 #define USE_BOARD_INFO
+
+#ifdef USE_FAST_DATA
+#define FAST_DATA_ZERO_INIT         __attribute__ ((section(".fastram_bss"), aligned(4)))
+#define FAST_DATA                   __attribute__ ((section(".fastram_data"), aligned(4)))
+#else
+#define FAST_DATA_ZERO_INIT
+#define FAST_DATA
+#endif // USE_FAST_DATA
 
 
 

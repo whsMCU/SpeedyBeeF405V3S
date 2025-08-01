@@ -137,28 +137,28 @@ void dynNotchConfig_Init(void)
 }
 
 // dynamic notch instance (singleton)
-static dynNotch_t dynNotch;
+static FAST_DATA_ZERO_INIT dynNotch_t dynNotch;
 
 // accumulator for oversampled data => no aliasing and less noise
-static int   sampleIndex;
-static int   sampleCount;
-static float sampleCountRcp;
-static float sampleAccumulator[XYZ_AXIS_COUNT];
+static FAST_DATA_ZERO_INIT int   sampleIndex;
+static FAST_DATA_ZERO_INIT int   sampleCount;
+static FAST_DATA_ZERO_INIT float sampleCountRcp;
+static FAST_DATA_ZERO_INIT float sampleAccumulator[XYZ_AXIS_COUNT];
 
 // downsampled data for frequency analysis
-static float sampleAvg[XYZ_AXIS_COUNT];
+static FAST_DATA_ZERO_INIT float sampleAvg[XYZ_AXIS_COUNT];
 
 // parameters for peak detection and frequency analysis
-static state_t state;
-static sdft_t  sdft[XYZ_AXIS_COUNT];
-static peak_t  peaks[DYN_NOTCH_COUNT_MAX];
-static float   sdftData[SDFT_BIN_COUNT];
-static float   sdftSampleRateHz;
-static float   sdftResolutionHz;
-static int     sdftStartBin;
-static int     sdftEndBin;
-static float   sdftNoiseThreshold;
-static float   pt1LooptimeS;
+static FAST_DATA_ZERO_INIT state_t state;
+static FAST_DATA_ZERO_INIT sdft_t  sdft[XYZ_AXIS_COUNT];
+static FAST_DATA_ZERO_INIT peak_t  peaks[DYN_NOTCH_COUNT_MAX];
+static FAST_DATA_ZERO_INIT float   sdftData[SDFT_BIN_COUNT];
+static FAST_DATA_ZERO_INIT float   sdftSampleRateHz;
+static FAST_DATA_ZERO_INIT float   sdftResolutionHz;
+static FAST_DATA_ZERO_INIT int     sdftStartBin;
+static FAST_DATA_ZERO_INIT int     sdftEndBin;
+static FAST_DATA_ZERO_INIT float   sdftNoiseThreshold;
+static FAST_DATA_ZERO_INIT float   pt1LooptimeS;
 
 
 void dynNotchInit(const dynNotchConfig_t *config, const uint32_t targetLooptimeUs)

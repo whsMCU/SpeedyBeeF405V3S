@@ -99,7 +99,7 @@ static bool qmc5883lRead(magDev_t *magDev, int16_t *magData)
     switch (state) {
         default:
         case STATE_READ_STATUS:
-            I2C_ByteRead(magDev->address, QMC5883L_REG_STATUS, I2C_MEMADD_SIZE_8BIT, &status, sizeof(status));
+            I2C_ByteRead_IT(magDev->address, QMC5883L_REG_STATUS, I2C_MEMADD_SIZE_8BIT, &status, sizeof(status));
             state = STATE_WAIT_STATUS;
             return false;
 
@@ -108,7 +108,7 @@ static bool qmc5883lRead(magDev_t *magDev, int16_t *magData)
                 state = STATE_READ_STATUS;
                 return false;
             }
-            I2C_ByteRead(magDev->address, QMC5883L_REG_DATA_OUTPUT_X, I2C_MEMADD_SIZE_8BIT, buf, sizeof(buf));
+            I2C_ByteRead_IT(magDev->address, QMC5883L_REG_DATA_OUTPUT_X, I2C_MEMADD_SIZE_8BIT, buf, sizeof(buf));
             state = STATE_WAIT_READ;
             return false;
 

@@ -49,7 +49,7 @@
 
 #include "drivers/accgyro/accgyro_spi_bmi270.h"
 
-imu_t bmi270;
+FAST_DATA_ZERO_INIT imu_t bmi270;
 
 static bool overflowDetected;
 #ifdef USE_GYRO_OVERFLOW_CHECK
@@ -223,7 +223,7 @@ void taskGyroUpdate(timeUs_t currentTimeUs)
   for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
     bmi270.gyroADCf[axis] = applyGyrorMedianFilter(axis, bmi270.gyroADC[axis]);
   }
-  DEBUG_SET(DEBUG_NONE, 0, (bmi270.gyroADCf[Y]));
+  //DEBUG_SET(DEBUG_NONE, 0, (bmi270.gyroADCf[Y]));
   if (bmi270.downsampleFilterEnabled) {
       // using gyro lowpass 2 filter for downsampling
     bmi270.sampleSum[X] = bmi270.lowpass2FilterApplyFn((filter_t *)&bmi270.lowpass2Filter[X], bmi270.gyroADCf[X]);
@@ -237,7 +237,7 @@ void taskGyroUpdate(timeUs_t currentTimeUs)
     bmi270.sampleCount++;
   }
 
-  DEBUG_SET(DEBUG_NONE, 1, (bmi270.sampleSum[Y]));
+  //DEBUG_SET(DEBUG_NONE, 1, (bmi270.sampleSum[Y]));
 
   DEBUG_SET(DEBUG_GYRO_RAW, 0, (deltaT));
   DEBUG_SET(DEBUG_GYRO_RAW, 1, (bmi270.gyroADCf[X]));
@@ -289,7 +289,7 @@ void filterGyro(void)
 #endif
         bmi270.gyroADCf[axis] = gyroADCf;
     }
-    DEBUG_SET(DEBUG_NONE, 2, (bmi270.gyroADCf[Y]));
+    //DEBUG_SET(DEBUG_NONE, 2, (bmi270.gyroADCf[Y]));
     bmi270.sampleCount = 0;
 }
 

@@ -149,25 +149,6 @@ SECTIONS
 
   } >RAM AT> FLASH
 
-  _siccmram = LOADADDR(.ccmram);
-
-  /* CCM-RAM section
-  *
-  * IMPORTANT NOTE!
-  * If initialized variables will be placed in this section,
-  * the startup code needs to be modified to copy the init-values.
-  */
-  .ccmram :
-  {
-    . = ALIGN(4);
-    _sccmram = .;       /* create a global symbol at ccmram start */
-    *(.ccmram)
-    *(.ccmram*)
-
-    . = ALIGN(4);
-    _eccmram = .;       /* create a global symbol at ccmram end */
-  } >CCMRAM AT> FLASH
-
   /* Uninitialized data section into "RAM" Ram type memory */
   . = ALIGN(4);
   .bss :
@@ -183,6 +164,30 @@ SECTIONS
     _ebss = .;         /* define a global symbol at bss end */
     __bss_end__ = _ebss;
   } >RAM
+
+  _sfastram_idata = LOADADDR(.fastram_data);
+
+  /* Initialized FAST_DATA section for unsuspecting developers */
+  .fastram_data :
+  {
+    . = ALIGN(4);
+    _sfastram_data = .;        /* create a global symbol at data start */
+    *(.fastram_data)           /* .data sections */
+    *(.fastram_data*)          /* .data* sections */
+
+    . = ALIGN(4);
+    _efastram_data = .;        /* define a global symbol at data end */
+  } >CCMRAM AT> FLASH
+  
+  . = ALIGN(4);
+  .fastram_bss (NOLOAD) :
+  {
+    __fastram_bss_start__ = .;
+    *(.fastram_bss)
+    *(SORT_BY_ALIGNMENT(.fastram_bss*))
+    . = ALIGN(4);
+    __fastram_bss_end__ = .;
+  } >CCMRAM
 
   /* User_heap_stack section, used to check that there is enough "RAM" Ram  type memory left */
   ._user_heap_stack :

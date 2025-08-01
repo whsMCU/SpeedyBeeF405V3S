@@ -155,54 +155,52 @@ bool compassIsCalibrationComplete(void)
 
 uint32_t compassUpdate(uint32_t currentTimeUs)
 {
-    if (!magDev.read(&magDev, magADCRaw)) {
-        // No action was taken as the read has not completed
-        //schedulerIgnoreTaskExecRate();
-        return 1000; // Wait 1ms between states
-    }
+  if (busBusy() || !magDev.read(&magDev, magADCRaw)) {
+      // No action was taken as the read has not completed
+      //schedulerIgnoreTaskExecRate();
+      return 1000; // Wait 1ms between states
+  }
 
-    for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-        mag.magADC[axis] = magADCRaw[axis];
-    }
-    if (magDev.magAlignment == ALIGN_CUSTOM) {
-        alignSensorViaMatrix(mag.magADC, &magDev.rotationMatrix);
-    } else {
-        alignSensorViaRotation(mag.magADC, magDev.magAlignment);
-    }
+  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+      mag.magADC[axis] = magADCRaw[axis];
+  }
+  if (magDev.magAlignment == ALIGN_CUSTOM) {
+      alignSensorViaMatrix(mag.magADC, &magDev.rotationMatrix);
+  } else {
+      alignSensorViaRotation(mag.magADC, magDev.magAlignment);
+  }
 
-    flightDynamicsTrims_t *magZero = &compassConfig.magZero;
-    if (magInit) {              // we apply offset only once mag calibration is done
-        mag.magADC[X] -= magZero->raw[X];
-        mag.magADC[Y] -= magZero->raw[Y];
-        mag.magADC[Z] -= magZero->raw[Z];
-    }
+  flightDynamicsTrims_t *magZero = &compassConfig.magZero;
+  if (magInit) {              // we apply offset only once mag calibration is done
+      mag.magADC[X] -= magZero->raw[X];
+      mag.magADC[Y] -= magZero->raw[Y];
+      mag.magADC[Z] -= magZero->raw[Z];
+  }
 
-    if (tCal != 0) {
-        if ((currentTimeUs - tCal) < 30000000) {    // 30s: you have 30s to turn the multi in all directions
-            //LED0_TOGGLE;
-            for (int axis = 0; axis < 3; axis++) {
-                if (mag.magADC[axis] < magZeroTempMin.raw[axis])
-                    magZeroTempMin.raw[axis] = mag.magADC[axis];
-                if (mag.magADC[axis] > magZeroTempMax.raw[axis])
-                    magZeroTempMax.raw[axis] = mag.magADC[axis];
-            }
-        } else {
-            tCal = 0;
-            for (int axis = 0; axis < 3; axis++) {
-                magZero->raw[axis] = (magZeroTempMin.raw[axis] + magZeroTempMax.raw[axis]) / 2; // Calculate offsets
-            }
+  if (tCal != 0) {
+      if ((currentTimeUs - tCal) < 30000000) {    // 30s: you have 30s to turn the multi in all directions
+          //LED0_TOGGLE;
+          for (int axis = 0; axis < 3; axis++) {
+              if (mag.magADC[axis] < magZeroTempMin.raw[axis])
+                  magZeroTempMin.raw[axis] = mag.magADC[axis];
+              if (mag.magADC[axis] > magZeroTempMax.raw[axis])
+                  magZeroTempMax.raw[axis] = mag.magADC[axis];
+          }
+      } else {
+          tCal = 0;
+          for (int axis = 0; axis < 3; axis++) {
+              magZero->raw[axis] = (magZeroTempMin.raw[axis] + magZeroTempMax.raw[axis]) / 2; // Calculate offsets
+          }
 
-            //saveConfigAndNotify();
-        }
-    }
-
-    return TASK_PERIOD_HZ(10);
+          //saveConfigAndNotify();
+      }
+  }
+  return TASK_PERIOD_HZ(10);
 }
 
 void taskUpdateMag(uint32_t currentTimeUs)
 {
     UNUSED(currentTimeUs);
-
 		const uint32_t newDeadline = compassUpdate(currentTimeUs);
 		if (newDeadline != 0) {
 				rescheduleTask(TASK_SELF, newDeadline);

@@ -26,9 +26,9 @@
 
 #define SDFT_R 0.9999f  // damping factor for guaranteed SDFT stability (r < 1.0f) 
 
-static float     rPowerN;  // SDFT_R to the power of SDFT_SAMPLE_SIZE
-static bool      isInitialized;
-static complex_t twiddle[SDFT_BIN_COUNT];
+static FAST_DATA_ZERO_INIT float     rPowerN;  // SDFT_R to the power of SDFT_SAMPLE_SIZE
+static FAST_DATA_ZERO_INIT bool      isInitialized;
+static FAST_DATA_ZERO_INIT complex_t twiddle[SDFT_BIN_COUNT];
 
 static void applySqrt(const sdft_t *sdft, float *data);
 

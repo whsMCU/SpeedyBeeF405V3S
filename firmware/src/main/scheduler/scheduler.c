@@ -59,14 +59,14 @@
 // 2 - Total lateness in last second in 10ths us
 // 3 - Total tasks run in last second
 
-static task_t *currentTask = NULL;
+static FAST_DATA_ZERO_INIT task_t *currentTask = NULL;
 
-uint16_t averageSystemLoadPercent = 0;
+FAST_DATA_ZERO_INIT uint16_t averageSystemLoadPercent = 0;
 
-static int taskQueuePos = 0;
-static int taskQueueSize = 0;
+static FAST_DATA_ZERO_INIT int taskQueuePos = 0;
+static FAST_DATA_ZERO_INIT int taskQueueSize = 0;
 
-static task_t* taskQueueArray[TASK_COUNT + 1]; // extra item for NULL pointer at end of queue
+static FAST_DATA_ZERO_INIT task_t* taskQueueArray[TASK_COUNT + 1]; // extra item for NULL pointer at end of queue
 
 void queueClear(void)
 {
@@ -221,6 +221,7 @@ void scheduler(void)
 	      selectedTask->attribute->taskFunc(currentTimeBeforeTaskCallUs);
 	      taskExecutionTimeUs = micros() - currentTimeBeforeTaskCallUs;
 	      taskTotalExecutionTime += taskExecutionTimeUs;
+	      //DEBUG_SET(DEBUG_NONE, taskQueuePos, (taskExecutionTimeUs));
 
 	      selectedTask->taskLatestDeltaTimeUs = cmpTimeUs(currentTimeUs, selectedTask->lastStatsAtUs);
 	      selectedTask->lastStatsAtUs = currentTimeUs;
