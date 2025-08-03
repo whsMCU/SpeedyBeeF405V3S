@@ -133,7 +133,8 @@ SECTIONS
 
   /* Used by the startup to initialize data */
   _sidata = LOADADDR(.data);
-
+  _sfastcode_load = LOADADDR(.fast_code);
+   
   /* Initialized data sections into "RAM" Ram type memory */
   .data :
   {
@@ -148,6 +149,17 @@ SECTIONS
     _edata = .;        /* define a global symbol at data end */
 
   } >RAM AT> FLASH
+  
+  /* ----------- FAST_CODE 섹션 추가 ----------- */
+  .fast_code :
+  {
+    . = ALIGN(4);
+    _sfast_code = .;
+    *(.fast_code)
+    . = ALIGN(4);
+    _efast_code = .;
+  } >RAM AT> FLASH
+  /* ------------------------------------------ */
 
   /* Uninitialized data section into "RAM" Ram type memory */
   . = ALIGN(4);

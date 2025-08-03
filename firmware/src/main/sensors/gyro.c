@@ -255,7 +255,7 @@ void taskGyroUpdate(timeUs_t currentTimeUs)
 #endif
 }
 
-void filterGyro(void)
+FAST_CODE void filterGyro(void)
 {
     for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
 

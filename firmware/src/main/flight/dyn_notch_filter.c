@@ -407,7 +407,7 @@ static void dynNotchProcess(void)
     state.step = (state.step + 1) % STEP_COUNT;
 }
 
-float dynNotchFilter(const int axis, float value) 
+float dynNotchFilter(const int axis, float value)
 {
     for (int p = 0; p < dynNotch.count; p++) {
         value = biquadFilterApplyDF1(&dynNotch.notch[axis][p], value);

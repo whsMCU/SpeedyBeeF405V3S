@@ -46,15 +46,15 @@
 #include "sensors/rangefinder.h"
 #include "navigation/navigation.h"
 
-DoublePID _ROLL;
-DoublePID _PITCH;
+FAST_DATA_ZERO_INIT DoublePID _ROLL;
+FAST_DATA_ZERO_INIT DoublePID _PITCH;
 
-PID _YAW_Heading;
-PID _YAW_Rate;
+FAST_DATA_ZERO_INIT PID _YAW_Heading;
+FAST_DATA_ZERO_INIT PID _YAW_Rate;
 
-PID _ALT;
+FAST_DATA_ZERO_INIT PID _ALT;
 
-PID_Test _PID_Test;
+FAST_DATA_ZERO_INIT PID_Test _PID_Test;
 #ifdef USE_RANGEFINDER
 static void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs);
 #endif

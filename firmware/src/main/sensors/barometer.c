@@ -26,7 +26,7 @@
 
 #include "common/maths.h"
 
-//#include "fc/runtime_config.h"
+#include "fc/runtime_config.h"
 
 #include "sensors/barometer.h"
 #include "sensors/sensors.h"
