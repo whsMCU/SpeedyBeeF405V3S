@@ -2134,22 +2134,6 @@ namespace SpeedyBeeF405V3S_GUI
 
         private void bt_start_pid_test_Click(object sender, EventArgs e)
         {
-            // 바탕화면 경로 가져오기
-            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-
-            // 로그 폴더 만들기 (선택 사항)
-            string folderPath = Path.Combine(desktopPath, "PID_Log");
-            if (!Directory.Exists(folderPath))
-            {
-                Directory.CreateDirectory(folderPath);
-            }
-
-            string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-            string fileName = $"log_{timestamp}.txt";
-
-            PID_log_filePath = Path.Combine(folderPath, fileName);
-            InitLogger(PID_log_filePath);
-
             pid_test_flag = true;
         }
 

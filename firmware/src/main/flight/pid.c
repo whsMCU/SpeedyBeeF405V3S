@@ -141,6 +141,8 @@ void PID_Calculation(PID* axis, float set_point, float measured1, float measured
     axis->derivative_filter = axis->derivative_filter * 0.4f + axis->derivative * 0.6f;
   }else{
     axis->measured = measured1;
+    axis->pre_measured = axis->prev_measured;
+
     axis->derivative = -(measured1 - axis->prev_measured) / dt;
     axis->prev_measured = measured1;
 
@@ -234,7 +236,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   DEBUG_SET(DEBUG_PIDLOOP, 9, (_PITCH.in.result_i));
   DEBUG_SET(DEBUG_PIDLOOP, 10, (_PITCH.in.result_d));
   DEBUG_SET(DEBUG_PIDLOOP, 11, (_PITCH.in.result));
-  DEBUG_SET(DEBUG_PIDLOOP, 12, (_PITCH.in.prev_measured));
+  DEBUG_SET(DEBUG_PIDLOOP, 12, (_PITCH.in.pre_measured));
   DEBUG_SET(DEBUG_PIDLOOP, 13, (_PITCH.in.measured));
   DEBUG_SET(DEBUG_PIDLOOP, 14, (_PITCH.in.derivative));
   DEBUG_SET(DEBUG_PIDLOOP, 15, (_PITCH.in.derivative_filter));
