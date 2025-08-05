@@ -212,7 +212,7 @@ task_attribute_t task_attributes[TASK_COUNT] = {
 
 #ifdef USE_ACC
     [TASK_ACCEL] = DEFINE_TASK("ACC", taskAccUpdate, TASK_PERIOD_HZ(1000), TASK_PRIORITY_MEDIUM),
-    [TASK_ATTITUDE] = DEFINE_TASK("ATTITUDE", imuUpdateAttitude, TASK_PERIOD_HZ(1000), TASK_PRIORITY_MEDIUM),
+    [TASK_ATTITUDE] = DEFINE_TASK("ATTITUDE", imuUpdateAttitude, TASK_PERIOD_HZ(500), TASK_PRIORITY_MEDIUM),
 #endif
 
     [TASK_RX] = DEFINE_TASK("RX", taskUpdateRxMain, TASK_PERIOD_HZ(33), TASK_PRIORITY_HIGH), // If event-based scheduling doesn't work, fallback to periodic scheduling
