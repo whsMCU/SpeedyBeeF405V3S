@@ -69,12 +69,12 @@ static bool firstArmingCalibrationWasStarted = false;
 
 #define DEBUG_GYRO_CALIBRATION 3
 
-bool isGyroSensorCalibrationComplete(const imu_t *gyroSensor)
+FAST_CODE bool isGyroSensorCalibrationComplete(const imu_t *gyroSensor)
 {
     return gyroSensor->calibration.cyclesRemaining == 0;
 }
 
-bool gyroIsCalibrationComplete(void)
+FAST_CODE bool gyroIsCalibrationComplete(void)
 {
 
 	return isGyroSensorCalibrationComplete(&bmi270);
@@ -125,7 +125,7 @@ bool isFirstArmingGyroCalibrationRunning(void)
     return firstArmingCalibrationWasStarted && !gyroIsCalibrationComplete();
 }
 
-void performGyroCalibration(imu_t *gyroSensor, uint8_t gyroMovementCalibrationThreshold)
+static void performGyroCalibration(imu_t *gyroSensor, uint8_t gyroMovementCalibrationThreshold)
 {
     for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
         // Reset g[axis] at start of calibration
@@ -163,7 +163,7 @@ void performGyroCalibration(imu_t *gyroSensor, uint8_t gyroMovementCalibrationTh
     }
 
     if (isOnFinalGyroCalibrationCycle(&gyroSensor->calibration)) {
-        //schedulerResetTaskStatistics(TASK_SELF); // so calibration cycles do not pollute tasks statistics
+        schedulerResetTaskStatistics(TASK_SELF); // so calibration cycles do not pollute tasks statistics
         // if (!firstArmingCalibrationWasStarted || (getArmingDisableFlags() & ~ARMING_DISABLED_CALIBRATING) == 0) {
         //     beeper(BEEPER_GYRO_CALIBRATED);
         // }
@@ -172,9 +172,27 @@ void performGyroCalibration(imu_t *gyroSensor, uint8_t gyroMovementCalibrationTh
     --gyroSensor->calibration.cyclesRemaining;
 }
 
+#if defined(USE_GYRO_SLEW_LIMITER)
+FAST_CODE int32_t gyroSlewLimiter(imu_t *gyroSensor, int axis)
+{
+    int32_t ret = (int32_t)gyroSensor->gyroADCRaw[axis];
+//    if (gyroConfig()->checkOverflow || gyro.gyroHasOverflowProtection) {
+//        // don't use the slew limiter if overflow checking is on or gyro is not subject to overflow bug
+//        return ret;
+//    }
+    if (abs(ret - gyroSensor->gyroADCRawPrevious[axis]) > (1<<14)) {
+        // there has been a large change in value, so assume overflow has occurred and return the previous value
+        ret = gyroSensor->gyroADCRawPrevious[axis];
+    } else {
+        gyroSensor->gyroADCRawPrevious[axis] = ret;
+    }
+    return ret;
+}
+#endif
+
 #define gyroMovementCalibrationThreshold 48
 
-static void gyroUpdateSensor()
+static FAST_CODE void gyroUpdateSensor()
 {
 	if (!bmi270SpiGyroRead(&bmi270)) {
 		return;
@@ -183,9 +201,16 @@ static void gyroUpdateSensor()
 
     if (isGyroSensorCalibrationComplete(&bmi270)) {
     // move 16-bit gyro data into 32-bit variables to avoid overflows in calculations
+
+#if defined(USE_GYRO_SLEW_LIMITER)
+      bmi270.gyroADC[X] = gyroSlewLimiter(&bmi270, X) - bmi270.gyroZero[X];
+      bmi270.gyroADC[Y] = gyroSlewLimiter(&bmi270, Y) - bmi270.gyroZero[Y];
+      bmi270.gyroADC[Z] = gyroSlewLimiter(&bmi270, Z) - bmi270.gyroZero[Z];
+#else
     	bmi270.gyroADC[X] = bmi270.gyroADCRaw[X] - bmi270.gyroZero[X];
     	bmi270.gyroADC[Y] = bmi270.gyroADCRaw[Y] - bmi270.gyroZero[Y];
     	bmi270.gyroADC[Z] = bmi270.gyroADCRaw[Z] - bmi270.gyroZero[Z];
+#endif
 
 			alignSensorViaRotation(bmi270.gyroADC, CW0_DEG);
 
@@ -209,7 +234,7 @@ static float applyGyrorMedianFilter(int axis, float newGyroReading)
     return quickMedianFilter3f(gyroFilterSamples[axis]);
 }
 
-void taskGyroUpdate(timeUs_t currentTimeUs)
+FAST_CODE void taskGyroUpdate(timeUs_t currentTimeUs)
 {
   static timeUs_t previousIMUUpdateTime;
   const timeDelta_t deltaT = currentTimeUs - previousIMUUpdateTime;
@@ -255,7 +280,7 @@ void taskGyroUpdate(timeUs_t currentTimeUs)
 #endif
 }
 
-FAST_CODE void filterGyro(void)
+static FAST_CODE void filterGyro(void)
 {
     for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
 

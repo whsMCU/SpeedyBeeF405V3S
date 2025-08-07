@@ -70,7 +70,7 @@ void motorShutdown(void)
 
 }
 
-void motorWriteAll(void)
+FAST_CODE void motorWriteAll(void)
 {
   if(ARMING_FLAG(ARMED))
   {

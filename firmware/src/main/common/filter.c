@@ -34,7 +34,7 @@
 
 // NULL filter
 
-float nullFilterApply(filter_t *filter, float input)
+FAST_CODE float nullFilterApply(filter_t *filter, float input)
 {
     UNUSED(filter);
     return input;
@@ -60,7 +60,7 @@ void pt1FilterUpdateCutoff(pt1Filter_t *filter, float k)
     filter->k = k;
 }
 
-float pt1FilterApply(pt1Filter_t *filter, float input)
+FAST_CODE float pt1FilterApply(pt1Filter_t *filter, float input)
 {
     filter->state = filter->state + filter->k * (input - filter->state);
     return filter->state;
@@ -117,7 +117,7 @@ void pt2FilterUpdateCutoff(pt2Filter_t *filter, float k)
     filter->k = k;
 }
 
-float pt2FilterApply(pt2Filter_t *filter, float input)
+FAST_CODE float pt2FilterApply(pt2Filter_t *filter, float input)
 {
     filter->state1 = filter->state1 + filter->k * (input - filter->state1);
     filter->state = filter->state + filter->k * (filter->state1 - filter->state);
@@ -149,7 +149,7 @@ void pt3FilterUpdateCutoff(pt3Filter_t *filter, float k)
     filter->k = k;
 }
 
-float pt3FilterApply(pt3Filter_t *filter, float input)
+FAST_CODE float pt3FilterApply(pt3Filter_t *filter, float input)
 {
     filter->state1 = filter->state1 + filter->k * (input - filter->state1);
     filter->state2 = filter->state2 + filter->k * (filter->state1 - filter->state2);
@@ -167,7 +167,7 @@ void slewFilterInit(slewFilter_t *filter, float slewLimit, float threshold)
     filter->threshold = threshold;
 }
 
-float slewFilterApply(slewFilter_t *filter, float input)
+FAST_CODE float slewFilterApply(slewFilter_t *filter, float input)
 {
     if (filter->state >= filter->threshold) {
         if (input >= filter->state - filter->slewLimit) {
@@ -205,7 +205,7 @@ void biquadFilterInit(biquadFilter_t *filter, float filterFreq, uint32_t refresh
     filter->y1 = filter->y2 = 0;
 }
 
-void biquadFilterUpdate(biquadFilter_t *filter, float filterFreq, uint32_t refreshRate, float Q, biquadFilterType_e filterType, float weight)
+FAST_CODE void biquadFilterUpdate(biquadFilter_t *filter, float filterFreq, uint32_t refreshRate, float Q, biquadFilterType_e filterType, float weight)
 {
     // setup variables
     const float omega = 2.0f * M_PIf * filterFreq * refreshRate * 0.000001f;
@@ -252,13 +252,13 @@ void biquadFilterUpdate(biquadFilter_t *filter, float filterFreq, uint32_t refre
     filter->weight = weight;
 }
 
-void biquadFilterUpdateLPF(biquadFilter_t *filter, float filterFreq, uint32_t refreshRate)
+FAST_CODE void biquadFilterUpdateLPF(biquadFilter_t *filter, float filterFreq, uint32_t refreshRate)
 {
     biquadFilterUpdate(filter, filterFreq, refreshRate, BIQUAD_Q, FILTER_LPF, 1.0f);
 }
 
 /* Computes a biquadFilter_t filter on a sample (slightly less precise than df2 but works in dynamic mode) */
-float biquadFilterApplyDF1(biquadFilter_t *filter, float input)
+FAST_CODE float biquadFilterApplyDF1(biquadFilter_t *filter, float input)
 {
     /* compute result */
     const float result = filter->b0 * input + filter->b1 * filter->x1 + filter->b2 * filter->x2 - filter->a1 * filter->y1 - filter->a2 * filter->y2;
@@ -275,7 +275,7 @@ float biquadFilterApplyDF1(biquadFilter_t *filter, float input)
 }
 
 /* Computes a biquadFilter_t filter in df1 and crossfades input with output */
-float biquadFilterApplyDF1Weighted(biquadFilter_t* filter, float input)
+FAST_CODE float biquadFilterApplyDF1Weighted(biquadFilter_t* filter, float input)
 {
     // compute result
     const float result = biquadFilterApplyDF1(filter, input);
@@ -285,7 +285,7 @@ float biquadFilterApplyDF1Weighted(biquadFilter_t* filter, float input)
 }
 
 /* Computes a biquadFilter_t filter in direct form 2 on a sample (higher precision but can't handle changes in coefficients */
-float biquadFilterApply(biquadFilter_t *filter, float input)
+FAST_CODE float biquadFilterApply(biquadFilter_t *filter, float input)
 {
     const float result = filter->b0 * input + filter->x1;
 
@@ -305,7 +305,7 @@ void laggedMovingAverageInit(laggedMovingAverage_t *filter, uint16_t windowSize,
     filter->primed = false;
 }
 
-float laggedMovingAverageUpdate(laggedMovingAverage_t *filter, float input)
+FAST_CODE float laggedMovingAverageUpdate(laggedMovingAverage_t *filter, float input)
 {
     filter->movingSum -= filter->buf[filter->movingWindowIndex];
     filter->buf[filter->movingWindowIndex] = input;

@@ -209,7 +209,7 @@ void dynNotchInit(const dynNotchConfig_t *config, const uint32_t targetLooptimeU
 }
 
 // Collect gyro data, to be downsampled and analysed in dynNotchUpdate() function
-void dynNotchPush(const int axis, const float sample)
+FAST_CODE void dynNotchPush(const int axis, const float sample)
 {
     sampleAccumulator[axis] += sample;
 }
@@ -217,7 +217,7 @@ void dynNotchPush(const int axis, const float sample)
 static void dynNotchProcess(void);
 
 // Downsample and analyse gyro data
-void dynNotchUpdate(void)
+FAST_CODE void dynNotchUpdate(void)
 {
     // samples should have been pushed by `dynNotchPush`
     // if gyro sampling is > 1kHz, accumulate and average multiple gyro samples
@@ -255,7 +255,7 @@ void dynNotchUpdate(void)
 }
 
 // Find frequency peaks and update filters
-static void dynNotchProcess(void)
+static NOINLINE void dynNotchProcess(void)
 {
     uint32_t startTime = 0;
      if (debugMode == DEBUG_FFT_TIME) {
@@ -407,7 +407,7 @@ static void dynNotchProcess(void)
     state.step = (state.step + 1) % STEP_COUNT;
 }
 
-float dynNotchFilter(const int axis, float value)
+FAST_CODE float dynNotchFilter(const int axis, float value)
 {
     for (int p = 0; p < dynNotch.count; p++) {
         value = biquadFilterApplyDF1(&dynNotch.notch[axis][p], value);

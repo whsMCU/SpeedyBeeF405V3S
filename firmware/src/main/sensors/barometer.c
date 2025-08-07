@@ -188,14 +188,17 @@ void taskUpdateBaro(timeUs_t currentTimeUs)
 
 uint32_t baroUpdate(timeUs_t currentTimeUs)
 {
+  static timeUs_t baroStateDurationUs[BARO_STATE_COUNT];
     static barometerState_e state = BARO_STATE_PRESSURE_START;
+    barometerState_e oldState = state;
     timeUs_t executeTimeUs;
     timeUs_t sleepTime = 1000; // Wait 1ms between states
 
 
     if (busBusy()){
         // If the bus is busy, simply return to have another go later
-        return sleepTime;
+      schedulerIgnoreTaskStateTime();
+      return sleepTime;
     }
 
     switch (state) {
@@ -211,7 +214,7 @@ uint32_t baroUpdate(timeUs_t currentTimeUs)
                 state = BARO_STATE_TEMPERATURE_SAMPLE;
             } else {
                 // No action was taken as the read has not completed
-                //schedulerIgnoreTaskExecTime();
+                schedulerIgnoreTaskExecTime();
             }
             break;
 
@@ -220,7 +223,7 @@ uint32_t baroUpdate(timeUs_t currentTimeUs)
                 state = BARO_STATE_PRESSURE_START;
             } else {
                 // No action was taken as the read has not completed
-                //schedulerIgnoreTaskExecTime();
+                schedulerIgnoreTaskExecTime();
             }
             break;
 
@@ -235,14 +238,14 @@ uint32_t baroUpdate(timeUs_t currentTimeUs)
                 state = BARO_STATE_PRESSURE_SAMPLE;
             } else {
                 // No action was taken as the read has not completed
-                //schedulerIgnoreTaskExecTime();
+                schedulerIgnoreTaskExecTime();
             }
             break;
 
         case BARO_STATE_PRESSURE_SAMPLE:
             if (!baro.dev.get_up(&baro.dev)) {
                 // No action was taken as the read has not completed
-                //schedulerIgnoreTaskExecTime();
+                schedulerIgnoreTaskExecTime();
                 break;
             }
 
@@ -266,10 +269,17 @@ uint32_t baroUpdate(timeUs_t currentTimeUs)
 
     // Where we are using a state machine call schedulerIgnoreTaskExecRate() for all states bar one
     if (sleepTime != baro.dev.ut_delay) {
-        //schedulerIgnoreTaskExecRate();
+        schedulerIgnoreTaskExecRate();
     }
 
     executeTimeUs = micros() - currentTimeUs;
+
+    if (executeTimeUs > baroStateDurationUs[oldState]) {
+        baroStateDurationUs[oldState] = executeTimeUs;
+    }
+
+    schedulerSetNextStateTime(baroStateDurationUs[state]);
+
     return sleepTime;
 }
 

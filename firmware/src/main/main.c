@@ -56,6 +56,8 @@ void SystemClock_Config(void);
 
 void hwInit(void);
 
+void run(void);
+
 int main(void)
 {
   initialiseMemorySections();
@@ -83,11 +85,16 @@ int main(void)
 
   init();
 
-  while (1)
-  {
-	  scheduler();
-  }
+  run();
 
+  return 0;
+
+}
+void FAST_CODE run(void)
+{
+    while (true) {
+        scheduler();
+    }
 }
 
 void hwInit(void)

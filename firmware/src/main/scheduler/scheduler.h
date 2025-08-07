@@ -75,6 +75,32 @@ typedef enum {
     TASK_PRIORITY_LOWEST,
 } taskPriority_e;
 
+typedef struct {
+    timeUs_t     maxExecutionTimeUs;
+    timeUs_t     totalExecutionTimeUs;
+    timeUs_t     averageExecutionTimeUs;
+    timeUs_t     averageDeltaTimeUs;
+} cfCheckFuncInfo_t;
+
+typedef struct {
+    const char * taskName;
+//    const char * subTaskName;
+    bool         isEnabled;
+    int8_t       staticPriority;
+    timeDelta_t  desiredPeriodUs;
+    timeDelta_t  latestDeltaTimeUs;
+    timeUs_t     maxExecutionTimeUs;
+    timeUs_t     totalExecutionTimeUs;
+    timeUs_t     averageExecutionTime10thUs;
+    timeUs_t     averageDeltaTime10thUs;
+    float        movingAverageCycleTimeUs;
+#if defined(USE_LATE_TASK_STATISTICS)
+    uint32_t     runCount;
+    uint32_t     lateCount;
+    timeUs_t     execTime;
+#endif
+} taskInfo_t;
+
 typedef enum {
     /* Actual tasks */
     TASK_SYSTEM = 0,
@@ -156,13 +182,24 @@ typedef struct {
   uint16_t taskAgePeriods;
   timeDelta_t taskLatestDeltaTimeUs;
   uint32_t lastExecutedAtUs;          // last time of invocation
-  uint32_t taskExecutionTimeUs;
 
   uint32_t taskPeriodTimeUs;
 
-  uint32_t taskExcutedEndUs;
-  uint32_t totalExecutionTimeUs;      // total time consumed by task since boot
+  // Statistics
+  float    movingAverageCycleTimeUs;
+  timeUs_t anticipatedExecutionTime;  // Fixed point expectation of next execution time
+  timeUs_t movingSumDeltaTime10thUs;  // moving sum over 64 samples
+  timeUs_t movingSumExecutionTime10thUs;
+  timeUs_t maxExecutionTimeUs;
+  timeUs_t totalExecutionTimeUs;      // total time consumed by task since boot
   timeUs_t lastStatsAtUs;             // time of last stats gathering for rate calculation
+#if defined(USE_LATE_TASK_STATISTICS)
+  uint32_t runCount;
+  uint32_t lateCount;
+  timeUs_t execTime;
+#endif
+
+  uint32_t taskExcutedEndUs;
   uint32_t missedCount;
 } task_t;
 
@@ -171,6 +208,16 @@ void schedulerInit(void);
 void rescheduleTask(taskId_e taskId, int32_t newPeriodUs);
 void setTaskEnabled(taskId_e taskId, bool newEnabledState);
 timeDelta_t getTaskDeltaTimeUs(taskId_e taskId);
+void schedulerIgnoreTaskStateTime();
+void schedulerIgnoreTaskExecRate();
+void schedulerIgnoreTaskExecTime();
+bool schedulerGetIgnoreTaskExecTime();
+void schedulerResetTaskStatistics(taskId_e taskId);
+void schedulerResetTaskMaxExecutionTime(taskId_e taskId);
+void schedulerResetCheckFunctionMaxExecutionTime(void);
+void schedulerSetNextStateTime(timeDelta_t nextStateTime);
+timeDelta_t schedulerGetNextStateTime();
+void schedulerInit(void);
 void scheduler(void);
 uint32_t schedulerExecuteTask(task_t *selectedTask, uint32_t currentTimeUs);
 void taskSystemLoad(uint32_t currentTimeUs);

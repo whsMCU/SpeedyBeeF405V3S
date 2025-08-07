@@ -73,12 +73,6 @@
 #include "telemetry/telemetry.h"
 #include "telemetry/crsf.h"
 
-// taskUpdateRxMain() has occasional peaks in execution time so normal moving average duration estimation doesn't work
-// Decay the estimated max task duration by 1/(1 << RX_TASK_DECAY_SHIFT) on every invocation
-#define RX_TASK_DECAY_SHIFT 6
-// Add a margin to the task duration estimation
-#define RX_TASK_MARGIN 1
-
 static void ledUpdate(uint32_t currentTimeUs)
 {
     static uint32_t pre_time = 0;
@@ -147,7 +141,7 @@ void taskUpdateOpticalFlow(timeUs_t currentTimeUs)
 }
 #endif
 
-void taskFiltering(timeUs_t currentTimeUs)
+FAST_CODE void taskFiltering(timeUs_t currentTimeUs)
 {
     gyroFiltering(currentTimeUs);
 

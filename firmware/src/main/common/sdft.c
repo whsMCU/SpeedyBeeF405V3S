@@ -66,7 +66,7 @@ void sdftInit(sdft_t *sdft, const int startBin, const int endBin, const int numB
 
 
 // Add new sample to frequency spectrum
-void sdftPush(sdft_t *sdft, const float sample)
+FAST_CODE void sdftPush(sdft_t *sdft, const float sample)
 {
     const float delta = sample - rPowerN * sdft->samples[sdft->idx];
     
@@ -80,7 +80,7 @@ void sdftPush(sdft_t *sdft, const float sample)
 
 
 // Add new sample to frequency spectrum in parts
-void sdftPushBatch(sdft_t* sdft, const float sample, const int batchIdx)
+FAST_CODE void sdftPushBatch(sdft_t* sdft, const float sample, const int batchIdx)
 {
     const int batchStart = sdft->batchSize * batchIdx;
     int batchEnd = batchStart;
@@ -102,7 +102,7 @@ void sdftPushBatch(sdft_t* sdft, const float sample, const int batchIdx)
 
 
 // Get squared magnitude of frequency spectrum
-void sdftMagSq(const sdft_t *sdft, float *output)
+FAST_CODE void sdftMagSq(const sdft_t *sdft, float *output)
 {
     float re;
     float im;
@@ -116,7 +116,7 @@ void sdftMagSq(const sdft_t *sdft, float *output)
 
 
 // Get magnitude of frequency spectrum (slower)
-void sdftMagnitude(const sdft_t *sdft, float *output)
+FAST_CODE void sdftMagnitude(const sdft_t *sdft, float *output)
 {
     sdftMagSq(sdft, output);
     applySqrt(sdft, output);
@@ -125,7 +125,7 @@ void sdftMagnitude(const sdft_t *sdft, float *output)
 
 // Get squared magnitude of frequency spectrum with Hann window applied
 // Hann window in frequency domain: X[k] = -0.25 * X[k-1] +0.5 * X[k] -0.25 * X[k+1]
-void sdftWinSq(const sdft_t *sdft, float *output)
+FAST_CODE void sdftWinSq(const sdft_t *sdft, float *output)
 {
     complex_t val;
     float re;
@@ -141,7 +141,7 @@ void sdftWinSq(const sdft_t *sdft, float *output)
 
 
 // Get magnitude of frequency spectrum with Hann window applied (slower)
-void sdftWindow(const sdft_t *sdft, float *output)
+FAST_CODE void sdftWindow(const sdft_t *sdft, float *output)
 {
     sdftWinSq(sdft, output);
     applySqrt(sdft, output);
@@ -149,7 +149,7 @@ void sdftWindow(const sdft_t *sdft, float *output)
 
 
 // Apply square root to the whole sdft range
-static void applySqrt(const sdft_t *sdft, float *data)
+static FAST_CODE void applySqrt(const sdft_t *sdft, float *data)
 {
     for (int i = sdft->startBin; i <= sdft->endBin; i++) {
         data[i] = sqrtf(data[i]);

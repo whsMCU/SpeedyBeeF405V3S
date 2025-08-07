@@ -50,6 +50,7 @@
 #include "flight/imu.h"
 #include "flight/pid.h"
 #include "flight/position.h"
+#include "flight/dyn_notch_filter.h"
 
 #include "rx/rx.h"
 #include "rx/crsf.h"
@@ -352,8 +353,24 @@ bool taskUpdateRxMainInProgress(void)
     return (rxState != RX_STATE_CHECK);
 }
 
+// taskUpdateRxMain() has occasional peaks in execution time so normal moving average duration estimation doesn't work
+// Decay the estimated max task duration by 1/(1 << RX_TASK_DECAY_SHIFT) on every invocation
+#define RX_TASK_DECAY_SHIFT 6
+// Add a margin to the task duration estimation
+#define RX_TASK_MARGIN 1
+
 void taskUpdateRxMain(uint32_t currentTimeUs)
 {
+
+  static timeDelta_t rxStateDurationFractionUs[RX_STATE_COUNT];
+  timeDelta_t executeTimeUs;
+  rxState_e oldRxState = rxState;
+  timeDelta_t anticipatedExecutionTime;
+
+  // Where we are using a state machine call schedulerIgnoreTaskExecRate() for all states bar one
+  if (rxState != RX_STATE_UPDATE) {
+      schedulerIgnoreTaskExecRate();
+  }
 
     switch (rxState) {
     default:
@@ -376,6 +393,28 @@ void taskUpdateRxMain(uint32_t currentTimeUs)
         rxState = RX_STATE_CHECK;
         break;
     }
+    if (!schedulerGetIgnoreTaskExecTime()) {
+        executeTimeUs = micros() - currentTimeUs + RX_TASK_MARGIN;
+
+        // If the scheduler has reduced the anticipatedExecutionTime due to task aging, pick that up
+        anticipatedExecutionTime = schedulerGetNextStateTime();
+        if (anticipatedExecutionTime != (rxStateDurationFractionUs[oldRxState] >> RX_TASK_DECAY_SHIFT)) {
+            rxStateDurationFractionUs[oldRxState] = anticipatedExecutionTime << RX_TASK_DECAY_SHIFT;
+        }
+
+        if (executeTimeUs > (rxStateDurationFractionUs[oldRxState] >> RX_TASK_DECAY_SHIFT)) {
+            rxStateDurationFractionUs[oldRxState] = executeTimeUs << RX_TASK_DECAY_SHIFT;
+        } else {
+            // Slowly decay the max time
+            rxStateDurationFractionUs[oldRxState]--;
+        }
+    }
+
+    if (debugMode == DEBUG_RX_STATE_TIME) {
+        debug[oldRxState] = rxStateDurationFractionUs[oldRxState] >> RX_TASK_DECAY_SHIFT;
+    }
+
+    schedulerSetNextStateTime(rxStateDurationFractionUs[rxState] >> RX_TASK_DECAY_SHIFT);
 }
 
 #ifdef USE_RX_LINK_QUALITY_INFO
@@ -612,6 +651,12 @@ void processRxModes(uint32_t currentTimeUs)
 		{
 			ENABLE_ARMING_FLAG(ARMED);
 			yaw_heading_reference = (float)DECIDEGREES_TO_DEGREES(attitude.values.yaw);
+
+			imuQuaternionHeadfreeOffsetSet();
+
+#if defined(USE_DYN_NOTCH_FILTER)
+      resetMaxFFT();
+#endif
 			GPS_reset_home_position();
 #ifdef USE_PERSISTENT_STATS
 			 statsOnArm();

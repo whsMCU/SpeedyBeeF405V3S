@@ -94,9 +94,11 @@
 #define USE_CRSF_LINK_STATISTICS
 #define USE_RX_RSSI_DBM
 #define USE_RX_LINK_QUALITY_INFO
+#define USE_GYRO_SLEW_LIMITER
+#define USE_LATE_TASK_STATISTICS
 
-//#define USE_FAST_DATA
-//#define USE_DYN_NOTCH_FILTER
+#define USE_FAST_DATA
+#define USE_DYN_NOTCH_FILTER
 
 //#define USE_TELEMETRY
 //#define USE_TELEMETRY_CRSF
@@ -108,10 +110,12 @@
 
 #define USE_BOARD_INFO
 
+#define NOINLINE __attribute__((noinline))
+
 #ifdef USE_FAST_DATA
 #define FAST_DATA_ZERO_INIT         __attribute__ ((section(".fastram_bss"), aligned(4)))
 #define FAST_DATA                   __attribute__ ((section(".fastram_data"), aligned(4)))
-#define FAST_CODE                   __attribute__ ((section(".fast_code")))
+#define FAST_CODE                   //0 67__attribute__ ((section(".fast_code")))
 #else
 #define FAST_DATA_ZERO_INIT
 #define FAST_DATA
