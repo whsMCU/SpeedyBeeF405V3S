@@ -134,17 +134,6 @@ void initialiseMemorySections(void)
     uint32_t *p = &__fastram_bss_start__;
     while (p < &__fastram_bss_end__)
         *p++ = 0;
-
-    /* Load FAST_CODE load into SRAM */
-    extern uint32_t _sfastcode_load;
-    extern uint32_t _sfast_code;
-    extern uint32_t _efast_code;
-    uint32_t *source = (uint32_t *)&_sfastcode_load;
-    uint32_t *destination = (uint32_t *)&_sfast_code;
-    uint32_t *end = (uint32_t *)&_efast_code;
-    while (destination < end) {
-        *destination++ = *source++;
-    }
 #endif
 }
 
