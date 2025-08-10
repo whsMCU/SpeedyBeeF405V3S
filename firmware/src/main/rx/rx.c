@@ -707,9 +707,9 @@ void processRxModes(uint32_t currentTimeUs)
     {
       ENABLE_FLIGHT_MODE(RANGEFINDER_MODE);
       rangefinder.althold.target_Height = rangefinder.calculatedAltitude;
-      if(rangefinder.althold.target_Height > 150)
+      if(rangefinder.althold.target_Height > 150.0f)
       {
-        rangefinder.althold.target_Height = 150.f;
+        rangefinder.althold.target_Height = 150.0f;
       }
 
       rangefinder.althold.integral_Height = 0;

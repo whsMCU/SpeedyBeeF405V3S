@@ -54,6 +54,7 @@ typedef struct {
   float error_Pixel[2];
   float integral_Pixel[2];
   float integral_windup;
+  float filteredFlowRate[2];
   float Pixel[2];
   float target_Angle[2];
   float dt;

@@ -67,6 +67,7 @@ void positionEstimationConfig_Init(void)
   positionEstimationConfig.max_eph_epv = 1000;
   positionEstimationConfig.w_z_surface_p = 3.5;
   positionEstimationConfig.w_z_surface_v = 6.1;
+  positionEstimationConfig.w_xyz_acc_p = 1.0;
 }
 
 //PG_REGISTER_WITH_RESET_TEMPLATE(positionEstimationConfig_t, positionEstimationConfig, PG_POSITION_ESTIMATION_CONFIG, 5);
@@ -379,44 +380,44 @@ void positionEstimationConfig_Init(void)
 //
 //    return zeroCalibrationIsCompleteS(&posEstimator.imu.gravityCalibration);
 //}
-//
-//static void updateIMUEstimationWeight(const float dt)
-//{
-//    bool isAccClipped = accIsClipped();
-//
-//    // If accelerometer measurement is clipped - drop the acc weight to zero
-//    // and gradually restore weight back to 1.0 over time
-//    if (isAccClipped) {
-//        posEstimator.imu.accWeightFactor = 0.0f;
-//    }
-//    else {
-//        const float relAlpha = dt / (dt + INAV_ACC_CLIPPING_RC_CONSTANT);
-//        posEstimator.imu.accWeightFactor = posEstimator.imu.accWeightFactor * (1.0f - relAlpha) + 1.0f * relAlpha;
-//    }
-//
-//    // DEBUG_VIBE[0-3] are used in IMU
-//    DEBUG_SET(DEBUG_VIBE, 4, posEstimator.imu.accWeightFactor * 1000);
-//}
-//
-//float navGetAccelerometerWeight(void)
-//{
-//    const float accWeightScaled = posEstimator.imu.accWeightFactor * positionEstimationConfig()->w_xyz_acc_p;
-//    DEBUG_SET(DEBUG_VIBE, 5, accWeightScaled * 1000);
-//
-//    return accWeightScaled;
-//}
-//
+
+static void updateIMUEstimationWeight(const float dt)
+{
+    bool isAccClipped = accIsClipped();
+
+    // If accelerometer measurement is clipped - drop the acc weight to zero
+    // and gradually restore weight back to 1.0 over time
+    if (isAccClipped) {
+        posEstimator.imu.accWeightFactor = 0.0f;
+    }
+    else {
+        const float relAlpha = dt / (dt + INAV_ACC_CLIPPING_RC_CONSTANT);
+        posEstimator.imu.accWeightFactor = posEstimator.imu.accWeightFactor * (1.0f - relAlpha) + 1.0f * relAlpha;
+    }
+
+    // DEBUG_VIBE[0-3] are used in IMU
+    //DEBUG_SET(DEBUG_VIBE, 4, posEstimator.imu.accWeightFactor * 1000);
+}
+
+float navGetAccelerometerWeight(void)
+{
+    const float accWeightScaled = posEstimator.imu.accWeightFactor * positionEstimationConfig.w_xyz_acc_p;
+    //DEBUG_SET(DEBUG_VIBE, 5, accWeightScaled * 1000);
+
+    return accWeightScaled;
+}
+
 //static void updateIMUTopic(timeUs_t currentTimeUs)
 //{
 //    const float dt = US2S(currentTimeUs - posEstimator.imu.lastUpdateTime);
 //    posEstimator.imu.lastUpdateTime = currentTimeUs;
 //
-//    if (!isImuReady()) {
+//    if (false) { //!isImuReady()
 //        posEstimator.imu.accelNEU.x = 0.0f;
 //        posEstimator.imu.accelNEU.y = 0.0f;
 //        posEstimator.imu.accelNEU.z = 0.0f;
 //
-//        restartGravityCalibration();
+//        //restartGravityCalibration();
 //    }
 //    else {
 //        /* Update acceleration weight based on vibration levels and clipping */
@@ -485,22 +486,23 @@ float updateEPE(const float oldEPE, const float dt, const float newEPE, const fl
     return oldEPE + (newEPE - oldEPE) * w * dt;
 }
 
-//static bool navIsAccelerationUsable(void)
-//{
-//    return true;
-//}
-//
-//static bool navIsHeadingUsable(void)
-//{
-//    if (sensors(SENSOR_GPS)) {
-//        // If we have GPS - we need true IMU north (valid heading)
-//        return isImuHeadingValid();
-//    }
-//    else {
-//        // If we don't have GPS - we may use whatever we have, other sensors are operating in body frame
-//        return isImuHeadingValid() || positionEstimationConfig()->allow_dead_reckoning;
-//    }
-//}
+static bool navIsAccelerationUsable(void)
+{
+    return true;
+}
+
+static bool navIsHeadingUsable(void)
+{
+//  if (sensors(SENSOR_GPS)) {
+//      // If we have GPS - we need true IMU north (valid heading)
+//      return isImuHeadingValid();
+//  }
+//  else {
+//      // If we don't have GPS - we may use whatever we have, other sensors are operating in body frame
+//      return isImuHeadingValid() || positionEstimationConfig()->allow_dead_reckoning;
+//  }
+  return true;
+}
 
 static uint32_t calculateCurrentValidityFlags(timeUs_t currentTimeUs)
 {
@@ -530,13 +532,13 @@ static uint32_t calculateCurrentValidityFlags(timeUs_t currentTimeUs)
         new_Flags |= EST_FLOW_VALID;
     }
 
-//    if (posEstimator.est.eph < positionEstimationConfig()->max_eph_epv) {
-//        new_Flags |= EST_XY_VALID;
-//    }
-//
-//    if (posEstimator.est.epv < positionEstimationConfig()->max_eph_epv) {
-//        new_Flags |= EST_Z_VALID;
-//    }
+    if (posEstimator.est.eph < positionEstimationConfig.max_eph_epv) {
+        new_Flags |= EST_XY_VALID;
+    }
+
+    if (posEstimator.est.epv < positionEstimationConfig.max_eph_epv) {
+        new_Flags |= EST_Z_VALID;
+    }
 
     return new_Flags;
 }
@@ -567,7 +569,7 @@ static uint32_t calculateCurrentValidityFlags(timeUs_t currentTimeUs)
 //        }
 //    }
 //}
-//
+
 //static bool estimationCalculateCorrection_Z(estimationContext_t * ctx)
 //{
 //    bool correctionCalculated = false;
@@ -741,20 +743,20 @@ void updateEstimatedTopic(timeUs_t currentTimeUs)
 //        posEstimator.flags = 0;
 //        return;
 //    }
-//
-//    /* Calculate new EPH and EPV for the case we didn't update postion */
-//    ctx.newEPH = posEstimator.est.eph * ((posEstimator.est.eph <= positionEstimationConfig()->max_eph_epv) ? 1.0f + ctx.dt : 1.0f);
-//    ctx.newEPV = posEstimator.est.epv * ((posEstimator.est.epv <= positionEstimationConfig()->max_eph_epv) ? 1.0f + ctx.dt : 1.0f);
+
+    /* Calculate new EPH and EPV for the case we didn't update postion */
+    ctx.newEPH = posEstimator.est.eph * ((posEstimator.est.eph <= positionEstimationConfig.max_eph_epv) ? 1.0f + ctx.dt : 1.0f);
+    ctx.newEPV = posEstimator.est.epv * ((posEstimator.est.epv <= positionEstimationConfig.max_eph_epv) ? 1.0f + ctx.dt : 1.0f);
     ctx.newFlags = calculateCurrentValidityFlags(currentTimeUs);
-//    vectorZero(&ctx.estPosCorr);
-//    vectorZero(&ctx.estVelCorr);
-//    vectorZero(&ctx.accBiasCorr);
-//
-//    /* AGL estimation - separate process, decouples from Z coordinate */
+    vectorZero(&ctx.estPosCorr);
+    vectorZero(&ctx.estVelCorr);
+    vectorZero(&ctx.accBiasCorr);
+
+    /* AGL estimation - separate process, decouples from Z coordinate */
 //    estimationCalculateAGL(&ctx);
-//
-//    /* Prediction stage: X,Y,Z */
-//    estimationPredict(&ctx);
+
+    /* Prediction stage: X,Y,Z */
+    //estimationPredict(&ctx);
 //
 //    /* Correction stage: Z */
 //    const bool estZCorrectOk =

@@ -143,6 +143,9 @@ typedef struct gyro_s {
     bool isAccelUpdatedAtLeastOnce;
     uint16_t accSampleRateHz;
     bool acc_high_fsr;
+
+    uint32_t accClipCount;
+    bool isClipped;
 } imu_t;
 
 extern imu_t bmi270;
@@ -164,3 +167,6 @@ bool accGetAccumulationAverage(float *accumulation);
 
 void resetFlightDynamicsTrims(flightDynamicsTrims_t *accZero);
 void setAccelerationTrims(union flightDynamicsTrims_u *accelerationTrimsToUse);
+
+uint32_t accGetClipCount(void);
+bool accIsClipped(void);

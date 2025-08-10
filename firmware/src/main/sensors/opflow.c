@@ -190,8 +190,8 @@ void opflowUpdate(timeUs_t currentTimeUs)
             // Only update DEBUG_FLOW_RAW if flow is good
             DEBUG_SET(DEBUG_FLOW_RAW, 0, (opflow.flowRate[X])); // right +
             DEBUG_SET(DEBUG_FLOW_RAW, 1, (opflow.flowRate[Y])); // front -
-            DEBUG_SET(DEBUG_FLOW_RAW, 2, (opflow.bodyRate[X]));
-            DEBUG_SET(DEBUG_FLOW_RAW, 3, (opflow.bodyRate[Y]));
+            DEBUG_SET(DEBUG_FLOW_RAW, 2, (opflow.bodyRate[X])); // right -
+            DEBUG_SET(DEBUG_FLOW_RAW, 3, (opflow.bodyRate[Y])); // front -
         }
 
         // Process calibration
@@ -217,10 +217,10 @@ void opflowUpdate(timeUs_t currentTimeUs)
         }
 
         // Convert to radians so NAV doesn't have to do the conversion
-        opflow.bodyRate[X] = DEGREES_TO_RADIANS(opflow.bodyRate[X]);
-        opflow.bodyRate[Y] = DEGREES_TO_RADIANS(opflow.bodyRate[Y]);
-        opflow.flowRate[X] = DEGREES_TO_RADIANS(opflow.flowRate[X]);
-        opflow.flowRate[Y] = DEGREES_TO_RADIANS(opflow.flowRate[Y]);
+        //opflow.bodyRate[X] = DEGREES_TO_RADIANS(opflow.bodyRate[X]);
+        //opflow.bodyRate[Y] = DEGREES_TO_RADIANS(opflow.bodyRate[Y]);
+        //opflow.flowRate[X] = DEGREES_TO_RADIANS(opflow.flowRate[X]);
+        //opflow.flowRate[Y] = DEGREES_TO_RADIANS(opflow.flowRate[Y]);
 
         // Zero out gyro accumulators to calculate rotation per flow update
         opflowZeroBodyGyroAcc();

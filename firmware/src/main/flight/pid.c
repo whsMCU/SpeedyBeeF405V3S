@@ -254,16 +254,16 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 
 	  if(_PID_Test.pid_test_flag == 1)
 	  {
-	    LF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result;// + _ROLL.in.result - _YAW_Rate.result;
-	    LR = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 + _PITCH.in.result;// + _ROLL.in.result + _YAW_Rate.result;
-	    RR = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 + _PITCH.in.result;// - _ROLL.in.result - _YAW_Rate.result;
-	    RF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result;// - _ROLL.in.result + _YAW_Rate.result;
+	    LF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result + _ROLL.in.result - _YAW_Rate.result;
+	    LR = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 + _PITCH.in.result + _ROLL.in.result + _YAW_Rate.result;
+	    RR = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 + _PITCH.in.result - _ROLL.in.result - _YAW_Rate.result;
+	    RF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result - _ROLL.in.result + _YAW_Rate.result;
 	  }else
 	  {
-	    LF = 10500 + 500 + rcCommand[THROTTLE] * 10 - _PITCH.in.result;// + _ROLL.in.result - _YAW_Rate.result;
-	    LR = 10500 + 500 + rcCommand[THROTTLE] * 10 + _PITCH.in.result;// + _ROLL.in.result + _YAW_Rate.result;
-	    RR = 10500 + 500 + rcCommand[THROTTLE] * 10 + _PITCH.in.result;// - _ROLL.in.result - _YAW_Rate.result;
-	    RF = 10500 + 500 + rcCommand[THROTTLE] * 10 - _PITCH.in.result;// - _ROLL.in.result + _YAW_Rate.result;
+	    LF = 10500 + 500 + rcCommand[THROTTLE] * 10 - _PITCH.in.result + _ROLL.in.result - _YAW_Rate.result;
+	    LR = 10500 + 500 + rcCommand[THROTTLE] * 10 + _PITCH.in.result + _ROLL.in.result + _YAW_Rate.result;
+	    RR = 10500 + 500 + rcCommand[THROTTLE] * 10 + _PITCH.in.result - _ROLL.in.result - _YAW_Rate.result;
+	    RF = 10500 + 500 + rcCommand[THROTTLE] * 10 - _PITCH.in.result - _ROLL.in.result + _YAW_Rate.result;
 	  }
   }
   else
@@ -271,16 +271,16 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 	  PID_Calculation(&_YAW_Heading, yaw_heading_reference, imu_yaw, -bmi270.gyroADCf[Z], dT);
     if(_PID_Test.pid_test_flag == 1)
     {
-      LF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result;// + _ROLL.in.result - _YAW_Heading.result;
-      LR = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 + _PITCH.in.result;// + _ROLL.in.result + _YAW_Heading.result;
-      RR = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 + _PITCH.in.result;// - _ROLL.in.result - _YAW_Heading.result;
-      RF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result;// - _ROLL.in.result + _YAW_Heading.result;
+      LF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result + _ROLL.in.result - _YAW_Heading.result;
+      LR = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 + _PITCH.in.result + _ROLL.in.result + _YAW_Heading.result;
+      RR = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 + _PITCH.in.result - _ROLL.in.result - _YAW_Heading.result;
+      RF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result - _ROLL.in.result + _YAW_Heading.result;
     }else
     {
-      LF = 10500 + 500 + rcCommand[THROTTLE] * 10 - _PITCH.in.result;// + _ROLL.in.result - _YAW_Heading.result;
-      LR = 10500 + 500 + rcCommand[THROTTLE] * 10 + _PITCH.in.result;// + _ROLL.in.result + _YAW_Heading.result;
-      RR = 10500 + 500 + rcCommand[THROTTLE] * 10 + _PITCH.in.result;// - _ROLL.in.result - _YAW_Heading.result;
-      RF = 10500 + 500 + rcCommand[THROTTLE] * 10 - _PITCH.in.result;// - _ROLL.in.result + _YAW_Heading.result;
+      LF = 10500 + 500 + rcCommand[THROTTLE] * 10 - _PITCH.in.result + _ROLL.in.result - _YAW_Heading.result;
+      LR = 10500 + 500 + rcCommand[THROTTLE] * 10 + _PITCH.in.result + _ROLL.in.result + _YAW_Heading.result;
+      RR = 10500 + 500 + rcCommand[THROTTLE] * 10 + _PITCH.in.result - _ROLL.in.result - _YAW_Heading.result;
+      RF = 10500 + 500 + rcCommand[THROTTLE] * 10 - _PITCH.in.result - _ROLL.in.result + _YAW_Heading.result;
     }
   }
 
@@ -353,13 +353,12 @@ void updatePosHold(timeUs_t currentTimeUs)
     poshold->dt = (float)US2S(now_time - pre_time);
     pre_time = now_time;
 
-    static float filteredFlowRate[2] = {0, 0};
     for (int i = 0; i < 2; i++) {
-        filteredFlowRate[i] = filteredFlowRate[i] * (1 - FLOW_LPF_ALPHA) + opflow.flowRate[i] * FLOW_LPF_ALPHA;
+      poshold->filteredFlowRate[i] = poshold->filteredFlowRate[i] * (1 - FLOW_LPF_ALPHA) + opflow.flowRate[i] * FLOW_LPF_ALPHA;
     }
 
-    poshold->Pixel[X] = poshold->Pixel[X] + filteredFlowRate[X] * poshold->dt;
-    poshold->Pixel[Y] = poshold->Pixel[Y] + filteredFlowRate[Y] * poshold->dt;
+    poshold->Pixel[X] = poshold->Pixel[X] + poshold->filteredFlowRate[X] * poshold->dt;
+    poshold->Pixel[Y] = poshold->Pixel[Y] + poshold->filteredFlowRate[Y] * poshold->dt;
 
     if(rcData[THROTTLE] < 1030)
     {
@@ -372,14 +371,14 @@ void updatePosHold(timeUs_t currentTimeUs)
     poshold->error_Pixel[X] = poshold->target_Pixel[X] - poshold->Pixel[X];
     poshold->error_Pixel[Y] = poshold->target_Pixel[Y] - poshold->Pixel[Y];
 
-    poshold->target_Angle[Y] = -poshold->KP * poshold->error_Pixel[X];
-    poshold->target_Angle[X] = -poshold->KP * poshold->error_Pixel[Y];
+    poshold->target_Angle[X] = poshold->KP * poshold->error_Pixel[X];
+    poshold->target_Angle[Y] = poshold->KP * poshold->error_Pixel[Y];
 
-    poshold->target_Angle[Y] += -poshold->KD * -filteredFlowRate[X];
-    poshold->target_Angle[X] += -poshold->KD * -filteredFlowRate[Y];
+    poshold->target_Angle[X] += -poshold->KD * -poshold->filteredFlowRate[X];
+    poshold->target_Angle[Y] += -poshold->KD * -poshold->filteredFlowRate[Y];
 
-    poshold->integral_Pixel[X] += -poshold->KI * poshold->error_Pixel[X] * poshold->dt;
-    poshold->integral_Pixel[Y] += -poshold->KI * poshold->error_Pixel[Y] * poshold->dt;
+    poshold->integral_Pixel[X] += poshold->KI * poshold->error_Pixel[X] * poshold->dt;
+    poshold->integral_Pixel[Y] += poshold->KI * poshold->error_Pixel[Y] * poshold->dt;
 
     if(poshold->integral_Pixel[X] > poshold->integral_windup) poshold->integral_Pixel[X] = poshold->integral_windup;
     else if(poshold->integral_Pixel[X] < -poshold->integral_windup) poshold->integral_Pixel[X] = -poshold->integral_windup;
@@ -394,8 +393,8 @@ void updatePosHold(timeUs_t currentTimeUs)
       poshold->integral_Pixel[Y] = 0;
     }
 
-    poshold->target_Angle[Y] += poshold->integral_Pixel[X];
-    poshold->target_Angle[X] += poshold->integral_Pixel[Y];
+    poshold->target_Angle[X] += poshold->integral_Pixel[X];
+    poshold->target_Angle[Y] += poshold->integral_Pixel[Y];
 
     if(rcData[THROTTLE] < 1030)
     {
@@ -403,11 +402,16 @@ void updatePosHold(timeUs_t currentTimeUs)
       poshold->target_Angle[Y] = 0;
     }
 
-    poshold->target_Angle[X] = constrain(poshold->target_Angle[X], -30, 30);
-    poshold->target_Angle[Y] = constrain(poshold->target_Angle[Y], -30, 30);
+    poshold->target_Angle[X] = constrain(poshold->target_Angle[X], -25, 25);
+    poshold->target_Angle[Y] = -constrain(poshold->target_Angle[Y], -25, 25);
 
     rcCommand[ROLL] = poshold->target_Angle[X];
     rcCommand[PITCH] = poshold->target_Angle[Y];
+
+    DEBUG_SET(DEBUG_NONE, 0, poshold->Pixel[X]);
+    DEBUG_SET(DEBUG_NONE, 1, poshold->Pixel[Y]);
+    DEBUG_SET(DEBUG_NONE, 2, rcCommand[ROLL]);
+    DEBUG_SET(DEBUG_NONE, 3, rcCommand[PITCH]);
   }
 }
 #endif
@@ -424,7 +428,6 @@ void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
     uint32_t now_time = currentTimeUs;
     althold->dt = (float)US2S(now_time - pre_time);
     pre_time = now_time;
-    //debug[3] = althold->dt / 1e-6f;
 
 //    // 1. 스로틀 기반 상승속도 입력
 //    float throttleStick = (float)(rcData[THROTTLE] - 1500) / 500.0f;  // -1.0 ~ 1.0
@@ -440,20 +443,17 @@ void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
 
     althold->proportional_Height = althold->KP * althold->error_Height;
 
+    althold->integral_Height += althold->KI * (althold->error_Height * althold->dt);
+    if(althold->integral_Height > althold->integral_windup) althold->integral_Height = althold->integral_windup;
+    else if(althold->integral_Height < -althold->integral_windup) althold->integral_Height = -althold->integral_windup;
+
     derivative = -(rangefinder.calculatedAltitude - althold->pre_Height) / althold->dt;
     if (fabsf(derivative) > MAX_DERIVATIVE) derivative = 0;
     althold->derivative_Height = althold->KD * derivative;
     althold->pre_Height = rangefinder.calculatedAltitude;
 
-
-    althold->integral_Height += althold->KI * althold->error_Height * althold->dt;
-
-    if(althold->integral_Height > althold->integral_windup) althold->integral_Height = althold->integral_windup;
-    else if(althold->integral_Height < -althold->integral_windup) althold->integral_Height = -althold->integral_windup;
-
     althold->result = althold->proportional_Height + althold->integral_Height + althold->derivative_Height;
 
-    //debug[1] = althold->result;
     if(rcData[THROTTLE] < 1030)
     {
       althold->integral_Height = 0;
@@ -465,14 +465,14 @@ void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
     {
       rxRuntimeState.rcCommand_updated = false;
       rcCommand[THROTTLE] += althold->result;
-      //debug[2] = rcCommand[THROTTLE];
     }
 
     DEBUG_SET(DEBUG_RANGEFINDER, 0, (althold->dt / 1e-6f));
     DEBUG_SET(DEBUG_RANGEFINDER, 1, (althold->proportional_Height));
     DEBUG_SET(DEBUG_RANGEFINDER, 2, (althold->integral_Height));
-    DEBUG_SET(DEBUG_RANGEFINDER, 3, (althold->result));
-    DEBUG_SET(DEBUG_RANGEFINDER, 4, (rcCommand[THROTTLE]));
+    DEBUG_SET(DEBUG_RANGEFINDER, 3, (althold->derivative_Height));
+    DEBUG_SET(DEBUG_RANGEFINDER, 4, (althold->result));
+    DEBUG_SET(DEBUG_RANGEFINDER, 5, (rcCommand[THROTTLE]));
   }
 }
 #endif

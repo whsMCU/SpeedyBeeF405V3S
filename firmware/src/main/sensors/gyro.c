@@ -487,6 +487,22 @@ void taskAccUpdate(timeUs_t currentTimeUs)
 
   applyAccelerationTrims(&bmi270.accelerationTrims);
 
+
+  // Calculate acceleration readings in G's
+  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+    bmi270.accADCf[axis] = (float)bmi270.accADC[axis] / bmi270.acc_1G;
+  }
+
+  // Before filtering check for clipping and vibration levels
+  if (fabsf(bmi270.accADCf[X]) > ACC_CLIPPING_THRESHOLD_G || fabsf(bmi270.accADCf[Y]) > ACC_CLIPPING_THRESHOLD_G || fabsf(bmi270.accADCf[Z]) > ACC_CLIPPING_THRESHOLD_G) {
+    bmi270.isClipped = true;
+    bmi270.accClipCount++;
+  }
+  else {
+    bmi270.isClipped = false;
+  }
+
+
   for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
     bmi270.accADCf[axis] = laggedMovingAverageUpdate(&accAvg[axis].filter, (float)bmi270.accADC[axis]);
   }
@@ -517,4 +533,14 @@ bool accGetAccumulationAverage(float *accumulationAverage)
         }
         return false;
     }
+}
+
+uint32_t accGetClipCount(void)
+{
+    return bmi270.accClipCount;
+}
+
+bool accIsClipped(void)
+{
+    return bmi270.isClipped;
 }

@@ -288,6 +288,7 @@ void schedulerResetTaskStatistics(taskId_e taskId)
 
 void schedulerResetTaskMaxExecutionTime(taskId_e taskId)
 {
+
     if (taskId == TASK_SELF) {
         currentTask->maxExecutionTimeUs = 0;
     } else if (taskId < TASK_COUNT) {
