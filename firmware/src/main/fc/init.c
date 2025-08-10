@@ -124,7 +124,7 @@ static void Param_Config_Init(void);
 
 void init(void)
 {
-  debugMode = DEBUG_FLOW; //DEBUG_PIDLOOP
+  debugMode = DEBUG_NONE; //DEBUG_PIDLOOP
   Param_Config_Init();
   bool existing = loadFromSDCard();
   if(existing)
