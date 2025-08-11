@@ -80,6 +80,8 @@ void taskMainPidLoop(timeUs_t currentTimeUs);
 
 void updateAltHold(timeUs_t currentTimeUs);
 
+void mixerSetThrottleAngleCorrection(int correctionValue);
+
 extern float yaw_heading_reference;
 
 #ifdef __cplusplus

@@ -37,7 +37,7 @@
 //#include "flight/gps_rescue.h"
 #include "flight/imu.h"
 //#include "flight/mixer.h"
-//#include "flight/pid.h"
+#include "flight/pid.h"
 
 #include "scheduler/scheduler.h"
 
@@ -94,8 +94,9 @@ void imuConfig_Init(void)
 	imuConfig.dcm_kp = 2500;                // 1.0 * 10000
 	imuConfig.dcm_ki = 0;                   // 0.003 * 10000
 	imuConfig.small_angle = 25;
-  imuRuntimeConfig.dcm_kp = imuConfig.dcm_kp / 10000.0f;
-  imuRuntimeConfig.dcm_ki = imuConfig.dcm_ki / 10000.0f;
+	imuConfig.throttle_correction_value = 0;      // could 10 with althold or 40 for fpv
+  imuConfig.throttle_correction_angle = 800;    // could be 80.0 deg with atlhold or 45.0 for fpv
+  imuConfigure(imuConfig.throttle_correction_angle, imuConfig.throttle_correction_value);
 }
 
 static void imuQuaternionComputeProducts(quaternion *quat, quaternionProducts *quatProd)
@@ -297,7 +298,7 @@ static void imuMahonyAHRSupdate(float dt, float gx, float gy, float gz,
     attitudeIsEstablished = true;
 }
 
-void imuUpdateEulerAngles(void)
+static void imuUpdateEulerAngles(void)
 {
     quaternionProducts buffer;
 
@@ -502,11 +503,41 @@ static void imuCalculateEstimatedAttitude(timeUs_t currentTimeUs)
   imuUpdateEulerAngles();
 }
 
+static int calculateThrottleAngleCorrection(void)
+{
+    /*
+    * Use 0 as the throttle angle correction if we are inverted, vertical or with a
+    * small angle < 0.86 deg
+    * TODO: Define this small angle in config.
+    */
+    if (getCosTiltAngle() <= 0.015f) {
+        return 0;
+    }
+    int angle = lrintf(acos_approx(getCosTiltAngle()) * throttleAngleScale);
+    if (angle > 900)
+        angle = 900;
+    return lrintf(throttleAngleValue * sin_approx(angle / (900.0f * M_PIf / 2.0f)));
+}
+
 void imuUpdateAttitude(timeUs_t currentTimeUs)
 {
-	imuCalculateEstimatedAttitude(currentTimeUs);
+  if (bmi270.isAccelUpdatedAtLeastOnce) {
+    imuCalculateEstimatedAttitude(currentTimeUs);
 
-	updatePositionEstimator();
+    // Update the throttle correction for angle and supply it to the mixer
+    int throttleAngleCorrection = 0;
+    if (throttleAngleValue && (FLIGHT_MODE(ANGLE_MODE) || FLIGHT_MODE(HORIZON_MODE)) && ARMING_FLAG(ARMED)) {
+        throttleAngleCorrection = calculateThrottleAngleCorrection();
+    }
+    mixerSetThrottleAngleCorrection(throttleAngleCorrection);
+
+    updatePositionEstimator();
+  } else {
+    bmi270.accADC[X] = 0;
+    bmi270.accADC[Y] = 0;
+    bmi270.accADC[Z] = 0;
+    schedulerIgnoreTaskStateTime();
+  }
 }
 #endif // USE_ACC
 

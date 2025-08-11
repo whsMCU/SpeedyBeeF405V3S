@@ -55,6 +55,10 @@ FAST_DATA_ZERO_INIT PID _YAW_Rate;
 FAST_DATA_ZERO_INIT PID _ALT;
 
 FAST_DATA_ZERO_INIT PID_Test _PID_Test;
+
+static FAST_DATA_ZERO_INIT float throttle = 0;
+static FAST_DATA_ZERO_INIT int throttleAngleCorrection;
+
 #ifdef USE_RANGEFINDER
 static void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs);
 #endif
@@ -112,9 +116,9 @@ void pidInit(void)
   rangefinder.althold.integral_windup = 500;
 
   opflow.poshold.KP = 1.0f;
-  opflow.poshold.KI = 1.8f;
+  opflow.poshold.KI = 0.1f;
   opflow.poshold.KD = 0.15f;
-  opflow.poshold.integral_windup = 500;
+  opflow.poshold.integral_windup = 5;
 
   _PID_Test.pid_test_flag = 0;
   _PID_Test.pid_test_throttle = 0;
@@ -240,6 +244,8 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   DEBUG_SET(DEBUG_PIDLOOP, 13, (_PITCH.in.measured));
   DEBUG_SET(DEBUG_PIDLOOP, 14, (_PITCH.in.derivative));
   DEBUG_SET(DEBUG_PIDLOOP, 15, (_PITCH.in.derivative_filter));
+
+  throttle = rcCommand[THROTTLE] + throttleAngleCorrection;
 
   if((rcData[THROTTLE] < 1030 || !ARMING_FLAG(ARMED))&& _PID_Test.pid_test_flag == 0)
   {
@@ -476,3 +482,8 @@ void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
   }
 }
 #endif
+
+void mixerSetThrottleAngleCorrection(int correctionValue)
+{
+    throttleAngleCorrection = correctionValue;
+}

@@ -335,7 +335,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
       }
       bmi270.detectedEXTI++;
     }
-
 }
 
 bool bmi270SpiAccRead(imu_t *acc)
