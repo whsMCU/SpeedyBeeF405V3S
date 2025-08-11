@@ -27,8 +27,7 @@
 #include "build/build_config.h"
 #include "build/debug.h"
 
-#include "common/axis.h"
-#include "common/time.h"
+#include "common/quaternion.h"
 #include "drivers/gps/gps.h"
 
 #include "fc/runtime_config.h"
@@ -86,6 +85,9 @@ quaternion offset = QUATERNION_INITIALIZE;
 
 // absolute angle inclination in multiple of 0.1 degree    180 deg = 1800
 attitudeEulerAngles_t attitude = EULER_INITIALIZE;
+
+FAST_DATA_ZERO_INIT fpVector3_t imuMeasuredAccelBF;
+FAST_DATA_ZERO_INIT fpVector3_t imuMeasuredRotationBF;
 
 imuConfig_t imuConfig;
 
@@ -522,6 +524,10 @@ static int calculateThrottleAngleCorrection(void)
 void imuUpdateAttitude(timeUs_t currentTimeUs)
 {
   if (bmi270.isAccelUpdatedAtLeastOnce) {
+
+    gyroGetMeasuredRotationRate(&imuMeasuredRotationBF);    // Calculate gyro rate in body frame in rad/s
+    accGetMeasuredAcceleration(&imuMeasuredAccelBF);  // Calculate accel in body frame in cm/s/s
+
     imuCalculateEstimatedAttitude(currentTimeUs);
 
     // Update the throttle correction for angle and supply it to the mixer
@@ -623,4 +629,42 @@ bool isUpright(void)
 #else
     return true;
 #endif
+}
+
+void imuTransformVectorBodyToEarth(fpVector3_t * v)
+{
+    // From body frame to earth frame
+    quaternionRotateVectorInv(v, v, &q);
+
+    // HACK: This is needed to correctly transform from NED (sensor frame) to NEU (navigation)
+    v->y = -v->y;
+}
+
+void imuTransformVectorEarthToBody(fpVector3_t * v)
+{
+    // HACK: This is needed to correctly transform from NED (sensor frame) to NEU (navigation)
+    v->y = -v->y;
+
+    // From earth frame to body frame
+    quaternionRotateVector(v, v, &q);
+}
+
+/*
+ * Calculate rotation rate in rad/s in body frame
+ */
+void gyroGetMeasuredRotationRate(fpVector3_t *measuredRotationRate)
+{
+    for (int axis = 0; axis < 3; axis++) {
+        measuredRotationRate->v[axis] = DEGREES_TO_RADIANS(bmi270.gyroADCf[axis]);
+    }
+}
+
+/*
+ * Calculate measured acceleration in body frame in m/s^2
+ */
+void accGetMeasuredAcceleration(fpVector3_t *measuredAcc)
+{
+    for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+        measuredAcc->v[axis] = bmi270.accADCf_1G[axis] * GRAVITY_CMSS;
+    }
 }

@@ -26,6 +26,8 @@
 #include "common/maths.h"
 #include "common/vector.h"
 
+#include "flight/imu.h"
+
 typedef struct {
     float q0, q1, q2, q3;
 } fpQuaternion_t;
@@ -91,14 +93,14 @@ static inline float quaternionNormSqared(const fpQuaternion_t * q)
     return sq(q->q0) + sq(q->q1) + sq(q->q2) + sq(q->q3);
 }
 
-static inline fpQuaternion_t * quaternionMultiply(fpQuaternion_t * result, const fpQuaternion_t * a, const fpQuaternion_t * b)
+static inline quaternion * quaternionMultiply(quaternion * result, const quaternion * a, const quaternion * b)
 {
-  fpQuaternion_t p;
+  quaternion p;
 
-  p.q0 = a->q0 * b->q0 - a->q1 * b->q1 - a->q2 * b->q2 - a->q3 * b->q3;
-  p.q1 = a->q0 * b->q1 + a->q1 * b->q0 + a->q2 * b->q3 - a->q3 * b->q2;
-  p.q2 = a->q0 * b->q2 - a->q1 * b->q3 + a->q2 * b->q0 + a->q3 * b->q1;
-  p.q3 = a->q0 * b->q3 + a->q1 * b->q2 - a->q2 * b->q1 + a->q3 * b->q0;
+  p.w = a->w * b->w - a->x * b->x - a->y * b->y - a->z * b->z;
+  p.x = a->w * b->x + a->x * b->w + a->y * b->z - a->z * b->y;
+  p.y = a->w * b->y - a->x * b->z + a->y * b->w + a->z * b->x;
+  p.z = a->w * b->z + a->x * b->y - a->y * b->x + a->z * b->w;
 
   *result = p;
   return result;
@@ -130,12 +132,12 @@ static inline fpQuaternion_t * quaternionAdd(fpQuaternion_t * result, const fpQu
     return result;
 }
 
-static inline fpQuaternion_t * quaternionConjugate(fpQuaternion_t * result, const fpQuaternion_t * q)
+static inline quaternion * quaternionConjugate(quaternion * result, const quaternion * q)
 {
-    result->q0 =  q->q0;
-    result->q1 = -q->q1;
-    result->q2 = -q->q2;
-    result->q3 = -q->q3;
+    result->w =  q->w;
+    result->x = -q->x;
+    result->y = -q->y;
+    result->z = -q->z;
 
     return result;
 }
@@ -160,40 +162,40 @@ static inline fpQuaternion_t * quaternionNormalize(fpQuaternion_t * result, cons
     return result;
 }
 
-static inline fpVector3_t * quaternionRotateVector(fpVector3_t * result, const fpVector3_t * vect, const fpQuaternion_t * ref)
+static inline fpVector3_t * quaternionRotateVector(fpVector3_t * result, const fpVector3_t * vect, const quaternion * ref)
 {
-    fpQuaternion_t vectQuat, refConj;
+  quaternion vectQuat, refConj;
 
-    vectQuat.q0 = 0;
-    vectQuat.q1 = vect->x;
-    vectQuat.q2 = vect->y;
-    vectQuat.q3 = vect->z;
+    vectQuat.w = 0;
+    vectQuat.x = vect->x;
+    vectQuat.y = vect->y;
+    vectQuat.z = vect->z;
 
     quaternionConjugate(&refConj, ref);
     quaternionMultiply(&vectQuat, &refConj, &vectQuat);
     quaternionMultiply(&vectQuat, &vectQuat, ref);
 
-    result->x = vectQuat.q1;
-    result->y = vectQuat.q2;
-    result->z = vectQuat.q3;
+    result->x = vectQuat.x;
+    result->y = vectQuat.y;
+    result->z = vectQuat.z;
     return result;
 }
 
-static inline fpVector3_t * quaternionRotateVectorInv(fpVector3_t * result, const fpVector3_t * vect, const fpQuaternion_t * ref)
+static inline fpVector3_t * quaternionRotateVectorInv(fpVector3_t * result, const fpVector3_t * vect, const quaternion * ref)
 {
-    fpQuaternion_t vectQuat, refConj;
+  quaternion vectQuat, refConj;
 
-    vectQuat.q0 = 0;
-    vectQuat.q1 = vect->x;
-    vectQuat.q2 = vect->y;
-    vectQuat.q3 = vect->z;
+    vectQuat.w = 0;
+    vectQuat.x = vect->x;
+    vectQuat.y = vect->y;
+    vectQuat.z = vect->z;
 
     quaternionConjugate(&refConj, ref);
     quaternionMultiply(&vectQuat, ref, &vectQuat);
     quaternionMultiply(&vectQuat, &vectQuat, &refConj);
 
-    result->x = vectQuat.q1;
-    result->y = vectQuat.q2;
-    result->z = vectQuat.q3;
+    result->x = vectQuat.x;
+    result->y = vectQuat.y;
+    result->z = vectQuat.z;
     return result;
 }

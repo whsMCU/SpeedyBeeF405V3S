@@ -83,6 +83,9 @@ void gyroConfig_init(void)
   bmi270.accelerationTrims.values.roll = 21;
   bmi270.accelerationTrims.values.pitch = -55;
   bmi270.accelerationTrims.values.yaw = -6;
+
+  bmi270.init_gyro_cal_enabled = true;
+  bmi270.gravity_cmss_cal = 0;
 }
 
 static uint16_t calculateNyquistAdjustedNotchHz(uint16_t notchHz, uint16_t notchCutoffHz)

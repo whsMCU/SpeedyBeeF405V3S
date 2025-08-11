@@ -202,7 +202,7 @@ void init(void)
 #ifdef USE_BARO
     baroStartCalibration();
 #endif
-    initializePositionEstimator();
+
 #ifdef USE_RANGEFINDER
     rangefinderInit();
 #endif

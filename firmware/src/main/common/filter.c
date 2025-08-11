@@ -93,6 +93,10 @@ float pt1FilterApply3(pt1Filter3_t *filter, float input, float dT)
     return filter->state;
 }
 
+float pt1FilterGetLastOutput(pt1Filter3_t *filter) {
+    return filter->state;
+}
+
 // PT2 Low Pass filter
 
 float pt2FilterGain(float f_cut, float dT)

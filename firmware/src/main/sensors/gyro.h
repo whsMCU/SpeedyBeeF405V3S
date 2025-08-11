@@ -128,11 +128,15 @@ typedef struct gyro_s {
 
     uint16_t gyroSampleRateHz;
 
+    bool init_gyro_cal_enabled;
+    float gravity_cmss_cal;
+
     float acc_1G_rec;
     uint16_t acc_1G;
     int16_t accADCRaw[XYZ_AXIS_COUNT];
     float accADC[XYZ_AXIS_COUNT];
     float accADCf[XYZ_AXIS_COUNT];
+    float accADCf_1G[XYZ_AXIS_COUNT];
     float accPrevious[XYZ_AXIS_COUNT];
     flightDynamicsTrims_t accelerationTrims;
     rollAndPitchTrims_t rollAndPitchTrims;

@@ -23,7 +23,7 @@
 #include "common/axis.h"
 #include "common/maths.h"
 #include "common/filter.h"
-//#include "common/calibration.h"
+#include "common/calibration.h"
 #include "common/vector.h"
 
 #include "sensors/sensors.h"
@@ -138,7 +138,7 @@ typedef struct {
     fpVector3_t             accelBias;
     float                   calibratedGravityCMSS;
     float                   accWeightFactor;
-//    zeroCalibrationScalar_t gravityCalibration;
+    zeroCalibrationScalar_t gravityCalibration;
 } navPosisitonEstimatorIMU_t;
 
 typedef enum {

@@ -61,16 +61,6 @@ void updatePositionEstimator_OpticalFlowTopic(timeUs_t currentTimeUs)
 }
 #endif
 
-fpQuaternion_t orientation;
-static void imuTransformVectorBodyToEarth(fpVector3_t * v)
-{
-    // From body frame to earth frame
-    quaternionRotateVectorInv(v, v, &orientation);
-
-    // HACK: This is needed to correctly transform from NED (sensor frame) to NEU (navigation)
-    v->y = -v->y;
-}
-
 bool estimationCalculateCorrection_XY_FLOW(estimationContext_t * ctx)
 {
 #if defined(USE_RANGEFINDER) && defined(USE_OPFLOW)
@@ -94,7 +84,7 @@ bool estimationCalculateCorrection_XY_FLOW(estimationContext_t * ctx)
     };
 
     // At this point flowVel will hold linear velocities in earth frame
-    imuTransformVectorBodyToEarth(&flowVel);
+//    imuTransformVectorBodyToEarth(&flowVel);
 
 //    // Calculate velocity correction
 //    const float flowVelXInnov = flowVel.x - posEstimator.est.vel.x;

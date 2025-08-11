@@ -24,12 +24,16 @@
 #include "common/axis.h"
 #include "common/maths.h"
 #include "common/time.h"
+#include "common/vector.h"
 //#include "pg/pg.h"
 
 // Exported symbols
 extern bool canUseGPSHeading;
 extern float accAverage[XYZ_AXIS_COUNT];
 extern int16_t heading;
+
+extern fpVector3_t imuMeasuredAccelBF;         // cm/s/s
+extern fpVector3_t imuMeasuredRotationBF;       // rad/s
 
 typedef struct {
     float w,x,y,z;
@@ -86,3 +90,9 @@ void imuQuaternionHeadfreeTransformVectorEarthToBody(t_fp_vector_def * v);
 bool shouldInitializeGPSHeading(void);
 
 bool isUpright(void);
+
+void imuTransformVectorBodyToEarth(fpVector3_t * v);
+void imuTransformVectorEarthToBody(fpVector3_t * v);
+
+void gyroGetMeasuredRotationRate(fpVector3_t *measuredRotationRate);
+void accGetMeasuredAcceleration(fpVector3_t *measuredAcc);

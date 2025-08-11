@@ -247,6 +247,9 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 
   throttle = rcCommand[THROTTLE] + throttleAngleCorrection;
 
+  DEBUG_SET(DEBUG_NONE, 0, (throttle));
+  DEBUG_SET(DEBUG_NONE, 1, (throttleAngleCorrection));
+
   if((rcData[THROTTLE] < 1030 || !ARMING_FLAG(ARMED))&& _PID_Test.pid_test_flag == 0)
   {
 	  Reset_All_PID_Integrator();

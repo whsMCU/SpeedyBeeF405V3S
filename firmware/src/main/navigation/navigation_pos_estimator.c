@@ -68,6 +68,7 @@ void positionEstimationConfig_Init(void)
   positionEstimationConfig.w_z_surface_p = 3.5;
   positionEstimationConfig.w_z_surface_v = 6.1;
   positionEstimationConfig.w_xyz_acc_p = 1.0;
+  positionEstimationConfig.gravity_calibration_tolerance = 5;
 }
 
 //PG_REGISTER_WITH_RESET_TEMPLATE(positionEstimationConfig_t, positionEstimationConfig, PG_POSITION_ESTIMATION_CONFIG, 5);
@@ -363,23 +364,23 @@ void positionEstimationConfig_Init(void)
 // * Update IMU topic
 // *  Function is called at main loop rate
 // */
-//static void restartGravityCalibration(void)
-//{
-//    if (!gyroConfig()->init_gyro_cal_enabled) {
-//        return;
-//    }
-//
-//    zeroCalibrationStartS(&posEstimator.imu.gravityCalibration, CALIBRATING_GRAVITY_TIME_MS, positionEstimationConfig()->gravity_calibration_tolerance, false);
-//}
-//
-//static bool gravityCalibrationComplete(void)
-//{
-//    if (!gyroConfig()->init_gyro_cal_enabled) {
-//        return true;
-//    }
-//
-//    return zeroCalibrationIsCompleteS(&posEstimator.imu.gravityCalibration);
-//}
+static void restartGravityCalibration(void)
+{
+    if (!bmi270.init_gyro_cal_enabled) {
+        return;
+    }
+
+    zeroCalibrationStartS(&posEstimator.imu.gravityCalibration, CALIBRATING_GRAVITY_TIME_MS, positionEstimationConfig.gravity_calibration_tolerance, false);
+}
+
+static bool gravityCalibrationComplete(void)
+{
+    if (!bmi270.init_gyro_cal_enabled) {
+        return true;
+    }
+
+    return zeroCalibrationIsCompleteS(&posEstimator.imu.gravityCalibration);
+}
 
 static void updateIMUEstimationWeight(const float dt)
 {
@@ -407,79 +408,74 @@ float navGetAccelerometerWeight(void)
     return accWeightScaled;
 }
 
-//static void updateIMUTopic(timeUs_t currentTimeUs)
-//{
-//    const float dt = US2S(currentTimeUs - posEstimator.imu.lastUpdateTime);
-//    posEstimator.imu.lastUpdateTime = currentTimeUs;
-//
-//    if (false) { //!isImuReady()
-//        posEstimator.imu.accelNEU.x = 0.0f;
-//        posEstimator.imu.accelNEU.y = 0.0f;
-//        posEstimator.imu.accelNEU.z = 0.0f;
-//
-//        //restartGravityCalibration();
-//    }
-//    else {
-//        /* Update acceleration weight based on vibration levels and clipping */
-//        updateIMUEstimationWeight(dt);
-//
-//        fpVector3_t accelBF;
-//
-//        /* Read acceleration data in body frame */
-//        accelBF.x = imuMeasuredAccelBF.x;
-//        accelBF.y = imuMeasuredAccelBF.y;
-//        accelBF.z = imuMeasuredAccelBF.z;
-//
-//        /* Correct accelerometer bias */
-//        accelBF.x -= posEstimator.imu.accelBias.x;
-//        accelBF.y -= posEstimator.imu.accelBias.y;
-//        accelBF.z -= posEstimator.imu.accelBias.z;
-//
-//        /* Rotate vector to Earth frame - from Forward-Right-Down to North-East-Up*/
-//        imuTransformVectorBodyToEarth(&accelBF);
-//
-//        /* Read acceleration data in NEU frame from IMU */
-//        posEstimator.imu.accelNEU.x = accelBF.x;
-//        posEstimator.imu.accelNEU.y = accelBF.y;
-//        posEstimator.imu.accelNEU.z = accelBF.z;
-//
-//        /* When unarmed, assume that accelerometer should measure 1G. Use that to correct accelerometer gain */
-//        if (gyroConfig()->init_gyro_cal_enabled) {
-//            if (!ARMING_FLAG(ARMED) && !gravityCalibrationComplete()) {
-//                zeroCalibrationAddValueS(&posEstimator.imu.gravityCalibration, posEstimator.imu.accelNEU.z);
-//
-//                if (gravityCalibrationComplete()) {
-//                    zeroCalibrationGetZeroS(&posEstimator.imu.gravityCalibration, &posEstimator.imu.calibratedGravityCMSS);
-//                    setGravityCalibration(posEstimator.imu.calibratedGravityCMSS);
-//                    LOG_DEBUG(POS_ESTIMATOR, "Gravity calibration complete (%d)", (int)lrintf(posEstimator.imu.calibratedGravityCMSS));
-//                }
-//            }
-//        } else {
-//            posEstimator.imu.gravityCalibration.params.state = ZERO_CALIBRATION_DONE;
-//            posEstimator.imu.calibratedGravityCMSS = gyroConfig()->gravity_cmss_cal;
-//        }
-//
-//        /* If calibration is incomplete - report zero acceleration */
-//        if (gravityCalibrationComplete()) {
-//#ifdef USE_SIMULATOR
-//            if (ARMING_FLAG(SIMULATOR_MODE_HITL) || ARMING_FLAG(SIMULATOR_MODE_SITL)) {
-//                posEstimator.imu.calibratedGravityCMSS = GRAVITY_CMSS;
-//            }
-//#endif
-//            posEstimator.imu.accelNEU.z -= posEstimator.imu.calibratedGravityCMSS;
-//        }
-//        else {
-//            posEstimator.imu.accelNEU.x = 0.0f;
-//            posEstimator.imu.accelNEU.y = 0.0f;
-//            posEstimator.imu.accelNEU.z = 0.0f;
-//        }
-//
-//        /* Update blackbox values */
+static void updateIMUTopic(timeUs_t currentTimeUs)
+{
+    const float dt = US2S(currentTimeUs - posEstimator.imu.lastUpdateTime);
+    posEstimator.imu.lastUpdateTime = currentTimeUs;
+
+    if (false) { //!isImuReady()
+        posEstimator.imu.accelNEU.x = 0.0f;
+        posEstimator.imu.accelNEU.y = 0.0f;
+        posEstimator.imu.accelNEU.z = 0.0f;
+
+        restartGravityCalibration();
+    }
+    else {
+        /* Update acceleration weight based on vibration levels and clipping */
+        updateIMUEstimationWeight(dt);
+
+        fpVector3_t accelBF;
+
+        /* Read acceleration data in body frame */
+        accelBF.x = imuMeasuredAccelBF.x;
+        accelBF.y = imuMeasuredAccelBF.y;
+        accelBF.z = imuMeasuredAccelBF.z;
+
+        /* Correct accelerometer bias */
+        accelBF.x -= posEstimator.imu.accelBias.x;
+        accelBF.y -= posEstimator.imu.accelBias.y;
+        accelBF.z -= posEstimator.imu.accelBias.z;
+
+        /* Rotate vector to Earth frame - from Forward-Right-Down to North-East-Up*/
+        imuTransformVectorBodyToEarth(&accelBF);
+
+        /* Read acceleration data in NEU frame from IMU */
+        posEstimator.imu.accelNEU.x = accelBF.x;
+        posEstimator.imu.accelNEU.y = accelBF.y;
+        posEstimator.imu.accelNEU.z = accelBF.z;
+
+        /* When unarmed, assume that accelerometer should measure 1G. Use that to correct accelerometer gain */
+        if (bmi270.init_gyro_cal_enabled) {
+            if (!ARMING_FLAG(ARMED) && !gravityCalibrationComplete()) {
+                zeroCalibrationAddValueS(&posEstimator.imu.gravityCalibration, posEstimator.imu.accelNEU.z);
+
+                if (gravityCalibrationComplete()) {
+                    zeroCalibrationGetZeroS(&posEstimator.imu.gravityCalibration, &posEstimator.imu.calibratedGravityCMSS);
+                    setGravityCalibration(posEstimator.imu.calibratedGravityCMSS);
+                    //LOG_DEBUG(POS_ESTIMATOR, "Gravity calibration complete (%d)", (int)lrintf(posEstimator.imu.calibratedGravityCMSS));
+                }
+            }
+        } else {
+            posEstimator.imu.gravityCalibration.params.state = ZERO_CALIBRATION_DONE;
+            posEstimator.imu.calibratedGravityCMSS = bmi270.gravity_cmss_cal;
+        }
+
+        /* If calibration is incomplete - report zero acceleration */
+        if (gravityCalibrationComplete()) {
+            posEstimator.imu.accelNEU.z -= posEstimator.imu.calibratedGravityCMSS;
+        }
+        else {
+            posEstimator.imu.accelNEU.x = 0.0f;
+            posEstimator.imu.accelNEU.y = 0.0f;
+            posEstimator.imu.accelNEU.z = 0.0f;
+        }
+
+        /* Update blackbox values */
 //        navAccNEU[X] = posEstimator.imu.accelNEU.x;
 //        navAccNEU[Y] = posEstimator.imu.accelNEU.y;
 //        navAccNEU[Z] = posEstimator.imu.accelNEU.z;
-//    }
-//}
+    }
+}
 
 float updateEPE(const float oldEPE, const float dt, const float newEPE, const float w)
 {
@@ -543,32 +539,32 @@ static uint32_t calculateCurrentValidityFlags(timeUs_t currentTimeUs)
     return new_Flags;
 }
 
-//static void estimationPredict(estimationContext_t * ctx)
-//{
-//    const float accWeight = navGetAccelerometerWeight();
-//
-//    /* Prediction step: Z-axis */
-//    if ((ctx->newFlags & EST_Z_VALID)) {
-//        posEstimator.est.pos.z += posEstimator.est.vel.z * ctx->dt;
-//        posEstimator.est.pos.z += posEstimator.imu.accelNEU.z * sq(ctx->dt) / 2.0f * accWeight;
-//        posEstimator.est.vel.z += posEstimator.imu.accelNEU.z * ctx->dt * sq(accWeight);
-//    }
-//
-//    /* Prediction step: XY-axis */
-//    if ((ctx->newFlags & EST_XY_VALID)) {
-//        // Predict based on known velocity
-//        posEstimator.est.pos.x += posEstimator.est.vel.x * ctx->dt;
-//        posEstimator.est.pos.y += posEstimator.est.vel.y * ctx->dt;
-//
-//        // If heading is valid, accelNEU is valid as well. Account for acceleration
-//        if (navIsHeadingUsable() && navIsAccelerationUsable()) {
-//            posEstimator.est.pos.x += posEstimator.imu.accelNEU.x * sq(ctx->dt) / 2.0f * accWeight;
-//            posEstimator.est.pos.y += posEstimator.imu.accelNEU.y * sq(ctx->dt) / 2.0f * accWeight;
-//            posEstimator.est.vel.x += posEstimator.imu.accelNEU.x * ctx->dt * sq(accWeight);
-//            posEstimator.est.vel.y += posEstimator.imu.accelNEU.y * ctx->dt * sq(accWeight);
-//        }
-//    }
-//}
+static void estimationPredict(estimationContext_t * ctx)
+{
+    const float accWeight = navGetAccelerometerWeight();
+
+    /* Prediction step: Z-axis */
+    if ((ctx->newFlags & EST_Z_VALID)) {
+        posEstimator.est.pos.z += posEstimator.est.vel.z * ctx->dt;
+        posEstimator.est.pos.z += posEstimator.imu.accelNEU.z * sq(ctx->dt) / 2.0f * accWeight;
+        posEstimator.est.vel.z += posEstimator.imu.accelNEU.z * ctx->dt * sq(accWeight);
+    }
+
+    /* Prediction step: XY-axis */
+    if ((ctx->newFlags & EST_XY_VALID)) {
+        // Predict based on known velocity
+        posEstimator.est.pos.x += posEstimator.est.vel.x * ctx->dt;
+        posEstimator.est.pos.y += posEstimator.est.vel.y * ctx->dt;
+
+        // If heading is valid, accelNEU is valid as well. Account for acceleration
+        if (navIsHeadingUsable() && navIsAccelerationUsable()) {
+            posEstimator.est.pos.x += posEstimator.imu.accelNEU.x * sq(ctx->dt) / 2.0f * accWeight;
+            posEstimator.est.pos.y += posEstimator.imu.accelNEU.y * sq(ctx->dt) / 2.0f * accWeight;
+            posEstimator.est.vel.x += posEstimator.imu.accelNEU.x * ctx->dt * sq(accWeight);
+            posEstimator.est.vel.y += posEstimator.imu.accelNEU.y * ctx->dt * sq(accWeight);
+        }
+    }
+}
 
 //static bool estimationCalculateCorrection_Z(estimationContext_t * ctx)
 //{
@@ -753,10 +749,10 @@ void updateEstimatedTopic(timeUs_t currentTimeUs)
     vectorZero(&ctx.accBiasCorr);
 
     /* AGL estimation - separate process, decouples from Z coordinate */
-//    estimationCalculateAGL(&ctx);
+    estimationCalculateAGL(&ctx);
 
     /* Prediction stage: X,Y,Z */
-    //estimationPredict(&ctx);
+    estimationPredict(&ctx);
 //
 //    /* Correction stage: Z */
 //    const bool estZCorrectOk =
@@ -795,16 +791,16 @@ void updateEstimatedTopic(timeUs_t currentTimeUs)
 //            posEstimator.imu.accelBias.z += ctx.accBiasCorr.z * positionEstimationConfig()->w_acc_bias * ctx.dt;
 //        }
 //    }
-//
-//    /* Update ground course */
+
+    /* Update ground course */
 //    estimationCalculateGroundCourse(currentTimeUs);
-//
-//    /* Update uncertainty */
-//    posEstimator.est.eph = ctx.newEPH;
-//    posEstimator.est.epv = ctx.newEPV;
-//
-//    // Keep flags for further usage
-//    posEstimator.flags = ctx.newFlags;
+
+    /* Update uncertainty */
+    posEstimator.est.eph = ctx.newEPH;
+    posEstimator.est.epv = ctx.newEPV;
+
+    // Keep flags for further usage
+    posEstimator.flags = ctx.newFlags;
 }
 
 ///**
@@ -903,7 +899,7 @@ void initializePositionEstimator(void)
 
     posEstimator.imu.accWeightFactor = 0;
 
-    //restartGravityCalibration();
+    restartGravityCalibration();
 
     for (axis = 0; axis < 3; axis++) {
         posEstimator.imu.accelBias.v[axis] = 0;
@@ -921,17 +917,17 @@ void initializePositionEstimator(void)
  */
 void updatePositionEstimator(void)
 {
-//    static bool isInitialized = false;
-//
-//    if (!isInitialized) {
-//        initializePositionEstimator();
-//        isInitialized = true;
-//    }
+    static bool isInitialized = false;
+
+    if (!isInitialized) {
+        initializePositionEstimator();
+        isInitialized = true;
+    }
 
     const timeUs_t currentTimeUs = micros();
 
     /* Read updates from IMU, preprocess */
-    //updateIMUTopic(currentTimeUs);
+    updateIMUTopic(currentTimeUs);
 
     /* Update estimate */
     updateEstimatedTopic(currentTimeUs);
