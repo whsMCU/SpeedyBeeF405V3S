@@ -670,4 +670,9 @@ void gpsUpdate(uint32_t currentTimeUs)
   }
 }
 
+bool isGPSHeadingValid(void)
+{
+    return sensors(SENSOR_GPS) && STATE(GPS_FIX) && GpsNav.GPS_numSat >= 6;// && gpsSol.groundSpeed >= 300;
+}
+
 #endif

@@ -140,7 +140,8 @@ bool gyroInit(void)
 	bmi270.rxBuf = &gyroBuf1[GYRO_BUF_SIZE / 2];
 
 	bmi270Config();
-
+	sensorsSet(SENSOR_ACC);
+	sensorsSet(SENSOR_GYRO);
   filterApplyFnPtr *lowpassFilterApplyFn;
   gyroLowpassFilter_t *lowpassFilter = NULL;
 

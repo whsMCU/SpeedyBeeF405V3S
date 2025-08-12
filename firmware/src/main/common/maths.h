@@ -43,6 +43,12 @@
 #define DEGREES_TO_RADIANS(angle) ((angle) * 0.0174532925f)
 #define RADIANS_TO_DEGREES(angle) ((angle) / RAD)
 
+#define CENTIDEGREES_TO_DECIDEGREES(angle) ((angle) / 10)
+#define DECIDEGREES_TO_CENTIDEGREES(angle) ((angle) * 10)
+
+#define RADIANS_TO_CENTIDEGREES(angle) (((angle) * 100.0f) / RAD)
+#define CENTIDEGREES_TO_RADIANS(angle) (((angle) / 100.0f) * RAD)
+
 #define CM_S_TO_KM_H(centimetersPerSecond) ((centimetersPerSecond) * 36 / 1000)
 #define CM_S_TO_MPH(centimetersPerSecond) ((centimetersPerSecond) * 10000 / 5080 / 88)
 
@@ -181,3 +187,5 @@ static inline float constrainf(float amt, float low, float high)
     else
         return amt;
 }
+int32_t applyDeadbandRescaled(int32_t value, int32_t deadband, int32_t min, int32_t max);
+int32_t wrap_36000(int32_t angle);

@@ -367,3 +367,24 @@ float calc_length_pythagorean_3D(const float firstElement, const float secondEle
 {
   return fast_fsqrtf(sq(firstElement) + sq(secondElement) + sq(thirdElement));
 }
+
+int32_t wrap_36000(int32_t angle)
+{
+    if (angle >= 36000)
+        angle -= 36000;
+    if (angle < 0)
+        angle += 36000;
+    return angle;
+}
+
+int32_t applyDeadbandRescaled(int32_t value, int32_t deadband, int32_t min, int32_t max)
+{
+    if (ABS(value) < deadband) {
+        value = 0;
+    } else if (value > 0) {
+        value = scaleRange(value - deadband, 0, max - deadband, 0, max);
+    } else if (value < 0) {
+        value = scaleRange(value + deadband, min + deadband, 0, min, 0);
+    }
+    return value;
+}

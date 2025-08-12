@@ -214,6 +214,8 @@ void gpsSetFixState(bool state);
 int32_t wrap_18000(int32_t ang);
 void GPS_reset_nav(void);
 
+bool isGPSHeadingValid(void);
+
 #ifdef __cplusplus
 }
 #endif

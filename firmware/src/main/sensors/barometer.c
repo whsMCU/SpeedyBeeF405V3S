@@ -184,6 +184,7 @@ void taskUpdateBaro(timeUs_t currentTimeUs)
     if (newDeadline != 0) {
         rescheduleTask(TASK_SELF, newDeadline);
     }
+    updatePositionEstimator_BaroTopic(currentTimeUs);
 }
 
 uint32_t baroUpdate(timeUs_t currentTimeUs)

@@ -228,7 +228,7 @@ void nav_Init(void)
 
 ///* NAV variables */
 //static navWapointHeading_t wpHeadingControl;
-//navigationPosControl_t posControl;
+navigationPosControl_t posControl;
 //navSystemStatus_t NAV_Status;
 //
 //EXTENDED_FASTRAM multicopterPosXyCoefficients_t multicopterPosXyCoefficients;
@@ -2058,10 +2058,10 @@ void nav_Init(void)
 //    navActualVelocity[X] = constrain(newVelX, -32678, 32767);
 //    navActualVelocity[Y] = constrain(newVelY, -32678, 32767);
 //}
-//
-///*-----------------------------------------------------------
-// * Processes an update to Z-position and velocity
-// *-----------------------------------------------------------*/
+
+/*-----------------------------------------------------------
+ * Processes an update to Z-position and velocity
+ *-----------------------------------------------------------*/
 //void updateActualAltitudeAndClimbRate(bool estimateValid, float newAltitude, float newVelocity, float surfaceDistance, float surfaceVelocity, navigationEstimateStatus_e surfaceStatus)
 //{
 //    posControl.actualState.abs.pos.z = newAltitude;
@@ -2110,46 +2110,46 @@ void nav_Init(void)
 //    navLatestActualPosition[Z] = navGetCurrentActualPositionAndVelocity()->pos.z;
 //    navActualVelocity[Z] = constrain(navGetCurrentActualPositionAndVelocity()->vel.z, -32678, 32767);
 //}
-//
-///*-----------------------------------------------------------
-// * Processes an update to estimated heading
-// *-----------------------------------------------------------*/
-//void updateActualHeading(bool headingValid, int32_t newHeading, int32_t newGroundCourse)
-//{
-//    /* Update heading. Check if we're acquiring a valid heading for the
-//     * first time and update home heading accordingly.
-//     */
-//
-//    navigationEstimateStatus_e newEstHeading = headingValid ? EST_TRUSTED : EST_NONE;
-//
-//#ifdef USE_DEV_TOOLS
-//    if (systemConfig()->groundTestMode && STATE(AIRPLANE)) {
-//        newEstHeading = EST_TRUSTED;
-//    }
-//#endif
-//    if (newEstHeading >= EST_USABLE && posControl.flags.estHeadingStatus < EST_USABLE &&
-//        (posControl.rthState.homeFlags & (NAV_HOME_VALID_XY | NAV_HOME_VALID_Z)) &&
-//        (posControl.rthState.homeFlags & NAV_HOME_VALID_HEADING) == 0) {
-//
-//        // Home was stored using the fake heading (assuming boot as 0deg). Calculate
-//        // the offset from the fake to the actual yaw and apply the same rotation
-//        // to the home point.
-//        int32_t fakeToRealYawOffset = newHeading - posControl.actualState.yaw;
-//        posControl.rthState.homePosition.heading += fakeToRealYawOffset;
-//        posControl.rthState.homePosition.heading = wrap_36000(posControl.rthState.homePosition.heading);
-//
-//        posControl.rthState.homeFlags |= NAV_HOME_VALID_HEADING;
-//    }
-//
-//    posControl.actualState.yaw = newHeading;
-//    posControl.actualState.cog = newGroundCourse;
-//    posControl.flags.estHeadingStatus = newEstHeading;
-//
-//    /* Precompute sin/cos of yaw angle */
-//    posControl.actualState.sinYaw = sin_approx(CENTIDEGREES_TO_RADIANS(newHeading));
-//    posControl.actualState.cosYaw = cos_approx(CENTIDEGREES_TO_RADIANS(newHeading));
-//}
-//
+
+/*-----------------------------------------------------------
+ * Processes an update to estimated heading
+ *-----------------------------------------------------------*/
+void updateActualHeading(bool headingValid, int32_t newHeading, int32_t newGroundCourse)
+{
+    /* Update heading. Check if we're acquiring a valid heading for the
+     * first time and update home heading accordingly.
+     */
+
+    navigationEstimateStatus_e newEstHeading = headingValid ? EST_TRUSTED : EST_NONE;
+
+#ifdef USE_DEV_TOOLS
+    if (systemConfig()->groundTestMode && STATE(AIRPLANE)) {
+        newEstHeading = EST_TRUSTED;
+    }
+#endif
+    if (newEstHeading >= EST_USABLE && posControl.flags.estHeadingStatus < EST_USABLE &&
+        (posControl.rthState.homeFlags & (NAV_HOME_VALID_XY | NAV_HOME_VALID_Z)) &&
+        (posControl.rthState.homeFlags & NAV_HOME_VALID_HEADING) == 0) {
+
+        // Home was stored using the fake heading (assuming boot as 0deg). Calculate
+        // the offset from the fake to the actual yaw and apply the same rotation
+        // to the home point.
+        int32_t fakeToRealYawOffset = newHeading - posControl.actualState.yaw;
+        posControl.rthState.homePosition.heading += fakeToRealYawOffset;
+        posControl.rthState.homePosition.heading = wrap_36000(posControl.rthState.homePosition.heading);
+
+        posControl.rthState.homeFlags |= NAV_HOME_VALID_HEADING;
+    }
+
+    posControl.actualState.yaw = newHeading;
+    posControl.actualState.cog = newGroundCourse;
+    posControl.flags.estHeadingStatus = newEstHeading;
+
+    /* Precompute sin/cos of yaw angle */
+    posControl.actualState.sinYaw = sin_approx(CENTIDEGREES_TO_RADIANS(newHeading));
+    posControl.actualState.cosYaw = cos_approx(CENTIDEGREES_TO_RADIANS(newHeading));
+}
+
 ///*-----------------------------------------------------------
 // * Returns pointer to currently used position (ABS or AGL) depending on surface tracking status
 // *-----------------------------------------------------------*/
@@ -2290,10 +2290,10 @@ void nav_Init(void)
 //{
 //    return posControl.rthState.rthFinalAltitude;
 //}
-//
-///*-----------------------------------------------------------
-// * Update the RTH Altitudes
-// *-----------------------------------------------------------*/
+
+/*-----------------------------------------------------------
+ * Update the RTH Altitudes
+ *-----------------------------------------------------------*/
 //static void updateDesiredRTHAltitude(void)
 //{
 //    if (ARMING_FLAG(ARMED)) {
@@ -2349,7 +2349,7 @@ void nav_Init(void)
 //        posControl.rthState.rthFinalAltitude = posControl.actualState.abs.pos.z;
 //    }
 //}
-//
+
 ///*-----------------------------------------------------------
 // * RTH sanity test logic
 // *-----------------------------------------------------------*/
