@@ -78,6 +78,7 @@ void gyroConfig_init(void)
   bmi270.acc_1G = 512 * 4;
   bmi270.acc_1G_rec = 1.0f / bmi270.acc_1G;
   bmi270.acc_high_fsr = false;
+  bmi270.acc_lpf_hz = 10;
 
   resetFlightDynamicsTrims(&bmi270.accelerationTrims);
   bmi270.accelerationTrims.values.roll = 21;
@@ -132,6 +133,29 @@ static void gyroInitFilterNotch2(uint16_t notchHz, uint16_t notchCutoffHz)
     }
 }
 
+static void accInitFilters(void)
+{
+    // Only set the lowpass cutoff if the ACC sample rate is detected otherwise
+    // the filter initialization is not defined (sample rate = 0)
+  bmi270.accLpfCutHz = (bmi270.sampleRateHz) ? bmi270.acc_lpf_hz : 0;
+    if (bmi270.accLpfCutHz) {
+        const uint32_t accSampleTimeUs = 1e6 / bmi270.sampleRateHz;
+        for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+            biquadFilterInitLPF(&bmi270.accFilter[axis], bmi270.accLpfCutHz, accSampleTimeUs);
+        }
+    }
+}
+
+static void initGyroLPF(float cutoffHz, float gyroDt,
+                        filterApplyFnPtr *applyFn, gyroLowpassFilter_t *filters)
+{
+    float gain = pt1FilterGain(cutoffHz, gyroDt);
+    *applyFn = (filterApplyFnPtr) pt1FilterApply;
+    for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+        pt1FilterInit(&filters[axis].pt1FilterState, gain);
+    }
+}
+
 bool gyroInit(void)
 {
 	static uint8_t gyroBuf1[GYRO_BUF_SIZE];
@@ -142,32 +166,13 @@ bool gyroInit(void)
 	bmi270Config();
 	sensorsSet(SENSOR_ACC);
 	sensorsSet(SENSOR_GYRO);
-  filterApplyFnPtr *lowpassFilterApplyFn;
-  gyroLowpassFilter_t *lowpassFilter = NULL;
-
-  lowpassFilterApplyFn = &bmi270.lowpassFilterApplyFn;
-  lowpassFilter = bmi270.lowpassFilter;
 
   float lpf1Hz = 250.f;
   float lpf2Hz = 500.f;
   float gyroDt = 312 * 1e-6f;
 
-	float gain = pt1FilterGain(lpf1Hz, gyroDt);
-	*lowpassFilterApplyFn = nullFilterApply;
-	*lowpassFilterApplyFn = (filterApplyFnPtr) pt1FilterApply;
-  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-      pt1FilterInit(&lowpassFilter[axis].pt1FilterState, gain);
-  }
-
-  gain = pt1FilterGain(lpf2Hz, gyroDt);
-  lowpassFilterApplyFn = &bmi270.lowpass2FilterApplyFn;
-  lowpassFilter = bmi270.lowpass2Filter;
-
-  *lowpassFilterApplyFn = nullFilterApply;
-  *lowpassFilterApplyFn = (filterApplyFnPtr) pt1FilterApply;
-  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-      pt1FilterInit(&lowpassFilter[axis].pt1FilterState, gain);
-  }
+	initGyroLPF(lpf1Hz, gyroDt, &bmi270.lowpassFilterApplyFn, bmi270.lowpassFilter);
+	initGyroLPF(lpf2Hz, gyroDt, &bmi270.lowpass2FilterApplyFn, bmi270.lowpass2Filter);
 
   gyroInitFilterNotch1(bmi270.gyro_soft_notch_hz_1, bmi270.gyro_soft_notch_cutoff_1);
   gyroInitFilterNotch2(bmi270.gyro_soft_notch_hz_2, bmi270.gyro_soft_notch_cutoff_2);
@@ -178,6 +183,8 @@ bool gyroInit(void)
 #ifdef USE_DYN_NOTCH_FILTER
     dynNotchInit(&bmi270.dynNotchConfig, bmi270.targetLooptime);
 #endif
+
+    accInitFilters();
 
   return true;
 }

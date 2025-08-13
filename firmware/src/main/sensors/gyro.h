@@ -138,6 +138,11 @@ typedef struct gyro_s {
     float accADCf[XYZ_AXIS_COUNT];
     float accADCf_1G[XYZ_AXIS_COUNT];
     float accPrevious[XYZ_AXIS_COUNT];
+
+    uint16_t acc_lpf_hz;                    // cutoff frequency for the low pass filter used on the acc z-axis for althold in Hz
+    uint16_t accLpfCutHz;
+    biquadFilter_t accFilter[XYZ_AXIS_COUNT];
+
     flightDynamicsTrims_t accelerationTrims;
     rollAndPitchTrims_t rollAndPitchTrims;
     int acc_accumulatedMeasurementCount;

@@ -110,6 +110,8 @@ typedef struct {
   float  dTnav;                             // Delta Time in milliseconds for navigation computations, updated with every good GPS read
   int16_t actual_speed[2];
   int32_t altCm;                            // altitude in 0.01m
+  uint16_t groundSpeed;           // speed in 0.1m/s
+  uint16_t groundCourse;          // degrees * 10
 
   GPS_PID_t posholdPID[2];
   GPS_PID_t poshold_ratePID[2];

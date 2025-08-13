@@ -221,7 +221,7 @@ static FAST_CODE void gyroUpdateSensor()
 
 #define GYRO_SAMPLES_MEDIAN 3
 
-static float applyGyrorMedianFilter(int axis, float newGyroReading)
+static float applyGyroMedianFilter(int axis, float newGyroReading)
 {
     static float gyroFilterSamples[XYZ_AXIS_COUNT][GYRO_SAMPLES_MEDIAN];
 
@@ -245,29 +245,29 @@ FAST_CODE void taskGyroUpdate(timeUs_t currentTimeUs)
 	bmi270.gyroADC[Y] = bmi270.gyroADC[Y] * bmi270.scale;
 	bmi270.gyroADC[Z] = bmi270.gyroADC[Z] * bmi270.scale;
 
-  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-    bmi270.gyroADCf[axis] = applyGyrorMedianFilter(axis, bmi270.gyroADC[axis]);
-  }
-  //DEBUG_SET(DEBUG_NONE, 0, (bmi270.gyroADCf[Y]));
+//  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+//    bmi270.gyroADCf[axis] = applyGyroMedianFilter(axis, bmi270.gyroADC[axis]);
+//  }
+  //DEBUG_SET(DEBUG_NONE, 0, (bmi270.gyroADC[Y]));
   if (bmi270.downsampleFilterEnabled) {
       // using gyro lowpass 2 filter for downsampling
-    bmi270.sampleSum[X] = bmi270.lowpass2FilterApplyFn((filter_t *)&bmi270.lowpass2Filter[X], bmi270.gyroADCf[X]);
-    bmi270.sampleSum[Y] = bmi270.lowpass2FilterApplyFn((filter_t *)&bmi270.lowpass2Filter[Y], bmi270.gyroADCf[Y]);
-    bmi270.sampleSum[Z] = bmi270.lowpass2FilterApplyFn((filter_t *)&bmi270.lowpass2Filter[Z], bmi270.gyroADCf[Z]);
+    bmi270.sampleSum[X] = bmi270.lowpass2FilterApplyFn((filter_t *)&bmi270.lowpass2Filter[X], bmi270.gyroADC[X]);
+    bmi270.sampleSum[Y] = bmi270.lowpass2FilterApplyFn((filter_t *)&bmi270.lowpass2Filter[Y], bmi270.gyroADC[Y]);
+    bmi270.sampleSum[Z] = bmi270.lowpass2FilterApplyFn((filter_t *)&bmi270.lowpass2Filter[Z], bmi270.gyroADC[Z]);
   } else {
       // using simple averaging for downsampling
-    bmi270.sampleSum[X] += bmi270.gyroADCf[X];
-    bmi270.sampleSum[Y] += bmi270.gyroADCf[Y];
-    bmi270.sampleSum[Z] += bmi270.gyroADCf[Z];
+    bmi270.sampleSum[X] += bmi270.gyroADC[X];
+    bmi270.sampleSum[Y] += bmi270.gyroADC[Y];
+    bmi270.sampleSum[Z] += bmi270.gyroADC[Z];
     bmi270.sampleCount++;
   }
 
   //DEBUG_SET(DEBUG_NONE, 1, (bmi270.sampleSum[Y]));
 
   DEBUG_SET(DEBUG_GYRO_RAW, 0, (deltaT));
-  DEBUG_SET(DEBUG_GYRO_RAW, 1, (bmi270.gyroADCf[X]));
-  DEBUG_SET(DEBUG_GYRO_RAW, 2, (bmi270.gyroADCf[Y]));
-  DEBUG_SET(DEBUG_GYRO_RAW, 3, (bmi270.gyroADCf[Z]));
+  DEBUG_SET(DEBUG_GYRO_RAW, 1, (bmi270.gyroADC[X]));
+  DEBUG_SET(DEBUG_GYRO_RAW, 2, (bmi270.gyroADC[Y]));
+  DEBUG_SET(DEBUG_GYRO_RAW, 3, (bmi270.gyroADC[Z]));
 
 #ifdef USE_OPFLOW
   // getTaskDeltaTime() returns delta time frozen at the moment of entering the scheduler. currentTime is frozen at the very same point.
@@ -300,18 +300,19 @@ static FAST_CODE void filterGyro(void)
 #ifdef USE_RPM_FILTER
         gyroADCf = rpmFilterGyro(axis, gyroADCf);
 #endif
-
+        //if(axis == X) DEBUG_SET(DEBUG_NONE, 0, (gyroADCf));
         // apply static notch filters and software lowpass filters
         gyroADCf = bmi270.notchFilter1ApplyFn((filter_t *)&bmi270.notchFilter1[axis], gyroADCf);
         gyroADCf = bmi270.notchFilter2ApplyFn((filter_t *)&bmi270.notchFilter2[axis], gyroADCf);
         gyroADCf = bmi270.lowpassFilterApplyFn((filter_t *)&bmi270.lowpassFilter[axis], gyroADCf);
-
+        //if(axis == X) DEBUG_SET(DEBUG_NONE, 1, (gyroADCf));
 #ifdef USE_DYN_NOTCH_FILTER
         if (isDynNotchActive()) {
             dynNotchPush(axis, gyroADCf);
             gyroADCf = dynNotchFilter(axis, gyroADCf);
         }
 #endif
+        //if(axis == X) DEBUG_SET(DEBUG_NONE, 2, (gyroADCf));
         bmi270.gyroADCf[axis] = gyroADCf;
     }
     //DEBUG_SET(DEBUG_NONE, 2, (bmi270.gyroADCf[Y]));
@@ -470,8 +471,7 @@ void taskAccUpdate(timeUs_t currentTimeUs)
 	}
 
   for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-    bmi270.accADC[axis] = (bmi270.accADC[axis] * 0.9) + (bmi270.accPrevious[axis] * 0.1);
-    bmi270.accPrevious[axis] = bmi270.accADC[axis];
+    bmi270.accADC[axis] = biquadFilterApply(&bmi270.accFilter[axis], bmi270.accADC[axis]);
   }
 
 	alignSensorViaRotation(bmi270.accADC, CW0_DEG);
@@ -486,6 +486,10 @@ void taskAccUpdate(timeUs_t currentTimeUs)
   }
 
   applyAccelerationTrims(&bmi270.accelerationTrims);
+
+  DEBUG_SET(DEBUG_ACCELEROMETER, 4, (bmi270.accADC[X]));
+  DEBUG_SET(DEBUG_ACCELEROMETER, 5, (bmi270.accADC[Y]));
+  DEBUG_SET(DEBUG_ACCELEROMETER, 6, (bmi270.accADC[Z]));
 
 
   // Calculate acceleration readings in G's

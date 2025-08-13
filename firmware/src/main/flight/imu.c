@@ -173,8 +173,13 @@ static float invSqrt(float x)
 {
     return 1.0f / sqrtf(x);
 }
-
-static void imuMahonyAHRSupdate(float dt, float gx, float gy, float gz,
+// g[xyz] - gyro reading, in rad/s
+// useAcc, a[xyz] - accelerometer reading, direction only, normalized internally
+// headingErrMag - heading error (in earth frame) derived from magnetometter, rad/s around Z axis (* dcmKpGain)
+// headingErrCog - heading error (in earth frame) derived from CourseOverGround, rad/s around Z axis (* dcmKpGain)
+// dcmKpGain - gain applied to all error sources
+static void imuMahonyAHRSupdate(float dt,
+                                float gx, float gy, float gz,
                                 bool useAcc, float ax, float ay, float az,
                                 bool useMag,
                                 bool useCOG, float courseOverGround, const float dcmKpGain)
@@ -449,7 +454,7 @@ static void imuComputeQuaternionFromRPY(quaternionProducts *quatProd, int16_t in
 
 static void imuCalculateEstimatedAttitude(timeUs_t currentTimeUs)
 {
-    static timeUs_t previousIMUUpdateTime;
+    static timeUs_t previousIMUUpdateTime = 0;
     bool useAcc = false;
     bool useMag = false;
     bool useCOG = false; // Whether or not correct yaw via imuMahonyAHRSupdate from our ground course
@@ -458,27 +463,29 @@ static void imuCalculateEstimatedAttitude(timeUs_t currentTimeUs)
     const timeDelta_t deltaT = currentTimeUs - previousIMUUpdateTime;
     previousIMUUpdateTime = currentTimeUs;
 
+    const float dt = deltaT * 1e-6f;
+
 #ifdef USE_MAG
-    if (compassIsHealthy()) {
+    if (sensors(SENSOR_MAG) && compassIsHealthy()) {
         useMag = true;
         useMag = false;
     }
 #endif
 
 #if defined(USE_GPS)
-//    if (!useMag && STATE(GPS_FIX) && gpsSol.numSat >= 5 && gpsSol.groundSpeed >= GPS_COG_MIN_GROUNDSPEED) {
-//        // Use GPS course over ground to correct attitude.values.yaw
-//		courseOverGround = DECIDEGREES_TO_RADIANS(gpsSol.groundCourse);
-//		useCOG = true;
-//
-//        if (useCOG && shouldInitializeGPSHeading()) {
-//            // Reset our reference and reinitialize quaternion.  This will likely ideally happen more than once per flight, but for now,
-//            // shouldInitializeGPSHeading() returns true only once.
-//            imuComputeQuaternionFromRPY(&qP, attitude.values.roll, attitude.values.pitch, gpsSol.groundCourse);
-//
-//            useCOG = false; // Don't use the COG when we first reinitialize.  Next time around though, yes.
-//        }
-//    }
+    if (!useMag && STATE(GPS_FIX) && GpsNav.GPS_numSat >= 5 && GpsNav.groundSpeed >= GPS_COG_MIN_GROUNDSPEED) {
+        // Use GPS course over ground to correct attitude.values.yaw
+		courseOverGround = DECIDEGREES_TO_RADIANS(GpsNav.groundCourse);
+		useCOG = true;
+
+        if (useCOG && shouldInitializeGPSHeading()) {
+            // Reset our reference and reinitialize quaternion.  This will likely ideally happen more than once per flight, but for now,
+            // shouldInitializeGPSHeading() returns true only once.
+            imuComputeQuaternionFromRPY(&qP, attitude.values.roll, attitude.values.pitch, GpsNav.groundCourse);
+
+            useCOG = false; // Don't use the COG when we first reinitialize.  Next time around though, yes.
+        }
+    }
 #endif
 
   float gyroAverage[XYZ_AXIS_COUNT];
@@ -496,7 +503,7 @@ static void imuCalculateEstimatedAttitude(timeUs_t currentTimeUs)
   DEBUG_SET(DEBUG_IMU, 5, (accAverage[Y]));
   DEBUG_SET(DEBUG_IMU, 6, (accAverage[Z]));
 
-  imuMahonyAHRSupdate(deltaT * 1e-6f,
+  imuMahonyAHRSupdate(dt,
                       DEGREES_TO_RADIANS(gyroAverage[X]), DEGREES_TO_RADIANS(gyroAverage[Y]), DEGREES_TO_RADIANS(gyroAverage[Z]),
                       useAcc, accAverage[X], accAverage[Y], accAverage[Z],
                       useMag,
@@ -523,7 +530,7 @@ static int calculateThrottleAngleCorrection(void)
 
 void imuUpdateAttitude(timeUs_t currentTimeUs)
 {
-  if (bmi270.isAccelUpdatedAtLeastOnce) {
+  if (sensors(SENSOR_ACC) && bmi270.isAccelUpdatedAtLeastOnce) {
 
     gyroGetMeasuredRotationRate(&imuMeasuredRotationBF);    // Calculate gyro rate in body frame in rad/s
     accGetMeasuredAcceleration(&imuMeasuredAccelBF);  // Calculate accel in body frame in cm/s/s
@@ -625,7 +632,7 @@ void imuQuaternionHeadfreeTransformVectorEarthToBody(t_fp_vector_def *v)
 bool isUpright(void)
 {
 #ifdef USE_ACC
-    return (attitudeIsEstablished && getCosTiltAngle() > smallAngleCosZ);
+    return !sensors(SENSOR_ACC) || (attitudeIsEstablished && getCosTiltAngle() > smallAngleCosZ);
 #else
     return true;
 #endif

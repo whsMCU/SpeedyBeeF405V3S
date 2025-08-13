@@ -284,6 +284,8 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
     }
     GpsNav.GPS_numSat = pvt.numSV;
     GpsNav.GPS_headVeh = pvt.headVeh;
+    GpsNav.groundSpeed = pvt.gSpeed / 10; // cm/s
+    GpsNav.groundCourse = (uint16_t) (pvt.headMot / 10000); // Heading 2D deg * 100000 rescaled to deg * 10
 
 #ifdef USE_RTC_TIME
         //set clock, when gps time is available
