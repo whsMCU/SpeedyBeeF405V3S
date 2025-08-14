@@ -113,7 +113,7 @@ void pidInit(void)
   rangefinder.althold.KP = 1.0f;
   rangefinder.althold.KI = 0.3f;
   rangefinder.althold.KD = 0.4f;
-  rangefinder.althold.integral_windup = 500;
+  rangefinder.althold.integral_windup = 50;
 
   opflow.poshold.KP = 1.0f;
   opflow.poshold.KI = 0.1f;
@@ -477,11 +477,12 @@ void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
     }
 
     DEBUG_SET(DEBUG_RANGEFINDER, 0, (althold->dt / 1e-6f));
-    DEBUG_SET(DEBUG_RANGEFINDER, 1, (althold->proportional_Height));
-    DEBUG_SET(DEBUG_RANGEFINDER, 2, (althold->integral_Height));
-    DEBUG_SET(DEBUG_RANGEFINDER, 3, (althold->derivative_Height));
-    DEBUG_SET(DEBUG_RANGEFINDER, 4, (althold->result));
-    DEBUG_SET(DEBUG_RANGEFINDER, 5, (rcCommand[THROTTLE]));
+    DEBUG_SET(DEBUG_RANGEFINDER, 1, (althold->error_Height));
+    DEBUG_SET(DEBUG_RANGEFINDER, 2, (althold->proportional_Height));
+    DEBUG_SET(DEBUG_RANGEFINDER, 3, (althold->integral_Height));
+    DEBUG_SET(DEBUG_RANGEFINDER, 4, (althold->derivative_Height));
+    DEBUG_SET(DEBUG_RANGEFINDER, 5, (althold->result));
+    DEBUG_SET(DEBUG_RANGEFINDER, 6, (rcCommand[THROTTLE]));
   }
 }
 #endif
