@@ -54,6 +54,11 @@ typedef struct {
   float KI;
   float KD;
   float result;
+
+  float dz_filtered;
+  float stick_deadband;
+  float climb_rate_scale;
+
 } rangefinder_althold_t;
 
 typedef struct rangefinder_s {

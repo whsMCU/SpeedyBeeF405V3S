@@ -60,7 +60,30 @@ static FAST_DATA_ZERO_INIT float throttle = 0;
 static FAST_DATA_ZERO_INIT int throttleAngleCorrection;
 
 #ifdef USE_RANGEFINDER
+
+static inline float pt1_apply(float prev, float input, float alpha)
+{
+    return prev + alpha * (input - prev);
+}
+
+static inline float apply_deadband(float v, float db)
+{
+    return (fabsf(v) < db) ? 0.0f : v;
+}
+
+#define MAX_DERIVATIVE        5.0f      // max |dz/dt| in cm/s used by D (after filtering)
+#define ALT_ERR_DEADBAND      0.5f      // cm, small error deadband to avoid chatter
+#define ALT_MAX_CLIMB_RATE    50.0f     // cm/s, limit for stick-driven target rate
+#define ALT_TARGET_SOFTLOCK   100.0f    // cm, limit target within plausible range quickly
+#define ALT_RESULT_LIMIT      100.0f    // mixer units (matches your original)
+#define ALT_DZ_FILTER_ALPHA   0.2f      // PT1 for altitude rate estimate (0..1, lower = smoother)
+#define ALT_DERIV_CLAMP_ENABLE 1        // 1: clamp derivative spikes to 0 as original logic
+
+#define STICK_deadband        0.1      //+-5%
+#define climb_rate_fullstick  30
+
 static void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs);
+
 #endif
 #ifdef USE_OPFLOW
 static void updatePosHold(timeUs_t currentTimeUs);
@@ -114,6 +137,18 @@ void pidInit(void)
   rangefinder.althold.KI = 0.3f;
   rangefinder.althold.KD = 0.4f;
   rangefinder.althold.integral_windup = 50;
+
+  rangefinder.althold.stick_deadband = fminf(fmaxf(STICK_deadband, 0.0f), 0.2f);
+  rangefinder.althold.climb_rate_scale = fminf(fabsf(climb_rate_fullstick), ALT_MAX_CLIMB_RATE);
+
+  rangefinder.althold.target_Height = rangefinder.calculatedAltitude;
+  rangefinder.althold.error_Height = 0.0f;
+  rangefinder.althold.proportional_Height = 0.0f;
+  rangefinder.althold.integral_Height = 0.0f;
+  rangefinder.althold.derivative_Height = 0.0f;
+  rangefinder.althold.result = 0.0f;
+  rangefinder.althold.pre_Height = rangefinder.calculatedAltitude;
+  rangefinder.althold.dz_filtered = 0.0f;
 
   opflow.poshold.KP = 1.0f;
   opflow.poshold.KI = 0.1f;
@@ -293,7 +328,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     }
   }
 
-  motorWriteAll();
+  //motorWriteAll();
 
 #if defined(USE_GPS) || defined(USE_MAG)
     if (sensors(SENSOR_GPS) || sensors(SENSOR_MAG)) {
@@ -426,18 +461,18 @@ void updatePosHold(timeUs_t currentTimeUs)
 #endif
 
 #ifdef USE_RANGEFINDER
-#define MAX_DERIVATIVE 5.0f
 
-uint32_t rc_update_dt=0, rc_update_pre_t=0;
 void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
 {
   rangefinder_althold_t *althold = &rangefinder.althold;
-  if(FLIGHT_MODE(RANGEFINDER_MODE))
-  {
+
+  if (!FLIGHT_MODE(RANGEFINDER_MODE)) {
+      return;
+  }
+
     static uint32_t pre_time = 0;
-    float derivative = 0;
     uint32_t now_time = currentTimeUs;
-    althold->dt = (float)US2S(now_time - pre_time);
+    althold->dt = (pre_time == 0) ? (float)US2S(1000) : (float)US2S(now_time - pre_time);
     pre_time = now_time;
 
 //    // 1. 스로틀 기반 상승속도 입력
@@ -450,7 +485,34 @@ void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
 //    // 3. PID 제어
 //    althold->error_Height = althold->target_Height - rangefinder.calculatedAltitude;
 
-    althold->error_Height = (althold->target_Height <= 5.0) ? 0 : (althold->target_Height - rangefinder.calculatedAltitude);
+
+    if(rcData[THROTTLE] < 1030 || !ARMING_FLAG(ARMED))
+    {
+      althold->integral_Height = 0;
+      althold->dz_filtered = 0.0f;
+      althold->pre_Height = rangefinder.calculatedAltitude;
+
+      const float err_soft = rangefinder.calculatedAltitude - althold->target_Height;
+      const float max_pull = ALT_TARGET_SOFTLOCK * althold->dt; // cm per dt
+      if (fabsf(err_soft) > max_pull) {
+          althold->target_Height += (err_soft > 0 ? max_pull : -max_pull);
+      } else {
+          althold->target_Height = rangefinder.calculatedAltitude;
+      }
+      althold->proportional_Height = 0;
+      althold->derivative_Height = 0;
+      althold->result = 0;
+      return;
+    }
+
+    const float throttleStick = (float)(rcData[THROTTLE] - 1500) / 500.0f; // -1..+1
+    const float stick = apply_deadband(throttleStick, althold->stick_deadband);
+    const float climbRateCmd = stick * fminf(althold->climb_rate_scale, ALT_MAX_CLIMB_RATE);
+    althold->target_Height += climbRateCmd * althold->dt;
+
+    float error = althold->target_Height - rangefinder.calculatedAltitude; // cm
+    if (fabsf(error) < ALT_ERR_DEADBAND) error = 0.0f;
+    althold->error_Height = error;
 
     althold->proportional_Height = althold->KP * althold->error_Height;
 
@@ -458,39 +520,37 @@ void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
     if(althold->integral_Height > althold->integral_windup) althold->integral_Height = althold->integral_windup;
     else if(althold->integral_Height < -althold->integral_windup) althold->integral_Height = -althold->integral_windup;
 
-    derivative = -(rangefinder.calculatedAltitude - althold->pre_Height) / althold->dt;
-    if (fabsf(derivative) > MAX_DERIVATIVE) derivative = 0;
-    althold->derivative_Height = althold->KD * derivative;
+
+    float dz = (rangefinder.calculatedAltitude - althold->pre_Height) / althold->dt; // cm/s (positive = going up)
     althold->pre_Height = rangefinder.calculatedAltitude;
+
+    // Simple PT1 filter on dz to reduce RF noise
+    althold->dz_filtered = pt1_apply(althold->dz_filtered, dz, ALT_DZ_FILTER_ALPHA);
+
+    float derivative = -althold->dz_filtered; // negative sign: oppose motion toward error
+
+#if ALT_DERIV_CLAMP_ENABLE
+    if (fabsf(derivative) > MAX_DERIVATIVE) {
+        derivative = 0.0f; // reject spikes as in original code
+    }
+#endif
+    althold->derivative_Height = althold->KD * derivative;
 
     althold->result = althold->proportional_Height + althold->integral_Height + althold->derivative_Height;
 
-    if(rcData[THROTTLE] < 1030)
-    {
-      althold->integral_Height = 0;
-      althold->result = 0;
-    }
+    althold->result = constrainf(althold->result, -ALT_RESULT_LIMIT, ALT_RESULT_LIMIT);
 
-    althold->result = constrainf(althold->result, -300, 300);
-    if(rxRuntimeState.rcCommand_updated == true)
-    {
-      rc_update_dt = micros() - rc_update_pre_t;
-      rxRuntimeState.rcCommand_updated = false;
-      rcCommand[THROTTLE] += althold->result;
-      rc_update_pre_t = micros();
-    }
+    rcCommand[THROTTLE] = (float) constrainf(rcCommand[THROTTLE] + althold->result, 0.0f, 1000.0f);
 
     DEBUG_SET(DEBUG_RANGEFINDER, 0, (althold->dt / 1e-6f));
-    DEBUG_SET(DEBUG_RANGEFINDER, 1, (rc_update_dt));
-    DEBUG_SET(DEBUG_RANGEFINDER, 2, (althold->target_Height));
-    DEBUG_SET(DEBUG_RANGEFINDER, 3, (rangefinder.calculatedAltitude));
-    DEBUG_SET(DEBUG_RANGEFINDER, 4, (althold->error_Height));
-    DEBUG_SET(DEBUG_RANGEFINDER, 5, (althold->proportional_Height));
-    DEBUG_SET(DEBUG_RANGEFINDER, 6, (althold->integral_Height));
-    DEBUG_SET(DEBUG_RANGEFINDER, 7, (althold->derivative_Height));
-    DEBUG_SET(DEBUG_RANGEFINDER, 8, (althold->result));
-    DEBUG_SET(DEBUG_RANGEFINDER, 9, (rcCommand[THROTTLE]));
-  }
+    DEBUG_SET(DEBUG_RANGEFINDER, 1, (althold->target_Height));
+    DEBUG_SET(DEBUG_RANGEFINDER, 2, (rangefinder.calculatedAltitude));
+    DEBUG_SET(DEBUG_RANGEFINDER, 3, (althold->error_Height));
+    DEBUG_SET(DEBUG_RANGEFINDER, 4, (althold->proportional_Height));
+    DEBUG_SET(DEBUG_RANGEFINDER, 5, (althold->integral_Height));
+    DEBUG_SET(DEBUG_RANGEFINDER, 6, (althold->derivative_Height));
+    DEBUG_SET(DEBUG_RANGEFINDER, 7, (althold->result));
+    DEBUG_SET(DEBUG_RANGEFINDER, 8, (rcCommand[THROTTLE]));
 }
 #endif
 

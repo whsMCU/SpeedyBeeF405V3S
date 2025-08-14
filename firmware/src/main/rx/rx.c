@@ -244,7 +244,6 @@ void rxInit(void)
     rxRuntimeState.rcFrameStatusFn = nullFrameStatus;
     rxRuntimeState.rcProcessFrameFn = nullProcessFrame;
     rxRuntimeState.lastRcFrameTimeUs = 0;
-    rxRuntimeState.rcCommand_updated = false;
     rcSampleIndex = 0;
 
     for (int i = 0; i < MAX_SUPPORTED_RC_CHANNEL_COUNT; i++) {
@@ -325,8 +324,6 @@ static void updateRcCommands(void)
 		 rcCommand[YAW] = rcCommandBuff.Z;
 	 }
 	}
-
-	rxRuntimeState.rcCommand_updated = true;
 
 //	for (int axis = ROLL; axis <= YAW; axis++)
 //	{
