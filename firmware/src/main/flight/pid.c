@@ -427,6 +427,8 @@ void updatePosHold(timeUs_t currentTimeUs)
 
 #ifdef USE_RANGEFINDER
 #define MAX_DERIVATIVE 5.0f
+
+uint32_t rc_update_dt=0, rc_update_pre_t=0;
 void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
 {
   rangefinder_althold_t *althold = &rangefinder.althold;
@@ -469,20 +471,25 @@ void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
       althold->result = 0;
     }
 
-    althold->result = constrain(althold->result, -300, 300);
+    althold->result = constrainf(althold->result, -300, 300);
     if(rxRuntimeState.rcCommand_updated == true)
     {
+      rc_update_dt = micros() - rc_update_pre_t;
       rxRuntimeState.rcCommand_updated = false;
       rcCommand[THROTTLE] += althold->result;
+      rc_update_pre_t = micros();
     }
 
     DEBUG_SET(DEBUG_RANGEFINDER, 0, (althold->dt / 1e-6f));
-    DEBUG_SET(DEBUG_RANGEFINDER, 1, (althold->error_Height));
-    DEBUG_SET(DEBUG_RANGEFINDER, 2, (althold->proportional_Height));
-    DEBUG_SET(DEBUG_RANGEFINDER, 3, (althold->integral_Height));
-    DEBUG_SET(DEBUG_RANGEFINDER, 4, (althold->derivative_Height));
-    DEBUG_SET(DEBUG_RANGEFINDER, 5, (althold->result));
-    DEBUG_SET(DEBUG_RANGEFINDER, 6, (rcCommand[THROTTLE]));
+    DEBUG_SET(DEBUG_RANGEFINDER, 1, (rc_update_dt));
+    DEBUG_SET(DEBUG_RANGEFINDER, 2, (althold->target_Height));
+    DEBUG_SET(DEBUG_RANGEFINDER, 3, (rangefinder.calculatedAltitude));
+    DEBUG_SET(DEBUG_RANGEFINDER, 4, (althold->error_Height));
+    DEBUG_SET(DEBUG_RANGEFINDER, 5, (althold->proportional_Height));
+    DEBUG_SET(DEBUG_RANGEFINDER, 6, (althold->integral_Height));
+    DEBUG_SET(DEBUG_RANGEFINDER, 7, (althold->derivative_Height));
+    DEBUG_SET(DEBUG_RANGEFINDER, 8, (althold->result));
+    DEBUG_SET(DEBUG_RANGEFINDER, 9, (rcCommand[THROTTLE]));
   }
 }
 #endif
