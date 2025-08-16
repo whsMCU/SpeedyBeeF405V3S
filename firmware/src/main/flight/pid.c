@@ -84,6 +84,8 @@ static inline float apply_deadband(float v, float db)
 
 #define THROTTLE_SLEW_US_PER_S 20000.0f   // 초당 20000us → 1ms당 ≈20us
 
+//#define ALT_BACK_CALC_ENABLE
+
 static void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs);
 
 #endif
@@ -137,6 +139,7 @@ void pidInit(void)
 
   rangefinder.althold.KP = 1.0f;
   rangefinder.althold.KI = 0.3f;
+  rangefinder.althold.K_BACK_CALC = 0.5;
   rangefinder.althold.KD = 0.4f;
   rangefinder.althold.integral_windup = 200;
 
@@ -544,8 +547,14 @@ void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
   althold->derivative_Height = althold->KD * derivative;
 
   // PID 합산
-  althold->result = althold->proportional_Height + althold->integral_Height + althold->derivative_Height;
-  althold->result = constrainf(althold->result, -ALT_RESULT_LIMIT, ALT_RESULT_LIMIT);
+  float outputBeforeSaturation  = althold->proportional_Height + althold->integral_Height + althold->derivative_Height;
+  althold->result = constrainf(outputBeforeSaturation, -ALT_RESULT_LIMIT, ALT_RESULT_LIMIT);
+
+  // Back-calculation Anti-windup
+#ifdef ALT_BACK_CALC_ENABLE
+  float anti_windup_error = althold->result - outputBeforeSaturation;
+  althold->integral_Height += althold->K_BACK_CALC * anti_windup_error * althold->dt;
+#endif
 
   // 스로틀 출력 계산 (ESC 범위에서 Slew 제한)
   float throttle_cmd = (float) constrainf(pilot_Throttle + althold->result, 1000.0f, 2000.0f);

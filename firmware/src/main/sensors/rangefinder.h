@@ -52,6 +52,7 @@ typedef struct {
   float dt;
   float KP;
   float KI;
+  float K_BACK_CALC;
   float KD;
   float result;
 
