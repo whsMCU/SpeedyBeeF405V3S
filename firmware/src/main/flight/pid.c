@@ -333,7 +333,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     }
   }
 
-  //motorWriteAll();
+  motorWriteAll();
 
 #if defined(USE_GPS) || defined(USE_MAG)
     if (sensors(SENSOR_GPS) || sensors(SENSOR_MAG)) {
