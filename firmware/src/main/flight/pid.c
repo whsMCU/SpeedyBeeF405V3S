@@ -72,10 +72,10 @@ static inline float apply_deadband(float v, float db)
 }
 
 #define MAX_DERIVATIVE        30.0f      // max |dz/dt| in cm/s used by D (after filtering)
-#define ALT_ERR_DEADBAND      0.5f      // cm, small error deadband to avoid chatter
+#define ALT_ERR_DEADBAND      1.0f      // cm, small error deadband to avoid chatter
 #define ALT_MAX_CLIMB_RATE    50.0f     // cm/s, limit for stick-driven target rate
 #define ALT_TARGET_SOFTLOCK   100.0f    // cm, limit target within plausible range quickly
-#define ALT_RESULT_LIMIT      100.0f    // mixer units (matches your original)
+#define ALT_RESULT_LIMIT      200.0f    // mixer units (matches your original)
 #define ALT_DZ_FILTER_ALPHA   0.2f      // PT1 for altitude rate estimate (0..1, lower = smoother)
 #define ALT_DERIV_CLAMP_ENABLE 1        // 1: clamp derivative spikes to 0 as original logic
 
@@ -86,7 +86,7 @@ static inline float apply_deadband(float v, float db)
 
 //#define ALT_BACK_CALC_ENABLE
 
-static void updateAltHold_RANGEFINDER(rangefinder_t rangefinder_t, timeUs_t currentTimeUs);
+static void updateAltHold_RANGEFINDER(rangefinder_t *alt_sensor, timeUs_t currentTimeUs);
 
 #endif
 #ifdef USE_OPFLOW
@@ -171,8 +171,8 @@ void PID_Calculation(PID* axis, float set_point, float measured1, float measured
 
   if (strcmp(axis->pidName, "YAW_Heading") == 0)
   {
-    if (axis->error >= 180.0f)  axis->error -= 360.0f;
-    if (axis->error <= -180.0f) axis->error += 360.0f;
+    if (axis->error > 180.0f)  axis->error -= 360.0f;
+    if (axis->error < -180.0f) axis->error += 360.0f;
   }
 
   axis->integral += axis->error * dt;
@@ -251,7 +251,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 #endif
 
   #ifdef USE_RANGEFINDER
-    updateAltHold_RANGEFINDER(rangefinder, currentTimeUs);
+    updateAltHold_RANGEFINDER(&rangefinder, currentTimeUs);
 
     DEBUG_SET(DEBUG_RANGEFINDER, 0, (rangefinder.althold.target_Height));
     DEBUG_SET(DEBUG_RANGEFINDER, 1, (rangefinder.calculatedAltitude));
@@ -486,9 +486,9 @@ void updatePosHold(timeUs_t currentTimeUs)
 
 #ifdef USE_RANGEFINDER
 
-void updateAltHold_RANGEFINDER(rangefinder_t rangefinder_t, timeUs_t currentTimeUs)
+void updateAltHold_RANGEFINDER(rangefinder_t *alt_sensor, timeUs_t currentTimeUs)
 {
-  rangefinder_althold_t *althold = &rangefinder_t.althold;
+  rangefinder_althold_t *althold = &alt_sensor->althold;
 
   if (!FLIGHT_MODE(RANGEFINDER_MODE)) {
       return;
@@ -577,14 +577,14 @@ void updateAltHold_RANGEFINDER(rangefinder_t rangefinder_t, timeUs_t currentTime
 
   // 스로틀 출력 계산 (ESC 범위에서 Slew 제한)
   float throttle_cmd = (float) constrainf(pilot_Throttle + althold->result, 1000.0f, 2000.0f);
-//  float maxStep = THROTTLE_SLEW_US_PER_S * althold->dt;
-//  float step    = (float)throttle_cmd - (float)throttleOut;
-//  if (step >  maxStep) step =  maxStep;
-//  if (step < -maxStep) step = -maxStep;
-//  throttleOut += step;
-//
-//  rcCommand[THROTTLE] = scaleRangef(throttleOut, 1000.0f, 2000.0f, 0.0f, 1000.0f);
-  rcCommand[THROTTLE] = scaleRangef(throttle_cmd, 1000.0f, 2000.0f, 0.0f, 1000.0f);
+  float maxStep = THROTTLE_SLEW_US_PER_S * althold->dt;
+  float step    = (float)throttle_cmd - (float)throttleOut;
+  if (step >  maxStep) step =  maxStep;
+  if (step < -maxStep) step = -maxStep;
+  throttleOut += step;
+
+  rcCommand[THROTTLE] = scaleRangef(throttleOut, 1000.0f, 2000.0f, 0.0f, 1000.0f);
+  //rcCommand[THROTTLE] = scaleRangef(throttle_cmd, 1000.0f, 2000.0f, 0.0f, 1000.0f);
 }
 #endif
 
