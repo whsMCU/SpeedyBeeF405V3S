@@ -86,7 +86,7 @@ static inline float apply_deadband(float v, float db)
 
 //#define ALT_BACK_CALC_ENABLE
 
-static void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs);
+static void updateAltHold_RANGEFINDER(rangefinder_t rangefinder_t, timeUs_t currentTimeUs);
 
 #endif
 #ifdef USE_OPFLOW
@@ -251,7 +251,17 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 #endif
 
   #ifdef USE_RANGEFINDER
-    updateAltHold_RANGEFINDER(currentTimeUs);
+    updateAltHold_RANGEFINDER(rangefinder, currentTimeUs);
+
+    DEBUG_SET(DEBUG_RANGEFINDER, 0, (rangefinder.althold.target_Height));
+    DEBUG_SET(DEBUG_RANGEFINDER, 1, (rangefinder.calculatedAltitude));
+    DEBUG_SET(DEBUG_RANGEFINDER, 2, (rangefinder.althold.error_Height));
+    DEBUG_SET(DEBUG_RANGEFINDER, 3, (rangefinder.althold.proportional_Height));
+    DEBUG_SET(DEBUG_RANGEFINDER, 4, (rangefinder.althold.integral_Height));
+    DEBUG_SET(DEBUG_RANGEFINDER, 5, (rangefinder.althold.derivative_Height));
+    DEBUG_SET(DEBUG_RANGEFINDER, 6, (rangefinder.althold.result));
+    DEBUG_SET(DEBUG_RANGEFINDER, 7, (rcCommand[THROTTLE]));
+
   #endif
   #ifdef USE_OPFLOW
     updatePosHold(currentTimeUs);
@@ -268,22 +278,22 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   }
   PID_Calculation(&_PITCH.in, _PITCH.out.result, bmi270.gyroADCf[Y], 0, dT);
 
-  DEBUG_SET(DEBUG_PIDLOOP, 0, (_PID_Test.pid_test_deg));
-  DEBUG_SET(DEBUG_PIDLOOP, 1, (imu_pitch));
-  DEBUG_SET(DEBUG_PIDLOOP, 2, (_PITCH.out.error));
-  DEBUG_SET(DEBUG_PIDLOOP, 3, (_PITCH.out.result_p));
-  DEBUG_SET(DEBUG_PIDLOOP, 4, (_PITCH.out.result_i));
-  DEBUG_SET(DEBUG_PIDLOOP, 5, (_PITCH.out.result));
-  DEBUG_SET(DEBUG_PIDLOOP, 6, (bmi270.gyroADCf[Y]));
-  DEBUG_SET(DEBUG_PIDLOOP, 7, (_PITCH.in.error));
-  DEBUG_SET(DEBUG_PIDLOOP, 8, (_PITCH.in.result_p));
-  DEBUG_SET(DEBUG_PIDLOOP, 9, (_PITCH.in.result_i));
-  DEBUG_SET(DEBUG_PIDLOOP, 10, (_PITCH.in.result_d));
-  DEBUG_SET(DEBUG_PIDLOOP, 11, (_PITCH.in.result));
-  DEBUG_SET(DEBUG_PIDLOOP, 12, (_PITCH.in.pre_measured));
-  DEBUG_SET(DEBUG_PIDLOOP, 13, (_PITCH.in.measured));
-  DEBUG_SET(DEBUG_PIDLOOP, 14, (_PITCH.in.derivative));
-  DEBUG_SET(DEBUG_PIDLOOP, 15, (_PITCH.in.derivative_filter));
+//  DEBUG_SET(DEBUG_PIDLOOP, 0, (_PID_Test.pid_test_deg));
+//  DEBUG_SET(DEBUG_PIDLOOP, 1, (imu_pitch));
+//  DEBUG_SET(DEBUG_PIDLOOP, 2, (_PITCH.out.error));
+//  DEBUG_SET(DEBUG_PIDLOOP, 3, (_PITCH.out.result_p));
+//  DEBUG_SET(DEBUG_PIDLOOP, 4, (_PITCH.out.result_i));
+//  DEBUG_SET(DEBUG_PIDLOOP, 5, (_PITCH.out.result));
+//  DEBUG_SET(DEBUG_PIDLOOP, 6, (bmi270.gyroADCf[Y]));
+//  DEBUG_SET(DEBUG_PIDLOOP, 7, (_PITCH.in.error));
+//  DEBUG_SET(DEBUG_PIDLOOP, 8, (_PITCH.in.result_p));
+//  DEBUG_SET(DEBUG_PIDLOOP, 9, (_PITCH.in.result_i));
+//  DEBUG_SET(DEBUG_PIDLOOP, 10, (_PITCH.in.result_d));
+//  DEBUG_SET(DEBUG_PIDLOOP, 11, (_PITCH.in.result));
+//  DEBUG_SET(DEBUG_PIDLOOP, 12, (_PITCH.in.pre_measured));
+//  DEBUG_SET(DEBUG_PIDLOOP, 13, (_PITCH.in.measured));
+//  DEBUG_SET(DEBUG_PIDLOOP, 14, (_PITCH.in.derivative));
+//  DEBUG_SET(DEBUG_PIDLOOP, 15, (_PITCH.in.derivative_filter));
 
   throttle = rcCommand[THROTTLE] + throttleAngleCorrection;
 
@@ -318,6 +328,15 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   else
   {
 	  PID_Calculation(&_YAW_Heading, yaw_heading_reference, imu_yaw, -bmi270.gyroADCf[Z], dT);
+
+    DEBUG_SET(DEBUG_PIDLOOP, 0, (yaw_heading_reference));
+    DEBUG_SET(DEBUG_PIDLOOP, 1, (imu_yaw));
+	  DEBUG_SET(DEBUG_PIDLOOP, 2, (_YAW_Heading.error));
+	  DEBUG_SET(DEBUG_PIDLOOP, 3, (_YAW_Heading.result_p));
+	  DEBUG_SET(DEBUG_PIDLOOP, 4, (_YAW_Heading.result_i));
+    DEBUG_SET(DEBUG_PIDLOOP, 5, (_YAW_Heading.result_d));
+	  DEBUG_SET(DEBUG_PIDLOOP, 6, (_YAW_Heading.result));
+
     if(_PID_Test.pid_test_flag == 1)
     {
       LF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result + _ROLL.in.result - _YAW_Heading.result;
@@ -467,9 +486,9 @@ void updatePosHold(timeUs_t currentTimeUs)
 
 #ifdef USE_RANGEFINDER
 
-void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
+void updateAltHold_RANGEFINDER(rangefinder_t rangefinder_t, timeUs_t currentTimeUs)
 {
-  rangefinder_althold_t *althold = &rangefinder.althold;
+  rangefinder_althold_t *althold = &rangefinder_t.althold;
 
   if (!FLIGHT_MODE(RANGEFINDER_MODE)) {
       return;
@@ -512,10 +531,10 @@ void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
   }
 
   // 스틱 입력 → 목표 고도 갱신
-  const float throttleStick = (float)(rcData[THROTTLE] - 1500) / 500.0f; // -1..+1
-  const float stick = apply_deadband(throttleStick, althold->stick_deadband);
-  const float climbRateCmd = stick * fminf(althold->climb_rate_scale, ALT_MAX_CLIMB_RATE);
-  althold->target_Height += climbRateCmd * althold->dt;
+//  const float throttleStick = (float)(rcData[THROTTLE] - 1500) / 500.0f; // -1..+1
+//  const float stick = apply_deadband(throttleStick, althold->stick_deadband);
+//  const float climbRateCmd = stick * fminf(althold->climb_rate_scale, ALT_MAX_CLIMB_RATE);
+//  althold->target_Height += climbRateCmd * althold->dt;
 
   // 고도 오차
   float error = althold->target_Height - (float)rangefinder.calculatedAltitude; // cm
@@ -558,23 +577,14 @@ void updateAltHold_RANGEFINDER(timeUs_t currentTimeUs)
 
   // 스로틀 출력 계산 (ESC 범위에서 Slew 제한)
   float throttle_cmd = (float) constrainf(pilot_Throttle + althold->result, 1000.0f, 2000.0f);
-  float maxStep = THROTTLE_SLEW_US_PER_S * althold->dt;
-  float step    = (float)throttle_cmd - (float)throttleOut;
-  if (step >  maxStep) step =  maxStep;
-  if (step < -maxStep) step = -maxStep;
-  throttleOut += step;
-
-  rcCommand[THROTTLE] = scaleRangef(throttleOut, 1000.0f, 2000.0f, 0.0f, 1000.0f);
-
-  DEBUG_SET(DEBUG_RANGEFINDER, 0, (althold->dt / 1e-6f));
-  DEBUG_SET(DEBUG_RANGEFINDER, 1, (althold->target_Height));
-  DEBUG_SET(DEBUG_RANGEFINDER, 2, (rangefinder.calculatedAltitude));
-  DEBUG_SET(DEBUG_RANGEFINDER, 3, (althold->error_Height));
-  DEBUG_SET(DEBUG_RANGEFINDER, 4, (althold->proportional_Height));
-  DEBUG_SET(DEBUG_RANGEFINDER, 5, (althold->integral_Height));
-  DEBUG_SET(DEBUG_RANGEFINDER, 6, (althold->derivative_Height));
-  DEBUG_SET(DEBUG_RANGEFINDER, 7, (althold->result));
-  DEBUG_SET(DEBUG_RANGEFINDER, 8, (rcCommand[THROTTLE]));
+//  float maxStep = THROTTLE_SLEW_US_PER_S * althold->dt;
+//  float step    = (float)throttle_cmd - (float)throttleOut;
+//  if (step >  maxStep) step =  maxStep;
+//  if (step < -maxStep) step = -maxStep;
+//  throttleOut += step;
+//
+//  rcCommand[THROTTLE] = scaleRangef(throttleOut, 1000.0f, 2000.0f, 0.0f, 1000.0f);
+  rcCommand[THROTTLE] = scaleRangef(throttle_cmd, 1000.0f, 2000.0f, 0.0f, 1000.0f);
 }
 #endif
 
