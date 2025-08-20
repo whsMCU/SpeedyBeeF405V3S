@@ -507,13 +507,13 @@ void taskAccUpdate(timeUs_t currentTimeUs)
   }
 
 
-  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-    bmi270.accADCf[axis] = laggedMovingAverageUpdate(&accAvg[axis].filter, (float)bmi270.accADC[axis]);
-  }
-  // Calculate acceleration readings in G's
-  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-    bmi270.accADCf[axis] = ((bmi270.accADCf[axis] * bmi270.acc_1G_rec) - 1.0f) * GRAVITY_CMSS;
-  }
+//  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+//    bmi270.accADCf[axis] = laggedMovingAverageUpdate(&accAvg[axis].filter, (float)bmi270.accADC[axis]);
+//  }
+//  // Calculate acceleration readings in G's
+//  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+//    bmi270.accADCf[axis] = ((bmi270.accADCf[axis] * bmi270.acc_1G_rec) - 1.0f) * GRAVITY_CMSS;
+//  }
 
   ++bmi270.acc_accumulatedMeasurementCount;
   for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
