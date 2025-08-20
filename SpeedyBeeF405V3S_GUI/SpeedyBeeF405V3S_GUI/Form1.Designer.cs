@@ -133,6 +133,9 @@
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.lb_fail = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.lb_gps_time = new System.Windows.Forms.Label();
+            this.label101 = new System.Windows.Forms.Label();
+            this.label99 = new System.Windows.Forms.Label();
             this.label81 = new System.Windows.Forms.Label();
             this.lb_fc_load = new System.Windows.Forms.Label();
             this.label55 = new System.Windows.Forms.Label();
@@ -368,9 +371,8 @@
             this.bt_ReScan = new System.Windows.Forms.Button();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.tb_msp_error = new System.Windows.Forms.TextBox();
-            this.label99 = new System.Windows.Forms.Label();
-            this.label101 = new System.Windows.Forms.Label();
-            this.lb_gps_time = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.tb_msp_period = new System.Windows.Forms.TextBox();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -1089,6 +1091,37 @@
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(738, 56);
             this.panel3.TabIndex = 72;
+            // 
+            // lb_gps_time
+            // 
+            this.lb_gps_time.Font = new System.Drawing.Font("Consolas", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_gps_time.Location = new System.Drawing.Point(86, 30);
+            this.lb_gps_time.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_gps_time.Name = "lb_gps_time";
+            this.lb_gps_time.Size = new System.Drawing.Size(238, 25);
+            this.lb_gps_time.TabIndex = 95;
+            this.lb_gps_time.Text = "2025-01-01 00:00:00";
+            // 
+            // label101
+            // 
+            this.label101.AutoSize = true;
+            this.label101.Font = new System.Drawing.Font("굴림", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label101.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label101.Location = new System.Drawing.Point(4, 33);
+            this.label101.Name = "label101";
+            this.label101.Size = new System.Drawing.Size(92, 16);
+            this.label101.TabIndex = 94;
+            this.label101.Text = "GPS Time : ";
+            // 
+            // label99
+            // 
+            this.label99.AutoSize = true;
+            this.label99.Font = new System.Drawing.Font("굴림", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label99.Location = new System.Drawing.Point(497, 34);
+            this.label99.Name = "label99";
+            this.label99.Size = new System.Drawing.Size(99, 16);
+            this.label99.TabIndex = 93;
+            this.label99.Text = "Flight Time : ";
             // 
             // label81
             // 
@@ -3606,7 +3639,7 @@
             // 
             this.textBox5.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox5.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox5.Location = new System.Drawing.Point(15, 601);
+            this.textBox5.Location = new System.Drawing.Point(15, 602);
             this.textBox5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox5.Name = "textBox5";
             this.textBox5.ReadOnly = true;
@@ -3618,50 +3651,45 @@
             // 
             this.tb_msp_error.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.tb_msp_error.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_msp_error.Location = new System.Drawing.Point(124, 601);
+            this.tb_msp_error.Location = new System.Drawing.Point(124, 602);
             this.tb_msp_error.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tb_msp_error.Name = "tb_msp_error";
             this.tb_msp_error.ReadOnly = true;
-            this.tb_msp_error.Size = new System.Drawing.Size(55, 22);
+            this.tb_msp_error.Size = new System.Drawing.Size(61, 22);
             this.tb_msp_error.TabIndex = 93;
             this.tb_msp_error.Text = "-";
             // 
-            // label99
+            // textBox1
             // 
-            this.label99.AutoSize = true;
-            this.label99.Font = new System.Drawing.Font("굴림", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.label99.Location = new System.Drawing.Point(497, 34);
-            this.label99.Name = "label99";
-            this.label99.Size = new System.Drawing.Size(99, 16);
-            this.label99.TabIndex = 93;
-            this.label99.Text = "Flight Time : ";
+            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox1.Location = new System.Drawing.Point(15, 635);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
+            this.textBox1.Size = new System.Drawing.Size(97, 22);
+            this.textBox1.TabIndex = 96;
+            this.textBox1.Text = "MSP_Period";
             // 
-            // label101
+            // tb_msp_period
             // 
-            this.label101.AutoSize = true;
-            this.label101.Font = new System.Drawing.Font("굴림", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.label101.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.label101.Location = new System.Drawing.Point(4, 33);
-            this.label101.Name = "label101";
-            this.label101.Size = new System.Drawing.Size(92, 16);
-            this.label101.TabIndex = 94;
-            this.label101.Text = "GPS Time : ";
-            // 
-            // lb_gps_time
-            // 
-            this.lb_gps_time.Font = new System.Drawing.Font("Consolas", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_gps_time.Location = new System.Drawing.Point(86, 30);
-            this.lb_gps_time.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lb_gps_time.Name = "lb_gps_time";
-            this.lb_gps_time.Size = new System.Drawing.Size(238, 25);
-            this.lb_gps_time.TabIndex = 95;
-            this.lb_gps_time.Text = "2025-01-01 00:00:00";
+            this.tb_msp_period.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.tb_msp_period.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tb_msp_period.Location = new System.Drawing.Point(124, 635);
+            this.tb_msp_period.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tb_msp_period.Name = "tb_msp_period";
+            this.tb_msp_period.ReadOnly = true;
+            this.tb_msp_period.Size = new System.Drawing.Size(74, 22);
+            this.tb_msp_period.TabIndex = 95;
+            this.tb_msp_period.Text = "-";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1184, 681);
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.tb_msp_period);
             this.Controls.Add(this.textBox5);
             this.Controls.Add(this.tb_msp_error);
             this.Controls.Add(this.bt_ReScan);
@@ -4023,6 +4051,8 @@
         private System.Windows.Forms.Label label99;
         private System.Windows.Forms.Label lb_gps_time;
         private System.Windows.Forms.Label label101;
+        public System.Windows.Forms.TextBox textBox1;
+        public System.Windows.Forms.TextBox tb_msp_period;
     }
 }
 

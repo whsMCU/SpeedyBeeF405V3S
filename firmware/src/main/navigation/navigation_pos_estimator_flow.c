@@ -64,7 +64,7 @@ void updatePositionEstimator_OpticalFlowTopic(timeUs_t currentTimeUs)
 bool estimationCalculateCorrection_XY_FLOW(estimationContext_t * ctx)
 {
 #if defined(USE_RANGEFINDER) && defined(USE_OPFLOW)
-    if (!((ctx->newFlags & EST_FLOW_VALID) && (ctx->newFlags & EST_SURFACE_VALID))) { //&& (ctx->newFlags & EST_Z_VALID))
+    if (!((ctx->newFlags & EST_FLOW_VALID) && (ctx->newFlags & EST_SURFACE_VALID)&& (ctx->newFlags & EST_Z_VALID))) {
         return false;
     }
 

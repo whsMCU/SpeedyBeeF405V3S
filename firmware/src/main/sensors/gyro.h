@@ -136,7 +136,6 @@ typedef struct gyro_s {
     int16_t accADCRaw[XYZ_AXIS_COUNT];
     float accADC[XYZ_AXIS_COUNT];
     float accADCf[XYZ_AXIS_COUNT];
-    float accADCf_1G[XYZ_AXIS_COUNT];
     float accPrevious[XYZ_AXIS_COUNT];
 
     uint16_t acc_lpf_hz;                    // cutoff frequency for the low pass filter used on the acc z-axis for althold in Hz

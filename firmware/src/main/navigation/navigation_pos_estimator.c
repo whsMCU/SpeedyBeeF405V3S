@@ -429,7 +429,7 @@ static void updateIMUTopic(timeUs_t currentTimeUs)
     const float dt = US2S(currentTimeUs - posEstimator.imu.lastUpdateTime);
     posEstimator.imu.lastUpdateTime = currentTimeUs;
 
-    if (false) { //!isImuReady()
+    if (!isImuReady()) {
         posEstimator.imu.accelNEU.x = 0.0f;
         posEstimator.imu.accelNEU.y = 0.0f;
         posEstimator.imu.accelNEU.z = 0.0f;
@@ -505,15 +505,14 @@ static bool navIsAccelerationUsable(void)
 
 static bool navIsHeadingUsable(void)
 {
-//  if (sensors(SENSOR_GPS)) {
-//      // If we have GPS - we need true IMU north (valid heading)
-//      return isImuHeadingValid();
-//  }
-//  else {
-//      // If we don't have GPS - we may use whatever we have, other sensors are operating in body frame
-//      return isImuHeadingValid() || positionEstimationConfig()->allow_dead_reckoning;
-//  }
-  return true;
+  if (sensors(SENSOR_GPS)) {
+      // If we have GPS - we need true IMU north (valid heading)
+      return isImuHeadingValid();
+  }
+  else {
+      // If we don't have GPS - we may use whatever we have, other sensors are operating in body frame
+      return isImuHeadingValid() || positionEstimationConfig.allow_dead_reckoning;
+  }
 }
 
 static uint32_t calculateCurrentValidityFlags(timeUs_t currentTimeUs)
@@ -714,19 +713,19 @@ static bool estimationCalculateCorrection_XY_GPS(estimationContext_t * ctx)
     return false;
 }
 
-//static void estimationCalculateGroundCourse(timeUs_t currentTimeUs)
-//{
-//    if (STATE(GPS_FIX) && navIsHeadingUsable()) {
-//        static timeUs_t lastUpdateTimeUs = 0;
-//
-//        if (currentTimeUs - lastUpdateTimeUs >= HZ2US(INAV_COG_UPDATE_RATE_HZ)) {   // limit update rate
-//            const float dt = US2S(currentTimeUs - lastUpdateTimeUs);
-//            uint32_t groundCourse = wrap_36000(RADIANS_TO_CENTIDEGREES(atan2_approx(posEstimator.est.vel.y * dt, posEstimator.est.vel.x * dt)));
-//            posEstimator.est.cog = CENTIDEGREES_TO_DECIDEGREES(groundCourse);
-//            lastUpdateTimeUs = currentTimeUs;
-//        }
-//    }
-//}
+static void estimationCalculateGroundCourse(timeUs_t currentTimeUs)
+{
+    if (STATE(GPS_FIX) && navIsHeadingUsable()) {
+        static timeUs_t lastUpdateTimeUs = 0;
+
+        if (currentTimeUs - lastUpdateTimeUs >= HZ2US(INAV_COG_UPDATE_RATE_HZ)) {   // limit update rate
+            const float dt = US2S(currentTimeUs - lastUpdateTimeUs);
+            uint32_t groundCourse = wrap_36000(RADIANS_TO_CENTIDEGREES(atan2_approx(posEstimator.est.vel.y * dt, posEstimator.est.vel.x * dt)));
+            posEstimator.est.cog = CENTIDEGREES_TO_DECIDEGREES(groundCourse);
+            lastUpdateTimeUs = currentTimeUs;
+        }
+    }
+}
 
 /**
  * Calculate next estimate using IMU and apply corrections from reference sensors (GPS, BARO etc)
@@ -740,13 +739,13 @@ void updateEstimatedTopic(timeUs_t currentTimeUs)
     ctx.dt = US2S(currentTimeUs - posEstimator.est.lastUpdateTime);
     posEstimator.est.lastUpdateTime = currentTimeUs;
 
-//    /* If IMU is not ready we can't estimate anything */
-//    if (!isImuReady()) {
-//        posEstimator.est.eph = positionEstimationConfig()->max_eph_epv + 0.001f;
-//        posEstimator.est.epv = positionEstimationConfig()->max_eph_epv + 0.001f;
-//        posEstimator.flags = 0;
-//        return;
-//    }
+    /* If IMU is not ready we can't estimate anything */
+    if (!isImuReady()) {
+        posEstimator.est.eph = positionEstimationConfig.max_eph_epv + 0.001f;
+        posEstimator.est.epv = positionEstimationConfig.max_eph_epv + 0.001f;
+        posEstimator.flags = 0;
+        return;
+    }
 
     /* Calculate new EPH and EPV for the case we didn't update postion */
     ctx.newEPH = posEstimator.est.eph * ((posEstimator.est.eph <= positionEstimationConfig.max_eph_epv) ? 1.0f + ctx.dt : 1.0f);
@@ -801,7 +800,7 @@ void updateEstimatedTopic(timeUs_t currentTimeUs)
     }
 
     /* Update ground course */
-//    estimationCalculateGroundCourse(currentTimeUs);
+    estimationCalculateGroundCourse(currentTimeUs);
 
     /* Update uncertainty */
     posEstimator.est.eph = ctx.newEPH;

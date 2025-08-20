@@ -26,6 +26,8 @@ namespace SpeedyBeeF405V3S_GUI
     public partial class Form1 : Form
     {
         private static System.Timers.Timer AHRS_Timer;
+        Stopwatch stopwatch = new Stopwatch();
+        double delta_t = 0;
         float[] passed_data = new float[100];
         float[] float_data = new float[10];
         float[] float_data_pid = new float[18];
@@ -622,6 +624,13 @@ namespace SpeedyBeeF405V3S_GUI
 
         private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
+            stopwatch.Stop();
+            delta_t = stopwatch.Elapsed.TotalMilliseconds;
+            this.BeginInvoke((MethodInvoker)delegate
+            {
+                tb_msp_period.Text = $"{delta_t:F1} ms";
+            });
+            stopwatch.Restart();
             byte[] buff = new byte[20];
             if(drone_status_flag == true)
             {

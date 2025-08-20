@@ -552,6 +552,17 @@ void imuUpdateAttitude(timeUs_t currentTimeUs)
     schedulerIgnoreTaskStateTime();
   }
 }
+
+bool isImuReady(void)
+{
+    return sensors(SENSOR_ACC) && accIsCalibrationComplete() && gyroIsCalibrationComplete();
+}
+
+bool isImuHeadingValid(void)
+{
+    return sensors(SENSOR_MAG);
+}
+
 #endif // USE_ACC
 
 bool shouldInitializeGPSHeading()
@@ -672,6 +683,6 @@ void gyroGetMeasuredRotationRate(fpVector3_t *measuredRotationRate)
 void accGetMeasuredAcceleration(fpVector3_t *measuredAcc)
 {
     for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-        measuredAcc->v[axis] = bmi270.accADCf_1G[axis] * GRAVITY_CMSS;
+        measuredAcc->v[axis] = bmi270.accADCf[axis] * GRAVITY_CMSS;
     }
 }

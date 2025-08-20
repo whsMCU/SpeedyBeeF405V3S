@@ -495,7 +495,6 @@ void taskAccUpdate(timeUs_t currentTimeUs)
   // Calculate acceleration readings in G's
   for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
     bmi270.accADCf[axis] = (float)bmi270.accADC[axis] / bmi270.acc_1G;
-    bmi270.accADCf_1G[axis] = (float)bmi270.accADC[axis] / bmi270.acc_1G;
   }
 
   // Before filtering check for clipping and vibration levels

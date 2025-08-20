@@ -83,6 +83,9 @@ float getCosTiltAngle(void);
 void getQuaternion(quaternion * q);
 void imuUpdateAttitude(timeUs_t currentTimeUs);
 
+bool isImuReady(void);
+bool isImuHeadingValid(void);
+
 void imuInit(void);
 
 bool imuQuaternionHeadfreeOffsetSet(void);
