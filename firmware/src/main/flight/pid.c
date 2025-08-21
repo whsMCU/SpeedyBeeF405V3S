@@ -139,7 +139,7 @@ void pidInit(void)
 
   rangefinder.althold.KP = 1.0f;
   rangefinder.althold.KI = 0.3f;
-  rangefinder.althold.K_BACK_CALC = 0.5;
+  rangefinder.althold.K_BACK_CALC = 2.0f;
   rangefinder.althold.KD = 0.4f;
   rangefinder.althold.integral_windup = 200;
 
