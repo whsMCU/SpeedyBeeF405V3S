@@ -155,22 +155,6 @@ namespace SpeedyBeeF405V3S_GUI
         LineItem _debug_6_curve;
         PointPairList _debug_7_points = new PointPairList();
         LineItem _debug_7_curve;
-        PointPairList _debug_8_points = new PointPairList();
-        LineItem _debug_8_curve;
-        PointPairList _debug_9_points = new PointPairList();
-        LineItem _debug_9_curve;
-        PointPairList _debug_10_points = new PointPairList();
-        LineItem _debug_10_curve;
-        PointPairList _debug_11_points = new PointPairList();
-        LineItem _debug_11_curve;
-        PointPairList _debug_12_points = new PointPairList();
-        LineItem _debug_12_curve;
-        PointPairList _debug_13_points = new PointPairList();
-        LineItem _debug_13_curve;
-        PointPairList _debug_14_points = new PointPairList();
-        LineItem _debug_14_curve;
-        PointPairList _debug_15_points = new PointPairList();
-        LineItem _debug_15_curve;
 
         class Item
         {
@@ -332,7 +316,7 @@ namespace SpeedyBeeF405V3S_GUI
                 log = "DateTime, Arming_Flag, Flight_Mode, Roll(Deg), Pitch(Deg), Yaw(Deg), Alt(CM), RollSetPoint(Deg), PitchSetPoint(Deg), Yaw SetPoint(Deg), Thorttle(%), yaw_heading_reference(Deg)," +
                     " altHold, lattitude, longitude, Sat_Num, gps_fix, Throttle_Hold_point, Alt_PID_Result, MOTOR[Right_Rear](%), MOTOR[Right_Front](%), MOTOR[Left_Rear](%), MOTOR[Left_Front](%)," +
                     " BAT_V, BAT_A, BAT_mAh, Alt_Range(CM), Alt_Range_Hold(CM), GPS_HEADING(deg)," +
-                    " Debug[0], Debug[1], Debug[2], Debug[3], Debug[4], Debug[5], Debug[6], Debug[7], Debug[8], Debug[9], Debug[10], Debug[11], Debug[12], Debug[13], Debug[14], Debug[15]";
+                    " Debug[0], Debug[1], Debug[2], Debug[3], Debug[4], Debug[5], Debug[6], Debug[7]";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
             }
@@ -366,7 +350,7 @@ namespace SpeedyBeeF405V3S_GUI
                     $" {data[41]}, {data[42]}, {(double)data[8]/10000000}, {(double)data[9]/10000000}, {data[43]}, {data[44]}, {data[45]}, {data[46]}, {scaleRangef(data[14], 11000, 21000, 0, 100)}," +
                     $" {scaleRangef(data[15], 11000, 21000, 0, 100)}, {scaleRangef(data[16], 11000, 21000, 0, 100)}, {scaleRangef(data[17], 11000, 21000, 0, 100)}," +
                     $" {data[10]/100}, {data[47]/100}, {data[48]}, {data[38]}, {data[49]}, {data[60]}," +
-                    $" {data[18]}, {data[19]}, {data[20]}, {data[21]}, {data[50]}, {data[51]}, {data[52]}, {data[53]}, {data[61]}, {data[62]}, {data[63]}, {data[64]}, {data[65]}, {data[66]}, {data[67]}, {data[68]}";
+                    $" {data[18]}, {data[19]}, {data[20]}, {data[21]}, {data[50]}, {data[51]}, {data[52]}, {data[53]}";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
             }
@@ -1695,30 +1679,6 @@ namespace SpeedyBeeF405V3S_GUI
             _debug_7_curve = _myPane.AddCurve("DEBUG_[7]", _debug_7_points, Color.Magenta, SymbolType.None);
             _debug_7_curve.Line.Width = 2;
             _debug_7_curve.Clear();
-            _debug_8_curve = _myPane.AddCurve("DEBUG_[8]", _debug_8_points, Color.Yellow, SymbolType.None);
-            _debug_8_curve.Line.Width = 2;
-            _debug_8_curve.Clear();
-            _debug_9_curve = _myPane.AddCurve("DEBUG_[9]", _debug_9_points, Color.Gray, SymbolType.None);
-            _debug_9_curve.Line.Width = 2;
-            _debug_9_curve.Clear();
-            _debug_10_curve = _myPane.AddCurve("DEBUG_[10]", _debug_10_points, Color.Lime, SymbolType.None);
-            _debug_10_curve.Line.Width = 2;
-            _debug_10_curve.Clear();
-            _debug_11_curve = _myPane.AddCurve("DEBUG_[11]", _debug_11_points, Color.Teal, SymbolType.None);
-            _debug_11_curve.Line.Width = 2;
-            _debug_11_curve.Clear();
-            _debug_12_curve = _myPane.AddCurve("DEBUG_[12]", _debug_12_points, Color.Pink, SymbolType.None);
-            _debug_12_curve.Line.Width = 2;
-            _debug_12_curve.Clear();
-            _debug_13_curve = _myPane.AddCurve("DEBUG_[13]", _debug_13_points, Color.Gold, SymbolType.None);
-            _debug_13_curve.Line.Width = 2;
-            _debug_13_curve.Clear();
-            _debug_14_curve = _myPane.AddCurve("DEBUG_[14]", _debug_14_points, Color.DarkBlue, SymbolType.None);
-            _debug_14_curve.Line.Width = 2;
-            _debug_14_curve.Clear();
-            _debug_15_curve = _myPane.AddCurve("DEBUG_[15]", _debug_15_points, Color.Black, SymbolType.None);
-            _debug_15_curve.Line.Width = 2;
-            _debug_15_curve.Clear();
 
             zedGraphControl1.AxisChange();
             zedGraphControl1.Invalidate();
@@ -2284,15 +2244,6 @@ namespace SpeedyBeeF405V3S_GUI
 
             passed_data[60] = BitConverter.ToInt32(payload, 174);    // GPS_Heading
 
-            passed_data[61] = BitConverter.ToInt32(payload, 178);    // Debug[8]
-            passed_data[62] = BitConverter.ToInt32(payload, 182);    // Debug[9]
-            passed_data[63] = BitConverter.ToInt32(payload, 186);    // Debug[10]
-            passed_data[64] = BitConverter.ToInt32(payload, 190);    // Debug[11]
-            passed_data[65] = BitConverter.ToInt32(payload, 194);    // Debug[12]
-            passed_data[66] = BitConverter.ToInt32(payload, 198);    // Debug[13]
-            passed_data[67] = BitConverter.ToInt32(payload, 202);    // Debug[14]
-            passed_data[68] = BitConverter.ToInt32(payload, 206);    // Debug[15]
-
             if (cb_record.Checked == true)
             {
                 Check_Data_Log(PID_log_filePath, passed_data);
@@ -2495,14 +2446,6 @@ namespace SpeedyBeeF405V3S_GUI
                 _debug_5_points.Add(time_count + 150, passed_data[51]);
                 _debug_6_points.Add(time_count + 150, passed_data[52]);
                 _debug_7_points.Add(time_count + 150, passed_data[53]);
-                _debug_8_points.Add(time_count + 150, passed_data[61]);
-                _debug_9_points.Add(time_count + 150, passed_data[62]);
-                _debug_10_points.Add(time_count + 150, passed_data[63]);
-                _debug_11_points.Add(time_count + 150, passed_data[64]);
-                _debug_12_points.Add(time_count + 150, passed_data[65]);
-                _debug_13_points.Add(time_count + 150, passed_data[66]);
-                _debug_14_points.Add(time_count + 150, passed_data[67]);
-                _debug_15_points.Add(time_count + 150, passed_data[68]);
 
                 if (_debug_0_points.Count > 1000)
                 {
@@ -2514,14 +2457,6 @@ namespace SpeedyBeeF405V3S_GUI
                     _debug_5_points.RemoveAt(0);
                     _debug_6_points.RemoveAt(0);
                     _debug_7_points.RemoveAt(0);
-                    _debug_8_points.RemoveAt(0);
-                    _debug_9_points.RemoveAt(0);
-                    _debug_10_points.RemoveAt(0);
-                    _debug_11_points.RemoveAt(0);
-                    _debug_12_points.RemoveAt(0);
-                    _debug_13_points.RemoveAt(0);
-                    _debug_14_points.RemoveAt(0);
-                    _debug_15_points.RemoveAt(0);
                 }
 
                 _myPane.XAxis.Scale.Min = time_count;

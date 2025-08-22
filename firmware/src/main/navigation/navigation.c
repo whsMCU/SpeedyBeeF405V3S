@@ -232,22 +232,22 @@ navigationPosControl_t posControl;
 //navSystemStatus_t NAV_Status;
 //
 //EXTENDED_FASTRAM multicopterPosXyCoefficients_t multicopterPosXyCoefficients;
-//
-//// Blackbox states
-//int16_t navCurrentState;
-//int16_t navActualVelocity[3];
-//int16_t navDesiredVelocity[3];
-//int16_t navActualHeading;
-//int16_t navDesiredHeading;
-//int32_t navTargetPosition[3];
-//int32_t navLatestActualPosition[3];
-//int16_t navActualSurface;
-//uint16_t navFlags;
-//uint16_t navEPH;
-//uint16_t navEPV;
-//int16_t navAccNEU[3];
-////End of blackbox states
-//
+
+// Blackbox states
+int16_t navCurrentState;
+int16_t navActualVelocity[3];
+int16_t navDesiredVelocity[3];
+int16_t navActualHeading;
+int16_t navDesiredHeading;
+int32_t navTargetPosition[3];
+int32_t navLatestActualPosition[3];
+int16_t navActualSurface;
+uint16_t navFlags;
+uint16_t navEPH;
+uint16_t navEPV;
+int16_t navAccNEU[3];
+//End of blackbox states
+
 //static fpVector3_t * rthGetHomeTargetPosition(rthTargetMode_e mode);
 //static void updateDesiredRTHAltitude(void);
 //static void resetAltitudeController(bool useTerrainFollowing);

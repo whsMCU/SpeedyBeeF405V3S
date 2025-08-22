@@ -22,7 +22,7 @@
 
 #include "hw.h"
 
-#define DEBUG16_VALUE_COUNT 16
+#define DEBUG16_VALUE_COUNT 8
 extern int32_t debug[DEBUG16_VALUE_COUNT];
 extern uint8_t debugMode;
 
@@ -103,6 +103,7 @@ typedef enum {
     DEBUG_FLOW_RAW,
     DEBUG_FLOW,
     DEBUG_IMU,
+    DEBUG_POS_EST,
     DEBUG_COUNT
 } debugType_e;
 

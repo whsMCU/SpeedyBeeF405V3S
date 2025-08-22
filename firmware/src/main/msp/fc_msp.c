@@ -519,15 +519,6 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU32(dst, ((pvt.day) | (pvt.hour<<8) | (pvt.min<<16) | (pvt.sec<<24)));
 
           sbufWriteU32(dst, GpsNav.GPS_headVeh);
-
-          sbufWriteU32(dst, debug[8]);
-          sbufWriteU32(dst, debug[9]);
-          sbufWriteU32(dst, debug[10]);
-          sbufWriteU32(dst, debug[11]);
-          sbufWriteU32(dst, debug[12]);
-          sbufWriteU32(dst, debug[13]);
-          sbufWriteU32(dst, debug[14]);
-          sbufWriteU32(dst, debug[15]);
         }
         break;
 
