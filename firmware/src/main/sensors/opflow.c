@@ -86,7 +86,7 @@ void opflow_Init(void)
 {
   opticalFlowConfig.opflow_hardware = SETTING_OPFLOW_HARDWARE_DEFAULT;
   opticalFlowConfig.opflow_align = SETTING_ALIGN_OPFLOW_DEFAULT;
-  opticalFlowConfig.opflow_scale = SETTING_OPFLOW_SCALE_DEFAULT;
+  opticalFlowConfig.opflow_scale = 7.627f;
 }
 
 static bool opflowDetect(opflowDev_t * dev, uint8_t opflowHardwareToUse)
@@ -182,7 +182,7 @@ void opflowUpdate(timeUs_t currentTimeUs)
 
             // Apply sensor alignment
 //            applySensorAlignment(opflow.dev.rawData.flowRateRaw, opflow.dev.rawData.flowRateRaw, opticalFlowConfig.opflow_align);
-
+            alignSensorViaRotation(opflow.dev.rawData.flowRateRaw, CW0_DEG_FLIP);
             // Calculate flow rate and accumulated body rate
             opflow.flowRate[X] = opflow.dev.rawData.flowRateRaw[X] * integralToRateScaler;
             opflow.flowRate[Y] = opflow.dev.rawData.flowRateRaw[Y] * integralToRateScaler;
