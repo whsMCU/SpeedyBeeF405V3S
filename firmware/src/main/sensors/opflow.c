@@ -86,7 +86,7 @@ void opflow_Init(void)
 {
   opticalFlowConfig.opflow_hardware = SETTING_OPFLOW_HARDWARE_DEFAULT;
   opticalFlowConfig.opflow_align = SETTING_ALIGN_OPFLOW_DEFAULT;
-  opticalFlowConfig.opflow_scale = 7.627f;
+  opticalFlowConfig.opflow_scale = 10.785f;
 }
 
 static bool opflowDetect(opflowDev_t * dev, uint8_t opflowHardwareToUse)
