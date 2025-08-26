@@ -539,7 +539,7 @@ static uint32_t calculateCurrentValidityFlags(timeUs_t currentTimeUs)
         new_Flags |= EST_SURFACE_VALID;
     }
 
-    if (sensors(SENSOR_OPFLOW) && opflow.isHwHealty && ((currentTimeUs - posEstimator.flow.lastUpdateTime) <= MS2US(INAV_FLOW_TIMEOUT_MS))) {
+    if (sensors(SENSOR_OPFLOW) && posEstimator.flow.isValid && ((currentTimeUs - posEstimator.flow.lastUpdateTime) <= MS2US(INAV_FLOW_TIMEOUT_MS))) {
         new_Flags |= EST_FLOW_VALID;
     }
 
@@ -824,24 +824,24 @@ static void publishEstimatedTopic(timeUs_t currentTimeUs)
     updateActualHeading(true, DECIDEGREES_TO_CENTIDEGREES(attitude.values.yaw), DECIDEGREES_TO_CENTIDEGREES(cogValue));
 
     /* Position and velocity are published with INAV_POSITION_PUBLISH_RATE_HZ */
-//    if (updateTimer(&posPublishTimer, HZ2US(INAV_POSITION_PUBLISH_RATE_HZ), currentTimeUs)) {
-//        /* Publish position update */
-//        if (posEstimator.est.eph < positionEstimationConfig.max_eph_epv) {
-//            // FIXME!!!!!
-//            updateActualHorizontalPositionAndVelocity(true, true, posEstimator.est.pos.x, posEstimator.est.pos.y, posEstimator.est.vel.x, posEstimator.est.vel.y);
-//        }
-//        else {
-//            updateActualHorizontalPositionAndVelocity(false, false, posEstimator.est.pos.x, posEstimator.est.pos.y, 0, 0);
-//        }
+    if (updateTimer(&posPublishTimer, HZ2US(INAV_POSITION_PUBLISH_RATE_HZ), currentTimeUs)) {
+        /* Publish position update */
+        if (posEstimator.est.eph < positionEstimationConfig.max_eph_epv) {
+            // FIXME!!!!!
+            updateActualHorizontalPositionAndVelocity(true, true, posEstimator.est.pos.x, posEstimator.est.pos.y, posEstimator.est.vel.x, posEstimator.est.vel.y);
+        }
+        else {
+            updateActualHorizontalPositionAndVelocity(false, false, posEstimator.est.pos.x, posEstimator.est.pos.y, 0, 0);
+        }
 
         /* Publish altitude update and set altitude validity */
-//        if (posEstimator.est.epv < positionEstimationConfig.max_eph_epv) {
-//            navigationEstimateStatus_e aglStatus = (posEstimator.est.aglQual == SURFACE_QUAL_LOW) ? EST_USABLE : EST_TRUSTED;
-//            updateActualAltitudeAndClimbRate(true, posEstimator.est.pos.z, posEstimator.est.vel.z, posEstimator.est.aglAlt, posEstimator.est.aglVel, aglStatus);
-//        }
-//        else {
-//            updateActualAltitudeAndClimbRate(false, posEstimator.est.pos.z, 0, posEstimator.est.aglAlt, 0, EST_NONE);
-//        }
+        if (posEstimator.est.epv < positionEstimationConfig.max_eph_epv) {
+            navigationEstimateStatus_e aglStatus = (posEstimator.est.aglQual == SURFACE_QUAL_LOW) ? EST_USABLE : EST_TRUSTED;
+            updateActualAltitudeAndClimbRate(true, posEstimator.est.pos.z, posEstimator.est.vel.z, posEstimator.est.aglAlt, posEstimator.est.aglVel, aglStatus);
+        }
+        else {
+            updateActualAltitudeAndClimbRate(false, posEstimator.est.pos.z, 0, posEstimator.est.aglAlt, 0, EST_NONE);
+        }
 
         //Update Blackbox states
         navEPH = posEstimator.est.eph;
@@ -864,7 +864,7 @@ static void publishEstimatedTopic(timeUs_t currentTimeUs)
         DEBUG_SET(DEBUG_POS_EST, 7, (int32_t) (posEstimator.flags & 0b1111111)<<20 |          // navPositionEstimationFlags fit into 8bits
                                               (MIN(navEPH, 1000) & 0x3FF)<<10 |
                                               (MIN(navEPV, 1000) & 0x3FF));                   // Horizontal and vertical uncertainties (max value = 1000, fit into 20bits)
-    //}
+    }
 }
 
 #if defined(NAV_GPS_GLITCH_DETECTION)

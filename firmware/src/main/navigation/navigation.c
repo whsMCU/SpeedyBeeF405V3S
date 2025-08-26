@@ -2013,103 +2013,103 @@ int16_t navAccNEU[3];
 //        return false;
 //    }
 //}
-//
-///*-----------------------------------------------------------
-// * Processes an update to XY-position and velocity
-// *-----------------------------------------------------------*/
-//void updateActualHorizontalPositionAndVelocity(bool estPosValid, bool estVelValid, float newX, float newY, float newVelX, float newVelY)
-//{
-//    posControl.actualState.abs.pos.x = newX;
-//    posControl.actualState.abs.pos.y = newY;
-//    posControl.actualState.abs.vel.x = newVelX;
-//    posControl.actualState.abs.vel.y = newVelY;
-//
-//    posControl.actualState.agl.pos.x = newX;
-//    posControl.actualState.agl.pos.y = newY;
-//    posControl.actualState.agl.vel.x = newVelX;
-//    posControl.actualState.agl.vel.y = newVelY;
-//
-//    posControl.actualState.velXY = calc_length_pythagorean_2D(newVelX, newVelY);
-//
-//    // CASE 1: POS & VEL valid
-//    if (estPosValid && estVelValid) {
-//        posControl.flags.estPosStatus = EST_TRUSTED;
-//        posControl.flags.estVelStatus = EST_TRUSTED;
-//        posControl.flags.horizontalPositionDataNew = true;
-//        posControl.lastValidPositionTimeMs = millis();
-//    }
-//    // CASE 1: POS invalid, VEL valid
-//    else if (!estPosValid && estVelValid) {
-//        posControl.flags.estPosStatus = EST_USABLE;     // Pos usable, but not trusted
-//        posControl.flags.estVelStatus = EST_TRUSTED;
-//        posControl.flags.horizontalPositionDataNew = true;
-//        posControl.lastValidPositionTimeMs = millis();
-//    }
-//    // CASE 3: can't use pos/vel data
-//    else {
-//        posControl.flags.estPosStatus = EST_NONE;
-//        posControl.flags.estVelStatus = EST_NONE;
-//        posControl.flags.horizontalPositionDataNew = false;
-//    }
-//
-//    //Update blackbox data
-//    navLatestActualPosition[X] = newX;
-//    navLatestActualPosition[Y] = newY;
-//    navActualVelocity[X] = constrain(newVelX, -32678, 32767);
-//    navActualVelocity[Y] = constrain(newVelY, -32678, 32767);
-//}
+
+/*-----------------------------------------------------------
+ * Processes an update to XY-position and velocity
+ *-----------------------------------------------------------*/
+void updateActualHorizontalPositionAndVelocity(bool estPosValid, bool estVelValid, float newX, float newY, float newVelX, float newVelY)
+{
+    posControl.actualState.abs.pos.x = newX;
+    posControl.actualState.abs.pos.y = newY;
+    posControl.actualState.abs.vel.x = newVelX;
+    posControl.actualState.abs.vel.y = newVelY;
+
+    posControl.actualState.agl.pos.x = newX;
+    posControl.actualState.agl.pos.y = newY;
+    posControl.actualState.agl.vel.x = newVelX;
+    posControl.actualState.agl.vel.y = newVelY;
+
+    posControl.actualState.velXY = calc_length_pythagorean_2D(newVelX, newVelY);
+
+    // CASE 1: POS & VEL valid
+    if (estPosValid && estVelValid) {
+        posControl.flags.estPosStatus = EST_TRUSTED;
+        posControl.flags.estVelStatus = EST_TRUSTED;
+        posControl.flags.horizontalPositionDataNew = true;
+        posControl.lastValidPositionTimeMs = millis();
+    }
+    // CASE 1: POS invalid, VEL valid
+    else if (!estPosValid && estVelValid) {
+        posControl.flags.estPosStatus = EST_USABLE;     // Pos usable, but not trusted
+        posControl.flags.estVelStatus = EST_TRUSTED;
+        posControl.flags.horizontalPositionDataNew = true;
+        posControl.lastValidPositionTimeMs = millis();
+    }
+    // CASE 3: can't use pos/vel data
+    else {
+        posControl.flags.estPosStatus = EST_NONE;
+        posControl.flags.estVelStatus = EST_NONE;
+        posControl.flags.horizontalPositionDataNew = false;
+    }
+
+    //Update blackbox data
+    navLatestActualPosition[X] = newX;
+    navLatestActualPosition[Y] = newY;
+    navActualVelocity[X] = constrain(newVelX, -32678, 32767);
+    navActualVelocity[Y] = constrain(newVelY, -32678, 32767);
+}
 
 /*-----------------------------------------------------------
  * Processes an update to Z-position and velocity
  *-----------------------------------------------------------*/
-//void updateActualAltitudeAndClimbRate(bool estimateValid, float newAltitude, float newVelocity, float surfaceDistance, float surfaceVelocity, navigationEstimateStatus_e surfaceStatus)
-//{
-//    posControl.actualState.abs.pos.z = newAltitude;
-//    posControl.actualState.abs.vel.z = newVelocity;
-//
-//    posControl.actualState.agl.pos.z = surfaceDistance;
-//    posControl.actualState.agl.vel.z = surfaceVelocity;
-//
-//    // Update altitude that would be used when executing RTH
-//    if (estimateValid) {
-//        updateDesiredRTHAltitude();
-//
-//        // If we acquired new surface reference - changing from NONE/USABLE -> TRUSTED
-//        if ((surfaceStatus == EST_TRUSTED) && (posControl.flags.estAglStatus != EST_TRUSTED)) {
-//            // If we are in terrain-following modes - signal that we should update the surface tracking setpoint
-//            //      NONE/USABLE means that we were flying blind, now we should lock to surface
-//            //updateSurfaceTrackingSetpoint();
-//        }
-//
-//        posControl.flags.estAglStatus = surfaceStatus;  // Could be TRUSTED or USABLE
-//        posControl.flags.estAltStatus = EST_TRUSTED;
-//        posControl.flags.verticalPositionDataNew = true;
-//        posControl.lastValidAltitudeTimeMs = millis();
-//    }
-//    else {
-//        posControl.flags.estAltStatus = EST_NONE;
-//        posControl.flags.estAglStatus = EST_NONE;
-//        posControl.flags.verticalPositionDataNew = false;
-//    }
-//
-//    if (ARMING_FLAG(ARMED)) {
-//        if ((posControl.flags.estAglStatus == EST_TRUSTED) && surfaceDistance > 0) {
-//            if (posControl.actualState.surfaceMin > 0) {
-//                posControl.actualState.surfaceMin = MIN(posControl.actualState.surfaceMin, surfaceDistance);
-//            }
-//            else {
-//                posControl.actualState.surfaceMin = surfaceDistance;
-//            }
-//        }
-//    }
-//    else {
-//        posControl.actualState.surfaceMin = -1;
-//    }
-//
-//    //Update blackbox data
-//    navLatestActualPosition[Z] = navGetCurrentActualPositionAndVelocity()->pos.z;
-//    navActualVelocity[Z] = constrain(navGetCurrentActualPositionAndVelocity()->vel.z, -32678, 32767);
-//}
+void updateActualAltitudeAndClimbRate(bool estimateValid, float newAltitude, float newVelocity, float surfaceDistance, float surfaceVelocity, navigationEstimateStatus_e surfaceStatus)
+{
+    posControl.actualState.abs.pos.z = newAltitude;
+    posControl.actualState.abs.vel.z = newVelocity;
+
+    posControl.actualState.agl.pos.z = surfaceDistance;
+    posControl.actualState.agl.vel.z = surfaceVelocity;
+
+    // Update altitude that would be used when executing RTH
+    if (estimateValid) {
+        //updateDesiredRTHAltitude();
+
+        // If we acquired new surface reference - changing from NONE/USABLE -> TRUSTED
+        if ((surfaceStatus == EST_TRUSTED) && (posControl.flags.estAglStatus != EST_TRUSTED)) {
+            // If we are in terrain-following modes - signal that we should update the surface tracking setpoint
+            //      NONE/USABLE means that we were flying blind, now we should lock to surface
+            //updateSurfaceTrackingSetpoint();
+        }
+
+        posControl.flags.estAglStatus = surfaceStatus;  // Could be TRUSTED or USABLE
+        posControl.flags.estAltStatus = EST_TRUSTED;
+        posControl.flags.verticalPositionDataNew = true;
+        posControl.lastValidAltitudeTimeMs = millis();
+    }
+    else {
+        posControl.flags.estAltStatus = EST_NONE;
+        posControl.flags.estAglStatus = EST_NONE;
+        posControl.flags.verticalPositionDataNew = false;
+    }
+
+    if (ARMING_FLAG(ARMED)) {
+        if ((posControl.flags.estAglStatus == EST_TRUSTED) && surfaceDistance > 0) {
+            if (posControl.actualState.surfaceMin > 0) {
+                posControl.actualState.surfaceMin = MIN(posControl.actualState.surfaceMin, surfaceDistance);
+            }
+            else {
+                posControl.actualState.surfaceMin = surfaceDistance;
+            }
+        }
+    }
+    else {
+        posControl.actualState.surfaceMin = -1;
+    }
+
+    //Update blackbox data
+    //navLatestActualPosition[Z] = navGetCurrentActualPositionAndVelocity()->pos.z;
+    //navActualVelocity[Z] = constrain(navGetCurrentActualPositionAndVelocity()->vel.z, -32678, 32767);
+}
 
 /*-----------------------------------------------------------
  * Processes an update to estimated heading
