@@ -217,10 +217,10 @@ void opflowUpdate(timeUs_t currentTimeUs)
         }
 
         // Convert to radians so NAV doesn't have to do the conversion
-        //opflow.bodyRate[X] = DEGREES_TO_RADIANS(opflow.bodyRate[X]);
-        //opflow.bodyRate[Y] = DEGREES_TO_RADIANS(opflow.bodyRate[Y]);
-        //opflow.flowRate[X] = DEGREES_TO_RADIANS(opflow.flowRate[X]);
-        //opflow.flowRate[Y] = DEGREES_TO_RADIANS(opflow.flowRate[Y]);
+        opflow.bodyRate[X] = DEGREES_TO_RADIANS(opflow.bodyRate[X]);
+        opflow.bodyRate[Y] = DEGREES_TO_RADIANS(opflow.bodyRate[Y]);
+        opflow.flowRate[X] = DEGREES_TO_RADIANS(opflow.flowRate[X]);
+        opflow.flowRate[Y] = DEGREES_TO_RADIANS(opflow.flowRate[Y]);
 
         // Zero out gyro accumulators to calculate rotation per flow update
         opflowZeroBodyGyroAcc();
