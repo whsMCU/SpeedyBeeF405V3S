@@ -346,7 +346,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     }
   }
 
-  motorWriteAll();
+  //motorWriteAll();
 
 #if defined(USE_GPS) || defined(USE_MAG)
     if (sensors(SENSOR_GPS) || sensors(SENSOR_MAG)) {
@@ -408,7 +408,7 @@ void updateAltHold(timeUs_t currentTimeUs)
 void updatePosHold(timeUs_t currentTimeUs)
 {
   opflow_poshold_t *poshold = &opflow.poshold;
-  if(FLIGHT_MODE(OPFLOW_HOLD_MODE) && abs(rcCommand[ROLL]) < 1 && abs(rcCommand[PITCH]) < 1)
+  if(FLIGHT_MODE(OPFLOW_HOLD_MODE) && abs(rcCommand[ROLL]) < 2 && abs(rcCommand[PITCH]) < 2)
   {
     static uint32_t pre_time = 0;
     uint32_t now_time = currentTimeUs;
@@ -416,11 +416,14 @@ void updatePosHold(timeUs_t currentTimeUs)
     pre_time = now_time;
 
     for (int i = 0; i < 2; i++) {
-      poshold->filteredFlowRate[i] = poshold->filteredFlowRate[i] * (1 - FLOW_LPF_ALPHA) + opflow.flowRate[i] * FLOW_LPF_ALPHA;
+      poshold->filteredFlowRate[i] = poshold->filteredFlowRate[i] * (1 - FLOW_LPF_ALPHA) + RADIANS_TO_DEGREES(opflow.flowRate[i]) * FLOW_LPF_ALPHA;
     }
+    // FlowRate[X] : 오른 -, 왼쪽+, +-30
+    // FlowRate[Y] : 앞 -, 뒤 +, +-30
 
-    poshold->Pixel[X] = poshold->Pixel[X] + poshold->filteredFlowRate[X] * poshold->dt;
-    poshold->Pixel[Y] = poshold->Pixel[Y] + poshold->filteredFlowRate[Y] * poshold->dt;
+    //Position(Pixcl Coordinate)
+    poshold->Pixel[X] += poshold->filteredFlowRate[X] * poshold->dt;
+    poshold->Pixel[Y] += poshold->filteredFlowRate[Y] * poshold->dt;
 
     if(rcData[THROTTLE] < 1030)
     {
@@ -433,11 +436,11 @@ void updatePosHold(timeUs_t currentTimeUs)
     poshold->error_Pixel[X] = poshold->target_Pixel[X] - poshold->Pixel[X];
     poshold->error_Pixel[Y] = poshold->target_Pixel[Y] - poshold->Pixel[Y];
 
-    poshold->target_Angle[X] = poshold->KP * poshold->error_Pixel[X];
-    poshold->target_Angle[Y] = poshold->KP * poshold->error_Pixel[Y];
+    poshold->proportional_Pixel[X] = poshold->KP * poshold->error_Pixel[X];
+    poshold->proportional_Pixel[Y] = poshold->KP * poshold->error_Pixel[Y];
 
-    poshold->target_Angle[X] += -poshold->KD * -poshold->filteredFlowRate[X];
-    poshold->target_Angle[Y] += -poshold->KD * -poshold->filteredFlowRate[Y];
+    poshold->derivative_Pixel[X] = poshold->KD * poshold->filteredFlowRate[X];
+    poshold->derivative_Pixel[Y] = poshold->KD * poshold->filteredFlowRate[Y];
 
     poshold->integral_Pixel[X] += poshold->KI * poshold->error_Pixel[X] * poshold->dt;
     poshold->integral_Pixel[Y] += poshold->KI * poshold->error_Pixel[Y] * poshold->dt;
@@ -455,8 +458,8 @@ void updatePosHold(timeUs_t currentTimeUs)
       poshold->integral_Pixel[Y] = 0;
     }
 
-    poshold->target_Angle[X] += poshold->integral_Pixel[X];
-    poshold->target_Angle[Y] += poshold->integral_Pixel[Y];
+    poshold->target_Angle[X] = poshold->proportional_Pixel[X] + poshold->integral_Pixel[X] + poshold->derivative_Pixel[X];
+    poshold->target_Angle[Y] = poshold->proportional_Pixel[Y] + poshold->integral_Pixel[Y] + poshold->derivative_Pixel[Y];
 
     if(rcData[THROTTLE] < 1030)
     {
@@ -464,16 +467,20 @@ void updatePosHold(timeUs_t currentTimeUs)
       poshold->target_Angle[Y] = 0;
     }
 
-    poshold->target_Angle[X] = constrain(poshold->target_Angle[X], -25, 25);
-    poshold->target_Angle[Y] = -constrain(poshold->target_Angle[Y], -25, 25);
+    poshold->target_Angle[X] = -constrain(poshold->target_Angle[X], -10, 10);
+    poshold->target_Angle[Y] = -constrain(poshold->target_Angle[Y], -10, 10);
 
     rcCommand[ROLL] = poshold->target_Angle[X];
     rcCommand[PITCH] = poshold->target_Angle[Y];
 
-    DEBUG_SET(DEBUG_NONE, 0, poshold->Pixel[X]);
-    DEBUG_SET(DEBUG_NONE, 1, poshold->Pixel[Y]);
-    DEBUG_SET(DEBUG_NONE, 2, rcCommand[ROLL]);
-    DEBUG_SET(DEBUG_NONE, 3, rcCommand[PITCH]);
+    DEBUG_SET(DEBUG_POS_HOLD, 2, poshold->filteredFlowRate[X]);
+    DEBUG_SET(DEBUG_POS_HOLD, 0, poshold->Pixel[X]);
+    DEBUG_SET(DEBUG_POS_HOLD, 1, poshold->error_Pixel[X]);
+    DEBUG_SET(DEBUG_POS_HOLD, 3, poshold->proportional_Pixel[X]);
+    DEBUG_SET(DEBUG_POS_HOLD, 4, poshold->integral_Pixel[X]);
+    DEBUG_SET(DEBUG_POS_HOLD, 5, poshold->derivative_Pixel[X]);
+    DEBUG_SET(DEBUG_POS_HOLD, 6, poshold->target_Angle[X]);
+    DEBUG_SET(DEBUG_POS_HOLD, 7, rcCommand[ROLL]);
   }
 }
 #endif

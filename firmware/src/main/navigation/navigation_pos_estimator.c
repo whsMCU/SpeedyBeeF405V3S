@@ -557,7 +557,6 @@ static uint32_t calculateCurrentValidityFlags(timeUs_t currentTimeUs)
 static void estimationPredict(estimationContext_t * ctx)
 {
     const float accWeight = navGetAccelerometerWeight();
-    DEBUG_SET(DEBUG_NONE, 0, accWeight);
     /* Prediction step: Z-axis */
     if ((ctx->newFlags & EST_Z_VALID)) {
         posEstimator.est.pos.z += posEstimator.est.vel.z * ctx->dt;

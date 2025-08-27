@@ -52,7 +52,9 @@ extern opticalFlowConfig_t opticalFlowConfig;
 typedef struct {
   float target_Pixel[2];
   float error_Pixel[2];
+  float proportional_Pixel[2];
   float integral_Pixel[2];
+  float derivative_Pixel[2];
   float integral_windup;
   float filteredFlowRate[2];
   float Pixel[2];

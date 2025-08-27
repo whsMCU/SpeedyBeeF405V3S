@@ -173,6 +173,7 @@ namespace SpeedyBeeF405V3S_GUI
             new Item() { Text = "DEBUG_FLOW", Value = 72 },
             new Item() { Text = "DEBUG_IMU", Value = 73 },
             new Item() { Text = "DEBUG_POS_EST", Value = 74 },
+            new Item() { Text = "DEBUG_POS_HOLD", Value = 75 },
         };
 
         public Form1()

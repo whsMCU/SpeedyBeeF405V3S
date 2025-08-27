@@ -248,7 +248,7 @@ FAST_CODE void taskGyroUpdate(timeUs_t currentTimeUs)
 //  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
 //    bmi270.gyroADCf[axis] = applyGyroMedianFilter(axis, bmi270.gyroADC[axis]);
 //  }
-  //DEBUG_SET(DEBUG_NONE, 0, (bmi270.gyroADC[Y]));
+
   if (bmi270.downsampleFilterEnabled) {
       // using gyro lowpass 2 filter for downsampling
     bmi270.sampleSum[X] = bmi270.lowpass2FilterApplyFn((filter_t *)&bmi270.lowpass2Filter[X], bmi270.gyroADC[X]);
@@ -261,8 +261,6 @@ FAST_CODE void taskGyroUpdate(timeUs_t currentTimeUs)
     bmi270.sampleSum[Z] += bmi270.gyroADC[Z];
     bmi270.sampleCount++;
   }
-
-  //DEBUG_SET(DEBUG_NONE, 1, (bmi270.sampleSum[Y]));
 
   DEBUG_SET(DEBUG_GYRO_RAW, 0, (deltaT));
   DEBUG_SET(DEBUG_GYRO_RAW, 1, (bmi270.gyroADC[X]));
@@ -300,22 +298,19 @@ static FAST_CODE void filterGyro(void)
 #ifdef USE_RPM_FILTER
         gyroADCf = rpmFilterGyro(axis, gyroADCf);
 #endif
-        //if(axis == X) DEBUG_SET(DEBUG_NONE, 0, (gyroADCf));
         // apply static notch filters and software lowpass filters
         gyroADCf = bmi270.notchFilter1ApplyFn((filter_t *)&bmi270.notchFilter1[axis], gyroADCf);
         gyroADCf = bmi270.notchFilter2ApplyFn((filter_t *)&bmi270.notchFilter2[axis], gyroADCf);
         gyroADCf = bmi270.lowpassFilterApplyFn((filter_t *)&bmi270.lowpassFilter[axis], gyroADCf);
-        //if(axis == X) DEBUG_SET(DEBUG_NONE, 1, (gyroADCf));
+
 #ifdef USE_DYN_NOTCH_FILTER
         if (isDynNotchActive()) {
             dynNotchPush(axis, gyroADCf);
             gyroADCf = dynNotchFilter(axis, gyroADCf);
         }
 #endif
-        //if(axis == X) DEBUG_SET(DEBUG_NONE, 2, (gyroADCf));
         bmi270.gyroADCf[axis] = gyroADCf;
     }
-    //DEBUG_SET(DEBUG_NONE, 2, (bmi270.gyroADCf[Y]));
     bmi270.sampleCount = 0;
 }
 
