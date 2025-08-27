@@ -173,6 +173,7 @@ static float invSqrt(float x)
 {
     return 1.0f / sqrtf(x);
 }
+
 // g[xyz] - gyro reading, in rad/s
 // useAcc, a[xyz] - accelerometer reading, direction only, normalized internally
 // headingErrMag - heading error (in earth frame) derived from magnetometter, rad/s around Z axis (* dcmKpGain)

@@ -83,15 +83,8 @@ bool estimationCalculateCorrection_XY_FLOW(estimationContext_t * ctx)
         .z =    posEstimator.est.vel.z
     };
 
-    DEBUG_SET(DEBUG_NONE, 1, flowVel.x); //(INAV) 앞 -, 뒤 +
-    DEBUG_SET(DEBUG_NONE, 2, flowVel.y); //(INAV) 오른+, 왼쪽 -
-    DEBUG_SET(DEBUG_NONE, 3, flowVel.z);
     // At this point flowVel will hold linear velocities in earth frame
     imuTransformVectorBodyToEarth(&flowVel);
-
-    DEBUG_SET(DEBUG_NONE, 4, flowVel.x);//(INAV) 앞 +, 뒤 -
-    DEBUG_SET(DEBUG_NONE, 5, flowVel.y);//(INAV) 앞 -, 뒤 +
-    DEBUG_SET(DEBUG_NONE, 6, flowVel.z);
 
     // Calculate velocity correction
     const float flowVelXInnov = flowVel.x - posEstimator.est.vel.x;
