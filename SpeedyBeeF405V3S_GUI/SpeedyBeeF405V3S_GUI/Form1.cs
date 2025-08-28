@@ -316,6 +316,27 @@ namespace SpeedyBeeF405V3S_GUI
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
 
+                log = "A_B_P, A_B_I, A_B_D";
+                writer.WriteLine(log);
+                Console.WriteLine(log); // 콘솔에도 출력
+                log = $"{float_data_pid[18]}, {float_data_pid[19]}, {float_data_pid[20]}";
+                writer.WriteLine(log);
+                Console.WriteLine(log); // 콘솔에도 출력
+
+                log = "A_R_P, A_R_I, A_R_D";
+                writer.WriteLine(log);
+                Console.WriteLine(log); // 콘솔에도 출력
+                log = $"{float_data_pid[21]}, {float_data_pid[22]}, {float_data_pid[23]}";
+                writer.WriteLine(log);
+                Console.WriteLine(log); // 콘솔에도 출력
+
+                log = "P_O_P, P_O_I, P_O_D";
+                writer.WriteLine(log);
+                Console.WriteLine(log); // 콘솔에도 출력
+                log = $"{float_data_pid[24]}, {float_data_pid[25]}, {float_data_pid[26]}";
+                writer.WriteLine(log);
+                Console.WriteLine(log); // 콘솔에도 출력
+
                 log = "DateTime, Arming_Flag, Flight_Mode, Roll(Deg), Pitch(Deg), Yaw(Deg), Alt(CM), RollSetPoint(Deg), PitchSetPoint(Deg), Yaw SetPoint(Deg), Thorttle(%), yaw_heading_reference(Deg)," +
                     " altHold, lattitude, longitude, Sat_Num, gps_fix, Throttle_Hold_point, Alt_PID_Result, MOTOR[Right_Rear](%), MOTOR[Right_Front](%), MOTOR[Left_Rear](%), MOTOR[Left_Front](%)," +
                     " BAT_V, BAT_A, BAT_mAh, Alt_Range(CM), Alt_Range_Hold(CM), GPS_HEADING(deg)," +

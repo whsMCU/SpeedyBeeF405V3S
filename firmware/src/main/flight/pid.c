@@ -71,7 +71,7 @@ static inline float apply_deadband(float v, float db)
     return (fabsf(v) < db) ? 0.0f : v;
 }
 
-#define MAX_DERIVATIVE        30.0f      // max |dz/dt| in cm/s used by D (after filtering)
+#define MAX_DERIVATIVE        200.0f    // max |dz/dt| in cm/s used by D (after filtering)
 #define ALT_ERR_DEADBAND      1.0f      // cm, small error deadband to avoid chatter
 #define ALT_MAX_CLIMB_RATE    50.0f     // cm/s, limit for stick-driven target rate
 #define ALT_TARGET_SOFTLOCK   100.0f    // cm, limit target within plausible range quickly
@@ -346,7 +346,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     }
   }
 
-  //motorWriteAll();
+  motorWriteAll();
 
 #if defined(USE_GPS) || defined(USE_MAG)
     if (sensors(SENSOR_GPS) || sensors(SENSOR_MAG)) {
