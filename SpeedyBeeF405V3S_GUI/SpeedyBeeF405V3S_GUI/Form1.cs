@@ -274,6 +274,18 @@ namespace SpeedyBeeF405V3S_GUI
                 float_data_pid[16] = float.Parse(tb_Y_R_I.Text);
                 float_data_pid[17] = float.Parse(tb_Y_R_D.Text);
 
+                float_data_pid[18] = float.Parse(tb_ALT_P.Text);
+                float_data_pid[19] = float.Parse(tb_ALT_I.Text);
+                float_data_pid[20] = float.Parse(tb_ALT_D.Text);
+
+                float_data_pid[21] = float.Parse(tb_ALT_Range_P.Text);
+                float_data_pid[22] = float.Parse(tb_ALT_Range_I.Text);
+                float_data_pid[23] = float.Parse(tb_ALT_Range_D.Text);
+
+                float_data_pid[24] = float.Parse(tb_POS_Opflow_P.Text);
+                float_data_pid[25] = float.Parse(tb_POS_Opflow_I.Text);
+                float_data_pid[26] = float.Parse(tb_POS_Opflow_D.Text);
+
                 string log = "R_I_P, R_I_I, R_I_D";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
@@ -878,6 +890,22 @@ namespace SpeedyBeeF405V3S_GUI
                     //Console.WriteLine("PID값 전송 완료");
                 }
                 catch { Console.WriteLine("PID Data Send Error"); }
+
+                // 바탕화면 경로 가져오기
+                string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+                // 로그 폴더 만들기 (선택 사항)
+                string folderPath = Path.Combine(desktopPath, "PID_Log");
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+
+                string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                string fileName = $"log_{timestamp}_PID_Gain_Change.txt";
+
+                PID_log_filePath = Path.Combine(folderPath, fileName);
+                InitLogger(PID_log_filePath);
             }
 
             if (acc_cal_flag == true)
@@ -2168,7 +2196,7 @@ namespace SpeedyBeeF405V3S_GUI
             }
         }
 
-        private void bt_open_folder_Click(object sender, EventArgs e)
+    private void bt_open_folder_Click(object sender, EventArgs e)
         {
             // 실행 중인 프로그램의 폴더 경로 가져오기
             string folderPath = AppDomain.CurrentDomain.BaseDirectory;
