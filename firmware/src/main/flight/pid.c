@@ -251,7 +251,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     updateAltHold_RANGEFINDER(&rangefinder, currentTimeUs);
 
     DEBUG_SET(DEBUG_RANGEFINDER, 0, (rangefinder.althold.target_Height));
-    DEBUG_SET(DEBUG_RANGEFINDER, 1, (rangefinder.calculatedAltitude));
+    DEBUG_SET(DEBUG_RANGEFINDER, 1, (getEstimatedAglPosition()));
     DEBUG_SET(DEBUG_RANGEFINDER, 2, (rangefinder.althold.error_Height));
     DEBUG_SET(DEBUG_RANGEFINDER, 3, (rangefinder.althold.proportional_Height));
     DEBUG_SET(DEBUG_RANGEFINDER, 4, (rangefinder.althold.integral_Height));
@@ -503,9 +503,9 @@ void updateAltHold_RANGEFINDER(rangefinder_t *alt_sensor, timeUs_t currentTimeUs
   pre_time = now_time;
 
   // 센서 값 검증
-  if (!isfinite((float)rangefinder.calculatedAltitude) ||
-      (float)rangefinder.calculatedAltitude < 0.0f ||
-      (float)rangefinder.calculatedAltitude > 200.0f) {
+  if (!isfinite(getEstimatedAglPosition()) ||
+      getEstimatedAglPosition() < 0.0f ||
+      getEstimatedAglPosition() > 200.0f) {
       return;
   }
 
@@ -516,14 +516,14 @@ void updateAltHold_RANGEFINDER(rangefinder_t *alt_sensor, timeUs_t currentTimeUs
   {
     althold->integral_Height = 0;
     althold->dz_filtered = 0.0f;
-    althold->pre_Height = (float)rangefinder.calculatedAltitude;
+    althold->pre_Height = getEstimatedAglPosition();
 
-    const float err_soft = (float)rangefinder.calculatedAltitude - althold->target_Height;
+    const float err_soft = getEstimatedAglPosition() - althold->target_Height;
     const float max_pull = ALT_TARGET_SOFTLOCK * althold->dt; // cm per dt
     if (fabsf(err_soft) > max_pull) {
         althold->target_Height += (err_soft > 0 ? max_pull : -max_pull);
     } else {
-        althold->target_Height = (float)rangefinder.calculatedAltitude;
+        althold->target_Height = getEstimatedAglPosition();
     }
     althold->proportional_Height = 0;
     althold->derivative_Height = 0;
@@ -538,7 +538,7 @@ void updateAltHold_RANGEFINDER(rangefinder_t *alt_sensor, timeUs_t currentTimeUs
 //  althold->target_Height += climbRateCmd * althold->dt;
 
   // 고도 오차
-  float error = althold->target_Height - (float)rangefinder.calculatedAltitude; // cm
+  float error = althold->target_Height - getEstimatedAglPosition(); // cm
   if (fabsf(error) < ALT_ERR_DEADBAND) error = 0.0f;
   althold->error_Height = error;
 
@@ -551,8 +551,8 @@ void updateAltHold_RANGEFINDER(rangefinder_t *alt_sensor, timeUs_t currentTimeUs
   else if(althold->integral_Height < -althold->integral_windup) althold->integral_Height = -althold->integral_windup;
 
   // D항 (속도 기반, 노이즈 필터)
-  float dz = ((float)rangefinder.calculatedAltitude - althold->pre_Height) / althold->dt; // cm/s (positive = going up)
-  althold->pre_Height = (float)rangefinder.calculatedAltitude;
+  float dz = (getEstimatedAglPosition() - althold->pre_Height) / althold->dt; // cm/s (positive = going up)
+  althold->pre_Height = getEstimatedAglPosition();
 
   // Simple PT1 filter on dz to reduce RF noise
   althold->dz_filtered = pt1_apply(althold->dz_filtered, dz, ALT_DZ_FILTER_ALPHA);

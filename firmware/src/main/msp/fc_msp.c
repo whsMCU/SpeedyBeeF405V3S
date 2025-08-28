@@ -485,7 +485,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU32(dst, (int32_t)(opflow.bodyRate[X] * 1000.0f));
           sbufWriteU32(dst, (int32_t)(opflow.bodyRate[Y] * 1000.0f));
 
-          sbufWriteU32(dst, rangefinder.calculatedAltitude);
+          sbufWriteU32(dst, getEstimatedAglPosition());
 
           sbufWriteU32(dst, overren_cnt);
 

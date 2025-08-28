@@ -30,7 +30,7 @@ namespace SpeedyBeeF405V3S_GUI
         double delta_t = 0;
         float[] passed_data = new float[100];
         float[] float_data = new float[10];
-        float[] float_data_pid = new float[18];
+        float[] float_data_pid = new float[27];
         UTF8 UTF8 = new UTF8();
         Msp_Protocol protocol = new Msp_Protocol();
         MspProtocol mspProtocol = new MspProtocol();
@@ -890,22 +890,24 @@ namespace SpeedyBeeF405V3S_GUI
                     //Console.WriteLine("PID값 전송 완료");
                 }
                 catch { Console.WriteLine("PID Data Send Error"); }
-
-                // 바탕화면 경로 가져오기
-                string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-
-                // 로그 폴더 만들기 (선택 사항)
-                string folderPath = Path.Combine(desktopPath, "PID_Log");
-                if (!Directory.Exists(folderPath))
+                if(cb_record.Checked == true)
                 {
-                    Directory.CreateDirectory(folderPath);
+                    // 바탕화면 경로 가져오기
+                    string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+                    // 로그 폴더 만들기 (선택 사항)
+                    string folderPath = Path.Combine(desktopPath, "PID_Log");
+                    if (!Directory.Exists(folderPath))
+                    {
+                        Directory.CreateDirectory(folderPath);
+                    }
+
+                    string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                    string fileName = $"log_{timestamp}_PID_Gain_Change.txt";
+
+                    PID_log_filePath = Path.Combine(folderPath, fileName);
+                    InitLogger(PID_log_filePath);
                 }
-
-                string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                string fileName = $"log_{timestamp}_PID_Gain_Change.txt";
-
-                PID_log_filePath = Path.Combine(folderPath, fileName);
-                InitLogger(PID_log_filePath);
             }
 
             if (acc_cal_flag == true)
@@ -2196,7 +2198,7 @@ namespace SpeedyBeeF405V3S_GUI
             }
         }
 
-    private void bt_open_folder_Click(object sender, EventArgs e)
+        private void bt_open_folder_Click(object sender, EventArgs e)
         {
             // 실행 중인 프로그램의 폴더 경로 가져오기
             string folderPath = AppDomain.CurrentDomain.BaseDirectory;
