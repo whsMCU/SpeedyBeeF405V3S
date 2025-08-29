@@ -859,10 +859,10 @@ static void publishEstimatedTopic(timeUs_t currentTimeUs)
         //}
         DEBUG_SET(DEBUG_POS_EST, 3, (int32_t) posEstimator.est.vel.x);                // Speed estimate VX
         DEBUG_SET(DEBUG_POS_EST, 4, (int32_t) posEstimator.est.vel.y);                // Speed estimate VY
-        DEBUG_SET(DEBUG_POS_EST, 6, (int32_t) attitude.values.yaw);                           // Yaw estimate (4 bytes still available here)
-        DEBUG_SET(DEBUG_POS_EST, 7, (int32_t) (posEstimator.flags & 0b1111111)<<20 |          // navPositionEstimationFlags fit into 8bits
-                                              (MIN(navEPH, 1000) & 0x3FF)<<10 |
-                                              (MIN(navEPV, 1000) & 0x3FF));                   // Horizontal and vertical uncertainties (max value = 1000, fit into 20bits)
+        //DEBUG_SET(DEBUG_POS_EST, 6, (int32_t) attitude.values.yaw);                           // Yaw estimate (4 bytes still available here)
+        //DEBUG_SET(DEBUG_POS_EST, 7, (int32_t) (posEstimator.flags & 0b1111111)<<20 |          // navPositionEstimationFlags fit into 8bits
+        //                                      (MIN(navEPH, 1000) & 0x3FF)<<10 |
+        //                                      (MIN(navEPV, 1000) & 0x3FF));                   // Horizontal and vertical uncertainties (max value = 1000, fit into 20bits)
     }
 }
 
