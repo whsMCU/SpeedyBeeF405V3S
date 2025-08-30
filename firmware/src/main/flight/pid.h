@@ -71,6 +71,8 @@ extern PID _YAW_Rate;
 extern PID _ALT;
 extern PID_Test _PID_Test;
 
+extern int16_t altHoldThrottleRCZero;
+
 
 void PID_Calculation(PID* axis, float set_point, float measured1, float measured2, float dt);
 void Reset_All_PID_Integrator(void);

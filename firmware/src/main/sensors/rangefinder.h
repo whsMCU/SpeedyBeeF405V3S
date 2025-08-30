@@ -59,6 +59,8 @@ typedef struct {
   float dz_filtered;
   float stick_deadband;
   float climb_rate_scale;
+  float rcClimbRate;
+  int16_t rcThrottleAdjustment;
 
 } rangefinder_althold_t;
 

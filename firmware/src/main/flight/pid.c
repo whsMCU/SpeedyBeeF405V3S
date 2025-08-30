@@ -59,6 +59,8 @@ FAST_DATA_ZERO_INIT PID_Test _PID_Test;
 static FAST_DATA_ZERO_INIT float throttle = 0;
 static FAST_DATA_ZERO_INIT int throttleAngleCorrection;
 
+int16_t altHoldThrottleRCZero = 1500;
+
 #ifdef USE_RANGEFINDER
 
 static inline float pt1_apply(float prev, float input, float alpha)
@@ -73,14 +75,15 @@ static inline float apply_deadband(float v, float db)
 
 #define MAX_DERIVATIVE        200.0f    // max |dz/dt| in cm/s used by D (after filtering)
 #define ALT_ERR_DEADBAND      1.0f      // cm, small error deadband to avoid chatter
-#define ALT_MAX_CLIMB_RATE    50.0f     // cm/s, limit for stick-driven target rate
-#define ALT_TARGET_SOFTLOCK   100.0f    // cm, limit target within plausible range quickly
+#define ALT_TARGET_SOFTLOCK   10.0f    // cm, limit target within plausible range quickly
 #define ALT_RESULT_LIMIT      200.0f    // mixer units (matches your original)
 #define ALT_DZ_FILTER_ALPHA   0.2f      // PT1 for altitude rate estimate (0..1, lower = smoother)
 #define ALT_DERIV_CLAMP_ENABLE 1        // 1: clamp derivative spikes to 0 as original logic
 
-#define STICK_deadband        0.1      //+-5%
-#define climb_rate_fullstick  20
+#define alt_hold_deadband     50
+#define max_manual_climb_rate 30      // Maximum climb/descent rate firmware is allowed when processing pilot input for ALTHOLD control mode [cm/s]
+#define maxthrottle           2000
+#define idlethrottle          1050
 
 #define THROTTLE_SLEW_US_PER_S 20000.0f   // 초당 20000us → 1ms당 ≈20us
 
@@ -142,9 +145,6 @@ void pidInit(void)
   rangefinder.althold.K_BACK_CALC = 2.0f;
   rangefinder.althold.KD = 0.4f;
   rangefinder.althold.integral_windup = 200;
-
-  rangefinder.althold.stick_deadband = fminf(fmaxf(STICK_deadband, 0.0f), 0.2f);
-  rangefinder.althold.climb_rate_scale = fminf(fabsf(climb_rate_fullstick), ALT_MAX_CLIMB_RATE);
 
   rangefinder.althold.target_Height = rangefinder.calculatedAltitude;
   rangefinder.althold.error_Height = 0.0f;
@@ -532,10 +532,28 @@ void updateAltHold_RANGEFINDER(rangefinder_t *alt_sensor, timeUs_t currentTimeUs
   }
 
   // 스틱 입력 → 목표 고도 갱신
-//  const float throttleStick = (float)(rcData[THROTTLE] - 1500) / 500.0f; // -1..+1
-//  const float stick = apply_deadband(throttleStick, althold->stick_deadband);
-//  const float climbRateCmd = stick * fminf(althold->climb_rate_scale, ALT_MAX_CLIMB_RATE);
-//  althold->target_Height += climbRateCmd * althold->dt;
+  althold->rcThrottleAdjustment = applyDeadbandRescaled(pilot_Throttle - altHoldThrottleRCZero, alt_hold_deadband, -500, 500);
+
+  if (althold->rcThrottleAdjustment) {
+      // set velocity proportional to stick movement
+
+      // Make sure we can satisfy max_manual_climb_rate in both up and down directions
+      if (althold->rcThrottleAdjustment > 0) {
+          // Scaling from altHoldThrottleRCZero to maxthrottle
+        althold->rcClimbRate = althold->rcThrottleAdjustment * max_manual_climb_rate / (float)(maxthrottle - altHoldThrottleRCZero - alt_hold_deadband);
+      }
+      else {
+          // Scaling from minthrottle to altHoldThrottleRCZero
+        althold->rcClimbRate = althold->rcThrottleAdjustment * max_manual_climb_rate / (float)(altHoldThrottleRCZero - idlethrottle - alt_hold_deadband);
+      }
+  }
+  else {
+      // Adjusting finished - reset desired position to stay exactly where pilot released the stick
+    althold->rcClimbRate = 0;
+  }
+  althold->target_Height += althold->rcClimbRate * althold->dt;
+
+  //if(althold->target_Height < 10 && rcData[THROTTLE] < 1020) althold->target_Height = 0;
 
   // 고도 오차
   float error = althold->target_Height - getEstimatedAglPosition(); // cm
@@ -585,7 +603,6 @@ void updateAltHold_RANGEFINDER(rangefinder_t *alt_sensor, timeUs_t currentTimeUs
   throttleOut += step;
 
   rcCommand[THROTTLE] = scaleRangef(throttleOut, 1000.0f, 2000.0f, 0.0f, 1000.0f);
-  //rcCommand[THROTTLE] = scaleRangef(throttle_cmd, 1000.0f, 2000.0f, 0.0f, 1000.0f);
 }
 #endif
 

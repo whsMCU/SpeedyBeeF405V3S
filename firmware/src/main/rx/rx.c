@@ -52,6 +52,8 @@
 #include "flight/position.h"
 #include "flight/dyn_notch_filter.h"
 
+#include "navigation/navigation.h"
+
 #include "rx/rx.h"
 #include "rx/crsf.h"
 #include "scheduler/tasks.h"
@@ -703,7 +705,12 @@ void processRxModes(uint32_t currentTimeUs)
     if(!FLIGHT_MODE(RANGEFINDER_MODE))
     {
       ENABLE_FLIGHT_MODE(RANGEFINDER_MODE);
-      rangefinder.althold.target_Height = rangefinder.calculatedAltitude;
+      rangefinder.althold.target_Height = getEstimatedAglPosition();
+
+      altHoldThrottleRCZero = rcData[THROTTLE];
+      // Make sure we are able to satisfy the deadband
+      altHoldThrottleRCZero = constrain(altHoldThrottleRCZero, 1050, 1900);
+
       if(rangefinder.althold.target_Height > 200.0f)
       {
         rangefinder.althold.target_Height = 200.0f;
