@@ -103,8 +103,8 @@
 #include "msp/msp_protocol.h"
 #include "msp/msp_serial.h"
 
-//#include "navigation/navigation.h"
-//#include "navigation/navigation_private.h" //for MSP_SIMULATOR
+#include "navigation/navigation.h"
+#include "navigation/navigation_private.h" //for MSP_SIMULATOR
 //#include "navigation/navigation_pos_estimator_private.h" //for MSP_SIMULATOR
 
 #include "rx/rx.h"
@@ -485,7 +485,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU32(dst, (int32_t)(opflow.bodyRate[X] * 1000.0f));
           sbufWriteU32(dst, (int32_t)(opflow.bodyRate[Y] * 1000.0f));
 
-          sbufWriteU32(dst, getEstimatedAglPosition());
+          sbufWriteU32(dst, navGetCurrentActualPositionAndVelocity()->pos.z);
 
           sbufWriteU32(dst, overren_cnt);
 

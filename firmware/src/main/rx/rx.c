@@ -53,6 +53,7 @@
 #include "flight/dyn_notch_filter.h"
 
 #include "navigation/navigation.h"
+#include "navigation/navigation_private.h"
 
 #include "rx/rx.h"
 #include "rx/crsf.h"
@@ -705,7 +706,7 @@ void processRxModes(uint32_t currentTimeUs)
     if(!FLIGHT_MODE(RANGEFINDER_MODE))
     {
       ENABLE_FLIGHT_MODE(RANGEFINDER_MODE);
-      rangefinder.althold.target_Height = getEstimatedAglPosition();
+      rangefinder.althold.target_Height = navGetCurrentActualPositionAndVelocity()->pos.z;
 
       altHoldThrottleRCZero = rcData[THROTTLE];
       // Make sure we are able to satisfy the deadband

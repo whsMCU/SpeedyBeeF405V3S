@@ -274,6 +274,7 @@ void Param_Config_Init(void)
 //	throttleCorrectionConfig_Init();
 //	featureConfig_Init();
 	positionConfig_Init();
+	posControlConfig_Init();
 	rcControlsConfig_Init();
 	armingConfig_Init();
 	flight3DConfig_Init();

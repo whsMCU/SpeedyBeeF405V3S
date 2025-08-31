@@ -229,6 +229,13 @@ void nav_Init(void)
 ///* NAV variables */
 //static navWapointHeading_t wpHeadingControl;
 navigationPosControl_t posControl;
+
+navigationPosControl_t posControlConfig;
+
+void posControlConfig_Init(void)
+{
+  posControl.flags.isTerrainFollowEnabled = true;
+}
 //navSystemStatus_t NAV_Status;
 //
 //EXTENDED_FASTRAM multicopterPosXyCoefficients_t multicopterPosXyCoefficients;
@@ -2150,17 +2157,17 @@ void updateActualHeading(bool headingValid, int32_t newHeading, int32_t newGroun
     posControl.actualState.cosYaw = cos_approx(CENTIDEGREES_TO_RADIANS(newHeading));
 }
 
-///*-----------------------------------------------------------
-// * Returns pointer to currently used position (ABS or AGL) depending on surface tracking status
-// *-----------------------------------------------------------*/
-//const navEstimatedPosVel_t * navGetCurrentActualPositionAndVelocity(void)
-//{
-//    return posControl.flags.isTerrainFollowEnabled ? &posControl.actualState.agl : &posControl.actualState.abs;
-//}
-//
-///*-----------------------------------------------------------
-// * Calculates distance and bearing to destination point
-// *-----------------------------------------------------------*/
+/*-----------------------------------------------------------
+ * Returns pointer to currently used position (ABS or AGL) depending on surface tracking status
+ *-----------------------------------------------------------*/
+const navEstimatedPosVel_t * navGetCurrentActualPositionAndVelocity(void)
+{
+    return posControl.flags.isTerrainFollowEnabled ? &posControl.actualState.agl : &posControl.actualState.abs;
+}
+
+/*-----------------------------------------------------------
+ * Calculates distance and bearing to destination point
+ *-----------------------------------------------------------*/
 //static uint32_t calculateDistanceFromDelta(float deltaX, float deltaY)
 //{
 //    return calc_length_pythagorean_2D(deltaX, deltaY);

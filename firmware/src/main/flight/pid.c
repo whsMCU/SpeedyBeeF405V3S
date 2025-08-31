@@ -45,6 +45,7 @@
 #include "sensors/opflow.h"
 #include "sensors/rangefinder.h"
 #include "navigation/navigation.h"
+#include "navigation/navigation_private.h"
 
 FAST_DATA_ZERO_INIT DoublePID _ROLL;
 FAST_DATA_ZERO_INIT DoublePID _PITCH;
@@ -251,7 +252,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     updateAltHold_RANGEFINDER(&rangefinder, currentTimeUs);
 
     DEBUG_SET(DEBUG_RANGEFINDER, 0, (rangefinder.althold.target_Height));
-    DEBUG_SET(DEBUG_RANGEFINDER, 1, (getEstimatedAglPosition()));
+    DEBUG_SET(DEBUG_RANGEFINDER, 1, (navGetCurrentActualPositionAndVelocity()->pos.z));
     DEBUG_SET(DEBUG_RANGEFINDER, 2, (rangefinder.althold.error_Height));
     DEBUG_SET(DEBUG_RANGEFINDER, 3, (rangefinder.althold.proportional_Height));
     DEBUG_SET(DEBUG_RANGEFINDER, 4, (rangefinder.althold.integral_Height));
@@ -503,9 +504,9 @@ void updateAltHold_RANGEFINDER(rangefinder_t *alt_sensor, timeUs_t currentTimeUs
   pre_time = now_time;
 
   // 센서 값 검증
-  if (!isfinite(getEstimatedAglPosition()) ||
-      getEstimatedAglPosition() < 0.0f ||
-      getEstimatedAglPosition() > 200.0f) {
+  if (!isfinite(navGetCurrentActualPositionAndVelocity()->pos.z) ||
+      navGetCurrentActualPositionAndVelocity()->pos.z < 0.0f ||
+      navGetCurrentActualPositionAndVelocity()->pos.z > 200.0f) {
       return;
   }
 
@@ -516,14 +517,14 @@ void updateAltHold_RANGEFINDER(rangefinder_t *alt_sensor, timeUs_t currentTimeUs
   {
     althold->integral_Height = 0;
     althold->dz_filtered = 0.0f;
-    althold->pre_Height = getEstimatedAglPosition();
+    althold->pre_Height = navGetCurrentActualPositionAndVelocity()->pos.z;
 
-    const float err_soft = getEstimatedAglPosition() - althold->target_Height;
+    const float err_soft = navGetCurrentActualPositionAndVelocity()->pos.z - althold->target_Height;
     const float max_pull = ALT_TARGET_SOFTLOCK * althold->dt; // cm per dt
     if (fabsf(err_soft) > max_pull) {
         althold->target_Height += (err_soft > 0 ? max_pull : -max_pull);
     } else {
-        althold->target_Height = getEstimatedAglPosition();
+        althold->target_Height = navGetCurrentActualPositionAndVelocity()->pos.z;
     }
     althold->proportional_Height = 0;
     althold->derivative_Height = 0;
@@ -556,7 +557,7 @@ void updateAltHold_RANGEFINDER(rangefinder_t *alt_sensor, timeUs_t currentTimeUs
   //if(althold->target_Height < 10 && rcData[THROTTLE] < 1020) althold->target_Height = 0;
 
   // 고도 오차
-  float error = althold->target_Height - getEstimatedAglPosition(); // cm
+  float error = althold->target_Height - navGetCurrentActualPositionAndVelocity()->pos.z; // cm
   if (fabsf(error) < ALT_ERR_DEADBAND) error = 0.0f;
   althold->error_Height = error;
 
@@ -569,8 +570,8 @@ void updateAltHold_RANGEFINDER(rangefinder_t *alt_sensor, timeUs_t currentTimeUs
   else if(althold->integral_Height < -althold->integral_windup) althold->integral_Height = -althold->integral_windup;
 
   // D항 (속도 기반, 노이즈 필터)
-  float dz = (getEstimatedAglPosition() - althold->pre_Height) / althold->dt; // cm/s (positive = going up)
-  althold->pre_Height = getEstimatedAglPosition();
+  float dz = (navGetCurrentActualPositionAndVelocity()->pos.z - althold->pre_Height) / althold->dt; // cm/s (positive = going up)
+  althold->pre_Height = navGetCurrentActualPositionAndVelocity()->pos.z;
 
   // Simple PT1 filter on dz to reduce RF noise
   althold->dz_filtered = pt1_apply(althold->dz_filtered, dz, ALT_DZ_FILTER_ALPHA);
