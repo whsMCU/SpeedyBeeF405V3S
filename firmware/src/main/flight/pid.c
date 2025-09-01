@@ -46,6 +46,7 @@
 #include "sensors/rangefinder.h"
 #include "navigation/navigation.h"
 #include "navigation/navigation_private.h"
+#include "navigation/sqrt_controller.h"
 
 FAST_DATA_ZERO_INIT DoublePID _ROLL;
 FAST_DATA_ZERO_INIT DoublePID _PITCH;
@@ -487,10 +488,12 @@ void updatePosHold(timeUs_t currentTimeUs)
 #endif
 
 #ifdef USE_RANGEFINDER
+static sqrt_controller_t alt_hold_sqrt_controller;
 
 void updateAltHold_RANGEFINDER(rangefinder_t *alt_sensor, timeUs_t currentTimeUs)
 {
   rangefinder_althold_t *althold = &alt_sensor->althold;
+  const navEstimatedPosVel_t *posToUse = navGetCurrentActualPositionAndVelocity();
 
   if (!FLIGHT_MODE(RANGEFINDER_MODE)) {
       return;
@@ -504,9 +507,9 @@ void updateAltHold_RANGEFINDER(rangefinder_t *alt_sensor, timeUs_t currentTimeUs
   pre_time = now_time;
 
   // 센서 값 검증
-  if (!isfinite(navGetCurrentActualPositionAndVelocity()->pos.z) ||
-      navGetCurrentActualPositionAndVelocity()->pos.z < 0.0f ||
-      navGetCurrentActualPositionAndVelocity()->pos.z > 200.0f) {
+  if (!isfinite(posToUse->pos.z) ||
+      posToUse->pos.z < 0.0f ||
+      posToUse->pos.z > 200.0f) {
       return;
   }
 
@@ -517,14 +520,14 @@ void updateAltHold_RANGEFINDER(rangefinder_t *alt_sensor, timeUs_t currentTimeUs
   {
     althold->integral_Height = 0;
     althold->dz_filtered = 0.0f;
-    althold->pre_Height = navGetCurrentActualPositionAndVelocity()->pos.z;
+    althold->pre_Height = posToUse->pos.z;
 
-    const float err_soft = navGetCurrentActualPositionAndVelocity()->pos.z - althold->target_Height;
+    const float err_soft = posToUse->pos.z - althold->target_Height;
     const float max_pull = ALT_TARGET_SOFTLOCK * althold->dt; // cm per dt
     if (fabsf(err_soft) > max_pull) {
         althold->target_Height += (err_soft > 0 ? max_pull : -max_pull);
     } else {
-        althold->target_Height = navGetCurrentActualPositionAndVelocity()->pos.z;
+        althold->target_Height = posToUse->pos.z;
     }
     althold->proportional_Height = 0;
     althold->derivative_Height = 0;
@@ -547,17 +550,26 @@ void updateAltHold_RANGEFINDER(rangefinder_t *alt_sensor, timeUs_t currentTimeUs
           // Scaling from minthrottle to altHoldThrottleRCZero
         althold->rcClimbRate = althold->rcThrottleAdjustment * max_manual_climb_rate / (float)(altHoldThrottleRCZero - idlethrottle - alt_hold_deadband);
       }
+      updateClimbRateToAltitudeController(althold->rcClimbRate, ROC_TO_ALT_NORMAL);
   }
   else {
       // Adjusting finished - reset desired position to stay exactly where pilot released the stick
+    updateClimbRateToAltitudeController(0, ROC_TO_ALT_RESET);
     althold->rcClimbRate = 0;
   }
+
+  // Execute actual altitude controllers
+//  float targetVel = sqrtControllerApply(
+//      &alt_hold_sqrt_controller,
+//      posControl.desiredState.pos.z,
+//      navGetCurrentActualPositionAndVelocity()->pos.z,
+//      althold->dt
+//  );
+
   althold->target_Height += althold->rcClimbRate * althold->dt;
 
-  //if(althold->target_Height < 10 && rcData[THROTTLE] < 1020) althold->target_Height = 0;
-
   // 고도 오차
-  float error = althold->target_Height - navGetCurrentActualPositionAndVelocity()->pos.z; // cm
+  float error = althold->target_Height - posToUse->pos.z; // cm
   if (fabsf(error) < ALT_ERR_DEADBAND) error = 0.0f;
   althold->error_Height = error;
 
@@ -570,8 +582,8 @@ void updateAltHold_RANGEFINDER(rangefinder_t *alt_sensor, timeUs_t currentTimeUs
   else if(althold->integral_Height < -althold->integral_windup) althold->integral_Height = -althold->integral_windup;
 
   // D항 (속도 기반, 노이즈 필터)
-  float dz = (navGetCurrentActualPositionAndVelocity()->pos.z - althold->pre_Height) / althold->dt; // cm/s (positive = going up)
-  althold->pre_Height = navGetCurrentActualPositionAndVelocity()->pos.z;
+  float dz = (posToUse->pos.z - althold->pre_Height) / althold->dt; // cm/s (positive = going up)
+  althold->pre_Height = posToUse->pos.z;
 
   // Simple PT1 filter on dz to reduce RF noise
   althold->dz_filtered = pt1_apply(althold->dz_filtered, dz, ALT_DZ_FILTER_ALPHA);

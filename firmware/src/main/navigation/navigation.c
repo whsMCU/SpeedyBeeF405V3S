@@ -105,7 +105,7 @@ navConfig_t navConfig;
 
 void nav_Init(void)
 {
-
+  navConfig.general.max_altitude = 200;
 }
 
 //PG_RESET_TEMPLATE(navConfig_t, navConfig,
@@ -2875,62 +2875,42 @@ const navEstimatedPosVel_t * navGetCurrentActualPositionAndVelocity(void)
 //{
 //    return STATE(AIRPLANE) ? isFixedWingFlying() : isMulticopterFlying();
 //}
-//
-///*-----------------------------------------------------------
-// * Z-position controller
-// *-----------------------------------------------------------*/
-//void updateClimbRateToAltitudeController(float desiredClimbRate, climbRateToAltitudeControllerMode_e mode)
-//{
-//    static timeUs_t lastUpdateTimeUs;
-//    timeUs_t currentTimeUs = micros();
-//
-//    // Terrain following uses different altitude measurement
-//    const float altitudeToUse = navGetCurrentActualPositionAndVelocity()->pos.z;
-//
-//    if (mode == ROC_TO_ALT_RESET) {
-//        lastUpdateTimeUs = currentTimeUs;
-//        posControl.desiredState.pos.z = altitudeToUse;
-//    }
-//    else {      // ROC_TO_ALT_NORMAL
-//
-//        /*
-//         * If max altitude is set, reset climb rate if altitude is reached and climb rate is > 0
-//         * In other words, when altitude is reached, allow it only to shrink
-//         */
-//        if (navConfig()->general.max_altitude > 0 &&
-//            altitudeToUse >= navConfig()->general.max_altitude &&
-//            desiredClimbRate > 0
-//        ) {
-//            desiredClimbRate = 0;
-//        }
-//
-//        if (STATE(FIXED_WING_LEGACY)) {
-//            // Fixed wing climb rate controller is open-loop. We simply move the known altitude target
-//            float timeDelta = US2S(currentTimeUs - lastUpdateTimeUs);
-//            static bool targetHoldActive = false;
-//
-//            if (timeDelta <= HZ2S(MIN_POSITION_UPDATE_RATE_HZ) && desiredClimbRate) {
-//                // Update target altitude only if actual altitude moving in same direction and lagging by < 5 m, otherwise hold target
-//                if (navGetCurrentActualPositionAndVelocity()->vel.z * desiredClimbRate >= 0 && fabsf(posControl.desiredState.pos.z - altitudeToUse) < 500) {
-//                    posControl.desiredState.pos.z += desiredClimbRate * timeDelta;
-//                    targetHoldActive = false;
-//                } else if (!targetHoldActive) {     // Reset and hold target to actual + climb rate boost until actual catches up
-//                    posControl.desiredState.pos.z = altitudeToUse + desiredClimbRate;
-//                    targetHoldActive = true;
-//                }
-//            } else {
-//                targetHoldActive = false;
-//            }
-//        }
-//        else {
-//            // Multicopter climb-rate control is closed-loop, it's possible to directly calculate desired altitude setpoint to yield the required RoC/RoD
-//            posControl.desiredState.pos.z = altitudeToUse + (desiredClimbRate / posControl.pids.pos[Z].param.kP);
-//        }
-//
-//        lastUpdateTimeUs = currentTimeUs;
-//    }
-//}
-//
+
+/*-----------------------------------------------------------
+ * Z-position controller
+ *-----------------------------------------------------------*/
+void updateClimbRateToAltitudeController(float desiredClimbRate, climbRateToAltitudeControllerMode_e mode)
+{
+    static timeUs_t lastUpdateTimeUs;
+    timeUs_t currentTimeUs = micros();
+
+    // Terrain following uses different altitude measurement
+    const float altitudeToUse = navGetCurrentActualPositionAndVelocity()->pos.z;
+
+    if (mode == ROC_TO_ALT_RESET) {
+        lastUpdateTimeUs = currentTimeUs;
+        posControl.desiredState.pos.z = altitudeToUse;
+    }
+    else {      // ROC_TO_ALT_NORMAL
+
+        /*
+         * If max altitude is set, reset climb rate if altitude is reached and climb rate is > 0
+         * In other words, when altitude is reached, allow it only to shrink
+         */
+        if (navConfig.general.max_altitude > 0 &&
+            altitudeToUse >= navConfig.general.max_altitude &&
+            desiredClimbRate > 0
+        ) {
+            desiredClimbRate = 0;
+        }
+
+        // Multicopter climb-rate control is closed-loop, it's possible to directly calculate desired altitude setpoint to yield the required RoC/RoD
+        posControl.desiredState.pos.z = altitudeToUse + (desiredClimbRate / 40);// 40 = posControl.pids.pos[Z].param.kP
+
+        lastUpdateTimeUs = currentTimeUs;
+    }
+}
+
 //static void resetAltitudeController(bool useTerrainFollowing)
 //{
 //    // Set terrain following flag
