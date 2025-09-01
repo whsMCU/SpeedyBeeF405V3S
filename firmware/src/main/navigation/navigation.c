@@ -103,9 +103,11 @@ PG_REGISTER_ARRAY(navWaypoint_t, NAV_MAX_WAYPOINTS, nonVolatileWaypointList, PG_
 
 navConfig_t navConfig;
 
-void nav_Init(void)
+void navConfig_Init(void)
 {
   navConfig.general.max_altitude = 200;
+  navConfig.general.max_manual_speed = 20; //Maximum speed allowed when processing pilot input for POSHOLD/CRUISE control mode [cm/s] [Multirotor only]
+  navConfig.general.max_manual_climb_rate = 30; //Maximum climb/descent rate firmware is allowed when processing pilot input for ALTHOLD control mode [cm/s]
 }
 
 //PG_RESET_TEMPLATE(navConfig_t, navConfig,
@@ -4156,41 +4158,41 @@ void updateClimbRateToAltitudeController(float desiredClimbRate, climbRateToAlti
 //                                        0.0f
 //    );
 //}
-//
-//void navigationInit(void)
-//{
-//    /* Initial state */
-//    posControl.navState = NAV_STATE_IDLE;
-//
-//    posControl.flags.horizontalPositionDataNew = false;
-//    posControl.flags.verticalPositionDataNew = false;
-//
-//    posControl.flags.estAltStatus = EST_NONE;
-//    posControl.flags.estPosStatus = EST_NONE;
-//    posControl.flags.estVelStatus = EST_NONE;
-//    posControl.flags.estHeadingStatus = EST_NONE;
-//    posControl.flags.estAglStatus = EST_NONE;
-//
-//    posControl.flags.forcedRTHActivated = false;
-//    posControl.flags.forcedEmergLandingActivated = false;
-//    posControl.waypointCount = 0;
-//    posControl.activeWaypointIndex = 0;
-//    posControl.waypointListValid = false;
-//    posControl.wpPlannerActiveWPIndex = 0;
-//    posControl.flags.wpMissionPlannerActive = false;
-//    posControl.startWpIndex = 0;
-//#ifdef USE_MULTI_MISSION
-//    posControl.multiMissionCount = 0;
-//#endif
-//    /* Set initial surface invalid */
-//    posControl.actualState.surfaceMin = -1.0f;
-//
-//    /* Reset statistics */
-//    posControl.totalTripDistance = 0.0f;
-//
-//    /* Use system config */
+
+void navigationInit(void)
+{
+    /* Initial state */
+    posControl.navState = NAV_STATE_IDLE;
+
+    posControl.flags.horizontalPositionDataNew = false;
+    posControl.flags.verticalPositionDataNew = false;
+
+    posControl.flags.estAltStatus = EST_NONE;
+    posControl.flags.estPosStatus = EST_NONE;
+    posControl.flags.estVelStatus = EST_NONE;
+    posControl.flags.estHeadingStatus = EST_NONE;
+    posControl.flags.estAglStatus = EST_NONE;
+
+    posControl.flags.forcedRTHActivated = false;
+    posControl.flags.forcedEmergLandingActivated = false;
+    posControl.waypointCount = 0;
+    posControl.activeWaypointIndex = 0;
+    posControl.waypointListValid = false;
+    posControl.wpPlannerActiveWPIndex = 0;
+    posControl.flags.wpMissionPlannerActive = false;
+    posControl.startWpIndex = 0;
+#ifdef USE_MULTI_MISSION
+    posControl.multiMissionCount = 0;
+#endif
+    /* Set initial surface invalid */
+    posControl.actualState.surfaceMin = -1.0f;
+
+    /* Reset statistics */
+    posControl.totalTripDistance = 0.0f;
+
+    /* Use system config */
 //    navigationUsePIDs();
-//
+
 //    if (
 //        mixerConfig()->platformType == PLATFORM_BOAT ||
 //        mixerConfig()->platformType == PLATFORM_ROVER ||
@@ -4200,26 +4202,26 @@ void updateClimbRateToAltitudeController(float desiredClimbRate, climbRateToAlti
 //    } else {
 //        DISABLE_STATE(FW_HEADING_USE_YAW);
 //    }
-//#if defined(NAV_NON_VOLATILE_WAYPOINT_STORAGE)
-//    /* configure WP missions at boot */
-//#ifdef USE_MULTI_MISSION
-//    for (int8_t i = 0; i < NAV_MAX_WAYPOINTS; i++) {    // check number missions in NVM
-//        if (checkMissionCount(i)) {
-//            break;
-//        }
-//    }
-//    /* set index to 1 if saved mission index > available missions */
-//    if (navConfig()->general.waypoint_multi_mission_index > posControl.multiMissionCount) {
-//        navConfigMutable()->general.waypoint_multi_mission_index = 1;
-//    }
-//#endif
-//    /* load mission on boot */
-//    if (navConfig()->general.waypoint_load_on_boot) {
-//        loadNonVolatileWaypointList(false);
-//    }
-//#endif
-//}
-//
+#if defined(NAV_NON_VOLATILE_WAYPOINT_STORAGE)
+    /* configure WP missions at boot */
+#ifdef USE_MULTI_MISSION
+    for (int8_t i = 0; i < NAV_MAX_WAYPOINTS; i++) {    // check number missions in NVM
+        if (checkMissionCount(i)) {
+            break;
+        }
+    }
+    /* set index to 1 if saved mission index > available missions */
+    if (navConfig()->general.waypoint_multi_mission_index > posControl.multiMissionCount) {
+        navConfigMutable()->general.waypoint_multi_mission_index = 1;
+    }
+#endif
+    /* load mission on boot */
+    if (navConfig()->general.waypoint_load_on_boot) {
+        loadNonVolatileWaypointList(false);
+    }
+#endif
+}
+
 ///*-----------------------------------------------------------
 // * Access to estimated position/velocity data
 // *-----------------------------------------------------------*/

@@ -83,7 +83,6 @@ static inline float apply_deadband(float v, float db)
 #define ALT_DERIV_CLAMP_ENABLE 1        // 1: clamp derivative spikes to 0 as original logic
 
 #define alt_hold_deadband     50
-#define max_manual_climb_rate 30      // Maximum climb/descent rate firmware is allowed when processing pilot input for ALTHOLD control mode [cm/s]
 #define maxthrottle           2000
 #define idlethrottle          1050
 
@@ -529,9 +528,26 @@ void updateAltHold_RANGEFINDER(rangefinder_t *alt_sensor, timeUs_t currentTimeUs
     } else {
         althold->target_Height = posToUse->pos.z;
     }
+    posControl.desiredState.vel.z = posToUse->vel.z;   // Gradually transition from current climb
     althold->proportional_Height = 0;
     althold->derivative_Height = 0;
     althold->result = 0;
+
+//    float nav_speed_up = 0.0f;
+//    float nav_speed_down = 0.0f;
+//    float nav_accel_z = 0.0f;
+//
+//    nav_speed_up = navConfig.general.max_manual_speed;
+//    nav_accel_z = navConfig.general.max_manual_speed;
+//    nav_speed_down = navConfig.general.max_manual_climb_rate;
+
+//    sqrtControllerInit(
+//        &alt_hold_sqrt_controller,
+//        posControl.pids.pos[Z].param.kP,
+//        -fabsf(nav_speed_down),
+//        nav_speed_up,
+//        nav_accel_z
+//    );
     return;
   }
 
@@ -544,11 +560,11 @@ void updateAltHold_RANGEFINDER(rangefinder_t *alt_sensor, timeUs_t currentTimeUs
       // Make sure we can satisfy max_manual_climb_rate in both up and down directions
       if (althold->rcThrottleAdjustment > 0) {
           // Scaling from altHoldThrottleRCZero to maxthrottle
-        althold->rcClimbRate = althold->rcThrottleAdjustment * max_manual_climb_rate / (float)(maxthrottle - altHoldThrottleRCZero - alt_hold_deadband);
+        althold->rcClimbRate = althold->rcThrottleAdjustment * navConfig.general.max_manual_climb_rate / (float)(maxthrottle - altHoldThrottleRCZero - alt_hold_deadband);
       }
       else {
           // Scaling from minthrottle to altHoldThrottleRCZero
-        althold->rcClimbRate = althold->rcThrottleAdjustment * max_manual_climb_rate / (float)(altHoldThrottleRCZero - idlethrottle - alt_hold_deadband);
+        althold->rcClimbRate = althold->rcThrottleAdjustment * navConfig.general.max_manual_climb_rate / (float)(altHoldThrottleRCZero - idlethrottle - alt_hold_deadband);
       }
       updateClimbRateToAltitudeController(althold->rcClimbRate, ROC_TO_ALT_NORMAL);
   }

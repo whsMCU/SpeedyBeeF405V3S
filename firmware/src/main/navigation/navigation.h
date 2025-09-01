@@ -478,7 +478,7 @@ typedef struct {
     navWaypointActions_e    activeWpAction;
 } navSystemStatus_t;
 
-void nav_Init(void);
+void navConfig_Init(void);
 void positionEstimationConfig_Init(void);
 void posControlConfig_Init(void);
 void initializePositionEstimator(void);

@@ -210,8 +210,8 @@ void init(void)
 #ifdef USE_OPFLOW
     opflowInit();
 #endif
+    navigationInit();
 
-    nav_Init();
     positionEstimationConfig_Init();
 
 	batteryInit(); // always needs doing, regardless of features.
@@ -273,6 +273,7 @@ void Param_Config_Init(void)
 //	mixerConfig_Init();
 //	throttleCorrectionConfig_Init();
 //	featureConfig_Init();
+  navConfig_Init();
 	positionConfig_Init();
 	posControlConfig_Init();
 	rcControlsConfig_Init();
