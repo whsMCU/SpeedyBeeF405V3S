@@ -161,6 +161,23 @@ FAST_CODE float pt3FilterApply(pt3Filter_t *filter, float input)
     return filter->state;
 }
 
+float FAST_CODE NOINLINE pt1FilterApply4(pt1Filter_inav_t *filter, float input, float f_cut, float dT)
+{
+    // Pre calculate and store RC
+    if (!filter->RC) {
+        filter->RC = pt1ComputeRC(f_cut);
+    }
+
+    filter->dT = dT;    // cache latest dT for possible use in pt1FilterApply
+    filter->alpha = filter->dT / (filter->RC + filter->dT);
+    filter->state = filter->state + filter->alpha * (input - filter->state);
+    return filter->state;
+}
+
+void pt1FilterReset(pt1Filter_inav_t *filter, float input)
+{
+    filter->state = input;
+}
 
 // Slew filter with limit
 

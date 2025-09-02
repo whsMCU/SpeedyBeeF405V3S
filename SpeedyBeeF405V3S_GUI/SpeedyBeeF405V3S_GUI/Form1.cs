@@ -30,7 +30,7 @@ namespace SpeedyBeeF405V3S_GUI
         double delta_t = 0;
         float[] passed_data = new float[100];
         float[] float_data = new float[10];
-        float[] float_data_pid = new float[27];
+        float[] float_data_pid = new float[30];
         UTF8 UTF8 = new UTF8();
         Msp_Protocol protocol = new Msp_Protocol();
         MspProtocol mspProtocol = new MspProtocol();
@@ -282,9 +282,13 @@ namespace SpeedyBeeF405V3S_GUI
                 float_data_pid[22] = float.Parse(tb_ALT_O_I.Text);
                 float_data_pid[23] = float.Parse(tb_ALT_O_D.Text);
 
-                float_data_pid[24] = float.Parse(tb_POS_Opflow_P.Text);
-                float_data_pid[25] = float.Parse(tb_POS_Opflow_I.Text);
-                float_data_pid[26] = float.Parse(tb_POS_Opflow_D.Text);
+                float_data_pid[24] = float.Parse(tb_POS_I_P.Text);
+                float_data_pid[25] = float.Parse(tb_POS_I_I.Text);
+                float_data_pid[26] = float.Parse(tb_POS_I_D.Text);
+
+                float_data_pid[27] = float.Parse(tb_POS_O_P.Text);
+                float_data_pid[28] = float.Parse(tb_POS_O_I.Text);
+                float_data_pid[29] = float.Parse(tb_POS_O_D.Text);
 
                 string log = "R_I_P, R_I_I, R_I_D";
                 writer.WriteLine(log);
@@ -328,24 +332,31 @@ namespace SpeedyBeeF405V3S_GUI
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
 
-                log = "A_B_P, A_B_I, A_B_D";
+                log = "A_I_P, A_I_I, A_I_D";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
                 log = $"{float_data_pid[18]}, {float_data_pid[19]}, {float_data_pid[20]}";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
 
-                log = "A_R_P, A_R_I, A_R_D";
+                log = "A_O_P, A_O_I, A_O_D";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
                 log = $"{float_data_pid[21]}, {float_data_pid[22]}, {float_data_pid[23]}";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
 
-                log = "P_O_P, P_O_I, P_O_D";
+                log = "P_I_P, P_I_I, P_I_D";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
                 log = $"{float_data_pid[24]}, {float_data_pid[25]}, {float_data_pid[26]}";
+                writer.WriteLine(log);
+                Console.WriteLine(log); // 콘솔에도 출력
+
+                log = "P_O_P, P_O_I, P_O_D";
+                writer.WriteLine(log);
+                Console.WriteLine(log); // 콘솔에도 출력
+                log = $"{float_data_pid[27]}, {float_data_pid[28]}, {float_data_pid[29]}";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
 
@@ -701,7 +712,7 @@ namespace SpeedyBeeF405V3S_GUI
             {
                 pid_send_flag = false;
                 drone_status_flag = true;
-                byte[] pid_buff = new byte[108];
+                byte[] pid_buff = new byte[120];
                 float float_buff;
                 byte[] tmp = new byte[4];
                 try
@@ -864,26 +875,47 @@ namespace SpeedyBeeF405V3S_GUI
                     pid_buff[94] = tmp[2];
                     pid_buff[95] = tmp[3];
 
-                    float_buff = float.Parse(tb_POS_Opflow_P.Text);
+                    float_buff = float.Parse(tb_POS_I_P.Text);
                     tmp = BitConverter.GetBytes(float_buff);
                     pid_buff[96] = tmp[0];
                     pid_buff[97] = tmp[1];
                     pid_buff[98] = tmp[2];
                     pid_buff[99] = tmp[3];
 
-                    float_buff = float.Parse(tb_POS_Opflow_I.Text);
+                    float_buff = float.Parse(tb_POS_I_I.Text);
                     tmp = BitConverter.GetBytes(float_buff);
                     pid_buff[100] = tmp[0];
                     pid_buff[101] = tmp[1];
                     pid_buff[102] = tmp[2];
                     pid_buff[103] = tmp[3];
 
-                    float_buff = float.Parse(tb_POS_Opflow_D.Text);
+                    float_buff = float.Parse(tb_POS_I_D.Text);
                     tmp = BitConverter.GetBytes(float_buff);
                     pid_buff[104] = tmp[0];
                     pid_buff[105] = tmp[1];
                     pid_buff[106] = tmp[2];
                     pid_buff[107] = tmp[3];
+
+                    float_buff = float.Parse(tb_POS_O_P.Text);
+                    tmp = BitConverter.GetBytes(float_buff);
+                    pid_buff[108] = tmp[0];
+                    pid_buff[109] = tmp[1];
+                    pid_buff[110] = tmp[2];
+                    pid_buff[111] = tmp[3];
+
+                    float_buff = float.Parse(tb_POS_O_I.Text);
+                    tmp = BitConverter.GetBytes(float_buff);
+                    pid_buff[112] = tmp[0];
+                    pid_buff[113] = tmp[1];
+                    pid_buff[114] = tmp[2];
+                    pid_buff[115] = tmp[3];
+
+                    float_buff = float.Parse(tb_POS_O_D.Text);
+                    tmp = BitConverter.GetBytes(float_buff);
+                    pid_buff[116] = tmp[0];
+                    pid_buff[117] = tmp[1];
+                    pid_buff[118] = tmp[2];
+                    pid_buff[119] = tmp[3];
 
                     mspProtocol.SendMspCommand(95, pid_buff);
 
@@ -1450,9 +1482,13 @@ namespace SpeedyBeeF405V3S_GUI
             tb_ALT_O_I.Text = tb_FC_ALT_O_I.Text;
             tb_ALT_O_D.Text = tb_FC_ALT_O_D.Text;
 
-            tb_POS_Opflow_P.Text = tb_FC_POS_Opflow_P.Text;
-            tb_POS_Opflow_I.Text = tb_FC_POS_Opflow_I.Text;
-            tb_POS_Opflow_D.Text = tb_FC_POS_Opflow_D.Text;
+            tb_POS_I_P.Text = tb_FC_POS_I_P.Text;
+            tb_POS_I_I.Text = tb_FC_POS_I_I.Text;
+            tb_POS_I_D.Text = tb_FC_POS_I_D.Text;
+
+            tb_POS_O_P.Text = tb_FC_POS_O_P.Text;
+            tb_POS_O_I.Text = tb_FC_POS_O_I.Text;
+            tb_POS_O_D.Text = tb_FC_POS_O_D.Text;
         }
 
         private void rb_yaw_MouseDown(object sender, MouseEventArgs e)
@@ -2648,17 +2684,21 @@ namespace SpeedyBeeF405V3S_GUI
             passed_data[16] = (float)(BitConverter.ToInt32(payload, 64)) / 10;   // Y_A_I
             passed_data[17] = (float)(BitConverter.ToInt32(payload, 68)) / 10;   // Y_A_D
 
-            passed_data[18] = (float)(BitConverter.ToInt32(payload, 72)) / 10;   // ALT_P
-            passed_data[19] = (float)(BitConverter.ToInt32(payload, 76)) / 10;   // ALT_I
-            passed_data[20] = (float)(BitConverter.ToInt32(payload, 80)) / 10;   // ALT_D
+            passed_data[18] = (float)(BitConverter.ToInt32(payload, 72)) / 10;   // ALT_I_P
+            passed_data[19] = (float)(BitConverter.ToInt32(payload, 76)) / 10;   // ALT_I_I
+            passed_data[20] = (float)(BitConverter.ToInt32(payload, 80)) / 10;   // ALT_I_D
 
-            passed_data[21] = (float)(BitConverter.ToInt32(payload, 84)) / 10;   // ALT_Range_P
-            passed_data[22] = (float)(BitConverter.ToInt32(payload, 88)) / 10;   // ALT_Range_I
-            passed_data[23] = (float)(BitConverter.ToInt32(payload, 92)) / 10;   // ALT_Range_D
+            passed_data[21] = (float)(BitConverter.ToInt32(payload, 84)) / 10;   // ALT_O_P
+            passed_data[22] = (float)(BitConverter.ToInt32(payload, 88)) / 10;   // ALT_O_I
+            passed_data[23] = (float)(BitConverter.ToInt32(payload, 92)) / 10;   // ALT_O_D
 
-            passed_data[24] = (float)(BitConverter.ToInt32(payload, 96)) / 10;   // POS_Opflow_P
-            passed_data[25] = (float)(BitConverter.ToInt32(payload, 100)) / 10;   // POS_Opflow_I
-            passed_data[26] = (float)(BitConverter.ToInt32(payload, 104)) / 10;   // POS_Opflow_D
+            passed_data[24] = (float)(BitConverter.ToInt32(payload, 96)) / 10;   // POS_I_P
+            passed_data[25] = (float)(BitConverter.ToInt32(payload, 100)) / 10;  // POS_I_I
+            passed_data[26] = (float)(BitConverter.ToInt32(payload, 104)) / 10;  // POS_I_D
+
+            passed_data[27] = (float)(BitConverter.ToInt32(payload, 108)) / 10;   // POS_O_P
+            passed_data[28] = (float)(BitConverter.ToInt32(payload, 112)) / 10;  // POS_O_I
+            passed_data[29] = (float)(BitConverter.ToInt32(payload, 116)) / 10;  // POS_O_D
 
             tb_FC_R_I_P.Text = passed_data[0].ToString();
             tb_FC_R_I_I.Text = passed_data[1].ToString();
@@ -2692,9 +2732,13 @@ namespace SpeedyBeeF405V3S_GUI
             tb_FC_ALT_O_I.Text = passed_data[22].ToString();
             tb_FC_ALT_O_D.Text = passed_data[23].ToString();
 
-            tb_FC_POS_Opflow_P.Text = passed_data[24].ToString();
-            tb_FC_POS_Opflow_I.Text = passed_data[25].ToString();
-            tb_FC_POS_Opflow_D.Text = passed_data[26].ToString();
+            tb_FC_POS_I_P.Text = passed_data[24].ToString();
+            tb_FC_POS_I_I.Text = passed_data[25].ToString();
+            tb_FC_POS_I_D.Text = passed_data[26].ToString();
+
+            tb_FC_POS_O_P.Text = passed_data[27].ToString();
+            tb_FC_POS_O_I.Text = passed_data[28].ToString();
+            tb_FC_POS_O_D.Text = passed_data[29].ToString();
 
             return true;
         }

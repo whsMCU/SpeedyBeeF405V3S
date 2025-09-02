@@ -38,7 +38,8 @@
               "RelativeToolTip": "SpeedyBeeF405V3S_GUI\\Form1.Designer.cs",
               "ViewState": "AQIAAAQJAAAAAAAAAAAtwB0JAABUAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-20T13:06:04.869Z"
+              "WhenOpened": "2025-06-20T13:06:04.869Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -48,7 +49,7 @@
               "RelativeDocumentMoniker": "SpeedyBeeF405V3S_GUI\\Form1.cs",
               "ToolTip": "D:\\STM32CubeIDE\\SpeedyBeeF405V3S\\SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI\\Form1.cs",
               "RelativeToolTip": "SpeedyBeeF405V3S_GUI\\Form1.cs",
-              "ViewState": "AQIAADUCAAAAAAAAAAAswF4CAAAxAAAA",
+              "ViewState": "AQIAAHIDAAAAAAAAAAAAAMoCAAAuAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-09-20T12:45:57.848Z",
               "EditorCaption": ""
@@ -62,7 +63,8 @@
               "ToolTip": "D:\\STM32CubeIDE\\SpeedyBeeF405V3S\\SpeedyBeeF405V3S_GUI\\SpeedyBeeF405V3S_GUI\\Form1.cs [\uB514\uC790\uC778]",
               "RelativeToolTip": "SpeedyBeeF405V3S_GUI\\Form1.cs [\uB514\uC790\uC778]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-20T12:41:13.006Z"
+              "WhenOpened": "2024-09-20T12:41:13.006Z",
+              "EditorCaption": " [\uB514\uC790\uC778]"
             },
             {
               "$type": "Document",
@@ -74,7 +76,8 @@
               "RelativeToolTip": "SpeedyBeeF405V3S_GUI\\Class\\MspProtocol.cs",
               "ViewState": "AQIAACEAAAAAAAAAAAAAADcAAAAUAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-27T12:55:05.12Z"
+              "WhenOpened": "2025-04-27T12:55:05.12Z",
+              "EditorCaption": ""
             }
           ]
         }

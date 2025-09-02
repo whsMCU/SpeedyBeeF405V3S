@@ -67,13 +67,12 @@ typedef struct _PID_Test{
 extern DoublePID _ROLL;
 extern DoublePID _PITCH;
 extern DoublePID _ALT;
+extern DoublePID _POS;
 
 extern PID _YAW_Heading;
 extern PID _YAW_Rate;
 
 extern PID_Test _PID_Test;
-
-extern int16_t altHoldThrottleRCZero;
 
 
 void PID_Calculation(PID* axis, float set_point, float measured1, float measured2, float dt);

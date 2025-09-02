@@ -176,15 +176,13 @@
             this.tb_ALT_O_D = new System.Windows.Forms.TextBox();
             this.tb_ALT_O_I = new System.Windows.Forms.TextBox();
             this.tb_ALT_O_P = new System.Windows.Forms.TextBox();
-            this.tb_FC_POS_Opflow_D = new System.Windows.Forms.TextBox();
-            this.tb_FC_POS_Opflow_I = new System.Windows.Forms.TextBox();
-            this.tb_FC_POS_Opflow_P = new System.Windows.Forms.TextBox();
-            this.label93 = new System.Windows.Forms.Label();
+            this.tb_FC_POS_I_D = new System.Windows.Forms.TextBox();
+            this.tb_FC_POS_I_I = new System.Windows.Forms.TextBox();
+            this.tb_FC_POS_I_P = new System.Windows.Forms.TextBox();
             this.label94 = new System.Windows.Forms.Label();
-            this.label95 = new System.Windows.Forms.Label();
-            this.tb_POS_Opflow_D = new System.Windows.Forms.TextBox();
-            this.tb_POS_Opflow_I = new System.Windows.Forms.TextBox();
-            this.tb_POS_Opflow_P = new System.Windows.Forms.TextBox();
+            this.tb_POS_I_D = new System.Windows.Forms.TextBox();
+            this.tb_POS_I_I = new System.Windows.Forms.TextBox();
+            this.tb_POS_I_P = new System.Windows.Forms.TextBox();
             this.tb_FC_ALT_I_D = new System.Windows.Forms.TextBox();
             this.tb_FC_ALT_I_I = new System.Windows.Forms.TextBox();
             this.tb_FC_ALT_I_P = new System.Windows.Forms.TextBox();
@@ -373,6 +371,16 @@
             this.tb_msp_error = new System.Windows.Forms.TextBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.tb_msp_period = new System.Windows.Forms.TextBox();
+            this.tb_FC_POS_O_D = new System.Windows.Forms.TextBox();
+            this.tb_FC_POS_O_I = new System.Windows.Forms.TextBox();
+            this.tb_FC_POS_O_P = new System.Windows.Forms.TextBox();
+            this.tb_POS_O_D = new System.Windows.Forms.TextBox();
+            this.tb_POS_O_I = new System.Windows.Forms.TextBox();
+            this.tb_POS_O_P = new System.Windows.Forms.TextBox();
+            this.label93 = new System.Windows.Forms.Label();
+            this.label95 = new System.Windows.Forms.Label();
+            this.label103 = new System.Windows.Forms.Label();
+            this.label105 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -1470,6 +1478,16 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label103);
+            this.groupBox1.Controls.Add(this.label105);
+            this.groupBox1.Controls.Add(this.label93);
+            this.groupBox1.Controls.Add(this.label95);
+            this.groupBox1.Controls.Add(this.tb_FC_POS_O_D);
+            this.groupBox1.Controls.Add(this.tb_FC_POS_O_I);
+            this.groupBox1.Controls.Add(this.tb_FC_POS_O_P);
+            this.groupBox1.Controls.Add(this.tb_POS_O_D);
+            this.groupBox1.Controls.Add(this.tb_POS_O_I);
+            this.groupBox1.Controls.Add(this.tb_POS_O_P);
             this.groupBox1.Controls.Add(this.tb_FC_ALT_O_D);
             this.groupBox1.Controls.Add(this.tb_FC_ALT_O_I);
             this.groupBox1.Controls.Add(this.tb_FC_ALT_O_P);
@@ -1478,15 +1496,13 @@
             this.groupBox1.Controls.Add(this.tb_ALT_O_D);
             this.groupBox1.Controls.Add(this.tb_ALT_O_I);
             this.groupBox1.Controls.Add(this.tb_ALT_O_P);
-            this.groupBox1.Controls.Add(this.tb_FC_POS_Opflow_D);
-            this.groupBox1.Controls.Add(this.tb_FC_POS_Opflow_I);
-            this.groupBox1.Controls.Add(this.tb_FC_POS_Opflow_P);
-            this.groupBox1.Controls.Add(this.label93);
+            this.groupBox1.Controls.Add(this.tb_FC_POS_I_D);
+            this.groupBox1.Controls.Add(this.tb_FC_POS_I_I);
+            this.groupBox1.Controls.Add(this.tb_FC_POS_I_P);
             this.groupBox1.Controls.Add(this.label94);
-            this.groupBox1.Controls.Add(this.label95);
-            this.groupBox1.Controls.Add(this.tb_POS_Opflow_D);
-            this.groupBox1.Controls.Add(this.tb_POS_Opflow_I);
-            this.groupBox1.Controls.Add(this.tb_POS_Opflow_P);
+            this.groupBox1.Controls.Add(this.tb_POS_I_D);
+            this.groupBox1.Controls.Add(this.tb_POS_I_I);
+            this.groupBox1.Controls.Add(this.tb_POS_I_P);
             this.groupBox1.Controls.Add(this.tb_FC_ALT_I_D);
             this.groupBox1.Controls.Add(this.tb_FC_ALT_I_I);
             this.groupBox1.Controls.Add(this.tb_FC_ALT_I_P);
@@ -1560,7 +1576,7 @@
             this.groupBox1.Controls.Add(this.tb_R_I_P);
             this.groupBox1.Location = new System.Drawing.Point(11, 209);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(699, 354);
+            this.groupBox1.Size = new System.Drawing.Size(699, 395);
             this.groupBox1.TabIndex = 84;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "PID상수";
@@ -1593,7 +1609,7 @@
             // 
             this.label96.AutoSize = true;
             this.label96.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label96.Location = new System.Drawing.Point(403, 252);
+            this.label96.Location = new System.Drawing.Point(418, 251);
             this.label96.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label96.Name = "label96";
             this.label96.Size = new System.Drawing.Size(41, 17);
@@ -1604,7 +1620,7 @@
             // 
             this.label97.AutoSize = true;
             this.label97.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label97.Location = new System.Drawing.Point(46, 253);
+            this.label97.Location = new System.Drawing.Point(62, 250);
             this.label97.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label97.Name = "label97";
             this.label97.Size = new System.Drawing.Size(41, 17);
@@ -1633,83 +1649,61 @@
             this.tb_ALT_O_P.Size = new System.Drawing.Size(45, 21);
             this.tb_ALT_O_P.TabIndex = 168;
             // 
-            // tb_FC_POS_Opflow_D
+            // tb_FC_POS_I_D
             // 
-            this.tb_FC_POS_Opflow_D.Location = new System.Drawing.Point(617, 287);
-            this.tb_FC_POS_Opflow_D.Name = "tb_FC_POS_Opflow_D";
-            this.tb_FC_POS_Opflow_D.ReadOnly = true;
-            this.tb_FC_POS_Opflow_D.Size = new System.Drawing.Size(45, 21);
-            this.tb_FC_POS_Opflow_D.TabIndex = 167;
+            this.tb_FC_POS_I_D.Location = new System.Drawing.Point(617, 287);
+            this.tb_FC_POS_I_D.Name = "tb_FC_POS_I_D";
+            this.tb_FC_POS_I_D.ReadOnly = true;
+            this.tb_FC_POS_I_D.Size = new System.Drawing.Size(45, 21);
+            this.tb_FC_POS_I_D.TabIndex = 167;
             // 
-            // tb_FC_POS_Opflow_I
+            // tb_FC_POS_I_I
             // 
-            this.tb_FC_POS_Opflow_I.Location = new System.Drawing.Point(546, 287);
-            this.tb_FC_POS_Opflow_I.Name = "tb_FC_POS_Opflow_I";
-            this.tb_FC_POS_Opflow_I.ReadOnly = true;
-            this.tb_FC_POS_Opflow_I.Size = new System.Drawing.Size(45, 21);
-            this.tb_FC_POS_Opflow_I.TabIndex = 166;
+            this.tb_FC_POS_I_I.Location = new System.Drawing.Point(546, 287);
+            this.tb_FC_POS_I_I.Name = "tb_FC_POS_I_I";
+            this.tb_FC_POS_I_I.ReadOnly = true;
+            this.tb_FC_POS_I_I.Size = new System.Drawing.Size(45, 21);
+            this.tb_FC_POS_I_I.TabIndex = 166;
             // 
-            // tb_FC_POS_Opflow_P
+            // tb_FC_POS_I_P
             // 
-            this.tb_FC_POS_Opflow_P.Location = new System.Drawing.Point(475, 287);
-            this.tb_FC_POS_Opflow_P.Name = "tb_FC_POS_Opflow_P";
-            this.tb_FC_POS_Opflow_P.ReadOnly = true;
-            this.tb_FC_POS_Opflow_P.Size = new System.Drawing.Size(45, 21);
-            this.tb_FC_POS_Opflow_P.TabIndex = 165;
-            // 
-            // label93
-            // 
-            this.label93.AutoSize = true;
-            this.label93.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label93.Location = new System.Drawing.Point(396, 290);
-            this.label93.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label93.Name = "label93";
-            this.label93.Size = new System.Drawing.Size(79, 17);
-            this.label93.TabIndex = 164;
-            this.label93.Text = "POS_Opflow";
+            this.tb_FC_POS_I_P.Location = new System.Drawing.Point(475, 287);
+            this.tb_FC_POS_I_P.Name = "tb_FC_POS_I_P";
+            this.tb_FC_POS_I_P.ReadOnly = true;
+            this.tb_FC_POS_I_P.Size = new System.Drawing.Size(45, 21);
+            this.tb_FC_POS_I_P.TabIndex = 165;
             // 
             // label94
             // 
             this.label94.AutoSize = true;
             this.label94.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label94.Location = new System.Drawing.Point(0, 288);
+            this.label94.Location = new System.Drawing.Point(0, 303);
             this.label94.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label94.Name = "label94";
             this.label94.Size = new System.Drawing.Size(41, 21);
             this.label94.TabIndex = 163;
             this.label94.Text = "POS";
             // 
-            // label95
+            // tb_POS_I_D
             // 
-            this.label95.AutoSize = true;
-            this.label95.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label95.Location = new System.Drawing.Point(42, 291);
-            this.label95.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label95.Name = "label95";
-            this.label95.Size = new System.Drawing.Size(79, 17);
-            this.label95.TabIndex = 162;
-            this.label95.Text = "POS_Opflow";
+            this.tb_POS_I_D.Location = new System.Drawing.Point(264, 288);
+            this.tb_POS_I_D.Name = "tb_POS_I_D";
+            this.tb_POS_I_D.Size = new System.Drawing.Size(45, 21);
+            this.tb_POS_I_D.TabIndex = 161;
             // 
-            // tb_POS_Opflow_D
+            // tb_POS_I_I
             // 
-            this.tb_POS_Opflow_D.Location = new System.Drawing.Point(264, 288);
-            this.tb_POS_Opflow_D.Name = "tb_POS_Opflow_D";
-            this.tb_POS_Opflow_D.Size = new System.Drawing.Size(45, 21);
-            this.tb_POS_Opflow_D.TabIndex = 161;
+            this.tb_POS_I_I.Location = new System.Drawing.Point(193, 288);
+            this.tb_POS_I_I.Name = "tb_POS_I_I";
+            this.tb_POS_I_I.Size = new System.Drawing.Size(45, 21);
+            this.tb_POS_I_I.TabIndex = 160;
             // 
-            // tb_POS_Opflow_I
+            // tb_POS_I_P
             // 
-            this.tb_POS_Opflow_I.Location = new System.Drawing.Point(193, 288);
-            this.tb_POS_Opflow_I.Name = "tb_POS_Opflow_I";
-            this.tb_POS_Opflow_I.Size = new System.Drawing.Size(45, 21);
-            this.tb_POS_Opflow_I.TabIndex = 160;
-            // 
-            // tb_POS_Opflow_P
-            // 
-            this.tb_POS_Opflow_P.Location = new System.Drawing.Point(122, 288);
-            this.tb_POS_Opflow_P.Name = "tb_POS_Opflow_P";
-            this.tb_POS_Opflow_P.Size = new System.Drawing.Size(45, 21);
-            this.tb_POS_Opflow_P.TabIndex = 159;
+            this.tb_POS_I_P.Location = new System.Drawing.Point(122, 288);
+            this.tb_POS_I_P.Name = "tb_POS_I_P";
+            this.tb_POS_I_P.Size = new System.Drawing.Size(45, 21);
+            this.tb_POS_I_P.TabIndex = 159;
             // 
             // tb_FC_ALT_I_D
             // 
@@ -1739,7 +1733,7 @@
             // 
             this.label89.AutoSize = true;
             this.label89.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label89.Location = new System.Drawing.Point(408, 219);
+            this.label89.Location = new System.Drawing.Point(420, 219);
             this.label89.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label89.Name = "label89";
             this.label89.Size = new System.Drawing.Size(37, 17);
@@ -1761,7 +1755,7 @@
             // 
             this.label87.AutoSize = true;
             this.label87.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label87.Location = new System.Drawing.Point(51, 220);
+            this.label87.Location = new System.Drawing.Point(64, 223);
             this.label87.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label87.Name = "label87";
             this.label87.Size = new System.Drawing.Size(37, 17);
@@ -1804,7 +1798,7 @@
             // 
             // bt_pid_save
             // 
-            this.bt_pid_save.Location = new System.Drawing.Point(212, 326);
+            this.bt_pid_save.Location = new System.Drawing.Point(212, 361);
             this.bt_pid_save.Name = "bt_pid_save";
             this.bt_pid_save.Size = new System.Drawing.Size(102, 23);
             this.bt_pid_save.TabIndex = 148;
@@ -2277,7 +2271,7 @@
             // 
             // bt_pid_recive
             // 
-            this.bt_pid_recive.Location = new System.Drawing.Point(495, 325);
+            this.bt_pid_recive.Location = new System.Drawing.Point(495, 360);
             this.bt_pid_recive.Name = "bt_pid_recive";
             this.bt_pid_recive.Size = new System.Drawing.Size(115, 23);
             this.bt_pid_recive.TabIndex = 53;
@@ -2287,7 +2281,7 @@
             // 
             // bt_pid_send
             // 
-            this.bt_pid_send.Location = new System.Drawing.Point(84, 325);
+            this.bt_pid_send.Location = new System.Drawing.Point(84, 360);
             this.bt_pid_send.Name = "bt_pid_send";
             this.bt_pid_send.Size = new System.Drawing.Size(102, 23);
             this.bt_pid_send.TabIndex = 52;
@@ -2716,7 +2710,7 @@
             this.tabControl1.Location = new System.Drawing.Point(351, 65);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(733, 595);
+            this.tabControl1.Size = new System.Drawing.Size(733, 636);
             this.tabControl1.TabIndex = 88;
             // 
             // tabPage1
@@ -2728,7 +2722,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(725, 569);
+            this.tabPage1.Size = new System.Drawing.Size(725, 610);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "PID 및 디버그";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -3683,11 +3677,102 @@
             this.tb_msp_period.TabIndex = 95;
             this.tb_msp_period.Text = "-";
             // 
+            // tb_FC_POS_O_D
+            // 
+            this.tb_FC_POS_O_D.Location = new System.Drawing.Point(617, 316);
+            this.tb_FC_POS_O_D.Name = "tb_FC_POS_O_D";
+            this.tb_FC_POS_O_D.ReadOnly = true;
+            this.tb_FC_POS_O_D.Size = new System.Drawing.Size(45, 21);
+            this.tb_FC_POS_O_D.TabIndex = 183;
+            // 
+            // tb_FC_POS_O_I
+            // 
+            this.tb_FC_POS_O_I.Location = new System.Drawing.Point(546, 316);
+            this.tb_FC_POS_O_I.Name = "tb_FC_POS_O_I";
+            this.tb_FC_POS_O_I.ReadOnly = true;
+            this.tb_FC_POS_O_I.Size = new System.Drawing.Size(45, 21);
+            this.tb_FC_POS_O_I.TabIndex = 182;
+            // 
+            // tb_FC_POS_O_P
+            // 
+            this.tb_FC_POS_O_P.Location = new System.Drawing.Point(475, 316);
+            this.tb_FC_POS_O_P.Name = "tb_FC_POS_O_P";
+            this.tb_FC_POS_O_P.ReadOnly = true;
+            this.tb_FC_POS_O_P.Size = new System.Drawing.Size(45, 21);
+            this.tb_FC_POS_O_P.TabIndex = 181;
+            // 
+            // tb_POS_O_D
+            // 
+            this.tb_POS_O_D.Location = new System.Drawing.Point(264, 317);
+            this.tb_POS_O_D.Name = "tb_POS_O_D";
+            this.tb_POS_O_D.Size = new System.Drawing.Size(45, 21);
+            this.tb_POS_O_D.TabIndex = 178;
+            // 
+            // tb_POS_O_I
+            // 
+            this.tb_POS_O_I.Location = new System.Drawing.Point(193, 317);
+            this.tb_POS_O_I.Name = "tb_POS_O_I";
+            this.tb_POS_O_I.Size = new System.Drawing.Size(45, 21);
+            this.tb_POS_O_I.TabIndex = 177;
+            // 
+            // tb_POS_O_P
+            // 
+            this.tb_POS_O_P.Location = new System.Drawing.Point(122, 317);
+            this.tb_POS_O_P.Name = "tb_POS_O_P";
+            this.tb_POS_O_P.Size = new System.Drawing.Size(45, 21);
+            this.tb_POS_O_P.TabIndex = 176;
+            // 
+            // label93
+            // 
+            this.label93.AutoSize = true;
+            this.label93.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label93.Location = new System.Drawing.Point(63, 317);
+            this.label93.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label93.Name = "label93";
+            this.label93.Size = new System.Drawing.Size(41, 17);
+            this.label93.TabIndex = 185;
+            this.label93.Tag = "Z";
+            this.label93.Text = "Outer";
+            // 
+            // label95
+            // 
+            this.label95.AutoSize = true;
+            this.label95.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label95.Location = new System.Drawing.Point(65, 290);
+            this.label95.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label95.Name = "label95";
+            this.label95.Size = new System.Drawing.Size(37, 17);
+            this.label95.TabIndex = 184;
+            this.label95.Text = "Inner";
+            // 
+            // label103
+            // 
+            this.label103.AutoSize = true;
+            this.label103.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label103.Location = new System.Drawing.Point(420, 320);
+            this.label103.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label103.Name = "label103";
+            this.label103.Size = new System.Drawing.Size(41, 17);
+            this.label103.TabIndex = 187;
+            this.label103.Tag = "Z";
+            this.label103.Text = "Outer";
+            // 
+            // label105
+            // 
+            this.label105.AutoSize = true;
+            this.label105.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label105.Location = new System.Drawing.Point(422, 293);
+            this.label105.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label105.Name = "label105";
+            this.label105.Size = new System.Drawing.Size(37, 17);
+            this.label105.TabIndex = 186;
+            this.label105.Text = "Inner";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1184, 681);
+            this.ClientSize = new System.Drawing.Size(1184, 713);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.tb_msp_period);
             this.Controls.Add(this.textBox5);
@@ -4028,15 +4113,13 @@
         private System.Windows.Forms.TextBox tb_ALT_O_D;
         private System.Windows.Forms.TextBox tb_ALT_O_I;
         private System.Windows.Forms.TextBox tb_ALT_O_P;
-        private System.Windows.Forms.TextBox tb_FC_POS_Opflow_D;
-        private System.Windows.Forms.TextBox tb_FC_POS_Opflow_I;
-        private System.Windows.Forms.TextBox tb_FC_POS_Opflow_P;
-        private System.Windows.Forms.Label label93;
+        private System.Windows.Forms.TextBox tb_FC_POS_I_D;
+        private System.Windows.Forms.TextBox tb_FC_POS_I_I;
+        private System.Windows.Forms.TextBox tb_FC_POS_I_P;
         private System.Windows.Forms.Label label94;
-        private System.Windows.Forms.Label label95;
-        private System.Windows.Forms.TextBox tb_POS_Opflow_D;
-        private System.Windows.Forms.TextBox tb_POS_Opflow_I;
-        private System.Windows.Forms.TextBox tb_POS_Opflow_P;
+        private System.Windows.Forms.TextBox tb_POS_I_D;
+        private System.Windows.Forms.TextBox tb_POS_I_I;
+        private System.Windows.Forms.TextBox tb_POS_I_P;
         private System.Windows.Forms.TabPage tabPage5;
         private System.Windows.Forms.RadioButton rb_alt_range_setpoint;
         private System.Windows.Forms.ComboBox comboBox_Debug;
@@ -4053,6 +4136,16 @@
         private System.Windows.Forms.Label label101;
         public System.Windows.Forms.TextBox textBox1;
         public System.Windows.Forms.TextBox tb_msp_period;
+        private System.Windows.Forms.Label label103;
+        private System.Windows.Forms.Label label105;
+        private System.Windows.Forms.Label label93;
+        private System.Windows.Forms.Label label95;
+        private System.Windows.Forms.TextBox tb_FC_POS_O_D;
+        private System.Windows.Forms.TextBox tb_FC_POS_O_I;
+        private System.Windows.Forms.TextBox tb_FC_POS_O_P;
+        private System.Windows.Forms.TextBox tb_POS_O_D;
+        private System.Windows.Forms.TextBox tb_POS_O_I;
+        private System.Windows.Forms.TextBox tb_POS_O_P;
     }
 }
 

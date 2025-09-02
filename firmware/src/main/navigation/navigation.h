@@ -23,7 +23,7 @@
 #include "common/filter.h"
 #include "common/maths.h"
 #include "common/vector.h"
-//#include "common/fp_pid.h"
+#include "common/fp_pid.h"
 #include "common/time.h"
 
 //#include "config/feature.h"
@@ -410,9 +410,9 @@ typedef struct navDestinationPath_s {   // NOT USED
 
 typedef struct navigationPIDControllers_s {
     /* Multicopter PIDs */
-//    pidController_t pos[XYZ_AXIS_COUNT];
-//    pidController_t vel[XYZ_AXIS_COUNT];
-//    pidController_t surface;
+    pidController_t pos[XYZ_AXIS_COUNT];
+    pidController_t vel[XYZ_AXIS_COUNT];
+    pidController_t surface;
 
     /* Fixed-wing PIDs */
 //    pidController_t fw_alt;
@@ -511,6 +511,10 @@ navArmingBlocker_e navigationIsBlockingArming(bool *usedBypass);
 bool navigationPositionEstimateIsHealthy(void);
 bool navIsCalibrationComplete(void);
 bool navigationTerrainFollowingEnabled(void);
+
+void resetAltitudeController(bool useTerrainFollowing);
+void resetPositionController(void);
+void setupAltitudeController(void);
 
 /* Access to estimated position and velocity */
 typedef struct {

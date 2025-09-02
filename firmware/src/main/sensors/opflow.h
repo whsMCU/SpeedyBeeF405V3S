@@ -55,14 +55,10 @@ typedef struct {
   float proportional_Pixel[2];
   float integral_Pixel[2];
   float derivative_Pixel[2];
-  float integral_windup;
   float filteredFlowRate[2];
   float Pixel[2];
   float target_Angle[2];
   float dt;
-  float KP;
-  float KI;
-  float KD;
 } opflow_poshold_t;
 
 typedef struct opflow_s {

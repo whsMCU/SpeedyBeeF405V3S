@@ -21,7 +21,8 @@ enum
   ACC_offset,
   PID_ALT_in,
   PID_ALT_out,
-  PID_POS_Opflow
+  PID_POS_in,
+  PID_POS_out
 };
 
 bool loadFromSDCard(void);

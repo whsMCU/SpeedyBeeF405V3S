@@ -708,21 +708,12 @@ void processRxModes(uint32_t currentTimeUs)
     if(!FLIGHT_MODE(RANGEFINDER_MODE))
     {
       ENABLE_FLIGHT_MODE(RANGEFINDER_MODE);
-      rangefinder.althold.target_Height = navGetCurrentActualPositionAndVelocity()->pos.z;
 
-      altHoldThrottleRCZero = rcData[THROTTLE];
-      // Make sure we are able to satisfy the deadband
-      altHoldThrottleRCZero = constrain(altHoldThrottleRCZero, 1050, 1900);
+      resetPositionController();
+      resetAltitudeController(true);     // Make sure surface tracking is not enabled - RTH uses global altitude, not AGL
+      setupAltitudeController();
 
-      if(rangefinder.althold.target_Height > 200.0f)
-      {
-        rangefinder.althold.target_Height = 200.0f;
-      }
 
-      rangefinder.althold.proportional_Height = 0;
-      rangefinder.althold.error_Height = 0;
-      rangefinder.althold.integral_Height = 0;
-      rangefinder.althold.result = 0;
       _ALT.in.integral = 0;
       _ALT.in.result = 0;
       _ALT.out.integral = 0;

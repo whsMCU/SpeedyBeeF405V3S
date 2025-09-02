@@ -571,7 +571,7 @@ static bool write_ini_alt_out(const char * ini_name)
       return ret;
 }
 
-static bool write_ini_pos_opflow(const char * ini_name)
+static bool write_ini_pos_in(const char * ini_name)
 {
   void *dictionary;
   FIL ini_file;
@@ -592,24 +592,85 @@ static bool write_ini_pos_opflow(const char * ini_name)
   }
 
   /* set key/value pair */
-  sprintf(str, "%.1f", opflow.poshold.KP);
-  ret = iniparser_set(dictionary, "pid:pos.opflow.kp", str);
+  sprintf(str, "%.1f", _POS.in.kp);
+  ret = iniparser_set(dictionary, "pid:pos.in.kp", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
       ret = -1;
       goto free_dict;
   }
 
-  sprintf(str, "%.1f", opflow.poshold.KI);
-  ret = iniparser_set(dictionary, "pid:pos.opflow.ki", str);
+  sprintf(str, "%.1f", _POS.in.ki);
+  ret = iniparser_set(dictionary, "pid:pos.in.ki", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
       ret = -1;
       goto free_dict;
   }
 
-  sprintf(str, "%.1f", opflow.poshold.KD);
-  ret = iniparser_set(dictionary, "pid:pos.opflow.kd", str);
+  sprintf(str, "%.1f", _POS.in.kd);
+  ret = iniparser_set(dictionary, "pid:pos.in.kd", str);
+  if (ret < 0) {
+      fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
+      ret = -1;
+      goto free_dict;
+  }
+
+  fp_ret = f_open(&ini_file, ini_name, FA_READ | FA_WRITE);
+
+  if (fp_ret != FR_OK) {
+      fprintf(stderr, "iniparser: cannot create example.ini\n");
+      ret = -1;
+      goto free_dict;
+  }
+
+  iniparser_dump_ini(dictionary, &ini_file);
+  f_close(&ini_file);
+
+  free_dict:
+      iniparser_freedict(dictionary);
+      return ret;
+}
+
+static bool write_ini_pos_out(const char * ini_name)
+{
+  void *dictionary;
+  FIL ini_file;
+  FRESULT fp_ret;
+  int ret = 0;
+
+  char str[20];
+
+  if (!ini_name) {
+      fprintf(stderr, "Invalid argurment\n");
+      return -1;
+  }
+
+  dictionary = iniparser_load(ini_name);
+  if (!dictionary) {
+      fprintf(stderr, "cannot parse file: %s\n", ini_name);
+      return -1 ;
+  }
+
+  /* set key/value pair */
+  sprintf(str, "%.1f", _POS.out.kp);
+  ret = iniparser_set(dictionary, "pid:pos.out.kp", str);
+  if (ret < 0) {
+      fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
+      ret = -1;
+      goto free_dict;
+  }
+
+  sprintf(str, "%.1f", _POS.out.ki);
+  ret = iniparser_set(dictionary, "pid:pos.out.ki", str);
+  if (ret < 0) {
+      fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
+      ret = -1;
+      goto free_dict;
+  }
+
+  sprintf(str, "%.1f", _POS.out.kd);
+  ret = iniparser_set(dictionary, "pid:pos.out.kd", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
       ret = -1;
@@ -708,16 +769,23 @@ static bool parse_ini(const char * ini_name)
   d = iniparser_getdouble(ini, "pid:alt.out.kp", 0.0);
   _ALT.out.kp = d;
   d = iniparser_getdouble(ini, "pid:alt.out.ki", 0.0);
-  _ALT.out.kp = d;
+  _ALT.out.ki = d;
   d = iniparser_getdouble(ini, "pid:alt.out.kd", 0.0);
-  _ALT.out.kp = d;
+  _ALT.out.kd = d;
 
-  d = iniparser_getdouble(ini, "pid:pos.opflow.kp", 0.0);
-  opflow.poshold.KP = d;
-  d = iniparser_getdouble(ini, "pid:pos.opflow.ki", 0.0);
-  opflow.poshold.KI = d;
-  d = iniparser_getdouble(ini, "pid:pos.opflow.kd", 0.0);
-  opflow.poshold.KD = d;
+  d = iniparser_getdouble(ini, "pid:pos.in.kp", 0.0);
+  _POS.in.kp = d;
+  d = iniparser_getdouble(ini, "pid:pos.in.ki", 0.0);
+  _POS.in.ki = d;
+  d = iniparser_getdouble(ini, "pid:pos.in.kd", 0.0);
+  _POS.in.kd = d;
+
+  d = iniparser_getdouble(ini, "pid:pos.out.kp", 0.0);
+  _POS.out.kp = d;
+  d = iniparser_getdouble(ini, "pid:pos.out.ki", 0.0);
+  _POS.out.ki = d;
+  d = iniparser_getdouble(ini, "pid:pos.out.kd", 0.0);
+  _POS.out.kd = d;
 
   return true;
 }
@@ -804,8 +872,11 @@ bool writeSDCard(uint8_t type)
     case PID_ALT_out:
       result = write_ini_alt_out(defaultSDCardConfigFilename);
       break;
-    case PID_POS_Opflow:
-      result = write_ini_pos_opflow(defaultSDCardConfigFilename);
+    case PID_POS_in:
+      result = write_ini_pos_in(defaultSDCardConfigFilename);
+      break;
+    case PID_POS_out:
+      result = write_ini_pos_out(defaultSDCardConfigFilename);
       break;
   }
 

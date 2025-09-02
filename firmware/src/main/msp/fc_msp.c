@@ -1351,9 +1351,13 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         sbufWriteU32(dst, (int32_t)(_ALT.out.ki * 10.0f));
         sbufWriteU32(dst, (int32_t)(_ALT.out.kd * 10.0f));
 
-        sbufWriteU32(dst, (int32_t)(opflow.poshold.KP * 10.0f));
-        sbufWriteU32(dst, (int32_t)(opflow.poshold.KI * 10.0f));
-        sbufWriteU32(dst, (int32_t)(opflow.poshold.KD * 10.0f));
+        sbufWriteU32(dst, (int32_t)(_POS.in.kp * 10.0f));
+        sbufWriteU32(dst, (int32_t)(_POS.in.ki * 10.0f));
+        sbufWriteU32(dst, (int32_t)(_POS.in.kd * 10.0f));
+
+        sbufWriteU32(dst, (int32_t)(_POS.out.kp * 10.0f));
+        sbufWriteU32(dst, (int32_t)(_POS.out.ki * 10.0f));
+        sbufWriteU32(dst, (int32_t)(_POS.out.kd * 10.0f));
       }
         break;
 
@@ -2348,16 +2352,23 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         u.b = sbufReadU32(src);
         _ALT.out.kp = (float)u.f;
         u.b = sbufReadU32(src);
-        _ALT.out.kp = (float)u.f;
+        _ALT.out.ki = (float)u.f;
         u.b = sbufReadU32(src);
-        _ALT.out.kp = (float)u.f;
+        _ALT.out.kd = (float)u.f;
 
         u.b = sbufReadU32(src);
-        opflow.poshold.KP = (float)u.f;
+        _POS.in.kp = (float)u.f;
         u.b = sbufReadU32(src);
-        opflow.poshold.KI = (float)u.f;
+        _POS.in.ki = (float)u.f;
         u.b = sbufReadU32(src);
-        opflow.poshold.KD = (float)u.f;
+        _POS.in.kd = (float)u.f;
+
+        u.b = sbufReadU32(src);
+        _POS.out.kp = (float)u.f;
+        u.b = sbufReadU32(src);
+        _POS.out.ki = (float)u.f;
+        u.b = sbufReadU32(src);
+        _POS.out.kd = (float)u.f;
         break;
 
     case MSP_SET_INAV_PID:
@@ -2372,7 +2383,8 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
           writeSDCard(ACC_offset);
           writeSDCard(PID_ALT_in);
           writeSDCard(PID_ALT_out);
-          writeSDCard(PID_POS_Opflow);
+          writeSDCard(PID_POS_in);
+          writeSDCard(PID_POS_out);
         }
         break;
 

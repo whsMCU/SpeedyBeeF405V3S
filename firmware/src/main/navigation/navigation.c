@@ -106,8 +106,8 @@ navConfig_t navConfig;
 void navConfig_Init(void)
 {
   navConfig.general.max_altitude = 200;
-  navConfig.general.max_manual_speed = 20; //Maximum speed allowed when processing pilot input for POSHOLD/CRUISE control mode [cm/s] [Multirotor only]
-  navConfig.general.max_manual_climb_rate = 30; //Maximum climb/descent rate firmware is allowed when processing pilot input for ALTHOLD control mode [cm/s]
+  navConfig.general.max_manual_speed = 50; //Maximum speed allowed when processing pilot input for POSHOLD/CRUISE control mode [cm/s] [Multirotor only]
+  navConfig.general.max_manual_climb_rate = 50; //Maximum climb/descent rate firmware is allowed when processing pilot input for ALTHOLD control mode [cm/s]
 }
 
 //PG_RESET_TEMPLATE(navConfig_t, navConfig,
@@ -259,9 +259,7 @@ int16_t navAccNEU[3];
 
 //static fpVector3_t * rthGetHomeTargetPosition(rthTargetMode_e mode);
 //static void updateDesiredRTHAltitude(void);
-//static void resetAltitudeController(bool useTerrainFollowing);
-//static void resetPositionController(void);
-//static void setupAltitudeController(void);
+
 //static void resetHeadingController(void);
 //void resetGCSFlags(void);
 //
@@ -325,656 +323,656 @@ int16_t navAccNEU[3];
 //static navigationFSMEvent_t navOnEnteringState_NAV_STATE_LAUNCH_INITIALIZE(navigationFSMState_t previousState);
 //static navigationFSMEvent_t navOnEnteringState_NAV_STATE_LAUNCH_WAIT(navigationFSMState_t previousState);
 //static navigationFSMEvent_t navOnEnteringState_NAV_STATE_LAUNCH_IN_PROGRESS(navigationFSMState_t previousState);
-//
-//static const navigationFSMStateDescriptor_t navFSM[NAV_STATE_COUNT] = {
-//    /** Idle state ******************************************************/
-//    [NAV_STATE_IDLE] = {
-//        .persistentId = NAV_PERSISTENT_ID_IDLE,
-//        .onEntry = navOnEnteringState_NAV_STATE_IDLE,
-//        .timeoutMs = 0,
-//        .stateFlags = 0,
-//        .mapToFlightModes = 0,
-//        .mwState = MW_NAV_STATE_NONE,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent    = {
-//            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT]             = NAV_STATE_WAYPOINT_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_LAUNCH]               = NAV_STATE_LAUNCH_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
-//        }
-//    },
-//
-//    /** ALTHOLD mode ***************************************************/
-//    [NAV_STATE_ALTHOLD_INITIALIZE] = {
-//        .persistentId = NAV_PERSISTENT_ID_ALTHOLD_INITIALIZE,
-//        .onEntry = navOnEnteringState_NAV_STATE_ALTHOLD_INITIALIZE,
-//        .timeoutMs = 0,
-//        .stateFlags = NAV_CTL_ALT | NAV_REQUIRE_ANGLE_FW | NAV_REQUIRE_THRTILT,
-//        .mapToFlightModes = NAV_ALTHOLD_MODE,
-//        .mwState = MW_NAV_STATE_NONE,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_ALTHOLD_IN_PROGRESS,
-//            [NAV_FSM_EVENT_ERROR]                          = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//        }
-//    },
-//
-//    [NAV_STATE_ALTHOLD_IN_PROGRESS] = {
-//        .persistentId = NAV_PERSISTENT_ID_ALTHOLD_IN_PROGRESS,
-//        .onEntry = navOnEnteringState_NAV_STATE_ALTHOLD_IN_PROGRESS,
-//        .timeoutMs = 10,
-//        .stateFlags = NAV_CTL_ALT | NAV_REQUIRE_ANGLE_FW | NAV_REQUIRE_THRTILT | NAV_RC_ALT,
-//        .mapToFlightModes = NAV_ALTHOLD_MODE,
-//        .mwState = MW_NAV_STATE_NONE,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_ALTHOLD_IN_PROGRESS,    // re-process the state
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT]             = NAV_STATE_WAYPOINT_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
-//        }
-//    },
-//
-//    /** POSHOLD_3D mode ************************************************/
-//    [NAV_STATE_POSHOLD_3D_INITIALIZE] = {
-//        .persistentId = NAV_PERSISTENT_ID_POSHOLD_3D_INITIALIZE,
-//        .onEntry = navOnEnteringState_NAV_STATE_POSHOLD_3D_INITIALIZE,
-//        .timeoutMs = 0,
-//        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_REQUIRE_ANGLE | NAV_REQUIRE_THRTILT,
-//        .mapToFlightModes = NAV_ALTHOLD_MODE | NAV_POSHOLD_MODE,
-//        .mwState = MW_NAV_STATE_HOLD_INFINIT,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_POSHOLD_3D_IN_PROGRESS,
-//            [NAV_FSM_EVENT_ERROR]                          = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//        }
-//    },
-//
-//    [NAV_STATE_POSHOLD_3D_IN_PROGRESS] = {
-//        .persistentId = NAV_PERSISTENT_ID_POSHOLD_3D_IN_PROGRESS,
-//        .onEntry = navOnEnteringState_NAV_STATE_POSHOLD_3D_IN_PROGRESS,
-//        .timeoutMs = 10,
-//        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_THRTILT | NAV_RC_ALT | NAV_RC_POS | NAV_RC_YAW,
-//        .mapToFlightModes = NAV_ALTHOLD_MODE | NAV_POSHOLD_MODE,
-//        .mwState = MW_NAV_STATE_HOLD_INFINIT,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_POSHOLD_3D_IN_PROGRESS,    // re-process the state
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT]             = NAV_STATE_WAYPOINT_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
-//        }
-//    },
-//    /** CRUISE_HOLD mode ************************************************/
-//    [NAV_STATE_COURSE_HOLD_INITIALIZE] = {
-//        .persistentId = NAV_PERSISTENT_ID_COURSE_HOLD_INITIALIZE,
-//        .onEntry = navOnEnteringState_NAV_STATE_COURSE_HOLD_INITIALIZE,
-//        .timeoutMs = 0,
-//        .stateFlags = NAV_REQUIRE_ANGLE,
-//        .mapToFlightModes = NAV_COURSE_HOLD_MODE,
-//        .mwState = MW_NAV_STATE_NONE,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_COURSE_HOLD_IN_PROGRESS,
-//            [NAV_FSM_EVENT_ERROR]                          = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//        }
-//    },
-//
-//    [NAV_STATE_COURSE_HOLD_IN_PROGRESS] = {
-//        .persistentId = NAV_PERSISTENT_ID_COURSE_HOLD_IN_PROGRESS,
-//        .onEntry = navOnEnteringState_NAV_STATE_COURSE_HOLD_IN_PROGRESS,
-//        .timeoutMs = 10,
-//        .stateFlags = NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_RC_POS | NAV_RC_YAW,
-//        .mapToFlightModes = NAV_COURSE_HOLD_MODE,
-//        .mwState = MW_NAV_STATE_NONE,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_COURSE_HOLD_IN_PROGRESS,    // re-process the state
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_COURSE_ADJ]           = NAV_STATE_COURSE_HOLD_ADJUSTING,
-//            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT]             = NAV_STATE_WAYPOINT_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
-//        }
-//    },
-//
-//        [NAV_STATE_COURSE_HOLD_ADJUSTING] = {
-//        .persistentId = NAV_PERSISTENT_ID_COURSE_HOLD_ADJUSTING,
-//        .onEntry = navOnEnteringState_NAV_STATE_COURSE_HOLD_ADJUSTING,
-//        .timeoutMs = 10,
-//        .stateFlags =  NAV_REQUIRE_ANGLE | NAV_RC_POS,
-//        .mapToFlightModes = NAV_COURSE_HOLD_MODE,
-//        .mwState = MW_NAV_STATE_NONE,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_COURSE_HOLD_IN_PROGRESS,
-//            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_COURSE_HOLD_ADJUSTING,
-//            [NAV_FSM_EVENT_ERROR]                          = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT]             = NAV_STATE_WAYPOINT_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
-//        }
-//    },
-//
-//    /** CRUISE_3D mode ************************************************/
-//    [NAV_STATE_CRUISE_INITIALIZE] = {
-//        .persistentId = NAV_PERSISTENT_ID_CRUISE_INITIALIZE,
-//        .onEntry = navOnEnteringState_NAV_STATE_CRUISE_INITIALIZE,
-//        .timeoutMs = 0,
-//        .stateFlags = NAV_REQUIRE_ANGLE,
-//        .mapToFlightModes = NAV_ALTHOLD_MODE | NAV_COURSE_HOLD_MODE,
-//        .mwState = MW_NAV_STATE_NONE,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_CRUISE_IN_PROGRESS,
-//            [NAV_FSM_EVENT_ERROR]                          = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//        }
-//    },
-//
-//    [NAV_STATE_CRUISE_IN_PROGRESS] = {
-//        .persistentId = NAV_PERSISTENT_ID_CRUISE_IN_PROGRESS,
-//        .onEntry = navOnEnteringState_NAV_STATE_CRUISE_IN_PROGRESS,
-//        .timeoutMs = 10,
-//        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_RC_POS | NAV_RC_YAW | NAV_RC_ALT,
-//        .mapToFlightModes = NAV_ALTHOLD_MODE | NAV_COURSE_HOLD_MODE,
-//        .mwState = MW_NAV_STATE_NONE,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_CRUISE_IN_PROGRESS,    // re-process the state
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_COURSE_ADJ]           = NAV_STATE_CRUISE_ADJUSTING,
-//            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT]             = NAV_STATE_WAYPOINT_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
-//        }
-//    },
-//
-//    [NAV_STATE_CRUISE_ADJUSTING] = {
-//        .persistentId = NAV_PERSISTENT_ID_CRUISE_ADJUSTING,
-//        .onEntry = navOnEnteringState_NAV_STATE_CRUISE_ADJUSTING,
-//        .timeoutMs = 10,
-//        .stateFlags =  NAV_CTL_ALT | NAV_REQUIRE_ANGLE | NAV_RC_POS | NAV_RC_ALT,
-//        .mapToFlightModes = NAV_ALTHOLD_MODE | NAV_COURSE_HOLD_MODE,
-//        .mwState = MW_NAV_STATE_NONE,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_CRUISE_IN_PROGRESS,
-//            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_CRUISE_ADJUSTING,
-//            [NAV_FSM_EVENT_ERROR]                          = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT]             = NAV_STATE_WAYPOINT_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
-//        }
-//    },
-//
-//    /** RTH_3D mode ************************************************/
-//    [NAV_STATE_RTH_INITIALIZE] = {
-//        .persistentId = NAV_PERSISTENT_ID_RTH_INITIALIZE,
-//        .onEntry = navOnEnteringState_NAV_STATE_RTH_INITIALIZE,
-//        .timeoutMs = 10,
-//        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_RTH,
-//        .mapToFlightModes = NAV_RTH_MODE | NAV_ALTHOLD_MODE,
-//        .mwState = MW_NAV_STATE_RTH_START,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_TIMEOUT]                             = NAV_STATE_RTH_INITIALIZE,      // re-process the state
-//            [NAV_FSM_EVENT_SUCCESS]                             = NAV_STATE_RTH_CLIMB_TO_SAFE_ALT,
-//            [NAV_FSM_EVENT_SWITCH_TO_NAV_STATE_RTH_TRACKBACK]   = NAV_STATE_RTH_TRACKBACK,
-//            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]         = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_RTH_LANDING]               = NAV_STATE_RTH_HOVER_PRIOR_TO_LANDING,
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                      = NAV_STATE_IDLE,
-//        }
-//    },
-//
-//    [NAV_STATE_RTH_CLIMB_TO_SAFE_ALT] = {
-//        .persistentId = NAV_PERSISTENT_ID_RTH_CLIMB_TO_SAFE_ALT,
-//        .onEntry = navOnEnteringState_NAV_STATE_RTH_CLIMB_TO_SAFE_ALT,
-//        .timeoutMs = 10,
-//        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_RTH | NAV_RC_POS | NAV_RC_YAW,     // allow pos adjustment while climbind to safe alt
-//        .mapToFlightModes = NAV_RTH_MODE | NAV_ALTHOLD_MODE,
-//        .mwState = MW_NAV_STATE_RTH_CLIMB,
-//        .mwError = MW_NAV_ERROR_WAIT_FOR_RTH_ALT,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_RTH_CLIMB_TO_SAFE_ALT,   // re-process the state
-//            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_RTH_HEAD_HOME,
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
-//        }
-//    },
-//
-//    [NAV_STATE_RTH_TRACKBACK] = {
-//        .persistentId = NAV_PERSISTENT_ID_RTH_TRACKBACK,
-//        .onEntry = navOnEnteringState_NAV_STATE_RTH_TRACKBACK,
-//        .timeoutMs = 10,
-//        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_RTH,
-//        .mapToFlightModes = NAV_RTH_MODE | NAV_ALTHOLD_MODE,
-//        .mwState = MW_NAV_STATE_RTH_ENROUTE,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_TIMEOUT]                             = NAV_STATE_RTH_TRACKBACK,           // re-process the state
-//            [NAV_FSM_EVENT_SWITCH_TO_NAV_STATE_RTH_INITIALIZE]  = NAV_STATE_RTH_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]         = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                      = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]                   = NAV_STATE_ALTHOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]                = NAV_STATE_POSHOLD_3D_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]               = NAV_STATE_COURSE_HOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]                    = NAV_STATE_CRUISE_INITIALIZE,
-//        }
-//    },
-//
-//    [NAV_STATE_RTH_HEAD_HOME] = {
-//        .persistentId = NAV_PERSISTENT_ID_RTH_HEAD_HOME,
-//        .onEntry = navOnEnteringState_NAV_STATE_RTH_HEAD_HOME,
-//        .timeoutMs = 10,
-//        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_RTH | NAV_RC_POS | NAV_RC_YAW,
-//        .mapToFlightModes = NAV_RTH_MODE | NAV_ALTHOLD_MODE,
-//        .mwState = MW_NAV_STATE_RTH_ENROUTE,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_RTH_HEAD_HOME,           // re-process the state
-//            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_RTH_HOVER_PRIOR_TO_LANDING,
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
-//        }
-//    },
-//
-//    [NAV_STATE_RTH_HOVER_PRIOR_TO_LANDING] = {
-//        .persistentId = NAV_PERSISTENT_ID_RTH_HOVER_PRIOR_TO_LANDING,
-//        .onEntry = navOnEnteringState_NAV_STATE_RTH_HOVER_PRIOR_TO_LANDING,
-//        .timeoutMs = 500,
-//        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_RTH | NAV_RC_POS | NAV_RC_YAW,
-//        .mapToFlightModes = NAV_RTH_MODE | NAV_ALTHOLD_MODE,
-//        .mwState = MW_NAV_STATE_LAND_SETTLE,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_RTH_HOVER_PRIOR_TO_LANDING,
-//            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_RTH_LANDING,
-//            [NAV_FSM_EVENT_SWITCH_TO_RTH_HOVER_ABOVE_HOME] = NAV_STATE_RTH_HOVER_ABOVE_HOME,
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
-//        }
-//    },
-//
-//    [NAV_STATE_RTH_HOVER_ABOVE_HOME] = {
-//        .persistentId = NAV_PERSISTENT_ID_RTH_HOVER_ABOVE_HOME,
-//        .onEntry = navOnEnteringState_NAV_STATE_RTH_HOVER_ABOVE_HOME,
-//        .timeoutMs = 10,
-//        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_RTH | NAV_RC_POS | NAV_RC_YAW | NAV_RC_ALT,
-//        .mapToFlightModes = NAV_RTH_MODE | NAV_ALTHOLD_MODE,
-//        .mwState = MW_NAV_STATE_HOVER_ABOVE_HOME,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_RTH_HOVER_ABOVE_HOME,
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
-//        }
-//    },
-//
-//    [NAV_STATE_RTH_LANDING] = {
-//        .persistentId = NAV_PERSISTENT_ID_RTH_LANDING,
-//        .onEntry = navOnEnteringState_NAV_STATE_RTH_LANDING,
-//        .timeoutMs = 10,
-//        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_CTL_LAND | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_RTH | NAV_RC_POS | NAV_RC_YAW,
-//        .mapToFlightModes = NAV_RTH_MODE | NAV_ALTHOLD_MODE,
-//        .mwState = MW_NAV_STATE_LAND_IN_PROGRESS,
-//        .mwError = MW_NAV_ERROR_LANDING,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_RTH_LANDING,         // re-process state
-//            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_RTH_FINISHING,
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
-//        }
-//    },
-//
-//    [NAV_STATE_RTH_FINISHING] = {
-//        .persistentId = NAV_PERSISTENT_ID_RTH_FINISHING,
-//        .onEntry = navOnEnteringState_NAV_STATE_RTH_FINISHING,
-//        .timeoutMs = 0,
-//        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_CTL_LAND | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_RTH,
-//        .mapToFlightModes = NAV_RTH_MODE | NAV_ALTHOLD_MODE,
-//        .mwState = MW_NAV_STATE_LAND_IN_PROGRESS,
-//        .mwError = MW_NAV_ERROR_LANDING,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_RTH_FINISHED,
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//        }
-//    },
-//
-//    [NAV_STATE_RTH_FINISHED] = {
-//        .persistentId = NAV_PERSISTENT_ID_RTH_FINISHED,
-//        .onEntry = navOnEnteringState_NAV_STATE_RTH_FINISHED,
-//        .timeoutMs = 10,
-//        .stateFlags = NAV_CTL_ALT | NAV_CTL_LAND | NAV_REQUIRE_ANGLE | NAV_REQUIRE_THRTILT | NAV_AUTO_RTH,
-//        .mapToFlightModes = NAV_RTH_MODE | NAV_ALTHOLD_MODE,
-//        .mwState = MW_NAV_STATE_LANDED,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_RTH_FINISHED,         // re-process state
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
-//        }
-//    },
-//
-//    /** WAYPOINT mode ************************************************/
-//    [NAV_STATE_WAYPOINT_INITIALIZE] = {
-//        .persistentId = NAV_PERSISTENT_ID_WAYPOINT_INITIALIZE,
-//        .onEntry = navOnEnteringState_NAV_STATE_WAYPOINT_INITIALIZE,
-//        .timeoutMs = 0,
-//        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_WP,
-//        .mapToFlightModes = NAV_WP_MODE | NAV_ALTHOLD_MODE,
-//        .mwState = MW_NAV_STATE_PROCESS_NEXT,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_WAYPOINT_PRE_ACTION,
-//            [NAV_FSM_EVENT_ERROR]                          = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT_FINISHED]    = NAV_STATE_WAYPOINT_FINISHED,
-//        }
-//    },
-//
-//    [NAV_STATE_WAYPOINT_PRE_ACTION] = {
-//        .persistentId = NAV_PERSISTENT_ID_WAYPOINT_PRE_ACTION,
-//        .onEntry = navOnEnteringState_NAV_STATE_WAYPOINT_PRE_ACTION,
-//        .timeoutMs = 10,
-//        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_WP,
-//        .mapToFlightModes = NAV_WP_MODE | NAV_ALTHOLD_MODE,
-//        .mwState = MW_NAV_STATE_PROCESS_NEXT,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_TIMEOUT]                     = NAV_STATE_WAYPOINT_PRE_ACTION,   // re-process the state (for JUMP)
-//            [NAV_FSM_EVENT_SUCCESS]                     = NAV_STATE_WAYPOINT_IN_PROGRESS,
-//            [NAV_FSM_EVENT_ERROR]                       = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]              = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_RTH]               = NAV_STATE_RTH_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT_FINISHED] = NAV_STATE_WAYPOINT_FINISHED,
-//        }
-//    },
-//
-//    [NAV_STATE_WAYPOINT_IN_PROGRESS] = {
-//        .persistentId = NAV_PERSISTENT_ID_WAYPOINT_IN_PROGRESS,
-//        .onEntry = navOnEnteringState_NAV_STATE_WAYPOINT_IN_PROGRESS,
-//        .timeoutMs = 10,
-//        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_WP,
-//        .mapToFlightModes = NAV_WP_MODE | NAV_ALTHOLD_MODE,
-//        .mwState = MW_NAV_STATE_WP_ENROUTE,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_WAYPOINT_IN_PROGRESS,   // re-process the state
-//            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_WAYPOINT_REACHED,       // successfully reached waypoint
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
-//        }
-//    },
-//
-//    [NAV_STATE_WAYPOINT_REACHED] = {
-//        .persistentId = NAV_PERSISTENT_ID_WAYPOINT_REACHED,
-//        .onEntry = navOnEnteringState_NAV_STATE_WAYPOINT_REACHED,
-//        .timeoutMs = 10,
-//        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_WP,
-//        .mapToFlightModes = NAV_WP_MODE | NAV_ALTHOLD_MODE,
-//        .mwState = MW_NAV_STATE_PROCESS_NEXT,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_TIMEOUT]                     = NAV_STATE_WAYPOINT_REACHED,   // re-process state
-//            [NAV_FSM_EVENT_SUCCESS]                     = NAV_STATE_WAYPOINT_NEXT,
-//            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT_HOLD_TIME] = NAV_STATE_WAYPOINT_HOLD_TIME,
-//            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT_FINISHED] = NAV_STATE_WAYPOINT_FINISHED,
-//            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT_RTH_LAND] = NAV_STATE_WAYPOINT_RTH_LAND,
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]              = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]           = NAV_STATE_ALTHOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]        = NAV_STATE_POSHOLD_3D_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_RTH]               = NAV_STATE_RTH_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING] = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]       = NAV_STATE_COURSE_HOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]            = NAV_STATE_CRUISE_INITIALIZE,
-//        }
-//    },
-//
-//    [NAV_STATE_WAYPOINT_HOLD_TIME] = {
-//        .persistentId = NAV_PERSISTENT_ID_WAYPOINT_HOLD_TIME,                             // There is no state for timed hold?
-//        .onEntry = navOnEnteringState_NAV_STATE_WAYPOINT_HOLD_TIME,
-//        .timeoutMs = 10,
-//        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_WP,
-//        .mapToFlightModes = NAV_WP_MODE | NAV_ALTHOLD_MODE,
-//        .mwState = MW_NAV_STATE_HOLD_TIMED,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_WAYPOINT_HOLD_TIME,     // re-process the state
-//            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_WAYPOINT_NEXT,          // successfully reached waypoint
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
-//        }
-//    },
-//
-//    [NAV_STATE_WAYPOINT_RTH_LAND] = {
-//        .persistentId = NAV_PERSISTENT_ID_WAYPOINT_RTH_LAND,
-//        .onEntry = navOnEnteringState_NAV_STATE_WAYPOINT_RTH_LAND,
-//        .timeoutMs = 10,
-//        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_CTL_LAND | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_WP,
-//        .mapToFlightModes = NAV_WP_MODE | NAV_ALTHOLD_MODE,
-//        .mwState = MW_NAV_STATE_LAND_IN_PROGRESS,
-//        .mwError = MW_NAV_ERROR_LANDING,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_WAYPOINT_RTH_LAND,   // re-process state
-//            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_WAYPOINT_FINISHED,
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
-//        }
-//    },
-//
-//    [NAV_STATE_WAYPOINT_NEXT] = {
-//        .persistentId = NAV_PERSISTENT_ID_WAYPOINT_NEXT,
-//        .onEntry = navOnEnteringState_NAV_STATE_WAYPOINT_NEXT,
-//        .timeoutMs = 0,
-//        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_WP,
-//        .mapToFlightModes = NAV_WP_MODE | NAV_ALTHOLD_MODE,
-//        .mwState = MW_NAV_STATE_PROCESS_NEXT,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_WAYPOINT_PRE_ACTION,
-//            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT_FINISHED]    = NAV_STATE_WAYPOINT_FINISHED,
-//        }
-//    },
-//
-//    [NAV_STATE_WAYPOINT_FINISHED] = {
-//        .persistentId = NAV_PERSISTENT_ID_WAYPOINT_FINISHED,
-//        .onEntry = navOnEnteringState_NAV_STATE_WAYPOINT_FINISHED,
-//        .timeoutMs = 10,
-//        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_WP | NAV_AUTO_WP_DONE,
-//        .mapToFlightModes = NAV_WP_MODE | NAV_ALTHOLD_MODE,
-//        .mwState = MW_NAV_STATE_WP_ENROUTE,
-//        .mwError = MW_NAV_ERROR_FINISH,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_WAYPOINT_FINISHED,   // re-process state
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
-//        }
-//    },
-//
-//    /** EMERGENCY LANDING ************************************************/
-//    [NAV_STATE_EMERGENCY_LANDING_INITIALIZE] = {
-//        .persistentId = NAV_PERSISTENT_ID_EMERGENCY_LANDING_INITIALIZE,
-//        .onEntry = navOnEnteringState_NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
-//        .timeoutMs = 0,
-//        .stateFlags = NAV_CTL_EMERG | NAV_REQUIRE_ANGLE,
-//        .mapToFlightModes = 0,
-//        .mwState = MW_NAV_STATE_EMERGENCY_LANDING,
-//        .mwError = MW_NAV_ERROR_LANDING,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_EMERGENCY_LANDING_IN_PROGRESS,
-//            [NAV_FSM_EVENT_ERROR]                          = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT]             = NAV_STATE_WAYPOINT_INITIALIZE,
-//        }
-//    },
-//
-//    [NAV_STATE_EMERGENCY_LANDING_IN_PROGRESS] = {
-//        .persistentId = NAV_PERSISTENT_ID_EMERGENCY_LANDING_IN_PROGRESS,
-//        .onEntry = navOnEnteringState_NAV_STATE_EMERGENCY_LANDING_IN_PROGRESS,
-//        .timeoutMs = 10,
-//        .stateFlags = NAV_CTL_EMERG | NAV_REQUIRE_ANGLE,
-//        .mapToFlightModes = 0,
-//        .mwState = MW_NAV_STATE_EMERGENCY_LANDING,
-//        .mwError = MW_NAV_ERROR_LANDING,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_EMERGENCY_LANDING_IN_PROGRESS,    // re-process the state
-//            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_EMERGENCY_LANDING_FINISHED,
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
-//            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT]             = NAV_STATE_WAYPOINT_INITIALIZE,
-//        }
-//    },
-//
-//    [NAV_STATE_EMERGENCY_LANDING_FINISHED] = {
-//        .persistentId = NAV_PERSISTENT_ID_EMERGENCY_LANDING_FINISHED,
-//        .onEntry = navOnEnteringState_NAV_STATE_EMERGENCY_LANDING_FINISHED,
-//        .timeoutMs = 10,
-//        .stateFlags = NAV_CTL_EMERG | NAV_REQUIRE_ANGLE,
-//        .mapToFlightModes = 0,
-//        .mwState = MW_NAV_STATE_LANDED,
-//        .mwError = MW_NAV_ERROR_LANDING,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_EMERGENCY_LANDING_FINISHED,
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//        }
-//    },
-//
-//    [NAV_STATE_LAUNCH_INITIALIZE] = {
-//        .persistentId = NAV_PERSISTENT_ID_LAUNCH_INITIALIZE,
-//        .onEntry = navOnEnteringState_NAV_STATE_LAUNCH_INITIALIZE,
-//        .timeoutMs = 0,
-//        .stateFlags = NAV_REQUIRE_ANGLE,
-//        .mapToFlightModes = NAV_LAUNCH_MODE,
-//        .mwState = MW_NAV_STATE_NONE,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_LAUNCH_WAIT,
-//            [NAV_FSM_EVENT_ERROR]                          = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//        }
-//    },
-//
-//    [NAV_STATE_LAUNCH_WAIT] = {
-//        .persistentId = NAV_PERSISTENT_ID_LAUNCH_WAIT,
-//        .onEntry = navOnEnteringState_NAV_STATE_LAUNCH_WAIT,
-//        .timeoutMs = 10,
-//        .stateFlags = NAV_CTL_LAUNCH | NAV_REQUIRE_ANGLE,
-//        .mapToFlightModes = NAV_LAUNCH_MODE,
-//        .mwState = MW_NAV_STATE_NONE,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_LAUNCH_WAIT,    // re-process the state
-//            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_LAUNCH_IN_PROGRESS,
-//            [NAV_FSM_EVENT_ERROR]                          = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//        }
-//    },
-//
-//    [NAV_STATE_LAUNCH_IN_PROGRESS] = {
-//        .persistentId = NAV_PERSISTENT_ID_LAUNCH_IN_PROGRESS,
-//        .onEntry = navOnEnteringState_NAV_STATE_LAUNCH_IN_PROGRESS,
-//        .timeoutMs = 10,
-//        .stateFlags = NAV_CTL_LAUNCH | NAV_REQUIRE_ANGLE,
-//        .mapToFlightModes = NAV_LAUNCH_MODE,
-//        .mwState = MW_NAV_STATE_NONE,
-//        .mwError = MW_NAV_ERROR_NONE,
-//        .onEvent = {
-//            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_LAUNCH_IN_PROGRESS,    // re-process the state
-//            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_ERROR]                          = NAV_STATE_IDLE,
-//            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
-//        }
-//    },
-//};
-//
-//static navigationFSMStateFlags_t navGetStateFlags(navigationFSMState_t state)
-//{
-//    return navFSM[state].stateFlags;
-//}
-//
-//static flightModeFlags_e navGetMappedFlightModes(navigationFSMState_t state)
-//{
-//    return navFSM[state].mapToFlightModes;
-//}
-//
-//navigationFSMStateFlags_t navGetCurrentStateFlags(void)
-//{
-//    return navGetStateFlags(posControl.navState);
-//}
-//
+
+static const navigationFSMStateDescriptor_t navFSM[NAV_STATE_COUNT] = {
+    /** Idle state ******************************************************/
+    [NAV_STATE_IDLE] = {
+        .persistentId = NAV_PERSISTENT_ID_IDLE,
+        //.onEntry = navOnEnteringState_NAV_STATE_IDLE,
+        .timeoutMs = 0,
+        .stateFlags = 0,
+        .mapToFlightModes = 0,
+        .mwState = MW_NAV_STATE_NONE,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent    = {
+            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT]             = NAV_STATE_WAYPOINT_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_LAUNCH]               = NAV_STATE_LAUNCH_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
+        }
+    },
+
+    /** ALTHOLD mode ***************************************************/
+    [NAV_STATE_ALTHOLD_INITIALIZE] = {
+        .persistentId = NAV_PERSISTENT_ID_ALTHOLD_INITIALIZE,
+        //.onEntry = navOnEnteringState_NAV_STATE_ALTHOLD_INITIALIZE,
+        .timeoutMs = 0,
+        .stateFlags = NAV_CTL_ALT | NAV_REQUIRE_ANGLE_FW | NAV_REQUIRE_THRTILT,
+        //.mapToFlightModes = NAV_ALTHOLD_MODE,
+        .mwState = MW_NAV_STATE_NONE,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent = {
+            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_ALTHOLD_IN_PROGRESS,
+            [NAV_FSM_EVENT_ERROR]                          = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+        }
+    },
+
+    [NAV_STATE_ALTHOLD_IN_PROGRESS] = {
+        .persistentId = NAV_PERSISTENT_ID_ALTHOLD_IN_PROGRESS,
+        //.onEntry = navOnEnteringState_NAV_STATE_ALTHOLD_IN_PROGRESS,
+        .timeoutMs = 10,
+        .stateFlags = NAV_CTL_ALT | NAV_REQUIRE_ANGLE_FW | NAV_REQUIRE_THRTILT | NAV_RC_ALT,
+        //.mapToFlightModes = NAV_ALTHOLD_MODE,
+        .mwState = MW_NAV_STATE_NONE,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent = {
+            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_ALTHOLD_IN_PROGRESS,    // re-process the state
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT]             = NAV_STATE_WAYPOINT_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
+        }
+    },
+
+    /** POSHOLD_3D mode ************************************************/
+    [NAV_STATE_POSHOLD_3D_INITIALIZE] = {
+        .persistentId = NAV_PERSISTENT_ID_POSHOLD_3D_INITIALIZE,
+        //.onEntry = navOnEnteringState_NAV_STATE_POSHOLD_3D_INITIALIZE,
+        .timeoutMs = 0,
+        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_REQUIRE_ANGLE | NAV_REQUIRE_THRTILT,
+        //.mapToFlightModes = NAV_ALTHOLD_MODE | NAV_POSHOLD_MODE,
+        .mwState = MW_NAV_STATE_HOLD_INFINIT,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent = {
+            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_POSHOLD_3D_IN_PROGRESS,
+            [NAV_FSM_EVENT_ERROR]                          = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+        }
+    },
+
+    [NAV_STATE_POSHOLD_3D_IN_PROGRESS] = {
+        .persistentId = NAV_PERSISTENT_ID_POSHOLD_3D_IN_PROGRESS,
+        //.onEntry = navOnEnteringState_NAV_STATE_POSHOLD_3D_IN_PROGRESS,
+        .timeoutMs = 10,
+        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_THRTILT | NAV_RC_ALT | NAV_RC_POS | NAV_RC_YAW,
+        //.mapToFlightModes = NAV_ALTHOLD_MODE | NAV_POSHOLD_MODE,
+        .mwState = MW_NAV_STATE_HOLD_INFINIT,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent = {
+            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_POSHOLD_3D_IN_PROGRESS,    // re-process the state
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT]             = NAV_STATE_WAYPOINT_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
+        }
+    },
+    /** CRUISE_HOLD mode ************************************************/
+    [NAV_STATE_COURSE_HOLD_INITIALIZE] = {
+        .persistentId = NAV_PERSISTENT_ID_COURSE_HOLD_INITIALIZE,
+        //.onEntry = navOnEnteringState_NAV_STATE_COURSE_HOLD_INITIALIZE,
+        .timeoutMs = 0,
+        .stateFlags = NAV_REQUIRE_ANGLE,
+        //.mapToFlightModes = NAV_COURSE_HOLD_MODE,
+        .mwState = MW_NAV_STATE_NONE,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent = {
+            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_COURSE_HOLD_IN_PROGRESS,
+            [NAV_FSM_EVENT_ERROR]                          = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+        }
+    },
+
+    [NAV_STATE_COURSE_HOLD_IN_PROGRESS] = {
+        .persistentId = NAV_PERSISTENT_ID_COURSE_HOLD_IN_PROGRESS,
+        //.onEntry = navOnEnteringState_NAV_STATE_COURSE_HOLD_IN_PROGRESS,
+        .timeoutMs = 10,
+        .stateFlags = NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_RC_POS | NAV_RC_YAW,
+        //.mapToFlightModes = NAV_COURSE_HOLD_MODE,
+        .mwState = MW_NAV_STATE_NONE,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent = {
+            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_COURSE_HOLD_IN_PROGRESS,    // re-process the state
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_COURSE_ADJ]           = NAV_STATE_COURSE_HOLD_ADJUSTING,
+            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT]             = NAV_STATE_WAYPOINT_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
+        }
+    },
+
+        [NAV_STATE_COURSE_HOLD_ADJUSTING] = {
+        .persistentId = NAV_PERSISTENT_ID_COURSE_HOLD_ADJUSTING,
+        //.onEntry = navOnEnteringState_NAV_STATE_COURSE_HOLD_ADJUSTING,
+        .timeoutMs = 10,
+        .stateFlags =  NAV_REQUIRE_ANGLE | NAV_RC_POS,
+        //.mapToFlightModes = NAV_COURSE_HOLD_MODE,
+        .mwState = MW_NAV_STATE_NONE,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent = {
+            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_COURSE_HOLD_IN_PROGRESS,
+            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_COURSE_HOLD_ADJUSTING,
+            [NAV_FSM_EVENT_ERROR]                          = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT]             = NAV_STATE_WAYPOINT_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
+        }
+    },
+
+    /** CRUISE_3D mode ************************************************/
+    [NAV_STATE_CRUISE_INITIALIZE] = {
+        .persistentId = NAV_PERSISTENT_ID_CRUISE_INITIALIZE,
+        //.onEntry = navOnEnteringState_NAV_STATE_CRUISE_INITIALIZE,
+        .timeoutMs = 0,
+        .stateFlags = NAV_REQUIRE_ANGLE,
+        //.mapToFlightModes = NAV_ALTHOLD_MODE | NAV_COURSE_HOLD_MODE,
+        .mwState = MW_NAV_STATE_NONE,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent = {
+            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_CRUISE_IN_PROGRESS,
+            [NAV_FSM_EVENT_ERROR]                          = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+        }
+    },
+
+    [NAV_STATE_CRUISE_IN_PROGRESS] = {
+        .persistentId = NAV_PERSISTENT_ID_CRUISE_IN_PROGRESS,
+        //.onEntry = navOnEnteringState_NAV_STATE_CRUISE_IN_PROGRESS,
+        .timeoutMs = 10,
+        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_RC_POS | NAV_RC_YAW | NAV_RC_ALT,
+        //.mapToFlightModes = NAV_ALTHOLD_MODE | NAV_COURSE_HOLD_MODE,
+        .mwState = MW_NAV_STATE_NONE,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent = {
+            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_CRUISE_IN_PROGRESS,    // re-process the state
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_COURSE_ADJ]           = NAV_STATE_CRUISE_ADJUSTING,
+            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT]             = NAV_STATE_WAYPOINT_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
+        }
+    },
+
+    [NAV_STATE_CRUISE_ADJUSTING] = {
+        .persistentId = NAV_PERSISTENT_ID_CRUISE_ADJUSTING,
+        //.onEntry = navOnEnteringState_NAV_STATE_CRUISE_ADJUSTING,
+        .timeoutMs = 10,
+        .stateFlags =  NAV_CTL_ALT | NAV_REQUIRE_ANGLE | NAV_RC_POS | NAV_RC_ALT,
+        //.mapToFlightModes = NAV_ALTHOLD_MODE | NAV_COURSE_HOLD_MODE,
+        .mwState = MW_NAV_STATE_NONE,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent = {
+            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_CRUISE_IN_PROGRESS,
+            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_CRUISE_ADJUSTING,
+            [NAV_FSM_EVENT_ERROR]                          = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT]             = NAV_STATE_WAYPOINT_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
+        }
+    },
+
+    /** RTH_3D mode ************************************************/
+    [NAV_STATE_RTH_INITIALIZE] = {
+        .persistentId = NAV_PERSISTENT_ID_RTH_INITIALIZE,
+        //.onEntry = navOnEnteringState_NAV_STATE_RTH_INITIALIZE,
+        .timeoutMs = 10,
+        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_RTH,
+        //.mapToFlightModes = NAV_RTH_MODE | NAV_ALTHOLD_MODE,
+        .mwState = MW_NAV_STATE_RTH_START,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent = {
+            [NAV_FSM_EVENT_TIMEOUT]                             = NAV_STATE_RTH_INITIALIZE,      // re-process the state
+            [NAV_FSM_EVENT_SUCCESS]                             = NAV_STATE_RTH_CLIMB_TO_SAFE_ALT,
+            [NAV_FSM_EVENT_SWITCH_TO_NAV_STATE_RTH_TRACKBACK]   = NAV_STATE_RTH_TRACKBACK,
+            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]         = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_RTH_LANDING]               = NAV_STATE_RTH_HOVER_PRIOR_TO_LANDING,
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                      = NAV_STATE_IDLE,
+        }
+    },
+
+    [NAV_STATE_RTH_CLIMB_TO_SAFE_ALT] = {
+        .persistentId = NAV_PERSISTENT_ID_RTH_CLIMB_TO_SAFE_ALT,
+        //.onEntry = navOnEnteringState_NAV_STATE_RTH_CLIMB_TO_SAFE_ALT,
+        .timeoutMs = 10,
+        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_RTH | NAV_RC_POS | NAV_RC_YAW,     // allow pos adjustment while climbind to safe alt
+        //.mapToFlightModes = NAV_RTH_MODE | NAV_ALTHOLD_MODE,
+        .mwState = MW_NAV_STATE_RTH_CLIMB,
+        .mwError = MW_NAV_ERROR_WAIT_FOR_RTH_ALT,
+        .onEvent = {
+            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_RTH_CLIMB_TO_SAFE_ALT,   // re-process the state
+            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_RTH_HEAD_HOME,
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
+        }
+    },
+
+    [NAV_STATE_RTH_TRACKBACK] = {
+        .persistentId = NAV_PERSISTENT_ID_RTH_TRACKBACK,
+        //.onEntry = navOnEnteringState_NAV_STATE_RTH_TRACKBACK,
+        .timeoutMs = 10,
+        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_RTH,
+        //.mapToFlightModes = NAV_RTH_MODE | NAV_ALTHOLD_MODE,
+        .mwState = MW_NAV_STATE_RTH_ENROUTE,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent = {
+            [NAV_FSM_EVENT_TIMEOUT]                             = NAV_STATE_RTH_TRACKBACK,           // re-process the state
+            [NAV_FSM_EVENT_SWITCH_TO_NAV_STATE_RTH_INITIALIZE]  = NAV_STATE_RTH_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]         = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                      = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]                   = NAV_STATE_ALTHOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]                = NAV_STATE_POSHOLD_3D_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]               = NAV_STATE_COURSE_HOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]                    = NAV_STATE_CRUISE_INITIALIZE,
+        }
+    },
+
+    [NAV_STATE_RTH_HEAD_HOME] = {
+        .persistentId = NAV_PERSISTENT_ID_RTH_HEAD_HOME,
+        //.onEntry = navOnEnteringState_NAV_STATE_RTH_HEAD_HOME,
+        .timeoutMs = 10,
+        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_RTH | NAV_RC_POS | NAV_RC_YAW,
+        //.mapToFlightModes = NAV_RTH_MODE | NAV_ALTHOLD_MODE,
+        .mwState = MW_NAV_STATE_RTH_ENROUTE,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent = {
+            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_RTH_HEAD_HOME,           // re-process the state
+            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_RTH_HOVER_PRIOR_TO_LANDING,
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
+        }
+    },
+
+    [NAV_STATE_RTH_HOVER_PRIOR_TO_LANDING] = {
+        .persistentId = NAV_PERSISTENT_ID_RTH_HOVER_PRIOR_TO_LANDING,
+        //.onEntry = navOnEnteringState_NAV_STATE_RTH_HOVER_PRIOR_TO_LANDING,
+        .timeoutMs = 500,
+        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_RTH | NAV_RC_POS | NAV_RC_YAW,
+        //.mapToFlightModes = NAV_RTH_MODE | NAV_ALTHOLD_MODE,
+        .mwState = MW_NAV_STATE_LAND_SETTLE,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent = {
+            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_RTH_HOVER_PRIOR_TO_LANDING,
+            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_RTH_LANDING,
+            [NAV_FSM_EVENT_SWITCH_TO_RTH_HOVER_ABOVE_HOME] = NAV_STATE_RTH_HOVER_ABOVE_HOME,
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
+        }
+    },
+
+    [NAV_STATE_RTH_HOVER_ABOVE_HOME] = {
+        .persistentId = NAV_PERSISTENT_ID_RTH_HOVER_ABOVE_HOME,
+        //.onEntry = navOnEnteringState_NAV_STATE_RTH_HOVER_ABOVE_HOME,
+        .timeoutMs = 10,
+        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_RTH | NAV_RC_POS | NAV_RC_YAW | NAV_RC_ALT,
+        //.mapToFlightModes = NAV_RTH_MODE | NAV_ALTHOLD_MODE,
+        .mwState = MW_NAV_STATE_HOVER_ABOVE_HOME,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent = {
+            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_RTH_HOVER_ABOVE_HOME,
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
+        }
+    },
+
+    [NAV_STATE_RTH_LANDING] = {
+        .persistentId = NAV_PERSISTENT_ID_RTH_LANDING,
+        //.onEntry = navOnEnteringState_NAV_STATE_RTH_LANDING,
+        .timeoutMs = 10,
+        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_CTL_LAND | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_RTH | NAV_RC_POS | NAV_RC_YAW,
+        //.mapToFlightModes = NAV_RTH_MODE | NAV_ALTHOLD_MODE,
+        .mwState = MW_NAV_STATE_LAND_IN_PROGRESS,
+        .mwError = MW_NAV_ERROR_LANDING,
+        .onEvent = {
+            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_RTH_LANDING,         // re-process state
+            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_RTH_FINISHING,
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
+        }
+    },
+
+    [NAV_STATE_RTH_FINISHING] = {
+        .persistentId = NAV_PERSISTENT_ID_RTH_FINISHING,
+        //.onEntry = navOnEnteringState_NAV_STATE_RTH_FINISHING,
+        .timeoutMs = 0,
+        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_CTL_LAND | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_RTH,
+        //.mapToFlightModes = NAV_RTH_MODE | NAV_ALTHOLD_MODE,
+        .mwState = MW_NAV_STATE_LAND_IN_PROGRESS,
+        .mwError = MW_NAV_ERROR_LANDING,
+        .onEvent = {
+            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_RTH_FINISHED,
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+        }
+    },
+
+    [NAV_STATE_RTH_FINISHED] = {
+        .persistentId = NAV_PERSISTENT_ID_RTH_FINISHED,
+        //.onEntry = navOnEnteringState_NAV_STATE_RTH_FINISHED,
+        .timeoutMs = 10,
+        .stateFlags = NAV_CTL_ALT | NAV_CTL_LAND | NAV_REQUIRE_ANGLE | NAV_REQUIRE_THRTILT | NAV_AUTO_RTH,
+        //.mapToFlightModes = NAV_RTH_MODE | NAV_ALTHOLD_MODE,
+        .mwState = MW_NAV_STATE_LANDED,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent = {
+            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_RTH_FINISHED,         // re-process state
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
+        }
+    },
+
+    /** WAYPOINT mode ************************************************/
+    [NAV_STATE_WAYPOINT_INITIALIZE] = {
+        .persistentId = NAV_PERSISTENT_ID_WAYPOINT_INITIALIZE,
+        //.onEntry = navOnEnteringState_NAV_STATE_WAYPOINT_INITIALIZE,
+        .timeoutMs = 0,
+        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_WP,
+        //.mapToFlightModes = NAV_WP_MODE | NAV_ALTHOLD_MODE,
+        .mwState = MW_NAV_STATE_PROCESS_NEXT,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent = {
+            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_WAYPOINT_PRE_ACTION,
+            [NAV_FSM_EVENT_ERROR]                          = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT_FINISHED]    = NAV_STATE_WAYPOINT_FINISHED,
+        }
+    },
+
+    [NAV_STATE_WAYPOINT_PRE_ACTION] = {
+        .persistentId = NAV_PERSISTENT_ID_WAYPOINT_PRE_ACTION,
+        //.onEntry = navOnEnteringState_NAV_STATE_WAYPOINT_PRE_ACTION,
+        .timeoutMs = 10,
+        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_WP,
+        //.mapToFlightModes = NAV_WP_MODE | NAV_ALTHOLD_MODE,
+        .mwState = MW_NAV_STATE_PROCESS_NEXT,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent = {
+            [NAV_FSM_EVENT_TIMEOUT]                     = NAV_STATE_WAYPOINT_PRE_ACTION,   // re-process the state (for JUMP)
+            [NAV_FSM_EVENT_SUCCESS]                     = NAV_STATE_WAYPOINT_IN_PROGRESS,
+            [NAV_FSM_EVENT_ERROR]                       = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]              = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_RTH]               = NAV_STATE_RTH_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT_FINISHED] = NAV_STATE_WAYPOINT_FINISHED,
+        }
+    },
+
+    [NAV_STATE_WAYPOINT_IN_PROGRESS] = {
+        .persistentId = NAV_PERSISTENT_ID_WAYPOINT_IN_PROGRESS,
+        //.onEntry = navOnEnteringState_NAV_STATE_WAYPOINT_IN_PROGRESS,
+        .timeoutMs = 10,
+        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_WP,
+        //.mapToFlightModes = NAV_WP_MODE | NAV_ALTHOLD_MODE,
+        .mwState = MW_NAV_STATE_WP_ENROUTE,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent = {
+            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_WAYPOINT_IN_PROGRESS,   // re-process the state
+            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_WAYPOINT_REACHED,       // successfully reached waypoint
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
+        }
+    },
+
+    [NAV_STATE_WAYPOINT_REACHED] = {
+        .persistentId = NAV_PERSISTENT_ID_WAYPOINT_REACHED,
+        //.onEntry = navOnEnteringState_NAV_STATE_WAYPOINT_REACHED,
+        .timeoutMs = 10,
+        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_WP,
+        //.mapToFlightModes = NAV_WP_MODE | NAV_ALTHOLD_MODE,
+        .mwState = MW_NAV_STATE_PROCESS_NEXT,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent = {
+            [NAV_FSM_EVENT_TIMEOUT]                     = NAV_STATE_WAYPOINT_REACHED,   // re-process state
+            [NAV_FSM_EVENT_SUCCESS]                     = NAV_STATE_WAYPOINT_NEXT,
+            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT_HOLD_TIME] = NAV_STATE_WAYPOINT_HOLD_TIME,
+            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT_FINISHED] = NAV_STATE_WAYPOINT_FINISHED,
+            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT_RTH_LAND] = NAV_STATE_WAYPOINT_RTH_LAND,
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]              = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]           = NAV_STATE_ALTHOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]        = NAV_STATE_POSHOLD_3D_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_RTH]               = NAV_STATE_RTH_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING] = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]       = NAV_STATE_COURSE_HOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]            = NAV_STATE_CRUISE_INITIALIZE,
+        }
+    },
+
+    [NAV_STATE_WAYPOINT_HOLD_TIME] = {
+        .persistentId = NAV_PERSISTENT_ID_WAYPOINT_HOLD_TIME,                             // There is no state for timed hold?
+        //.onEntry = navOnEnteringState_NAV_STATE_WAYPOINT_HOLD_TIME,
+        .timeoutMs = 10,
+        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_WP,
+        //.mapToFlightModes = NAV_WP_MODE | NAV_ALTHOLD_MODE,
+        .mwState = MW_NAV_STATE_HOLD_TIMED,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent = {
+            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_WAYPOINT_HOLD_TIME,     // re-process the state
+            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_WAYPOINT_NEXT,          // successfully reached waypoint
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
+        }
+    },
+
+    [NAV_STATE_WAYPOINT_RTH_LAND] = {
+        .persistentId = NAV_PERSISTENT_ID_WAYPOINT_RTH_LAND,
+        //.onEntry = navOnEnteringState_NAV_STATE_WAYPOINT_RTH_LAND,
+        .timeoutMs = 10,
+        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_CTL_LAND | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_WP,
+        //.mapToFlightModes = NAV_WP_MODE | NAV_ALTHOLD_MODE,
+        .mwState = MW_NAV_STATE_LAND_IN_PROGRESS,
+        .mwError = MW_NAV_ERROR_LANDING,
+        .onEvent = {
+            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_WAYPOINT_RTH_LAND,   // re-process state
+            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_WAYPOINT_FINISHED,
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
+        }
+    },
+
+    [NAV_STATE_WAYPOINT_NEXT] = {
+        .persistentId = NAV_PERSISTENT_ID_WAYPOINT_NEXT,
+        //.onEntry = navOnEnteringState_NAV_STATE_WAYPOINT_NEXT,
+        .timeoutMs = 0,
+        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_WP,
+        //.mapToFlightModes = NAV_WP_MODE | NAV_ALTHOLD_MODE,
+        .mwState = MW_NAV_STATE_PROCESS_NEXT,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent = {
+            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_WAYPOINT_PRE_ACTION,
+            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT_FINISHED]    = NAV_STATE_WAYPOINT_FINISHED,
+        }
+    },
+
+    [NAV_STATE_WAYPOINT_FINISHED] = {
+        .persistentId = NAV_PERSISTENT_ID_WAYPOINT_FINISHED,
+        //.onEntry = navOnEnteringState_NAV_STATE_WAYPOINT_FINISHED,
+        .timeoutMs = 10,
+        .stateFlags = NAV_CTL_ALT | NAV_CTL_POS | NAV_CTL_YAW | NAV_REQUIRE_ANGLE | NAV_REQUIRE_MAGHOLD | NAV_REQUIRE_THRTILT | NAV_AUTO_WP | NAV_AUTO_WP_DONE,
+        //.mapToFlightModes = NAV_WP_MODE | NAV_ALTHOLD_MODE,
+        .mwState = MW_NAV_STATE_WP_ENROUTE,
+        .mwError = MW_NAV_ERROR_FINISH,
+        .onEvent = {
+            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_WAYPOINT_FINISHED,   // re-process state
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D]           = NAV_STATE_POSHOLD_3D_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING]    = NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD]          = NAV_STATE_COURSE_HOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_CRUISE]               = NAV_STATE_CRUISE_INITIALIZE,
+        }
+    },
+
+    /** EMERGENCY LANDING ************************************************/
+    [NAV_STATE_EMERGENCY_LANDING_INITIALIZE] = {
+        .persistentId = NAV_PERSISTENT_ID_EMERGENCY_LANDING_INITIALIZE,
+        //.onEntry = navOnEnteringState_NAV_STATE_EMERGENCY_LANDING_INITIALIZE,
+        .timeoutMs = 0,
+        .stateFlags = NAV_CTL_EMERG | NAV_REQUIRE_ANGLE,
+        .mapToFlightModes = 0,
+        .mwState = MW_NAV_STATE_EMERGENCY_LANDING,
+        .mwError = MW_NAV_ERROR_LANDING,
+        .onEvent = {
+            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_EMERGENCY_LANDING_IN_PROGRESS,
+            [NAV_FSM_EVENT_ERROR]                          = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT]             = NAV_STATE_WAYPOINT_INITIALIZE,
+        }
+    },
+
+    [NAV_STATE_EMERGENCY_LANDING_IN_PROGRESS] = {
+        .persistentId = NAV_PERSISTENT_ID_EMERGENCY_LANDING_IN_PROGRESS,
+        //.onEntry = navOnEnteringState_NAV_STATE_EMERGENCY_LANDING_IN_PROGRESS,
+        .timeoutMs = 10,
+        .stateFlags = NAV_CTL_EMERG | NAV_REQUIRE_ANGLE,
+        .mapToFlightModes = 0,
+        .mwState = MW_NAV_STATE_EMERGENCY_LANDING,
+        .mwError = MW_NAV_ERROR_LANDING,
+        .onEvent = {
+            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_EMERGENCY_LANDING_IN_PROGRESS,    // re-process the state
+            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_EMERGENCY_LANDING_FINISHED,
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_ALTHOLD]              = NAV_STATE_ALTHOLD_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_RTH]                  = NAV_STATE_RTH_INITIALIZE,
+            [NAV_FSM_EVENT_SWITCH_TO_WAYPOINT]             = NAV_STATE_WAYPOINT_INITIALIZE,
+        }
+    },
+
+    [NAV_STATE_EMERGENCY_LANDING_FINISHED] = {
+        .persistentId = NAV_PERSISTENT_ID_EMERGENCY_LANDING_FINISHED,
+        //.onEntry = navOnEnteringState_NAV_STATE_EMERGENCY_LANDING_FINISHED,
+        .timeoutMs = 10,
+        .stateFlags = NAV_CTL_EMERG | NAV_REQUIRE_ANGLE,
+        .mapToFlightModes = 0,
+        .mwState = MW_NAV_STATE_LANDED,
+        .mwError = MW_NAV_ERROR_LANDING,
+        .onEvent = {
+            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_EMERGENCY_LANDING_FINISHED,
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+        }
+    },
+
+    [NAV_STATE_LAUNCH_INITIALIZE] = {
+        .persistentId = NAV_PERSISTENT_ID_LAUNCH_INITIALIZE,
+        //.onEntry = navOnEnteringState_NAV_STATE_LAUNCH_INITIALIZE,
+        .timeoutMs = 0,
+        .stateFlags = NAV_REQUIRE_ANGLE,
+        //.mapToFlightModes = NAV_LAUNCH_MODE,
+        .mwState = MW_NAV_STATE_NONE,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent = {
+            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_LAUNCH_WAIT,
+            [NAV_FSM_EVENT_ERROR]                          = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+        }
+    },
+
+    [NAV_STATE_LAUNCH_WAIT] = {
+        .persistentId = NAV_PERSISTENT_ID_LAUNCH_WAIT,
+        //.onEntry = navOnEnteringState_NAV_STATE_LAUNCH_WAIT,
+        .timeoutMs = 10,
+        .stateFlags = NAV_CTL_LAUNCH | NAV_REQUIRE_ANGLE,
+        //.mapToFlightModes = NAV_LAUNCH_MODE,
+        .mwState = MW_NAV_STATE_NONE,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent = {
+            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_LAUNCH_WAIT,    // re-process the state
+            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_LAUNCH_IN_PROGRESS,
+            [NAV_FSM_EVENT_ERROR]                          = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+        }
+    },
+
+    [NAV_STATE_LAUNCH_IN_PROGRESS] = {
+        .persistentId = NAV_PERSISTENT_ID_LAUNCH_IN_PROGRESS,
+        //.onEntry = navOnEnteringState_NAV_STATE_LAUNCH_IN_PROGRESS,
+        .timeoutMs = 10,
+        .stateFlags = NAV_CTL_LAUNCH | NAV_REQUIRE_ANGLE,
+        //.mapToFlightModes = NAV_LAUNCH_MODE,
+        .mwState = MW_NAV_STATE_NONE,
+        .mwError = MW_NAV_ERROR_NONE,
+        .onEvent = {
+            [NAV_FSM_EVENT_TIMEOUT]                        = NAV_STATE_LAUNCH_IN_PROGRESS,    // re-process the state
+            [NAV_FSM_EVENT_SUCCESS]                        = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_ERROR]                          = NAV_STATE_IDLE,
+            [NAV_FSM_EVENT_SWITCH_TO_IDLE]                 = NAV_STATE_IDLE,
+        }
+    },
+};
+
+static navigationFSMStateFlags_t navGetStateFlags(navigationFSMState_t state)
+{
+    return navFSM[state].stateFlags;
+}
+
+static flightModeFlags_e navGetMappedFlightModes(navigationFSMState_t state)
+{
+    return navFSM[state].mapToFlightModes;
+}
+
+navigationFSMStateFlags_t navGetCurrentStateFlags(void)
+{
+    return navGetStateFlags(posControl.navState);
+}
+
 //static bool navTerrainFollowingRequested(void)
 //{
 //    // Terrain following not supported on FIXED WING aircraft yet
@@ -2913,42 +2911,27 @@ void updateClimbRateToAltitudeController(float desiredClimbRate, climbRateToAlti
     }
 }
 
-//static void resetAltitudeController(bool useTerrainFollowing)
-//{
-//    // Set terrain following flag
-//    posControl.flags.isTerrainFollowEnabled = useTerrainFollowing;
-//
-//    if (STATE(FIXED_WING_LEGACY)) {
-//        resetFixedWingAltitudeController();
-//    }
-//    else {
-//        resetMulticopterAltitudeController();
-//    }
-//}
-//
-//static void setupAltitudeController(void)
-//{
-//    if (STATE(FIXED_WING_LEGACY)) {
-//        setupFixedWingAltitudeController();
-//    }
-//    else {
-//        setupMulticopterAltitudeController();
-//    }
-//}
-//
-//static bool adjustAltitudeFromRCInput(void)
-//{
-//    if (STATE(FIXED_WING_LEGACY)) {
-//        return adjustFixedWingAltitudeFromRCInput();
-//    }
-//    else {
-//        return adjustMulticopterAltitudeFromRCInput();
-//    }
-//}
-//
-///*-----------------------------------------------------------
-// * Jump Counter support functions
-// *-----------------------------------------------------------*/
+void resetAltitudeController(bool useTerrainFollowing)
+{
+    // Set terrain following flag
+    posControl.flags.isTerrainFollowEnabled = useTerrainFollowing;
+
+    resetMulticopterAltitudeController();
+}
+
+void setupAltitudeController(void)
+{
+  setupMulticopterAltitudeController();
+}
+
+static bool adjustAltitudeFromRCInput(void)
+{
+  return adjustMulticopterAltitudeFromRCInput();
+}
+
+/*-----------------------------------------------------------
+ * Jump Counter support functions
+ *-----------------------------------------------------------*/
 //static void setupJumpCounters(void)
 //{
 //    for (uint8_t wp = posControl.startWpIndex; wp < posControl.waypointCount + posControl.startWpIndex; wp++) {
@@ -2997,21 +2980,16 @@ void updateClimbRateToAltitudeController(float desiredClimbRate, climbRateToAlti
 //        return adjustMulticopterHeadingFromRCInput();
 //    }
 //}
-//
-///*-----------------------------------------------------------
-// * XY Position controller
-// *-----------------------------------------------------------*/
-//static void resetPositionController(void)
-//{
-//    if (STATE(FIXED_WING_LEGACY)) {
-//        resetFixedWingPositionController();
-//    }
-//    else {
-//        resetMulticopterPositionController();
-//        resetMulticopterBrakingMode();
-//    }
-//}
-//
+
+/*-----------------------------------------------------------
+ * XY Position controller
+ *-----------------------------------------------------------*/
+void resetPositionController(void)
+{
+    resetMulticopterPositionController();
+    //resetMulticopterBrakingMode();
+}
+
 //static bool adjustPositionFromRCInput(void)
 //{
 //    bool retValue;
@@ -3460,21 +3438,21 @@ void updateClimbRateToAltitudeController(float desiredClimbRate, climbRateToAlti
 //
 //    return FLIGHT_MODE(NAV_WP_MODE) || (posControl.flags.rthTrackbackActive && posControl.activeRthTBPointIndex != posControl.rthTBLastSavedIndex);
 //}
-//
-///*-----------------------------------------------------------
-// * Process adjustments to alt, pos and yaw controllers
-// *-----------------------------------------------------------*/
-//static void processNavigationRCAdjustments(void)
-//{
-//    /* Process pilot's RC input. Disable all pilot's input when in FAILSAFE_MODE */
-//    navigationFSMStateFlags_t navStateFlags = navGetStateFlags(posControl.navState);
-//    if ((navStateFlags & NAV_RC_ALT) && (!FLIGHT_MODE(FAILSAFE_MODE))) {
-//        posControl.flags.isAdjustingAltitude = adjustAltitudeFromRCInput();
-//    }
-//    else {
-//        posControl.flags.isAdjustingAltitude = false;
-//    }
-//
+
+/*-----------------------------------------------------------
+ * Process adjustments to alt, pos and yaw controllers
+ *-----------------------------------------------------------*/
+static void processNavigationRCAdjustments(void)
+{
+    /* Process pilot's RC input. Disable all pilot's input when in FAILSAFE_MODE */
+    //navigationFSMStateFlags_t navStateFlags = navGetStateFlags(posControl.navState);
+    if ((FLIGHT_MODE(RANGEFINDER_MODE)) && (!FLIGHT_MODE(FAILSAFE_MODE))) {
+        posControl.flags.isAdjustingAltitude = adjustAltitudeFromRCInput();
+    }
+    else {
+        posControl.flags.isAdjustingAltitude = false;
+    }
+
 //    if (navStateFlags & NAV_RC_POS) {
 //        posControl.flags.isAdjustingPosition = adjustPositionFromRCInput() && !FLIGHT_MODE(FAILSAFE_MODE);
 //        if (STATE(MULTIROTOR) && FLIGHT_MODE(FAILSAFE_MODE)) {
@@ -3491,80 +3469,73 @@ void updateClimbRateToAltitudeController(float desiredClimbRate, climbRateToAlti
 //    else {
 //        posControl.flags.isAdjustingHeading = false;
 //    }
-//}
-//
-///*-----------------------------------------------------------
-// * A main function to call position controllers at loop rate
-// *-----------------------------------------------------------*/
-//void applyWaypointNavigationAndAltitudeHold(void)
-//{
-//    const timeUs_t currentTimeUs = micros();
-//
-//    //Updata blackbox data
-//    navFlags = 0;
-//    if (posControl.flags.estAltStatus == EST_TRUSTED)       navFlags |= (1 << 0);
-//    if (posControl.flags.estAglStatus == EST_TRUSTED)       navFlags |= (1 << 1);
-//    if (posControl.flags.estPosStatus == EST_TRUSTED)       navFlags |= (1 << 2);
-//    if (posControl.flags.isTerrainFollowEnabled)            navFlags |= (1 << 3);
-//#if defined(NAV_GPS_GLITCH_DETECTION)
-//    if (isGPSGlitchDetected())                              navFlags |= (1 << 4);
-//#endif
-//    if (posControl.flags.estHeadingStatus == EST_TRUSTED)   navFlags |= (1 << 5);
-//
-//    // Reset all navigation requests - NAV controllers will set them if necessary
-//    DISABLE_STATE(NAV_MOTOR_STOP_OR_IDLE);
-//
-//    // No navigation when disarmed
-//    if (!ARMING_FLAG(ARMED)) {
-//        // If we are disarmed, abort forced RTH or Emergency Landing
-//        posControl.flags.forcedRTHActivated = false;
-//        posControl.flags.forcedEmergLandingActivated = false;
-//        posControl.flags.manualEmergLandActive = false;
-//        //  ensure WP missions always restart from first waypoint after disarm
-//        posControl.activeWaypointIndex = posControl.startWpIndex;
-//        // Reset RTH trackback
-//        posControl.activeRthTBPointIndex = -1;
-//        posControl.flags.rthTrackbackActive = false;
-//        posControl.rthTBWrapAroundCounter = -1;
-//
-//        return;
-//    }
-//
-//    /* Reset flags */
-//    posControl.flags.horizontalPositionDataConsumed = false;
-//    posControl.flags.verticalPositionDataConsumed = false;
-//
-//    /* Process controllers */
-//    navigationFSMStateFlags_t navStateFlags = navGetStateFlags(posControl.navState);
-//    if (STATE(ROVER) || STATE(BOAT)) {
-//        applyRoverBoatNavigationController(navStateFlags, currentTimeUs);
-//    } else if (STATE(FIXED_WING_LEGACY)) {
-//        applyFixedWingNavigationController(navStateFlags, currentTimeUs);
-//    }
-//    else {
-//        applyMulticopterNavigationController(navStateFlags, currentTimeUs);
-//    }
-//
-//    /* Consume position data */
-//    if (posControl.flags.horizontalPositionDataConsumed)
-//        posControl.flags.horizontalPositionDataNew = false;
-//
-//    if (posControl.flags.verticalPositionDataConsumed)
-//        posControl.flags.verticalPositionDataNew = false;
-//
-//    //Update blackbox data
-//    if (posControl.flags.isAdjustingPosition)       navFlags |= (1 << 6);
-//    if (posControl.flags.isAdjustingAltitude)       navFlags |= (1 << 7);
-//    if (posControl.flags.isAdjustingHeading)        navFlags |= (1 << 8);
-//
-//    navTargetPosition[X] = lrintf(posControl.desiredState.pos.x);
-//    navTargetPosition[Y] = lrintf(posControl.desiredState.pos.y);
-//    navTargetPosition[Z] = lrintf(posControl.desiredState.pos.z);
-//}
-//
-///*-----------------------------------------------------------
-// * Set CF's FLIGHT_MODE from current NAV_MODE
-// *-----------------------------------------------------------*/
+}
+
+/*-----------------------------------------------------------
+ * A main function to call position controllers at loop rate
+ *-----------------------------------------------------------*/
+void applyWaypointNavigationAndAltitudeHold(void)
+{
+    const timeUs_t currentTimeUs = micros();
+
+    //Updata blackbox data
+    navFlags = 0;
+    if (posControl.flags.estAltStatus == EST_TRUSTED)       navFlags |= (1 << 0);
+    if (posControl.flags.estAglStatus == EST_TRUSTED)       navFlags |= (1 << 1);
+    if (posControl.flags.estPosStatus == EST_TRUSTED)       navFlags |= (1 << 2);
+    if (posControl.flags.isTerrainFollowEnabled)            navFlags |= (1 << 3);
+#if defined(NAV_GPS_GLITCH_DETECTION)
+    if (isGPSGlitchDetected())                              navFlags |= (1 << 4);
+#endif
+    if (posControl.flags.estHeadingStatus == EST_TRUSTED)   navFlags |= (1 << 5);
+
+    // Reset all navigation requests - NAV controllers will set them if necessary
+    //DISABLE_STATE(NAV_MOTOR_STOP_OR_IDLE);
+
+    // No navigation when disarmed
+    if (!ARMING_FLAG(ARMED)) {
+        // If we are disarmed, abort forced RTH or Emergency Landing
+        posControl.flags.forcedRTHActivated = false;
+        posControl.flags.forcedEmergLandingActivated = false;
+        posControl.flags.manualEmergLandActive = false;
+        //  ensure WP missions always restart from first waypoint after disarm
+        posControl.activeWaypointIndex = posControl.startWpIndex;
+        // Reset RTH trackback
+        posControl.activeRthTBPointIndex = -1;
+        posControl.flags.rthTrackbackActive = false;
+        posControl.rthTBWrapAroundCounter = -1;
+
+        return;
+    }
+
+    /* Reset flags */
+    posControl.flags.horizontalPositionDataConsumed = false;
+    posControl.flags.verticalPositionDataConsumed = false;
+
+    /* Process controllers */
+    navigationFSMStateFlags_t navStateFlags = navGetStateFlags(posControl.navState);
+    applyMulticopterNavigationController(navStateFlags, currentTimeUs);
+
+    /* Consume position data */
+    if (posControl.flags.horizontalPositionDataConsumed)
+        posControl.flags.horizontalPositionDataNew = false;
+
+    if (posControl.flags.verticalPositionDataConsumed)
+        posControl.flags.verticalPositionDataNew = false;
+
+    //Update blackbox data
+    if (posControl.flags.isAdjustingPosition)       navFlags |= (1 << 6);
+    if (posControl.flags.isAdjustingAltitude)       navFlags |= (1 << 7);
+    if (posControl.flags.isAdjustingHeading)        navFlags |= (1 << 8);
+
+    navTargetPosition[X] = lrintf(posControl.desiredState.pos.x);
+    navTargetPosition[Y] = lrintf(posControl.desiredState.pos.y);
+    navTargetPosition[Z] = lrintf(posControl.desiredState.pos.z);
+}
+
+/*-----------------------------------------------------------
+ * Set CF's FLIGHT_MODE from current NAV_MODE
+ *-----------------------------------------------------------*/
 //void switchNavigationFlightModes(void)
 //{
 //    const flightModeFlags_e enabledNavFlightModes = navGetMappedFlightModes(posControl.navState);
@@ -3572,10 +3543,10 @@ void updateClimbRateToAltitudeController(float desiredClimbRate, climbRateToAlti
 //    DISABLE_FLIGHT_MODE(disabledFlightModes);
 //    ENABLE_FLIGHT_MODE(enabledNavFlightModes);
 //}
-//
-///*-----------------------------------------------------------
-// * desired NAV_MODE from combination of FLIGHT_MODE flags
-// *-----------------------------------------------------------*/
+
+/*-----------------------------------------------------------
+ * desired NAV_MODE from combination of FLIGHT_MODE flags
+ *-----------------------------------------------------------*/
 //static bool canActivateAltHoldMode(void)
 //{
 //    return (posControl.flags.estAltStatus >= EST_USABLE);
@@ -4022,57 +3993,57 @@ void updateClimbRateToAltitudeController(float desiredClimbRate, climbRateToAlti
 //    posControl.wpMissionPlannerStatus = posControl.waypointCount == NAV_MAX_WAYPOINTS ? WP_PLAN_FULL : WP_PLAN_OK;
 //    boxWPModeIsReset = false;
 //}
-//
-///**
-// * Process NAV mode transition and WP/RTH state machine
-// *  Update rate: RX (data driven or 50Hz)
-// */
-//void updateWaypointsAndNavigationMode(void)
-//{
-//    /* Initiate home position update */
-//    updateHomePosition();
-//
-//    /* Update flight statistics */
-//    updateNavigationFlightStatistics();
-//
-//    /* Update NAV ready status */
-//    updateReadyStatus();
-//
-//    // Update flight behaviour modifiers
-//    updateFlightBehaviorModifiers();
-//
-//    // Process switch to a different navigation mode (if needed)
-//    navProcessFSMEvents(selectNavEventFromBoxModeInput());
-//
-//    // Process pilot's RC input to adjust behaviour
-//    processNavigationRCAdjustments();
-//
-//    // Map navMode back to enabled flight modes
-//    switchNavigationFlightModes();
-//
-//    // Update WP mission planner
-//    updateWpMissionPlanner();
-//
-//    // Update RTH trackback
-//    updateRthTrackback(false);
-//
-//    //Update Blackbox data
-//    navCurrentState = (int16_t)posControl.navPersistentId;
-//}
-//
-///*-----------------------------------------------------------
-// * NAV main control functions
-// *-----------------------------------------------------------*/
-//void navigationUsePIDs(void)
-//{
-//    /** Multicopter PIDs */
-//    // Brake time parameter
-//    posControl.posDecelerationTime = (float)navConfig()->mc.posDecelerationTime / 100.0f;
-//
-//    // Position controller expo (taret vel expo for MC)
-//    posControl.posResponseExpo = constrainf((float)navConfig()->mc.posResponseExpo / 100.0f, 0.0f, 1.0f);
-//
-//    // Initialize position hold P-controller
+
+/**
+ * Process NAV mode transition and WP/RTH state machine
+ *  Update rate: RX (data driven or 50Hz)
+ */
+void updateWaypointsAndNavigationMode(void)
+{
+    /* Initiate home position update */
+    //updateHomePosition();
+
+    /* Update flight statistics */
+    //updateNavigationFlightStatistics();
+
+    /* Update NAV ready status */
+    //updateReadyStatus();
+
+    // Update flight behaviour modifiers
+    //updateFlightBehaviorModifiers();
+
+    // Process switch to a different navigation mode (if needed)
+    //navProcessFSMEvents(selectNavEventFromBoxModeInput());
+
+    // Process pilot's RC input to adjust behaviour
+    processNavigationRCAdjustments();
+
+    // Map navMode back to enabled flight modes
+    //switchNavigationFlightModes();
+
+    // Update WP mission planner
+    //updateWpMissionPlanner();
+
+    // Update RTH trackback
+    //updateRthTrackback(false);
+
+    //Update Blackbox data
+    //navCurrentState = (int16_t)posControl.navPersistentId;
+}
+
+/*-----------------------------------------------------------
+ * NAV main control functions
+ *-----------------------------------------------------------*/
+void navigationUsePIDs(void)
+{
+    /** Multicopter PIDs */
+    // Brake time parameter
+    //posControl.posDecelerationTime = (float)navConfig()->mc.posDecelerationTime / 100.0f;
+
+    // Position controller expo (taret vel expo for MC)
+    //posControl.posResponseExpo = constrainf((float)navConfig()->mc.posResponseExpo / 100.0f, 0.0f, 1.0f);
+
+    // Initialize position hold P-controller
 //    for (int axis = 0; axis < 2; axis++) {
 //        navPidInit(
 //            &posControl.pids.pos[axis],
@@ -4099,41 +4070,41 @@ void updateClimbRateToAltitudeController(float desiredClimbRate, climbRateToAlti
 //    multicopterPosXyCoefficients.dTermAttenuation = pidProfile()->navVelXyDtermAttenuation / 100.0f;
 //    multicopterPosXyCoefficients.dTermAttenuationStart = pidProfile()->navVelXyDtermAttenuationStart / 100.0f;
 //    multicopterPosXyCoefficients.dTermAttenuationEnd = pidProfile()->navVelXyDtermAttenuationEnd / 100.0f;
-//
-//#ifdef USE_MR_BRAKING_MODE
-//    multicopterPosXyCoefficients.breakingBoostFactor = (float) navConfig()->mc.braking_boost_factor / 100.0f;
-//#endif
-//
-//    // Initialize altitude hold PID-controllers (pos_z, vel_z, acc_z
-//    navPidInit(
-//        &posControl.pids.pos[Z],
-//        (float)pidProfile()->bank_mc.pid[PID_POS_Z].P / 100.0f,
-//        0.0f,
-//        0.0f,
-//        0.0f,
-//        NAV_DTERM_CUT_HZ,
-//        0.0f
-//    );
-//
-//    navPidInit(&posControl.pids.vel[Z], (float)pidProfile()->bank_mc.pid[PID_VEL_Z].P / 66.7f,
-//                                        (float)pidProfile()->bank_mc.pid[PID_VEL_Z].I / 20.0f,
-//                                        (float)pidProfile()->bank_mc.pid[PID_VEL_Z].D / 100.0f,
-//                                        0.0f,
-//                                        NAV_VEL_Z_DERIVATIVE_CUT_HZ,
-//                                        NAV_VEL_Z_ERROR_CUT_HZ
-//    );
-//
-//    // Initialize surface tracking PID
-//    navPidInit(&posControl.pids.surface, 2.0f,
-//                                         0.0f,
-//                                         0.0f,
-//                                         0.0f,
-//                                         NAV_DTERM_CUT_HZ,
-//                                         0.0f
-//    );
-//
-//    /** Airplane PIDs */
-//    // Initialize fixed wing PID controllers
+
+#ifdef USE_MR_BRAKING_MODE
+    multicopterPosXyCoefficients.breakingBoostFactor = (float) navConfig()->mc.braking_boost_factor / 100.0f;
+#endif
+
+    // Initialize altitude hold PID-controllers (pos_z, vel_z, acc_z
+    navPidInit(
+        &posControl.pids.pos[Z],
+        _ALT.out.kp,
+        0.0f,
+        0.0f,
+        0.0f,
+        NAV_DTERM_CUT_HZ,
+        0.0f
+    );
+
+    navPidInit(&posControl.pids.vel[Z], _ALT.in.kp,
+                                        _ALT.in.ki,
+                                        _ALT.in.kd,
+                                        0.0f,
+                                        NAV_VEL_Z_DERIVATIVE_CUT_HZ,
+                                        NAV_VEL_Z_ERROR_CUT_HZ
+    );
+
+    // Initialize surface tracking PID
+    navPidInit(&posControl.pids.surface, 2.0f,
+                                         0.0f,
+                                         0.0f,
+                                         0.0f,
+                                         NAV_DTERM_CUT_HZ,
+                                         0.0f
+    );
+
+    /** Airplane PIDs */
+    // Initialize fixed wing PID controllers
 //    navPidInit(&posControl.pids.fw_nav, (float)pidProfile()->bank_fw.pid[PID_POS_XY].P / 100.0f,
 //                                        (float)pidProfile()->bank_fw.pid[PID_POS_XY].I / 100.0f,
 //                                        (float)pidProfile()->bank_fw.pid[PID_POS_XY].D / 100.0f,
@@ -4157,7 +4128,7 @@ void updateClimbRateToAltitudeController(float desiredClimbRate, climbRateToAlti
 //                                        2.0f,
 //                                        0.0f
 //    );
-//}
+}
 
 void navigationInit(void)
 {
@@ -4191,7 +4162,7 @@ void navigationInit(void)
     posControl.totalTripDistance = 0.0f;
 
     /* Use system config */
-//    navigationUsePIDs();
+    navigationUsePIDs();
 
 //    if (
 //        mixerConfig()->platformType == PLATFORM_BOAT ||

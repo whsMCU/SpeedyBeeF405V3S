@@ -52,6 +52,7 @@ FAST_DATA_ZERO_INIT DoublePID _ROLL;
 FAST_DATA_ZERO_INIT DoublePID _PITCH;
 
 FAST_DATA_ZERO_INIT DoublePID _ALT;
+FAST_DATA_ZERO_INIT DoublePID _POS;
 
 FAST_DATA_ZERO_INIT PID _YAW_Heading;
 FAST_DATA_ZERO_INIT PID _YAW_Rate;
@@ -60,8 +61,6 @@ FAST_DATA_ZERO_INIT PID_Test _PID_Test;
 
 static FAST_DATA_ZERO_INIT float throttle = 0;
 static FAST_DATA_ZERO_INIT int throttleAngleCorrection;
-
-int16_t altHoldThrottleRCZero = 1500;
 
 #ifdef USE_RANGEFINDER
 
@@ -83,7 +82,7 @@ static inline float apply_deadband(float v, float db)
 #define ALT_DERIV_CLAMP_ENABLE 1        // 1: clamp derivative spikes to 0 as original logic
 
 #define alt_hold_deadband     50
-#define maxthrottle           2000
+#define maxthrottle           1850
 #define idlethrottle          1050
 
 #define THROTTLE_SLEW_US_PER_S 20000.0f   // 초당 20000us → 1ms당 ≈20us
@@ -160,10 +159,17 @@ void pidInit(void)
   rangefinder.althold.pre_Height = 0;
   rangefinder.althold.dz_filtered = 0.0f;
 
-  opflow.poshold.KP = 1.0f;
-  opflow.poshold.KI = 0.1f;
-  opflow.poshold.KD = 0.15f;
-  opflow.poshold.integral_windup = 5;
+  _POS.in.pidName = "POS_IN";
+  _POS.in.kp = 1;
+  _POS.in.ki = 0;
+  _POS.in.kd = 0;
+  _POS.in.integral_windup = 200;
+
+  _POS.out.pidName = "POS_OUT";
+  _POS.out.kp = 1.5f;
+  _POS.out.ki = 0.1f;
+  _POS.out.kd = 0.2f;
+  _POS.out.integral_windup = 200;
 
   _PID_Test.pid_test_flag = 0;
   _PID_Test.pid_test_throttle = 0;
@@ -254,9 +260,11 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 #endif
 
   if (isRXDataNew) {
-      //updateWaypointsAndNavigationMode();
+      updateWaypointsAndNavigationMode();
   }
   isRXDataNew = false;
+
+  applyWaypointNavigationAndAltitudeHold();
 
   #ifdef USE_RANGEFINDER
     updateAltHold_RANGEFINDER(&rangefinder, currentTimeUs);
@@ -399,20 +407,20 @@ void updatePosHold(timeUs_t currentTimeUs)
     poshold->error_Pixel[X] = poshold->target_Pixel[X] - poshold->Pixel[X];
     poshold->error_Pixel[Y] = poshold->target_Pixel[Y] - poshold->Pixel[Y];
 
-    poshold->proportional_Pixel[X] = poshold->KP * poshold->error_Pixel[X];
-    poshold->proportional_Pixel[Y] = poshold->KP * poshold->error_Pixel[Y];
+    poshold->proportional_Pixel[X] = _POS.in.kp * poshold->error_Pixel[X];
+    poshold->proportional_Pixel[Y] = _POS.in.kp * poshold->error_Pixel[Y];
 
-    poshold->derivative_Pixel[X] = poshold->KD * poshold->filteredFlowRate[X];
-    poshold->derivative_Pixel[Y] = poshold->KD * poshold->filteredFlowRate[Y];
+    poshold->derivative_Pixel[X] = _POS.in.kd * poshold->filteredFlowRate[X];
+    poshold->derivative_Pixel[Y] = _POS.in.kd * poshold->filteredFlowRate[Y];
 
-    poshold->integral_Pixel[X] += poshold->KI * poshold->error_Pixel[X] * poshold->dt;
-    poshold->integral_Pixel[Y] += poshold->KI * poshold->error_Pixel[Y] * poshold->dt;
+    poshold->integral_Pixel[X] += _POS.in.ki * poshold->error_Pixel[X] * poshold->dt;
+    poshold->integral_Pixel[Y] += _POS.in.ki * poshold->error_Pixel[Y] * poshold->dt;
 
-    if(poshold->integral_Pixel[X] > poshold->integral_windup) poshold->integral_Pixel[X] = poshold->integral_windup;
-    else if(poshold->integral_Pixel[X] < -poshold->integral_windup) poshold->integral_Pixel[X] = -poshold->integral_windup;
+    if(poshold->integral_Pixel[X] > _POS.in.integral_windup) poshold->integral_Pixel[X] = _POS.in.integral_windup;
+    else if(poshold->integral_Pixel[X] < -_POS.in.integral_windup) poshold->integral_Pixel[X] = -_POS.in.integral_windup;
 
-    if(poshold->integral_Pixel[Y] > poshold->integral_windup) poshold->integral_Pixel[Y] = poshold->integral_windup;
-    else if(poshold->integral_Pixel[Y] < -poshold->integral_windup) poshold->integral_Pixel[Y] = -poshold->integral_windup;
+    if(poshold->integral_Pixel[Y] > _POS.in.integral_windup) poshold->integral_Pixel[Y] = _POS.in.integral_windup;
+    else if(poshold->integral_Pixel[Y] < -_POS.in.integral_windup) poshold->integral_Pixel[Y] = -_POS.in.integral_windup;
 
 
     if(rcData[THROTTLE] < 1030)
@@ -449,7 +457,6 @@ void updatePosHold(timeUs_t currentTimeUs)
 #endif
 
 #ifdef USE_RANGEFINDER
-static sqrt_controller_t alt_hold_sqrt_controller;
 
 void updateAltHold_RANGEFINDER(rangefinder_t *alt_sensor, timeUs_t currentTimeUs)
 {
@@ -494,55 +501,8 @@ void updateAltHold_RANGEFINDER(rangefinder_t *alt_sensor, timeUs_t currentTimeUs
     althold->proportional_Height = 0;
     althold->derivative_Height = 0;
     althold->result = 0;
-
-//    float nav_speed_up = 0.0f;
-//    float nav_speed_down = 0.0f;
-//    float nav_accel_z = 0.0f;
-//
-//    nav_speed_up = navConfig.general.max_manual_speed;
-//    nav_accel_z = navConfig.general.max_manual_speed;
-//    nav_speed_down = navConfig.general.max_manual_climb_rate;
-
-//    sqrtControllerInit(
-//        &alt_hold_sqrt_controller,
-//        posControl.pids.pos[Z].param.kP,
-//        -fabsf(nav_speed_down),
-//        nav_speed_up,
-//        nav_accel_z
-//    );
     return;
   }
-
-  // 스틱 입력 → 목표 고도 갱신
-  althold->rcThrottleAdjustment = applyDeadbandRescaled(pilot_Throttle - altHoldThrottleRCZero, alt_hold_deadband, -500, 500);
-
-  if (althold->rcThrottleAdjustment) {
-      // set velocity proportional to stick movement
-
-      // Make sure we can satisfy max_manual_climb_rate in both up and down directions
-      if (althold->rcThrottleAdjustment > 0) {
-          // Scaling from altHoldThrottleRCZero to maxthrottle
-        althold->rcClimbRate = althold->rcThrottleAdjustment * navConfig.general.max_manual_climb_rate / (float)(maxthrottle - altHoldThrottleRCZero - alt_hold_deadband);
-      }
-      else {
-          // Scaling from minthrottle to altHoldThrottleRCZero
-        althold->rcClimbRate = althold->rcThrottleAdjustment * navConfig.general.max_manual_climb_rate / (float)(altHoldThrottleRCZero - idlethrottle - alt_hold_deadband);
-      }
-      updateClimbRateToAltitudeController(althold->rcClimbRate, ROC_TO_ALT_NORMAL);
-  }
-  else {
-      // Adjusting finished - reset desired position to stay exactly where pilot released the stick
-    updateClimbRateToAltitudeController(0, ROC_TO_ALT_RESET);
-    althold->rcClimbRate = 0;
-  }
-
-  // Execute actual altitude controllers
-//  float targetVel = sqrtControllerApply(
-//      &alt_hold_sqrt_controller,
-//      posControl.desiredState.pos.z,
-//      navGetCurrentActualPositionAndVelocity()->pos.z,
-//      althold->dt
-//  );
 
   althold->target_Height += althold->rcClimbRate * althold->dt;
 
@@ -552,10 +512,10 @@ void updateAltHold_RANGEFINDER(rangefinder_t *alt_sensor, timeUs_t currentTimeUs
   althold->error_Height = error;
 
   // P항
-  althold->proportional_Height = althold->KP * althold->error_Height;
+  althold->proportional_Height = _ALT.in.kp * althold->error_Height;
 
   // I항 (조건부 적분, anti-windup)
-  althold->integral_Height += althold->KI * (althold->error_Height * althold->dt);
+  althold->integral_Height += _ALT.in.ki * (althold->error_Height * althold->dt);
   if(althold->integral_Height > althold->integral_windup) althold->integral_Height = althold->integral_windup;
   else if(althold->integral_Height < -althold->integral_windup) althold->integral_Height = -althold->integral_windup;
 
@@ -573,7 +533,7 @@ void updateAltHold_RANGEFINDER(rangefinder_t *alt_sensor, timeUs_t currentTimeUs
       derivative = 0.0f; // reject spikes as in original code
   }
 #endif
-  althold->derivative_Height = althold->KD * derivative;
+  althold->derivative_Height = _ALT.in.kd * derivative;
 
   // PID 합산
   float outputBeforeSaturation  = althold->proportional_Height + althold->integral_Height + althold->derivative_Height;
