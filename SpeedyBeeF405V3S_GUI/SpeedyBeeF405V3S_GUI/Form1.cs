@@ -274,13 +274,13 @@ namespace SpeedyBeeF405V3S_GUI
                 float_data_pid[16] = float.Parse(tb_Y_R_I.Text);
                 float_data_pid[17] = float.Parse(tb_Y_R_D.Text);
 
-                float_data_pid[18] = float.Parse(tb_ALT_P.Text);
-                float_data_pid[19] = float.Parse(tb_ALT_I.Text);
-                float_data_pid[20] = float.Parse(tb_ALT_D.Text);
+                float_data_pid[18] = float.Parse(tb_ALT_I_P.Text);
+                float_data_pid[19] = float.Parse(tb_ALT_I_I.Text);
+                float_data_pid[20] = float.Parse(tb_ALT_I_D.Text);
 
-                float_data_pid[21] = float.Parse(tb_ALT_Range_P.Text);
-                float_data_pid[22] = float.Parse(tb_ALT_Range_I.Text);
-                float_data_pid[23] = float.Parse(tb_ALT_Range_D.Text);
+                float_data_pid[21] = float.Parse(tb_ALT_O_P.Text);
+                float_data_pid[22] = float.Parse(tb_ALT_O_I.Text);
+                float_data_pid[23] = float.Parse(tb_ALT_O_D.Text);
 
                 float_data_pid[24] = float.Parse(tb_POS_Opflow_P.Text);
                 float_data_pid[25] = float.Parse(tb_POS_Opflow_I.Text);
@@ -822,42 +822,42 @@ namespace SpeedyBeeF405V3S_GUI
                     pid_buff[70] = tmp[2];
                     pid_buff[71] = tmp[3];
 
-                    float_buff = float.Parse(tb_ALT_P.Text);
+                    float_buff = float.Parse(tb_ALT_I_P.Text);
                     tmp = BitConverter.GetBytes(float_buff);
                     pid_buff[72] = tmp[0];
                     pid_buff[73] = tmp[1];
                     pid_buff[74] = tmp[2];
                     pid_buff[75] = tmp[3];
 
-                    float_buff = float.Parse(tb_ALT_I.Text);
+                    float_buff = float.Parse(tb_ALT_I_I.Text);
                     tmp = BitConverter.GetBytes(float_buff);
                     pid_buff[76] = tmp[0];
                     pid_buff[77] = tmp[1];
                     pid_buff[78] = tmp[2];
                     pid_buff[79] = tmp[3];
 
-                    float_buff = float.Parse(tb_ALT_D.Text);
+                    float_buff = float.Parse(tb_ALT_I_D.Text);
                     tmp = BitConverter.GetBytes(float_buff);
                     pid_buff[80] = tmp[0];
                     pid_buff[81] = tmp[1];
                     pid_buff[82] = tmp[2];
                     pid_buff[83] = tmp[3];
 
-                    float_buff = float.Parse(tb_ALT_Range_P.Text);
+                    float_buff = float.Parse(tb_ALT_O_P.Text);
                     tmp = BitConverter.GetBytes(float_buff);
                     pid_buff[84] = tmp[0];
                     pid_buff[85] = tmp[1];
                     pid_buff[86] = tmp[2];
                     pid_buff[87] = tmp[3];
 
-                    float_buff = float.Parse(tb_ALT_Range_I.Text);
+                    float_buff = float.Parse(tb_ALT_O_I.Text);
                     tmp = BitConverter.GetBytes(float_buff);
                     pid_buff[88] = tmp[0];
                     pid_buff[89] = tmp[1];
                     pid_buff[90] = tmp[2];
                     pid_buff[91] = tmp[3];
 
-                    float_buff = float.Parse(tb_ALT_Range_D.Text);
+                    float_buff = float.Parse(tb_ALT_O_D.Text);
                     tmp = BitConverter.GetBytes(float_buff);
                     pid_buff[92] = tmp[0];
                     pid_buff[93] = tmp[1];
@@ -1442,13 +1442,13 @@ namespace SpeedyBeeF405V3S_GUI
             tb_Y_R_I.Text = tb_FC_Y_R_I.Text;
             tb_Y_R_D.Text = tb_FC_Y_R_D.Text;
 
-            tb_ALT_P.Text = tb_FC_ALT_P.Text;
-            tb_ALT_I.Text = tb_FC_ALT_I.Text;
-            tb_ALT_D.Text = tb_FC_ALT_D.Text;
+            tb_ALT_I_P.Text = tb_FC_ALT_I_P.Text;
+            tb_ALT_I_I.Text = tb_FC_ALT_I_I.Text;
+            tb_ALT_I_D.Text = tb_FC_ALT_I_D.Text;
 
-            tb_ALT_Range_P.Text = tb_FC_ALT_Range_P.Text;
-            tb_ALT_Range_I.Text = tb_FC_ALT_Range_I.Text;
-            tb_ALT_Range_D.Text = tb_FC_ALT_Range_D.Text;
+            tb_ALT_O_P.Text = tb_FC_ALT_O_P.Text;
+            tb_ALT_O_I.Text = tb_FC_ALT_O_I.Text;
+            tb_ALT_O_D.Text = tb_FC_ALT_O_D.Text;
 
             tb_POS_Opflow_P.Text = tb_FC_POS_Opflow_P.Text;
             tb_POS_Opflow_I.Text = tb_FC_POS_Opflow_I.Text;
@@ -2684,13 +2684,13 @@ namespace SpeedyBeeF405V3S_GUI
             tb_FC_Y_R_I.Text = passed_data[16].ToString();
             tb_FC_Y_R_D.Text = passed_data[17].ToString();
 
-            tb_FC_ALT_P.Text = passed_data[18].ToString();
-            tb_FC_ALT_I.Text = passed_data[19].ToString();
-            tb_FC_ALT_D.Text = passed_data[20].ToString();
+            tb_FC_ALT_I_P.Text = passed_data[18].ToString();
+            tb_FC_ALT_I_I.Text = passed_data[19].ToString();
+            tb_FC_ALT_I_D.Text = passed_data[20].ToString();
 
-            tb_FC_ALT_Range_P.Text = passed_data[21].ToString();
-            tb_FC_ALT_Range_I.Text = passed_data[22].ToString();
-            tb_FC_ALT_Range_D.Text = passed_data[23].ToString();
+            tb_FC_ALT_O_P.Text = passed_data[21].ToString();
+            tb_FC_ALT_O_I.Text = passed_data[22].ToString();
+            tb_FC_ALT_O_D.Text = passed_data[23].ToString();
 
             tb_FC_POS_Opflow_P.Text = passed_data[24].ToString();
             tb_FC_POS_Opflow_I.Text = passed_data[25].ToString();

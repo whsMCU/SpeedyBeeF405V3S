@@ -51,10 +51,10 @@
 FAST_DATA_ZERO_INIT DoublePID _ROLL;
 FAST_DATA_ZERO_INIT DoublePID _PITCH;
 
+FAST_DATA_ZERO_INIT DoublePID _ALT;
+
 FAST_DATA_ZERO_INIT PID _YAW_Heading;
 FAST_DATA_ZERO_INIT PID _YAW_Rate;
-
-FAST_DATA_ZERO_INIT PID _ALT;
 
 FAST_DATA_ZERO_INIT PID_Test _PID_Test;
 
@@ -135,25 +135,29 @@ void pidInit(void)
   _YAW_Rate.kd = 0;
   _YAW_Rate.integral_windup = 500;
 
-  _ALT.pidName = "ALT";
-  _ALT.kp = 5;
-  _ALT.ki = 0;
-  _ALT.kd = 0;
-  _ALT.integral_windup = 500;
 
-  rangefinder.althold.KP = 1.0f;
-  rangefinder.althold.KI = 0.3f;
+  _ALT.in.pidName = "ALT_IN";
+  _ALT.in.kp = 1;
+  _ALT.in.ki = 0;
+  _ALT.in.kd = 0;
+  _ALT.in.integral_windup = 200;
+
+  _ALT.out.pidName = "ALT_OUT";
+  _ALT.out.kp = 1.5f;
+  _ALT.out.ki = 0.1f;
+  _ALT.out.kd = 0.2f;
+  _ALT.out.integral_windup = 200;
+
   rangefinder.althold.K_BACK_CALC = 2.0f;
-  rangefinder.althold.KD = 0.4f;
   rangefinder.althold.integral_windup = 200;
 
-  rangefinder.althold.target_Height = rangefinder.calculatedAltitude;
+  rangefinder.althold.target_Height = 0;
   rangefinder.althold.error_Height = 0.0f;
   rangefinder.althold.proportional_Height = 0.0f;
   rangefinder.althold.integral_Height = 0.0f;
   rangefinder.althold.derivative_Height = 0.0f;
   rangefinder.althold.result = 0.0f;
-  rangefinder.althold.pre_Height = rangefinder.calculatedAltitude;
+  rangefinder.althold.pre_Height = 0;
   rangefinder.althold.dz_filtered = 0.0f;
 
   opflow.poshold.KP = 1.0f;
@@ -211,7 +215,8 @@ void Reset_All_PID_Integrator(void)
   _PITCH.in.integral = 0;
   _YAW_Heading.integral = 0;
   _YAW_Rate.integral = 0;
-  _ALT.integral = 0;
+  _ALT.in.integral = 0;
+  _ALT.out.integral = 0;
 }
 
 float yaw_heading_reference;
@@ -247,6 +252,11 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     GpsNav.GPS_angle[PITCH] = 0;
   }
 #endif
+
+  if (isRXDataNew) {
+      //updateWaypointsAndNavigationMode();
+  }
+  isRXDataNew = false;
 
   #ifdef USE_RANGEFINDER
     updateAltHold_RANGEFINDER(&rangefinder, currentTimeUs);
@@ -354,54 +364,6 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
         updateMagHold();
     }
 #endif
-}
-
-void updateAltHold(timeUs_t currentTimeUs)
-{
-  static timeUs_t previousUpdateTimeUs;
-  float dT = (float)US2S(currentTimeUs - previousUpdateTimeUs);
-  //debug[0] = currentTimeUs - previousUpdateTimeUs;
-  previousUpdateTimeUs = currentTimeUs;
-
-  float targetVel = constrain(AltHold - getEstimatedAltitudeCm(), -100, 100);
-  PID_Calculation(&_ALT, targetVel, (float)getEstimatedVario(), 0, dT);
-  _ALT.result = constrain(_ALT.result, -200, 200);
-
-  if(FLIGHT_MODE(BARO_MODE))
-  {
-    static uint8_t isAltHoldChanged = 0;
-    #if defined(ALTHOLD_FAST_THROTTLE_CHANGE)
-      if (abs(rcCommand[THROTTLE]-initialThrottleHold) > ALT_HOLD_THROTTLE_NEUTRAL_ZONE) {
-       //errorAltitudeI = 0;
-        isAltHoldChanged = 1;
-        rcCommand[THROTTLE] += (rcCommand[THROTTLE] > initialThrottleHold) ? -ALT_HOLD_THROTTLE_NEUTRAL_ZONE : ALT_HOLD_THROTTLE_NEUTRAL_ZONE;
-       // initialThrottleHold += (rcCommand[THROTTLE] > initialThrottleHold) ? -ALT_HOLD_THROTTLE_NEUTRAL_ZONE : ALT_HOLD_THROTTLE_NEUTRAL_ZONE;; //++hex nano
-      } else {
-        if (isAltHoldChanged) {
-          AltHold = getEstimatedAltitudeCm();
-          isAltHoldChanged = 0;
-        }
-        rcCommand[THROTTLE] = initialThrottleHold + _ALT.result;
-      }
-    #else
-      static int16_t AltHoldCorr = 0;
-      if (abs(rcCommand[THROTTLE]-initialThrottleHold)>ALT_HOLD_THROTTLE_NEUTRAL_ZONE) {
-        // Slowly increase/decrease AltHold proportional to stick movement ( +100 throttle gives ~ +50 cm in 1 second with cycle time about 3-4ms)
-        AltHoldCorr+= rcCommand[THROTTLE] - initialThrottleHold;
-        if(abs(AltHoldCorr) > 500) {
-          AltHold += AltHoldCorr/500;
-          AltHoldCorr %= 500;
-        }
-        //errorAltitudeI = 0;
-        isAltHoldChanged = 1;
-      } else if (isAltHoldChanged) {
-        AltHold = getEstimatedAltitudeCm();
-        isAltHoldChanged = 0;
-      }
-      rcCommand[THROTTLE] = initialThrottleHold + _ALT.result;
-    #endif
-  }
-
 }
 
 #ifdef USE_OPFLOW

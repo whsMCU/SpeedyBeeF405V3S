@@ -501,7 +501,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
 
           sbufWriteU32(dst, initialThrottleHold);
 
-          sbufWriteU32(dst, _ALT.result);
+          sbufWriteU32(dst, _ALT.out.result);
 
           sbufWriteU32(dst, getAmperage()); // send amperage in 0.01 A steps
 
@@ -1343,13 +1343,13 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         sbufWriteU32(dst, (int32_t)(_YAW_Rate.ki * 10.0f));
         sbufWriteU32(dst, (int32_t)(_YAW_Rate.kd * 10.0f));
 
-        sbufWriteU32(dst, (int32_t)(_ALT.kp * 10.0f));
-        sbufWriteU32(dst, (int32_t)(_ALT.ki * 10.0f));
-        sbufWriteU32(dst, (int32_t)(_ALT.kd * 10.0f));
+        sbufWriteU32(dst, (int32_t)(_ALT.in.kp * 10.0f));
+        sbufWriteU32(dst, (int32_t)(_ALT.in.ki * 10.0f));
+        sbufWriteU32(dst, (int32_t)(_ALT.in.kd * 10.0f));
 
-        sbufWriteU32(dst, (int32_t)(rangefinder.althold.KP * 10.0f));
-        sbufWriteU32(dst, (int32_t)(rangefinder.althold.KI * 10.0f));
-        sbufWriteU32(dst, (int32_t)(rangefinder.althold.KD * 10.0f));
+        sbufWriteU32(dst, (int32_t)(_ALT.out.kp * 10.0f));
+        sbufWriteU32(dst, (int32_t)(_ALT.out.ki * 10.0f));
+        sbufWriteU32(dst, (int32_t)(_ALT.out.kd * 10.0f));
 
         sbufWriteU32(dst, (int32_t)(opflow.poshold.KP * 10.0f));
         sbufWriteU32(dst, (int32_t)(opflow.poshold.KI * 10.0f));
@@ -2339,18 +2339,18 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         _YAW_Rate.kd = (float)u.f;
 
         u.b = sbufReadU32(src);
-        _ALT.kp = (float)u.f;
+        _ALT.in.kp = (float)u.f;
         u.b = sbufReadU32(src);
-        _ALT.ki = (float)u.f;
+        _ALT.in.ki = (float)u.f;
         u.b = sbufReadU32(src);
-        _ALT.kd = (float)u.f;
+        _ALT.in.kd = (float)u.f;
 
         u.b = sbufReadU32(src);
-        rangefinder.althold.KP = (float)u.f;
+        _ALT.out.kp = (float)u.f;
         u.b = sbufReadU32(src);
-        rangefinder.althold.KI = (float)u.f;
+        _ALT.out.kp = (float)u.f;
         u.b = sbufReadU32(src);
-        rangefinder.althold.KD = (float)u.f;
+        _ALT.out.kp = (float)u.f;
 
         u.b = sbufReadU32(src);
         opflow.poshold.KP = (float)u.f;
@@ -2370,8 +2370,8 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
           writeSDCard(PID_yaw_heading);
           writeSDCard(PID_yaw_rate);
           writeSDCard(ACC_offset);
-          writeSDCard(PID_ALT);
-          writeSDCard(PID_ALT_Range);
+          writeSDCard(PID_ALT_in);
+          writeSDCard(PID_ALT_out);
           writeSDCard(PID_POS_Opflow);
         }
         break;

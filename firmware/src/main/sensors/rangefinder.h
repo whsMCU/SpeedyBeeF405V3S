@@ -50,10 +50,7 @@ typedef struct {
   float integral_windup;
   float derivative_Height;
   float dt;
-  float KP;
-  float KI;
   float K_BACK_CALC;
-  float KD;
   float result;
 
   float dz_filtered;

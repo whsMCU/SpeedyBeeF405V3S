@@ -100,6 +100,8 @@ uint16_t rcData[MAX_SUPPORTED_RC_CHANNEL_COUNT];           // scaled, modified, 
 
 uint32_t validRxSignalTimeout[MAX_SUPPORTED_RC_CHANNEL_COUNT];
 
+bool isRXDataNew;
+
 float initialThrottleHold;
 
 #define MAX_INVALID_PULSE_TIME_MS 300                   // hold time in milliseconds after bad channel or Rx link loss
@@ -361,7 +363,6 @@ bool taskUpdateRxMainInProgress(void)
 
 void taskUpdateRxMain(uint32_t currentTimeUs)
 {
-
   static timeDelta_t rxStateDurationFractionUs[RX_STATE_COUNT];
   timeDelta_t executeTimeUs;
   rxState_e oldRxState = rxState;
@@ -387,9 +388,8 @@ void taskUpdateRxMain(uint32_t currentTimeUs)
     case RX_STATE_UPDATE:
         //updateRcCommands sets rcCommand, which is needed by updateAltHoldState and updateSonarAltHoldState
         updateRcCommands();
-        updateAltHold(currentTimeUs);
         //updateArmingStatus();
-
+        isRXDataNew = true;
         rxState = RX_STATE_CHECK;
         break;
     }
@@ -693,8 +693,10 @@ void processRxModes(uint32_t currentTimeUs)
       ENABLE_FLIGHT_MODE(BARO_MODE);
       AltHold = getEstimatedAltitudeCm();
       initialThrottleHold = rcCommand[THROTTLE];
-      _ALT.integral = 0;
-      _ALT.result = 0;
+      _ALT.in.integral = 0;
+      _ALT.in.result = 0;
+      _ALT.out.integral = 0;
+      _ALT.out.result = 0;
     }
 	}else
 	{
@@ -721,6 +723,10 @@ void processRxModes(uint32_t currentTimeUs)
       rangefinder.althold.error_Height = 0;
       rangefinder.althold.integral_Height = 0;
       rangefinder.althold.result = 0;
+      _ALT.in.integral = 0;
+      _ALT.in.result = 0;
+      _ALT.out.integral = 0;
+      _ALT.out.result = 0;
     }
   }else
   {

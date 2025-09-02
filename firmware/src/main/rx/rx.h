@@ -106,6 +106,7 @@ typedef struct rxConfig_s {
 } rxConfig_t;
 
 extern rxConfig_t rxConfig;
+extern bool isRXDataNew;
 
 #define MAX_SUPPORTED_RC_PPM_CHANNEL_COUNT          12
 #define MAX_SUPPORTED_RC_PARALLEL_PWM_CHANNEL_COUNT  8

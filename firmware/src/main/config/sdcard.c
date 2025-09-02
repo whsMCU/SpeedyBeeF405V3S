@@ -449,7 +449,7 @@ static bool write_ini_acc_offset(const char * ini_name)
       return ret;
 }
 
-static bool write_ini_alt(const char * ini_name)
+static bool write_ini_alt_in(const char * ini_name)
 {
   void *dictionary;
   FIL ini_file;
@@ -470,24 +470,24 @@ static bool write_ini_alt(const char * ini_name)
   }
 
   /* set key/value pair */
-  sprintf(str, "%.1f", _ALT.kp);
-  ret = iniparser_set(dictionary, "pid:alt.kp", str);
+  sprintf(str, "%.1f", _ALT.in.kp);
+  ret = iniparser_set(dictionary, "pid:alt.in.kp", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
       ret = -1;
       goto free_dict;
   }
 
-  sprintf(str, "%.1f", _ALT.ki);
-  ret = iniparser_set(dictionary, "pid:alt.ki", str);
+  sprintf(str, "%.1f", _ALT.in.ki);
+  ret = iniparser_set(dictionary, "pid:alt.in.ki", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
       ret = -1;
       goto free_dict;
   }
 
-  sprintf(str, "%.1f", _ALT.kd);
-  ret = iniparser_set(dictionary, "pid:alt.kd", str);
+  sprintf(str, "%.1f", _ALT.in.kd);
+  ret = iniparser_set(dictionary, "pid:alt.in.kd", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
       ret = -1;
@@ -510,7 +510,7 @@ static bool write_ini_alt(const char * ini_name)
       return ret;
 }
 
-static bool write_ini_alt_range(const char * ini_name)
+static bool write_ini_alt_out(const char * ini_name)
 {
   void *dictionary;
   FIL ini_file;
@@ -531,24 +531,24 @@ static bool write_ini_alt_range(const char * ini_name)
   }
 
   /* set key/value pair */
-  sprintf(str, "%.1f", rangefinder.althold.KP);
-  ret = iniparser_set(dictionary, "pid:alt.range.kp", str);
+  sprintf(str, "%.1f", _ALT.out.kp);
+  ret = iniparser_set(dictionary, "pid:alt.out.kp", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
       ret = -1;
       goto free_dict;
   }
 
-  sprintf(str, "%.1f", rangefinder.althold.KI);
-  ret = iniparser_set(dictionary, "pid:alt.range.ki", str);
+  sprintf(str, "%.1f", _ALT.out.ki);
+  ret = iniparser_set(dictionary, "pid:alt.out.ki", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
       ret = -1;
       goto free_dict;
   }
 
-  sprintf(str, "%.1f", rangefinder.althold.KD);
-  ret = iniparser_set(dictionary, "pid:alt.range.kd", str);
+  sprintf(str, "%.1f", _ALT.out.kd);
+  ret = iniparser_set(dictionary, "pid:alt.out.kd", str);
   if (ret < 0) {
       fprintf(stderr, "cannot set key/value in: %s\n", ini_name);
       ret = -1;
@@ -698,19 +698,19 @@ static bool parse_ini(const char * ini_name)
   d = iniparser_getdouble(ini, "pid:yaw_rate.kd", 0.0);
   _YAW_Rate.kd = d;
 
-  d = iniparser_getdouble(ini, "pid:alt.kp", 0.0);
-  _ALT.kp = d;
-  d = iniparser_getdouble(ini, "pid:alt.ki", 0.0);
-  _ALT.ki = d;
-  d = iniparser_getdouble(ini, "pid:alt.kd", 0.0);
-  _ALT.kd = d;
+  d = iniparser_getdouble(ini, "pid:alt.in.kp", 0.0);
+  _ALT.in.kp = d;
+  d = iniparser_getdouble(ini, "pid:alt.in.ki", 0.0);
+  _ALT.in.ki = d;
+  d = iniparser_getdouble(ini, "pid:alt.in.kd", 0.0);
+  _ALT.in.kd = d;
 
-  d = iniparser_getdouble(ini, "pid:alt.range.kp", 0.0);
-  rangefinder.althold.KP = d;
-  d = iniparser_getdouble(ini, "pid:alt.range.ki", 0.0);
-  rangefinder.althold.KI = d;
-  d = iniparser_getdouble(ini, "pid:alt.range.kd", 0.0);
-  rangefinder.althold.KD = d;
+  d = iniparser_getdouble(ini, "pid:alt.out.kp", 0.0);
+  _ALT.out.kp = d;
+  d = iniparser_getdouble(ini, "pid:alt.out.ki", 0.0);
+  _ALT.out.kp = d;
+  d = iniparser_getdouble(ini, "pid:alt.out.kd", 0.0);
+  _ALT.out.kp = d;
 
   d = iniparser_getdouble(ini, "pid:pos.opflow.kp", 0.0);
   opflow.poshold.KP = d;
@@ -798,11 +798,11 @@ bool writeSDCard(uint8_t type)
     case ACC_offset:
       result = write_ini_acc_offset(defaultSDCardConfigFilename);
       break;
-    case PID_ALT:
-      result = write_ini_alt(defaultSDCardConfigFilename);
+    case PID_ALT_in:
+      result = write_ini_alt_in(defaultSDCardConfigFilename);
       break;
-    case PID_ALT_Range:
-      result = write_ini_alt_range(defaultSDCardConfigFilename);
+    case PID_ALT_out:
+      result = write_ini_alt_out(defaultSDCardConfigFilename);
       break;
     case PID_POS_Opflow:
       result = write_ini_pos_opflow(defaultSDCardConfigFilename);

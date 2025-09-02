@@ -66,9 +66,11 @@ typedef struct _PID_Test{
 
 extern DoublePID _ROLL;
 extern DoublePID _PITCH;
+extern DoublePID _ALT;
+
 extern PID _YAW_Heading;
 extern PID _YAW_Rate;
-extern PID _ALT;
+
 extern PID_Test _PID_Test;
 
 extern int16_t altHoldThrottleRCZero;
@@ -79,8 +81,6 @@ void Reset_All_PID_Integrator(void);
 
 void pidInit(void);
 void taskMainPidLoop(timeUs_t currentTimeUs);
-
-void updateAltHold(timeUs_t currentTimeUs);
 
 void mixerSetThrottleAngleCorrection(int correctionValue);
 

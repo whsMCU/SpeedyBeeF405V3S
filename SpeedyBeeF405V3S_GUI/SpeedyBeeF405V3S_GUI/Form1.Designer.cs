@@ -168,14 +168,14 @@
             this.label15 = new System.Windows.Forms.Label();
             this.lb_debug0 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.tb_FC_ALT_Range_D = new System.Windows.Forms.TextBox();
-            this.tb_FC_ALT_Range_I = new System.Windows.Forms.TextBox();
-            this.tb_FC_ALT_Range_P = new System.Windows.Forms.TextBox();
+            this.tb_FC_ALT_O_D = new System.Windows.Forms.TextBox();
+            this.tb_FC_ALT_O_I = new System.Windows.Forms.TextBox();
+            this.tb_FC_ALT_O_P = new System.Windows.Forms.TextBox();
             this.label96 = new System.Windows.Forms.Label();
             this.label97 = new System.Windows.Forms.Label();
-            this.tb_ALT_Range_D = new System.Windows.Forms.TextBox();
-            this.tb_ALT_Range_I = new System.Windows.Forms.TextBox();
-            this.tb_ALT_Range_P = new System.Windows.Forms.TextBox();
+            this.tb_ALT_O_D = new System.Windows.Forms.TextBox();
+            this.tb_ALT_O_I = new System.Windows.Forms.TextBox();
+            this.tb_ALT_O_P = new System.Windows.Forms.TextBox();
             this.tb_FC_POS_Opflow_D = new System.Windows.Forms.TextBox();
             this.tb_FC_POS_Opflow_I = new System.Windows.Forms.TextBox();
             this.tb_FC_POS_Opflow_P = new System.Windows.Forms.TextBox();
@@ -185,15 +185,15 @@
             this.tb_POS_Opflow_D = new System.Windows.Forms.TextBox();
             this.tb_POS_Opflow_I = new System.Windows.Forms.TextBox();
             this.tb_POS_Opflow_P = new System.Windows.Forms.TextBox();
-            this.tb_FC_ALT_D = new System.Windows.Forms.TextBox();
-            this.tb_FC_ALT_I = new System.Windows.Forms.TextBox();
-            this.tb_FC_ALT_P = new System.Windows.Forms.TextBox();
+            this.tb_FC_ALT_I_D = new System.Windows.Forms.TextBox();
+            this.tb_FC_ALT_I_I = new System.Windows.Forms.TextBox();
+            this.tb_FC_ALT_I_P = new System.Windows.Forms.TextBox();
             this.label89 = new System.Windows.Forms.Label();
             this.label88 = new System.Windows.Forms.Label();
             this.label87 = new System.Windows.Forms.Label();
-            this.tb_ALT_D = new System.Windows.Forms.TextBox();
-            this.tb_ALT_I = new System.Windows.Forms.TextBox();
-            this.tb_ALT_P = new System.Windows.Forms.TextBox();
+            this.tb_ALT_I_D = new System.Windows.Forms.TextBox();
+            this.tb_ALT_I_I = new System.Windows.Forms.TextBox();
+            this.tb_ALT_I_P = new System.Windows.Forms.TextBox();
             this.cB_RP_Coupling = new System.Windows.Forms.CheckBox();
             this.bt_pid_save = new System.Windows.Forms.Button();
             this.bt_pid_copy = new System.Windows.Forms.Button();
@@ -1470,14 +1470,14 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.tb_FC_ALT_Range_D);
-            this.groupBox1.Controls.Add(this.tb_FC_ALT_Range_I);
-            this.groupBox1.Controls.Add(this.tb_FC_ALT_Range_P);
+            this.groupBox1.Controls.Add(this.tb_FC_ALT_O_D);
+            this.groupBox1.Controls.Add(this.tb_FC_ALT_O_I);
+            this.groupBox1.Controls.Add(this.tb_FC_ALT_O_P);
             this.groupBox1.Controls.Add(this.label96);
             this.groupBox1.Controls.Add(this.label97);
-            this.groupBox1.Controls.Add(this.tb_ALT_Range_D);
-            this.groupBox1.Controls.Add(this.tb_ALT_Range_I);
-            this.groupBox1.Controls.Add(this.tb_ALT_Range_P);
+            this.groupBox1.Controls.Add(this.tb_ALT_O_D);
+            this.groupBox1.Controls.Add(this.tb_ALT_O_I);
+            this.groupBox1.Controls.Add(this.tb_ALT_O_P);
             this.groupBox1.Controls.Add(this.tb_FC_POS_Opflow_D);
             this.groupBox1.Controls.Add(this.tb_FC_POS_Opflow_I);
             this.groupBox1.Controls.Add(this.tb_FC_POS_Opflow_P);
@@ -1487,15 +1487,15 @@
             this.groupBox1.Controls.Add(this.tb_POS_Opflow_D);
             this.groupBox1.Controls.Add(this.tb_POS_Opflow_I);
             this.groupBox1.Controls.Add(this.tb_POS_Opflow_P);
-            this.groupBox1.Controls.Add(this.tb_FC_ALT_D);
-            this.groupBox1.Controls.Add(this.tb_FC_ALT_I);
-            this.groupBox1.Controls.Add(this.tb_FC_ALT_P);
+            this.groupBox1.Controls.Add(this.tb_FC_ALT_I_D);
+            this.groupBox1.Controls.Add(this.tb_FC_ALT_I_I);
+            this.groupBox1.Controls.Add(this.tb_FC_ALT_I_P);
             this.groupBox1.Controls.Add(this.label89);
             this.groupBox1.Controls.Add(this.label88);
             this.groupBox1.Controls.Add(this.label87);
-            this.groupBox1.Controls.Add(this.tb_ALT_D);
-            this.groupBox1.Controls.Add(this.tb_ALT_I);
-            this.groupBox1.Controls.Add(this.tb_ALT_P);
+            this.groupBox1.Controls.Add(this.tb_ALT_I_D);
+            this.groupBox1.Controls.Add(this.tb_ALT_I_I);
+            this.groupBox1.Controls.Add(this.tb_ALT_I_P);
             this.groupBox1.Controls.Add(this.cB_RP_Coupling);
             this.groupBox1.Controls.Add(this.bt_pid_save);
             this.groupBox1.Controls.Add(this.bt_pid_copy);
@@ -1565,29 +1565,29 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "PID상수";
             // 
-            // tb_FC_ALT_Range_D
+            // tb_FC_ALT_O_D
             // 
-            this.tb_FC_ALT_Range_D.Location = new System.Drawing.Point(617, 249);
-            this.tb_FC_ALT_Range_D.Name = "tb_FC_ALT_Range_D";
-            this.tb_FC_ALT_Range_D.ReadOnly = true;
-            this.tb_FC_ALT_Range_D.Size = new System.Drawing.Size(45, 21);
-            this.tb_FC_ALT_Range_D.TabIndex = 175;
+            this.tb_FC_ALT_O_D.Location = new System.Drawing.Point(617, 249);
+            this.tb_FC_ALT_O_D.Name = "tb_FC_ALT_O_D";
+            this.tb_FC_ALT_O_D.ReadOnly = true;
+            this.tb_FC_ALT_O_D.Size = new System.Drawing.Size(45, 21);
+            this.tb_FC_ALT_O_D.TabIndex = 175;
             // 
-            // tb_FC_ALT_Range_I
+            // tb_FC_ALT_O_I
             // 
-            this.tb_FC_ALT_Range_I.Location = new System.Drawing.Point(546, 249);
-            this.tb_FC_ALT_Range_I.Name = "tb_FC_ALT_Range_I";
-            this.tb_FC_ALT_Range_I.ReadOnly = true;
-            this.tb_FC_ALT_Range_I.Size = new System.Drawing.Size(45, 21);
-            this.tb_FC_ALT_Range_I.TabIndex = 174;
+            this.tb_FC_ALT_O_I.Location = new System.Drawing.Point(546, 249);
+            this.tb_FC_ALT_O_I.Name = "tb_FC_ALT_O_I";
+            this.tb_FC_ALT_O_I.ReadOnly = true;
+            this.tb_FC_ALT_O_I.Size = new System.Drawing.Size(45, 21);
+            this.tb_FC_ALT_O_I.TabIndex = 174;
             // 
-            // tb_FC_ALT_Range_P
+            // tb_FC_ALT_O_P
             // 
-            this.tb_FC_ALT_Range_P.Location = new System.Drawing.Point(475, 249);
-            this.tb_FC_ALT_Range_P.Name = "tb_FC_ALT_Range_P";
-            this.tb_FC_ALT_Range_P.ReadOnly = true;
-            this.tb_FC_ALT_Range_P.Size = new System.Drawing.Size(45, 21);
-            this.tb_FC_ALT_Range_P.TabIndex = 173;
+            this.tb_FC_ALT_O_P.Location = new System.Drawing.Point(475, 249);
+            this.tb_FC_ALT_O_P.Name = "tb_FC_ALT_O_P";
+            this.tb_FC_ALT_O_P.ReadOnly = true;
+            this.tb_FC_ALT_O_P.Size = new System.Drawing.Size(45, 21);
+            this.tb_FC_ALT_O_P.TabIndex = 173;
             // 
             // label96
             // 
@@ -1596,9 +1596,9 @@
             this.label96.Location = new System.Drawing.Point(403, 252);
             this.label96.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label96.Name = "label96";
-            this.label96.Size = new System.Drawing.Size(65, 17);
+            this.label96.Size = new System.Drawing.Size(41, 17);
             this.label96.TabIndex = 172;
-            this.label96.Text = "Alt_Range";
+            this.label96.Text = "Outer";
             // 
             // label97
             // 
@@ -1607,31 +1607,31 @@
             this.label97.Location = new System.Drawing.Point(46, 253);
             this.label97.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label97.Name = "label97";
-            this.label97.Size = new System.Drawing.Size(70, 17);
+            this.label97.Size = new System.Drawing.Size(41, 17);
             this.label97.TabIndex = 171;
             this.label97.Tag = "Z";
-            this.label97.Text = "ALT_Range";
+            this.label97.Text = "Outer";
             // 
-            // tb_ALT_Range_D
+            // tb_ALT_O_D
             // 
-            this.tb_ALT_Range_D.Location = new System.Drawing.Point(264, 250);
-            this.tb_ALT_Range_D.Name = "tb_ALT_Range_D";
-            this.tb_ALT_Range_D.Size = new System.Drawing.Size(45, 21);
-            this.tb_ALT_Range_D.TabIndex = 170;
+            this.tb_ALT_O_D.Location = new System.Drawing.Point(264, 250);
+            this.tb_ALT_O_D.Name = "tb_ALT_O_D";
+            this.tb_ALT_O_D.Size = new System.Drawing.Size(45, 21);
+            this.tb_ALT_O_D.TabIndex = 170;
             // 
-            // tb_ALT_Range_I
+            // tb_ALT_O_I
             // 
-            this.tb_ALT_Range_I.Location = new System.Drawing.Point(193, 250);
-            this.tb_ALT_Range_I.Name = "tb_ALT_Range_I";
-            this.tb_ALT_Range_I.Size = new System.Drawing.Size(45, 21);
-            this.tb_ALT_Range_I.TabIndex = 169;
+            this.tb_ALT_O_I.Location = new System.Drawing.Point(193, 250);
+            this.tb_ALT_O_I.Name = "tb_ALT_O_I";
+            this.tb_ALT_O_I.Size = new System.Drawing.Size(45, 21);
+            this.tb_ALT_O_I.TabIndex = 169;
             // 
-            // tb_ALT_Range_P
+            // tb_ALT_O_P
             // 
-            this.tb_ALT_Range_P.Location = new System.Drawing.Point(122, 250);
-            this.tb_ALT_Range_P.Name = "tb_ALT_Range_P";
-            this.tb_ALT_Range_P.Size = new System.Drawing.Size(45, 21);
-            this.tb_ALT_Range_P.TabIndex = 168;
+            this.tb_ALT_O_P.Location = new System.Drawing.Point(122, 250);
+            this.tb_ALT_O_P.Name = "tb_ALT_O_P";
+            this.tb_ALT_O_P.Size = new System.Drawing.Size(45, 21);
+            this.tb_ALT_O_P.TabIndex = 168;
             // 
             // tb_FC_POS_Opflow_D
             // 
@@ -1711,29 +1711,29 @@
             this.tb_POS_Opflow_P.Size = new System.Drawing.Size(45, 21);
             this.tb_POS_Opflow_P.TabIndex = 159;
             // 
-            // tb_FC_ALT_D
+            // tb_FC_ALT_I_D
             // 
-            this.tb_FC_ALT_D.Location = new System.Drawing.Point(617, 216);
-            this.tb_FC_ALT_D.Name = "tb_FC_ALT_D";
-            this.tb_FC_ALT_D.ReadOnly = true;
-            this.tb_FC_ALT_D.Size = new System.Drawing.Size(45, 21);
-            this.tb_FC_ALT_D.TabIndex = 158;
+            this.tb_FC_ALT_I_D.Location = new System.Drawing.Point(617, 216);
+            this.tb_FC_ALT_I_D.Name = "tb_FC_ALT_I_D";
+            this.tb_FC_ALT_I_D.ReadOnly = true;
+            this.tb_FC_ALT_I_D.Size = new System.Drawing.Size(45, 21);
+            this.tb_FC_ALT_I_D.TabIndex = 158;
             // 
-            // tb_FC_ALT_I
+            // tb_FC_ALT_I_I
             // 
-            this.tb_FC_ALT_I.Location = new System.Drawing.Point(546, 216);
-            this.tb_FC_ALT_I.Name = "tb_FC_ALT_I";
-            this.tb_FC_ALT_I.ReadOnly = true;
-            this.tb_FC_ALT_I.Size = new System.Drawing.Size(45, 21);
-            this.tb_FC_ALT_I.TabIndex = 157;
+            this.tb_FC_ALT_I_I.Location = new System.Drawing.Point(546, 216);
+            this.tb_FC_ALT_I_I.Name = "tb_FC_ALT_I_I";
+            this.tb_FC_ALT_I_I.ReadOnly = true;
+            this.tb_FC_ALT_I_I.Size = new System.Drawing.Size(45, 21);
+            this.tb_FC_ALT_I_I.TabIndex = 157;
             // 
-            // tb_FC_ALT_P
+            // tb_FC_ALT_I_P
             // 
-            this.tb_FC_ALT_P.Location = new System.Drawing.Point(475, 216);
-            this.tb_FC_ALT_P.Name = "tb_FC_ALT_P";
-            this.tb_FC_ALT_P.ReadOnly = true;
-            this.tb_FC_ALT_P.Size = new System.Drawing.Size(45, 21);
-            this.tb_FC_ALT_P.TabIndex = 156;
+            this.tb_FC_ALT_I_P.Location = new System.Drawing.Point(475, 216);
+            this.tb_FC_ALT_I_P.Name = "tb_FC_ALT_I_P";
+            this.tb_FC_ALT_I_P.ReadOnly = true;
+            this.tb_FC_ALT_I_P.Size = new System.Drawing.Size(45, 21);
+            this.tb_FC_ALT_I_P.TabIndex = 156;
             // 
             // label89
             // 
@@ -1742,9 +1742,9 @@
             this.label89.Location = new System.Drawing.Point(408, 219);
             this.label89.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label89.Name = "label89";
-            this.label89.Size = new System.Drawing.Size(55, 17);
+            this.label89.Size = new System.Drawing.Size(37, 17);
             this.label89.TabIndex = 155;
-            this.label89.Text = "Alt_Baro";
+            this.label89.Text = "Inner";
             // 
             // label88
             // 
@@ -1764,30 +1764,30 @@
             this.label87.Location = new System.Drawing.Point(51, 220);
             this.label87.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label87.Name = "label87";
-            this.label87.Size = new System.Drawing.Size(60, 17);
+            this.label87.Size = new System.Drawing.Size(37, 17);
             this.label87.TabIndex = 153;
-            this.label87.Text = "ALT_Baro";
+            this.label87.Text = "Inner";
             // 
-            // tb_ALT_D
+            // tb_ALT_I_D
             // 
-            this.tb_ALT_D.Location = new System.Drawing.Point(264, 217);
-            this.tb_ALT_D.Name = "tb_ALT_D";
-            this.tb_ALT_D.Size = new System.Drawing.Size(45, 21);
-            this.tb_ALT_D.TabIndex = 152;
+            this.tb_ALT_I_D.Location = new System.Drawing.Point(264, 217);
+            this.tb_ALT_I_D.Name = "tb_ALT_I_D";
+            this.tb_ALT_I_D.Size = new System.Drawing.Size(45, 21);
+            this.tb_ALT_I_D.TabIndex = 152;
             // 
-            // tb_ALT_I
+            // tb_ALT_I_I
             // 
-            this.tb_ALT_I.Location = new System.Drawing.Point(193, 217);
-            this.tb_ALT_I.Name = "tb_ALT_I";
-            this.tb_ALT_I.Size = new System.Drawing.Size(45, 21);
-            this.tb_ALT_I.TabIndex = 151;
+            this.tb_ALT_I_I.Location = new System.Drawing.Point(193, 217);
+            this.tb_ALT_I_I.Name = "tb_ALT_I_I";
+            this.tb_ALT_I_I.Size = new System.Drawing.Size(45, 21);
+            this.tb_ALT_I_I.TabIndex = 151;
             // 
-            // tb_ALT_P
+            // tb_ALT_I_P
             // 
-            this.tb_ALT_P.Location = new System.Drawing.Point(122, 217);
-            this.tb_ALT_P.Name = "tb_ALT_P";
-            this.tb_ALT_P.Size = new System.Drawing.Size(45, 21);
-            this.tb_ALT_P.TabIndex = 150;
+            this.tb_ALT_I_P.Location = new System.Drawing.Point(122, 217);
+            this.tb_ALT_I_P.Name = "tb_ALT_I_P";
+            this.tb_ALT_I_P.Size = new System.Drawing.Size(45, 21);
+            this.tb_ALT_I_P.TabIndex = 150;
             // 
             // cB_RP_Coupling
             // 
@@ -3963,12 +3963,12 @@
         public System.Windows.Forms.TextBox tb_msp_error;
         private System.Windows.Forms.Label label88;
         private System.Windows.Forms.Label label87;
-        private System.Windows.Forms.TextBox tb_ALT_D;
-        private System.Windows.Forms.TextBox tb_ALT_I;
-        private System.Windows.Forms.TextBox tb_ALT_P;
-        private System.Windows.Forms.TextBox tb_FC_ALT_D;
-        private System.Windows.Forms.TextBox tb_FC_ALT_I;
-        private System.Windows.Forms.TextBox tb_FC_ALT_P;
+        private System.Windows.Forms.TextBox tb_ALT_I_D;
+        private System.Windows.Forms.TextBox tb_ALT_I_I;
+        private System.Windows.Forms.TextBox tb_ALT_I_P;
+        private System.Windows.Forms.TextBox tb_FC_ALT_I_D;
+        private System.Windows.Forms.TextBox tb_FC_ALT_I_I;
+        private System.Windows.Forms.TextBox tb_FC_ALT_I_P;
         private System.Windows.Forms.Label label89;
         private System.Windows.Forms.RadioButton rb_alt_setpoint;
         private System.Windows.Forms.Label lb_althold;
@@ -4020,14 +4020,14 @@
         private System.Windows.Forms.Label lb_bat_A;
         private System.Windows.Forms.Label label92;
         private System.Windows.Forms.Label lb_bat_mAh;
-        private System.Windows.Forms.TextBox tb_FC_ALT_Range_D;
-        private System.Windows.Forms.TextBox tb_FC_ALT_Range_I;
-        private System.Windows.Forms.TextBox tb_FC_ALT_Range_P;
+        private System.Windows.Forms.TextBox tb_FC_ALT_O_D;
+        private System.Windows.Forms.TextBox tb_FC_ALT_O_I;
+        private System.Windows.Forms.TextBox tb_FC_ALT_O_P;
         private System.Windows.Forms.Label label96;
         private System.Windows.Forms.Label label97;
-        private System.Windows.Forms.TextBox tb_ALT_Range_D;
-        private System.Windows.Forms.TextBox tb_ALT_Range_I;
-        private System.Windows.Forms.TextBox tb_ALT_Range_P;
+        private System.Windows.Forms.TextBox tb_ALT_O_D;
+        private System.Windows.Forms.TextBox tb_ALT_O_I;
+        private System.Windows.Forms.TextBox tb_ALT_O_P;
         private System.Windows.Forms.TextBox tb_FC_POS_Opflow_D;
         private System.Windows.Forms.TextBox tb_FC_POS_Opflow_I;
         private System.Windows.Forms.TextBox tb_FC_POS_Opflow_P;
