@@ -286,6 +286,7 @@ typedef struct navConfig_s {
         uint8_t posDecelerationTime;            // Brake time parameter
         uint8_t posResponseExpo;                // Position controller expo (taret vel expo for MC)
         bool slowDownForTurning;             // Slow down during WP missions when changing heading on next waypoint
+        int16_t max_angle_inclination[ANGLE_INDEX_COUNT];       // Max possible inclination (roll and pitch axis separately
     } mc;
 
     struct {

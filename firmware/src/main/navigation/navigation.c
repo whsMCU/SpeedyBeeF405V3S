@@ -36,7 +36,7 @@
 
 //#include "fc/fc_core.h"
 //#include "fc/config.h"
-//#include "fc/rc_controls.h"
+#include "fc/rc_controls.h"
 //#include "fc/rc_modes.h"
 #include "fc/runtime_config.h"
 #ifdef USE_MULTI_MISSION
@@ -106,8 +106,16 @@ navConfig_t navConfig;
 void navConfig_Init(void)
 {
   navConfig.general.max_altitude = 200;
-  navConfig.general.max_manual_speed = 50; //Maximum speed allowed when processing pilot input for POSHOLD/CRUISE control mode [cm/s] [Multirotor only]
+  navConfig.general.max_manual_speed = 50;      //Maximum speed allowed when processing pilot input for POSHOLD/CRUISE control mode [cm/s] [Multirotor only]
   navConfig.general.max_manual_climb_rate = 50; //Maximum climb/descent rate firmware is allowed when processing pilot input for ALTHOLD control mode [cm/s]
+  navConfig.general.auto_speed = 300;           //Speed in fully autonomous modes (RTH, WP) [cm/s]. Used for WP mode when no specific WP speed set. [Multirotor only]
+  navConfig.general.flags.user_control_mode = NAV_GPS_ATTI;
+  navConfig.mc.max_angle_inclination[FD_ROLL] = 300;  // Max possible inclination (roll and pitch axis separately)
+  navConfig.mc.max_angle_inclination[FD_PITCH] = 300; // Max possible inclination (roll and pitch axis separately)
+  navConfig.mc.slowDownForTurning = true;             //When ON, NAV engine will slow down when switching to the next waypoint. This prioritizes turning over forward movement. When OFF, NAV engine will continue to the next waypoint and turn as it goes.
+  navConfig.mc.max_bank_angle = 30;                   //Maximum banking angle (deg) that multicopter navigation is allowed to set. Machine must be able to satisfy this angle without loosing altitude
+  navConfig.mc.posDecelerationTime = 120;             //Used for stoping distance calculation. Stop position is computed as _speed_ * _nav_mc_pos_deceleration_time_ from the place where sticks are released. Braking mode overrides this setting
+  navConfig.mc.posResponseExpo = 10;                  //Expo for PosHold control
 }
 
 //PG_RESET_TEMPLATE(navConfig_t, navConfig,
@@ -239,8 +247,8 @@ void posControlConfig_Init(void)
   posControl.flags.isTerrainFollowEnabled = true;
 }
 //navSystemStatus_t NAV_Status;
-//
-//EXTENDED_FASTRAM multicopterPosXyCoefficients_t multicopterPosXyCoefficients;
+
+multicopterPosXyCoefficients_t multicopterPosXyCoefficients;
 
 // Blackbox states
 int16_t navCurrentState;
@@ -2172,12 +2180,12 @@ const navEstimatedPosVel_t * navGetCurrentActualPositionAndVelocity(void)
 //{
 //    return calc_length_pythagorean_2D(deltaX, deltaY);
 //}
-//
-//static int32_t calculateBearingFromDelta(float deltaX, float deltaY)
-//{
-//    return wrap_36000(RADIANS_TO_CENTIDEGREES(atan2_approx(deltaY, deltaX)));
-//}
-//
+
+static int32_t calculateBearingFromDelta(float deltaX, float deltaY)
+{
+    return wrap_36000(RADIANS_TO_CENTIDEGREES(atan2_approx(deltaY, deltaX)));
+}
+
 //uint32_t calculateDistanceToDestination(const fpVector3_t * destinationPos)
 //{
 //    const navEstimatedPosVel_t *posvel = navGetCurrentActualPositionAndVelocity();
@@ -2186,16 +2194,16 @@ const navEstimatedPosVel_t * navGetCurrentActualPositionAndVelocity(void)
 //
 //    return calculateDistanceFromDelta(deltaX, deltaY);
 //}
-//
-//int32_t calculateBearingToDestination(const fpVector3_t * destinationPos)
-//{
-//    const navEstimatedPosVel_t *posvel = navGetCurrentActualPositionAndVelocity();
-//    const float deltaX = destinationPos->x - posvel->pos.x;
-//    const float deltaY = destinationPos->y - posvel->pos.y;
-//
-//    return calculateBearingFromDelta(deltaX, deltaY);
-//}
-//
+
+int32_t calculateBearingToDestination(const fpVector3_t * destinationPos)
+{
+    const navEstimatedPosVel_t *posvel = navGetCurrentActualPositionAndVelocity();
+    const float deltaX = destinationPos->x - posvel->pos.x;
+    const float deltaY = destinationPos->y - posvel->pos.y;
+
+    return calculateBearingFromDelta(deltaX, deltaY);
+}
+
 //int32_t calculateBearingBetweenLocalPositions(const fpVector3_t * startPos, const fpVector3_t * endPos)
 //{
 //    const float deltaX = endPos->x - startPos->x;
@@ -2741,22 +2749,22 @@ const navEstimatedPosVel_t * navGetCurrentActualPositionAndVelocity(void)
 //
 //    return &posControl.rthTBPointsList[posControl.activeRthTBPointIndex];
 //}
-//
-///*-----------------------------------------------------------
-// * Update flight statistics
-// *-----------------------------------------------------------*/
-//static void updateNavigationFlightStatistics(void)
-//{
-//    static timeMs_t previousTimeMs = 0;
-//    const timeMs_t currentTimeMs = millis();
-//    const timeDelta_t timeDeltaMs = currentTimeMs - previousTimeMs;
-//    previousTimeMs = currentTimeMs;
-//
-//    if (ARMING_FLAG(ARMED)) {
-//        posControl.totalTripDistance += posControl.actualState.velXY * MS2S(timeDeltaMs);
-//    }
-//}
-//
+
+/*-----------------------------------------------------------
+ * Update flight statistics
+ *-----------------------------------------------------------*/
+static void updateNavigationFlightStatistics(void)
+{
+    static timeMs_t previousTimeMs = 0;
+    const timeMs_t currentTimeMs = millis();
+    const timeDelta_t timeDeltaMs = currentTimeMs - previousTimeMs;
+    previousTimeMs = currentTimeMs;
+
+    if (ARMING_FLAG(ARMED)) {
+        posControl.totalTripDistance += posControl.actualState.velXY * MS2S(timeDeltaMs);
+    }
+}
+
 //uint32_t getTotalTravelDistance(void)
 //{
 //    return lrintf(posControl.totalTripDistance);
@@ -2774,37 +2782,37 @@ const navEstimatedPosVel_t * navGetCurrentActualPositionAndVelocity(void)
 //        calculateMulticopterInitialHoldPosition(pos);
 //    }
 //}
-//
-///*-----------------------------------------------------------
-// * Set active XYZ-target and desired heading
-// *-----------------------------------------------------------*/
-//void setDesiredPosition(const fpVector3_t * pos, int32_t yaw, navSetWaypointFlags_t useMask)
-//{
-//    // XY-position update is allowed only when not braking in NAV_CRUISE_BRAKING
-//    if ((useMask & NAV_POS_UPDATE_XY) != 0 && !STATE(NAV_CRUISE_BRAKING)) {
-//        posControl.desiredState.pos.x = pos->x;
-//        posControl.desiredState.pos.y = pos->y;
-//    }
-//
-//    // Z-position
-//    if ((useMask & NAV_POS_UPDATE_Z) != 0) {
-//        updateClimbRateToAltitudeController(0, ROC_TO_ALT_RESET);   // Reset RoC/RoD -> altitude controller
-//        posControl.desiredState.pos.z = pos->z;
-//    }
-//
-//    // Heading
-//    if ((useMask & NAV_POS_UPDATE_HEADING) != 0) {
-//        // Heading
-//        posControl.desiredState.yaw = yaw;
-//    }
-//    else if ((useMask & NAV_POS_UPDATE_BEARING) != 0) {
-//        posControl.desiredState.yaw = calculateBearingToDestination(pos);
-//    }
-//    else if ((useMask & NAV_POS_UPDATE_BEARING_TAIL_FIRST) != 0) {
-//        posControl.desiredState.yaw = wrap_36000(calculateBearingToDestination(pos) - 18000);
-//    }
-//}
-//
+
+/*-----------------------------------------------------------
+ * Set active XYZ-target and desired heading
+ *-----------------------------------------------------------*/
+void setDesiredPosition(const fpVector3_t * pos, int32_t yaw, navSetWaypointFlags_t useMask)
+{
+    // XY-position update is allowed only when not braking in NAV_CRUISE_BRAKING
+    if ((useMask & NAV_POS_UPDATE_XY) != 0) { // && !STATE(NAV_CRUISE_BRAKING)
+        posControl.desiredState.pos.x = pos->x;
+        posControl.desiredState.pos.y = pos->y;
+    }
+
+    // Z-position
+    if ((useMask & NAV_POS_UPDATE_Z) != 0) {
+        updateClimbRateToAltitudeController(0, ROC_TO_ALT_RESET);   // Reset RoC/RoD -> altitude controller
+        posControl.desiredState.pos.z = pos->z;
+    }
+
+    // Heading
+    if ((useMask & NAV_POS_UPDATE_HEADING) != 0) {
+        // Heading
+        posControl.desiredState.yaw = yaw;
+    }
+    else if ((useMask & NAV_POS_UPDATE_BEARING) != 0) {
+        posControl.desiredState.yaw = calculateBearingToDestination(pos);
+    }
+    else if ((useMask & NAV_POS_UPDATE_BEARING_TAIL_FIRST) != 0) {
+        posControl.desiredState.yaw = wrap_36000(calculateBearingToDestination(pos) - 18000);
+    }
+}
+
 //void calculateFarAwayTarget(fpVector3_t * farAwayPos, int32_t bearing, int32_t distance)
 //{
 //    farAwayPos->x = navGetCurrentActualPositionAndVelocity()->pos.x + distance * cos_approx(CENTIDEGREES_TO_RADIANS(bearing));
@@ -2970,16 +2978,11 @@ static bool adjustAltitudeFromRCInput(void)
 //        resetMulticopterHeadingController();
 //    }
 //}
-//
-//static bool adjustHeadingFromRCInput(void)
-//{
-//    if (STATE(FIXED_WING_LEGACY)) {
-//        return adjustFixedWingHeadingFromRCInput();
-//    }
-//    else {
-//        return adjustMulticopterHeadingFromRCInput();
-//    }
-//}
+
+static bool adjustHeadingFromRCInput(void)
+{
+  return adjustMulticopterHeadingFromRCInput();
+}
 
 /*-----------------------------------------------------------
  * XY Position controller
@@ -2990,27 +2993,20 @@ void resetPositionController(void)
     //resetMulticopterBrakingMode();
 }
 
-//static bool adjustPositionFromRCInput(void)
-//{
-//    bool retValue;
-//
-//    if (STATE(FIXED_WING_LEGACY)) {
-//        retValue = adjustFixedWingPositionFromRCInput();
-//    }
-//    else {
-//
-//        const int16_t rcPitchAdjustment = applyDeadbandRescaled(rcCommand[PITCH], rcControlsConfig()->pos_hold_deadband, -500, 500);
-//        const int16_t rcRollAdjustment = applyDeadbandRescaled(rcCommand[ROLL], rcControlsConfig()->pos_hold_deadband, -500, 500);
-//
-//        retValue = adjustMulticopterPositionFromRCInput(rcPitchAdjustment, rcRollAdjustment);
-//    }
-//
-//    return retValue;
-//}
-//
-///*-----------------------------------------------------------
-// * WP controller
-// *-----------------------------------------------------------*/
+static bool adjustPositionFromRCInput(void)
+{
+    bool retValue;
+
+    const int16_t rcPitchAdjustment = applyDeadbandRescaled(rcCommand[PITCH], rcControlsConfig.pos_hold_deadband, -500, 500);
+    const int16_t rcRollAdjustment = applyDeadbandRescaled(rcCommand[ROLL], rcControlsConfig.pos_hold_deadband, -500, 500);
+
+    retValue = adjustMulticopterPositionFromRCInput(rcPitchAdjustment, rcRollAdjustment);
+    return retValue;
+}
+
+/*-----------------------------------------------------------
+ * WP controller
+ *-----------------------------------------------------------*/
 //void resetGCSFlags(void)
 //{
 //    posControl.flags.isGCSAssistedNavigationReset = false;
@@ -3400,16 +3396,16 @@ void resetPositionController(void)
 //            FLIGHT_MODE(NAV_POSHOLD_MODE) ||
 //            navigationIsExecutingAnEmergencyLanding();
 //}
-//
-//float getActiveWaypointSpeed(void)
-//{
-//    if (posControl.flags.isAdjustingPosition) {
-//        // In manual control mode use different cap for speed
-//        return navConfig()->general.max_manual_speed;
-//    }
-//    else {
-//        uint16_t waypointSpeed = navConfig()->general.auto_speed;
-//
+
+float getActiveWaypointSpeed(void)
+{
+    if (posControl.flags.isAdjustingPosition) {
+        // In manual control mode use different cap for speed
+        return navConfig.general.max_manual_speed;
+    }
+    else {
+        uint16_t waypointSpeed = navConfig.general.auto_speed;
+
 //        if (navGetStateFlags(posControl.navState) & NAV_AUTO_WP) {
 //            if (posControl.waypointCount > 0 && (posControl.waypointList[posControl.activeWaypointIndex].action == NAV_WP_ACTION_WAYPOINT || posControl.waypointList[posControl.activeWaypointIndex].action == NAV_WP_ACTION_HOLD_TIME || posControl.waypointList[posControl.activeWaypointIndex].action == NAV_WP_ACTION_LAND)) {
 //                float wpSpecificSpeed = 0.0f;
@@ -3425,11 +3421,11 @@ void resetPositionController(void)
 //                }
 //            }
 //        }
-//
-//        return waypointSpeed;
-//    }
-//}
-//
+
+        return waypointSpeed;
+    }
+}
+
 //bool isWaypointNavTrackingActive(void)
 //{
 //    // NAV_WP_MODE flag used rather than state flag NAV_AUTO_WP to ensure heading to initial waypoint
@@ -3453,22 +3449,22 @@ static void processNavigationRCAdjustments(void)
         posControl.flags.isAdjustingAltitude = false;
     }
 
-//    if (navStateFlags & NAV_RC_POS) {
-//        posControl.flags.isAdjustingPosition = adjustPositionFromRCInput() && !FLIGHT_MODE(FAILSAFE_MODE);
+    if (FLIGHT_MODE(OPFLOW_HOLD_MODE)) {
+        posControl.flags.isAdjustingPosition = adjustPositionFromRCInput() && !FLIGHT_MODE(FAILSAFE_MODE);
 //        if (STATE(MULTIROTOR) && FLIGHT_MODE(FAILSAFE_MODE)) {
 //            resetMulticopterBrakingMode();
 //        }
-//    }
-//    else {
-//        posControl.flags.isAdjustingPosition = false;
-//    }
-//
-//    if ((navStateFlags & NAV_RC_YAW) && (!FLIGHT_MODE(FAILSAFE_MODE))) {
-//        posControl.flags.isAdjustingHeading = adjustHeadingFromRCInput();
-//    }
-//    else {
-//        posControl.flags.isAdjustingHeading = false;
-//    }
+    }
+    else {
+        posControl.flags.isAdjustingPosition = false;
+    }
+
+    if ((!FLIGHT_MODE(FAILSAFE_MODE))) { //(navStateFlags & NAV_RC_YAW) &&
+        posControl.flags.isAdjustingHeading = adjustHeadingFromRCInput();
+    }
+    else {
+        posControl.flags.isAdjustingHeading = false;
+    }
 }
 
 /*-----------------------------------------------------------
@@ -3841,12 +3837,12 @@ void applyWaypointNavigationAndAltitudeHold(void)
 //    mapWaypointToLocalPosition(&startingWaypointPos, &posControl.waypointList[posControl.startWpIndex], GEO_ALT_RELATIVE);
 //    return calculateDistanceToDestination(&startingWaypointPos);
 //}
-//
-//bool navigationPositionEstimateIsHealthy(void)
-//{
-//    return (posControl.flags.estPosStatus >= EST_USABLE) && STATE(GPS_FIX_HOME);
-//}
-//
+
+bool navigationPositionEstimateIsHealthy(void)
+{
+    return (posControl.flags.estPosStatus >= EST_USABLE) && STATE(GPS_FIX_HOME);
+}
+
 //navArmingBlocker_e navigationIsBlockingArming(bool *usedBypass)
 //{
 //    const bool navBoxModesEnabled = IS_RC_MODE_ACTIVE(BOXNAVRTH) || IS_RC_MODE_ACTIVE(BOXNAVWP) || IS_RC_MODE_ACTIVE(BOXNAVPOSHOLD) || (STATE(FIXED_WING_LEGACY) && IS_RC_MODE_ACTIVE(BOXNAVALTHOLD)) || (STATE(FIXED_WING_LEGACY) && (IS_RC_MODE_ACTIVE(BOXNAVCOURSEHOLD) || IS_RC_MODE_ACTIVE(BOXNAVCRUISE)));
@@ -3905,21 +3901,21 @@ void applyWaypointNavigationAndAltitudeHold(void)
 //
 //    return NAV_ARMING_BLOCKER_NONE;
 //}
-//
-///**
-// * Indicate ready/not ready status
-// */
-//static void updateReadyStatus(void)
-//{
-//    static bool posReadyBeepDone = false;
-//
-//    /* Beep out READY_BEEP once when position lock is firstly acquired and HOME set */
-//    if (navigationPositionEstimateIsHealthy() && !posReadyBeepDone) {
-//        beeper(BEEPER_READY_BEEP);
-//        posReadyBeepDone = true;
-//    }
-//}
-//
+
+/**
+ * Indicate ready/not ready status
+ */
+static void updateReadyStatus(void)
+{
+    static bool posReadyBeepDone = false;
+
+    /* Beep out READY_BEEP once when position lock is firstly acquired and HOME set */
+    if (navigationPositionEstimateIsHealthy() && !posReadyBeepDone) {
+        //beeper(BEEPER_READY_BEEP);
+        posReadyBeepDone = true;
+    }
+}
+
 //void updateFlightBehaviorModifiers(void)
 //{
 //    if (posControl.flags.isGCSAssistedNavigationEnabled && !IS_RC_MODE_ACTIVE(BOXGCSNAV)) {
@@ -4004,10 +4000,10 @@ void updateWaypointsAndNavigationMode(void)
     //updateHomePosition();
 
     /* Update flight statistics */
-    //updateNavigationFlightStatistics();
+    updateNavigationFlightStatistics();
 
     /* Update NAV ready status */
-    //updateReadyStatus();
+    updateReadyStatus();
 
     // Update flight behaviour modifiers
     //updateFlightBehaviorModifiers();
@@ -4038,38 +4034,38 @@ void navigationUsePIDs(void)
 {
     /** Multicopter PIDs */
     // Brake time parameter
-    //posControl.posDecelerationTime = (float)navConfig()->mc.posDecelerationTime / 100.0f;
+    posControl.posDecelerationTime = (float)navConfig.mc.posDecelerationTime / 100.0f;
 
     // Position controller expo (taret vel expo for MC)
-    //posControl.posResponseExpo = constrainf((float)navConfig()->mc.posResponseExpo / 100.0f, 0.0f, 1.0f);
+    posControl.posResponseExpo = constrainf((float)navConfig.mc.posResponseExpo / 100.0f, 0.0f, 1.0f);
 
     // Initialize position hold P-controller
-//    for (int axis = 0; axis < 2; axis++) {
-//        navPidInit(
-//            &posControl.pids.pos[axis],
-//            (float)pidProfile()->bank_mc.pid[PID_POS_XY].P / 100.0f,
-//            0.0f,
-//            0.0f,
-//            0.0f,
-//            NAV_DTERM_CUT_HZ,
-//            0.0f
-//        );
-//
-//        navPidInit(&posControl.pids.vel[axis], (float)pidProfile()->bank_mc.pid[PID_VEL_XY].P / 20.0f,
-//                                               (float)pidProfile()->bank_mc.pid[PID_VEL_XY].I / 100.0f,
-//                                               (float)pidProfile()->bank_mc.pid[PID_VEL_XY].D / 100.0f,
-//                                               (float)pidProfile()->bank_mc.pid[PID_VEL_XY].FF / 100.0f,
-//                                               pidProfile()->navVelXyDTermLpfHz,
-//                                               0.0f
-//        );
-//    }
-//
-//    /*
-//     * Set coefficients used in MC VEL_XY
-//     */
-//    multicopterPosXyCoefficients.dTermAttenuation = pidProfile()->navVelXyDtermAttenuation / 100.0f;
-//    multicopterPosXyCoefficients.dTermAttenuationStart = pidProfile()->navVelXyDtermAttenuationStart / 100.0f;
-//    multicopterPosXyCoefficients.dTermAttenuationEnd = pidProfile()->navVelXyDtermAttenuationEnd / 100.0f;
+    for (int axis = 0; axis < 2; axis++) {
+        navPidInit(
+            &posControl.pids.pos[axis],
+            _POS.out.kp, //65/100=0.65
+            0.0f,
+            0.0f,
+            0.0f,
+            NAV_DTERM_CUT_HZ,
+            0.0f
+        );
+
+        navPidInit(&posControl.pids.vel[axis], _POS.in.kp / 20.0f,  //40/20 = 2
+                                               _POS.in.ki, //15/100 = 0.15
+                                               _POS.in.kd, //100 / 100 = 1
+                                               1.0f, //40 / 100 = 1
+                                               navVelXyDTermLpfHz,
+                                               0.0f
+        );
+    }
+
+    /*
+     * Set coefficients used in MC VEL_XY
+     */
+    multicopterPosXyCoefficients.dTermAttenuation = navVelXyDtermAttenuation / 100.0f;
+    multicopterPosXyCoefficients.dTermAttenuationStart = navVelXyDtermAttenuationStart / 100.0f;
+    multicopterPosXyCoefficients.dTermAttenuationEnd = navVelXyDtermAttenuationEnd / 100.0f;
 
 #ifdef USE_MR_BRAKING_MODE
     multicopterPosXyCoefficients.breakingBoostFactor = (float) navConfig()->mc.braking_boost_factor / 100.0f;

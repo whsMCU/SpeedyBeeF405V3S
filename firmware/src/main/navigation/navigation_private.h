@@ -34,6 +34,10 @@
 #define NAV_VEL_Z_DERIVATIVE_CUT_HZ         5.0f
 #define NAV_VEL_Z_ERROR_CUT_HZ              5.0f
 #define NAV_ACCELERATION_XY_MAX             980.0f  // cm/s/s       // approx 45 deg lean angle
+#define navVelXyDTermLpfHz                 2.0f
+#define navVelXyDtermAttenuation           90.0f    //Maximum D-term attenution percentage for horizontal velocity PID controller (Multirotor). It allows to smooth the PosHold CRUISE, WP and RTH when Multirotor is traveling at full speed. Dterm is not attenuated at low speeds, breaking and accelerating.
+#define navVelXyDtermAttenuationStart      10.0f    //A point (in percent of both target and current horizontal velocity) where nav_mc_vel_xy_dterm_attenuation begins
+#define navVelXyDtermAttenuationEnd        60.0f    //A point (in percent of both target and current horizontal velocity) where nav_mc_vel_xy_dterm_attenuation reaches maximum
 
 #define INAV_SURFACE_MAX_DISTANCE           40
 

@@ -82,7 +82,7 @@ static inline float apply_deadband(float v, float db)
 #define ALT_DERIV_CLAMP_ENABLE 1        // 1: clamp derivative spikes to 0 as original logic
 
 #define alt_hold_deadband     50
-#define maxthrottle           1850
+#define maxthrottle           2000
 #define idlethrottle          1050
 
 #define THROTTLE_SLEW_US_PER_S 20000.0f   // 초당 20000us → 1ms당 ≈20us
@@ -266,22 +266,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 
   applyWaypointNavigationAndAltitudeHold();
 
-  #ifdef USE_RANGEFINDER
-    updateAltHold_RANGEFINDER(&rangefinder, currentTimeUs);
 
-    DEBUG_SET(DEBUG_RANGEFINDER, 0, (rangefinder.althold.target_Height));
-    DEBUG_SET(DEBUG_RANGEFINDER, 1, (navGetCurrentActualPositionAndVelocity()->pos.z));
-    DEBUG_SET(DEBUG_RANGEFINDER, 2, (rangefinder.althold.error_Height));
-    DEBUG_SET(DEBUG_RANGEFINDER, 3, (rangefinder.althold.proportional_Height));
-    DEBUG_SET(DEBUG_RANGEFINDER, 4, (rangefinder.althold.integral_Height));
-    DEBUG_SET(DEBUG_RANGEFINDER, 5, (rangefinder.althold.derivative_Height));
-    DEBUG_SET(DEBUG_RANGEFINDER, 6, (rangefinder.althold.result));
-    DEBUG_SET(DEBUG_RANGEFINDER, 7, (rcCommand[THROTTLE]));
-
-  #endif
-  #ifdef USE_OPFLOW
-    updatePosHold(currentTimeUs);
-  #endif
   PID_Calculation(&_ROLL.out, rcCommand[ROLL] + GpsNav.GPS_angle[ROLL], imu_roll, bmi270.gyroADCf[X], dT);
   PID_Calculation(&_ROLL.in, _ROLL.out.result, bmi270.gyroADCf[X], 0, dT);
 
@@ -374,190 +359,13 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 #endif
 }
 
-#ifdef USE_OPFLOW
-#define FLOW_LPF_ALPHA 0.2f  // 0.0 ~ 1.0 (낮을수록 부드러움)
-void updatePosHold(timeUs_t currentTimeUs)
-{
-  opflow_poshold_t *poshold = &opflow.poshold;
-  if(FLIGHT_MODE(OPFLOW_HOLD_MODE) && abs(rcCommand[ROLL]) < 2 && abs(rcCommand[PITCH]) < 2)
-  {
-    static uint32_t pre_time = 0;
-    uint32_t now_time = currentTimeUs;
-    poshold->dt = (float)US2S(now_time - pre_time);
-    pre_time = now_time;
-
-    for (int i = 0; i < 2; i++) {
-      poshold->filteredFlowRate[i] = poshold->filteredFlowRate[i] * (1 - FLOW_LPF_ALPHA) + RADIANS_TO_DEGREES(opflow.flowRate[i]) * FLOW_LPF_ALPHA;
-    }
-    // FlowRate[X] : 오른 -, 왼쪽+, +-30
-    // FlowRate[Y] : 앞 -, 뒤 +, +-30
-
-    //Position(Pixcl Coordinate)
-    poshold->Pixel[X] += poshold->filteredFlowRate[X] * poshold->dt;
-    poshold->Pixel[Y] += poshold->filteredFlowRate[Y] * poshold->dt;
-
-    if(rcData[THROTTLE] < 1030)
-    {
-      poshold->Pixel[X] = 0;
-      poshold->Pixel[Y] = 0;
-    }
-
-    poshold->target_Pixel[X] = 0;
-    poshold->target_Pixel[Y] = 0;
-    poshold->error_Pixel[X] = poshold->target_Pixel[X] - poshold->Pixel[X];
-    poshold->error_Pixel[Y] = poshold->target_Pixel[Y] - poshold->Pixel[Y];
-
-    poshold->proportional_Pixel[X] = _POS.in.kp * poshold->error_Pixel[X];
-    poshold->proportional_Pixel[Y] = _POS.in.kp * poshold->error_Pixel[Y];
-
-    poshold->derivative_Pixel[X] = _POS.in.kd * poshold->filteredFlowRate[X];
-    poshold->derivative_Pixel[Y] = _POS.in.kd * poshold->filteredFlowRate[Y];
-
-    poshold->integral_Pixel[X] += _POS.in.ki * poshold->error_Pixel[X] * poshold->dt;
-    poshold->integral_Pixel[Y] += _POS.in.ki * poshold->error_Pixel[Y] * poshold->dt;
-
-    if(poshold->integral_Pixel[X] > _POS.in.integral_windup) poshold->integral_Pixel[X] = _POS.in.integral_windup;
-    else if(poshold->integral_Pixel[X] < -_POS.in.integral_windup) poshold->integral_Pixel[X] = -_POS.in.integral_windup;
-
-    if(poshold->integral_Pixel[Y] > _POS.in.integral_windup) poshold->integral_Pixel[Y] = _POS.in.integral_windup;
-    else if(poshold->integral_Pixel[Y] < -_POS.in.integral_windup) poshold->integral_Pixel[Y] = -_POS.in.integral_windup;
-
-
-    if(rcData[THROTTLE] < 1030)
-    {
-      poshold->integral_Pixel[X] = 0;
-      poshold->integral_Pixel[Y] = 0;
-    }
-
-    poshold->target_Angle[X] = poshold->proportional_Pixel[X] + poshold->integral_Pixel[X] + poshold->derivative_Pixel[X];
-    poshold->target_Angle[Y] = poshold->proportional_Pixel[Y] + poshold->integral_Pixel[Y] + poshold->derivative_Pixel[Y];
-
-    if(rcData[THROTTLE] < 1030)
-    {
-      poshold->target_Angle[X] = 0;
-      poshold->target_Angle[Y] = 0;
-    }
-
-    poshold->target_Angle[X] = -constrain(poshold->target_Angle[X], -10, 10);
-    poshold->target_Angle[Y] = -constrain(poshold->target_Angle[Y], -10, 10);
-
-    rcCommand[ROLL] = poshold->target_Angle[X];
-    rcCommand[PITCH] = poshold->target_Angle[Y];
-
-    DEBUG_SET(DEBUG_POS_HOLD, 2, poshold->filteredFlowRate[X]);
-    DEBUG_SET(DEBUG_POS_HOLD, 0, poshold->Pixel[X]);
-    DEBUG_SET(DEBUG_POS_HOLD, 1, poshold->error_Pixel[X]);
-    DEBUG_SET(DEBUG_POS_HOLD, 3, poshold->proportional_Pixel[X]);
-    DEBUG_SET(DEBUG_POS_HOLD, 4, poshold->integral_Pixel[X]);
-    DEBUG_SET(DEBUG_POS_HOLD, 5, poshold->derivative_Pixel[X]);
-    DEBUG_SET(DEBUG_POS_HOLD, 6, poshold->target_Angle[X]);
-    DEBUG_SET(DEBUG_POS_HOLD, 7, rcCommand[ROLL]);
-  }
-}
-#endif
-
-#ifdef USE_RANGEFINDER
-
-void updateAltHold_RANGEFINDER(rangefinder_t *alt_sensor, timeUs_t currentTimeUs)
-{
-  rangefinder_althold_t *althold = &alt_sensor->althold;
-  const navEstimatedPosVel_t *posToUse = navGetCurrentActualPositionAndVelocity();
-
-  if (!FLIGHT_MODE(RANGEFINDER_MODE)) {
-      return;
-  }
-
-  static float pilot_Throttle = 1500;
-  static float throttleOut = 1500;
-  static uint32_t pre_time = 0;
-  uint32_t now_time = currentTimeUs;
-  althold->dt = (pre_time == 0) ? (float)US2S(1000) : (float)US2S(now_time - pre_time);
-  pre_time = now_time;
-
-  // 센서 값 검증
-  if (!isfinite(posToUse->pos.z) ||
-      posToUse->pos.z < 0.0f ||
-      posToUse->pos.z > 200.0f) {
-      return;
-  }
-
-  pilot_Throttle = rcData[THROTTLE];
-
-  // Disarm 상태 → Soft-lock 적용
-  if(rcData[THROTTLE] < 1030 || !ARMING_FLAG(ARMED))
-  {
-    althold->integral_Height = 0;
-    althold->dz_filtered = 0.0f;
-    althold->pre_Height = posToUse->pos.z;
-
-    const float err_soft = posToUse->pos.z - althold->target_Height;
-    const float max_pull = ALT_TARGET_SOFTLOCK * althold->dt; // cm per dt
-    if (fabsf(err_soft) > max_pull) {
-        althold->target_Height += (err_soft > 0 ? max_pull : -max_pull);
-    } else {
-        althold->target_Height = posToUse->pos.z;
-    }
-    posControl.desiredState.vel.z = posToUse->vel.z;   // Gradually transition from current climb
-    althold->proportional_Height = 0;
-    althold->derivative_Height = 0;
-    althold->result = 0;
-    return;
-  }
-
-  althold->target_Height += althold->rcClimbRate * althold->dt;
-
-  // 고도 오차
-  float error = althold->target_Height - posToUse->pos.z; // cm
-  if (fabsf(error) < ALT_ERR_DEADBAND) error = 0.0f;
-  althold->error_Height = error;
-
-  // P항
-  althold->proportional_Height = _ALT.in.kp * althold->error_Height;
-
-  // I항 (조건부 적분, anti-windup)
-  althold->integral_Height += _ALT.in.ki * (althold->error_Height * althold->dt);
-  if(althold->integral_Height > althold->integral_windup) althold->integral_Height = althold->integral_windup;
-  else if(althold->integral_Height < -althold->integral_windup) althold->integral_Height = -althold->integral_windup;
-
-  // D항 (속도 기반, 노이즈 필터)
-  float dz = (posToUse->pos.z - althold->pre_Height) / althold->dt; // cm/s (positive = going up)
-  althold->pre_Height = posToUse->pos.z;
-
-  // Simple PT1 filter on dz to reduce RF noise
-  althold->dz_filtered = pt1_apply(althold->dz_filtered, dz, ALT_DZ_FILTER_ALPHA);
-
-  float derivative = -althold->dz_filtered; // negative sign: oppose motion toward error
-
-#if ALT_DERIV_CLAMP_ENABLE
-  if (fabsf(derivative) > MAX_DERIVATIVE) {
-      derivative = 0.0f; // reject spikes as in original code
-  }
-#endif
-  althold->derivative_Height = _ALT.in.kd * derivative;
-
-  // PID 합산
-  float outputBeforeSaturation  = althold->proportional_Height + althold->integral_Height + althold->derivative_Height;
-  althold->result = constrainf(outputBeforeSaturation, -ALT_RESULT_LIMIT, ALT_RESULT_LIMIT);
-
-  // Back-calculation Anti-windup
-#ifdef ALT_BACK_CALC_ENABLE
-  float anti_windup_error = althold->result - outputBeforeSaturation;
-  althold->integral_Height += althold->K_BACK_CALC * anti_windup_error * althold->dt;
-#endif
-
-  // 스로틀 출력 계산 (ESC 범위에서 Slew 제한)
-  float throttle_cmd = (float) constrainf(pilot_Throttle + althold->result, 1000.0f, 2000.0f);
-  float maxStep = THROTTLE_SLEW_US_PER_S * althold->dt;
-  float step    = (float)throttle_cmd - (float)throttleOut;
-  if (step >  maxStep) step =  maxStep;
-  if (step < -maxStep) step = -maxStep;
-  throttleOut += step;
-
-  rcCommand[THROTTLE] = scaleRangef(throttleOut, 1000.0f, 2000.0f, 0.0f, 1000.0f);
-}
-#endif
-
 void mixerSetThrottleAngleCorrection(int correctionValue)
 {
     throttleAngleCorrection = correctionValue;
+}
+
+int16_t pidAngleToRcCommand(float angleDeciDegrees, int16_t maxInclination)
+{
+    angleDeciDegrees = constrainf(angleDeciDegrees, (float) -maxInclination, (float) maxInclination);
+    return scaleRangef((float) angleDeciDegrees, (float) -maxInclination, (float) maxInclination, -500.0f, 500.0f);
 }

@@ -60,6 +60,7 @@ void rcControlsConfig_Init(void)
 {
 	rcControlsConfig.deadband = 10;
 	rcControlsConfig.yaw_deadband = 10;
+	rcControlsConfig.pos_hold_deadband = 5;
 	rcControlsConfig.alt_hold_deadband = 40;
 	rcControlsConfig.alt_hold_fast_change = 1;
 	rcControlsConfig.yaw_control_reversed = true;

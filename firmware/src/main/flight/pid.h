@@ -83,6 +83,8 @@ void taskMainPidLoop(timeUs_t currentTimeUs);
 
 void mixerSetThrottleAngleCorrection(int correctionValue);
 
+int16_t pidAngleToRcCommand(float angleDeciDegrees, int16_t maxInclination);
+
 extern float yaw_heading_reference;
 
 #ifdef __cplusplus
