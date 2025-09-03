@@ -39,7 +39,6 @@
 #define RAD    (M_PIf / 180.0f)
 #define DEGREES_TO_DECIDEGREES(angle) ((angle) * 10)
 #define DECIDEGREES_TO_DEGREES(angle) ((angle) / 10)
-#define DECIDEGREES_TO_RADIANS(angle) ((angle) / 10.0f * 0.0174532925f)
 #define DEGREES_TO_RADIANS(angle) ((angle) * 0.0174532925f)
 #define RADIANS_TO_DEGREES(angle) ((angle) / RAD)
 #define DECIDEGREES_TO_RADIANS(angle) (((angle) / 10.0f) * RAD)

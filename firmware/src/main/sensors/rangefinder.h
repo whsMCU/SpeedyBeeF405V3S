@@ -41,34 +41,12 @@ typedef struct rangefinderConfig_s {
 
 extern rangefinderConfig_t rangefinderConfig;
 
-typedef struct {
-  float target_Height;
-  float error_Height;
-  float pre_Height;
-  float proportional_Height;
-  float integral_Height;
-  float integral_windup;
-  float derivative_Height;
-  float dt;
-  float K_BACK_CALC;
-  float result;
-
-  float dz_filtered;
-  float stick_deadband;
-  float climb_rate_scale;
-  float rcClimbRate;
-  int16_t rcThrottleAdjustment;
-
-} rangefinder_althold_t;
-
 typedef struct rangefinder_s {
     rangefinderDev_t dev;
     float maxTiltCos;
     int32_t rawAltitude;
     int32_t calculatedAltitude;
     timeMs_t lastValidResponseTimeMs;
-
-    rangefinder_althold_t althold;
 } rangefinder_t;
 
 extern rangefinder_t rangefinder;

@@ -2913,7 +2913,7 @@ void updateClimbRateToAltitudeController(float desiredClimbRate, climbRateToAlti
         }
 
         // Multicopter climb-rate control is closed-loop, it's possible to directly calculate desired altitude setpoint to yield the required RoC/RoD
-        posControl.desiredState.pos.z = altitudeToUse + (desiredClimbRate / 40);// 40 = posControl.pids.pos[Z].param.kP
+        posControl.desiredState.pos.z = altitudeToUse + (desiredClimbRate / posControl.pids.pos[Z].param.kP);
 
         lastUpdateTimeUs = currentTimeUs;
     }
@@ -4043,7 +4043,7 @@ void navigationUsePIDs(void)
     for (int axis = 0; axis < 2; axis++) {
         navPidInit(
             &posControl.pids.pos[axis],
-            _POS.out.kp, //65/100=0.65
+            _POS.out.kp / 100.0f,
             0.0f,
             0.0f,
             0.0f,
@@ -4051,10 +4051,10 @@ void navigationUsePIDs(void)
             0.0f
         );
 
-        navPidInit(&posControl.pids.vel[axis], _POS.in.kp / 20.0f,  //40/20 = 2
-                                               _POS.in.ki, //15/100 = 0.15
-                                               _POS.in.kd, //100 / 100 = 1
-                                               1.0f, //40 / 100 = 1
+        navPidInit(&posControl.pids.vel[axis], _POS.in.kp / 20.0f,
+                                               _POS.in.ki / 100.0f,
+                                               _POS.in.kd / 100.0f,
+                                               40.0f / 100.0f,
                                                navVelXyDTermLpfHz,
                                                0.0f
         );
@@ -4074,7 +4074,7 @@ void navigationUsePIDs(void)
     // Initialize altitude hold PID-controllers (pos_z, vel_z, acc_z
     navPidInit(
         &posControl.pids.pos[Z],
-        _ALT.out.kp,
+        _ALT.out.kp / 100.0f,
         0.0f,
         0.0f,
         0.0f,
@@ -4082,9 +4082,9 @@ void navigationUsePIDs(void)
         0.0f
     );
 
-    navPidInit(&posControl.pids.vel[Z], _ALT.in.kp,
-                                        _ALT.in.ki,
-                                        _ALT.in.kd,
+    navPidInit(&posControl.pids.vel[Z], _ALT.in.kp / 66.7f,
+                                        _ALT.in.ki / 20.0f,
+                                        _ALT.in.kd / 100.0f,
                                         0.0f,
                                         NAV_VEL_Z_DERIVATIVE_CUT_HZ,
                                         NAV_VEL_Z_ERROR_CUT_HZ

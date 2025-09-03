@@ -59,42 +59,8 @@ FAST_DATA_ZERO_INIT PID _YAW_Rate;
 
 FAST_DATA_ZERO_INIT PID_Test _PID_Test;
 
-static FAST_DATA_ZERO_INIT float throttle = 0;
+FAST_DATA_ZERO_INIT float applyCommand[4];
 static FAST_DATA_ZERO_INIT int throttleAngleCorrection;
-
-#ifdef USE_RANGEFINDER
-
-static inline float pt1_apply(float prev, float input, float alpha)
-{
-    return prev + alpha * (input - prev);
-}
-
-static inline float apply_deadband(float v, float db)
-{
-    return (fabsf(v) < db) ? 0.0f : v;
-}
-
-#define MAX_DERIVATIVE        200.0f    // max |dz/dt| in cm/s used by D (after filtering)
-#define ALT_ERR_DEADBAND      1.0f      // cm, small error deadband to avoid chatter
-#define ALT_TARGET_SOFTLOCK   10.0f    // cm, limit target within plausible range quickly
-#define ALT_RESULT_LIMIT      200.0f    // mixer units (matches your original)
-#define ALT_DZ_FILTER_ALPHA   0.2f      // PT1 for altitude rate estimate (0..1, lower = smoother)
-#define ALT_DERIV_CLAMP_ENABLE 1        // 1: clamp derivative spikes to 0 as original logic
-
-#define alt_hold_deadband     50
-#define maxthrottle           2000
-#define idlethrottle          1050
-
-#define THROTTLE_SLEW_US_PER_S 20000.0f   // 초당 20000us → 1ms당 ≈20us
-
-//#define ALT_BACK_CALC_ENABLE
-
-static void updateAltHold_RANGEFINDER(rangefinder_t *alt_sensor, timeUs_t currentTimeUs);
-
-#endif
-#ifdef USE_OPFLOW
-static void updatePosHold(timeUs_t currentTimeUs);
-#endif
 
 void pidInit(void)
 {
@@ -146,18 +112,6 @@ void pidInit(void)
   _ALT.out.ki = 0.1f;
   _ALT.out.kd = 0.2f;
   _ALT.out.integral_windup = 200;
-
-  rangefinder.althold.K_BACK_CALC = 2.0f;
-  rangefinder.althold.integral_windup = 200;
-
-  rangefinder.althold.target_Height = 0;
-  rangefinder.althold.error_Height = 0.0f;
-  rangefinder.althold.proportional_Height = 0.0f;
-  rangefinder.althold.integral_Height = 0.0f;
-  rangefinder.althold.derivative_Height = 0.0f;
-  rangefinder.althold.result = 0.0f;
-  rangefinder.althold.pre_Height = 0;
-  rangefinder.althold.dz_filtered = 0.0f;
 
   _POS.in.pidName = "POS_IN";
   _POS.in.kp = 1;
@@ -267,7 +221,13 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   applyWaypointNavigationAndAltitudeHold();
 
 
-  PID_Calculation(&_ROLL.out, rcCommand[ROLL] + GpsNav.GPS_angle[ROLL], imu_roll, bmi270.gyroADCf[X], dT);
+  applyCommand[ROLL]      = scaleRangef(rcCommand[ROLL],  -500.0f, 500.0f, -30.0f,  30.f);
+  applyCommand[PITCH]     = scaleRangef(rcCommand[PITCH], -500.0f, 500.0f, -30.0f,  30.f);
+  applyCommand[YAW]       = scaleRangef(rcCommand[YAW],   -500.0f, 500.0f, -500.0f, 500.f);
+  applyCommand[THROTTLE]  = scaleRangef(rcCommand[THROTTLE] + throttleAngleCorrection, 1000.0f, 2000.0f, 0.0f, 1000.0f);
+
+
+  PID_Calculation(&_ROLL.out, applyCommand[ROLL], imu_roll, bmi270.gyroADCf[X], dT);
   PID_Calculation(&_ROLL.in, _ROLL.out.result, bmi270.gyroADCf[X], 0, dT);
 
   if(_PID_Test.pid_test_flag == 1)
@@ -275,7 +235,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     PID_Calculation(&_PITCH.out, _PID_Test.pid_test_deg, imu_pitch, bmi270.gyroADCf[Y], dT);
   }else
   {
-    PID_Calculation(&_PITCH.out, rcCommand[PITCH] + GpsNav.GPS_angle[PITCH], imu_pitch, bmi270.gyroADCf[Y], dT);
+    PID_Calculation(&_PITCH.out, applyCommand[PITCH], imu_pitch, bmi270.gyroADCf[Y], dT);
   }
   PID_Calculation(&_PITCH.in, _PITCH.out.result, bmi270.gyroADCf[Y], 0, dT);
 
@@ -296,7 +256,6 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 //  DEBUG_SET(DEBUG_PIDLOOP, 14, (_PITCH.in.derivative));
 //  DEBUG_SET(DEBUG_PIDLOOP, 15, (_PITCH.in.derivative_filter));
 
-  throttle = rcCommand[THROTTLE] + throttleAngleCorrection;
 
   if((rcData[THROTTLE] < 1030 || !ARMING_FLAG(ARMED))&& _PID_Test.pid_test_flag == 0)
   {
@@ -307,7 +266,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   {
 	  yaw_heading_reference = imu_yaw;
 
-	  PID_Calculation(&_YAW_Rate, rcCommand[YAW], -bmi270.gyroADCf[Z], 0, dT);//left -, right +
+	  PID_Calculation(&_YAW_Rate, applyCommand[YAW], -bmi270.gyroADCf[Z], 0, dT);//left -, right +
 
 	  if(_PID_Test.pid_test_flag == 1)
 	  {
@@ -317,10 +276,10 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 	    RF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result - _ROLL.in.result + _YAW_Rate.result;
 	  }else
 	  {
-	    LF = 10500 + 500 + rcCommand[THROTTLE] * 10 - _PITCH.in.result + _ROLL.in.result - _YAW_Rate.result;
-	    LR = 10500 + 500 + rcCommand[THROTTLE] * 10 + _PITCH.in.result + _ROLL.in.result + _YAW_Rate.result;
-	    RR = 10500 + 500 + rcCommand[THROTTLE] * 10 + _PITCH.in.result - _ROLL.in.result - _YAW_Rate.result;
-	    RF = 10500 + 500 + rcCommand[THROTTLE] * 10 - _PITCH.in.result - _ROLL.in.result + _YAW_Rate.result;
+	    LF = 10500 + 500 + applyCommand[THROTTLE] * 10 - _PITCH.in.result + _ROLL.in.result - _YAW_Rate.result;
+	    LR = 10500 + 500 + applyCommand[THROTTLE] * 10 + _PITCH.in.result + _ROLL.in.result + _YAW_Rate.result;
+	    RR = 10500 + 500 + applyCommand[THROTTLE] * 10 + _PITCH.in.result - _ROLL.in.result - _YAW_Rate.result;
+	    RF = 10500 + 500 + applyCommand[THROTTLE] * 10 - _PITCH.in.result - _ROLL.in.result + _YAW_Rate.result;
 	  }
   }
   else
@@ -343,14 +302,14 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
       RF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result - _ROLL.in.result + _YAW_Heading.result;
     }else
     {
-      LF = 10500 + 500 + rcCommand[THROTTLE] * 10 - _PITCH.in.result + _ROLL.in.result - _YAW_Heading.result;
-      LR = 10500 + 500 + rcCommand[THROTTLE] * 10 + _PITCH.in.result + _ROLL.in.result + _YAW_Heading.result;
-      RR = 10500 + 500 + rcCommand[THROTTLE] * 10 + _PITCH.in.result - _ROLL.in.result - _YAW_Heading.result;
-      RF = 10500 + 500 + rcCommand[THROTTLE] * 10 - _PITCH.in.result - _ROLL.in.result + _YAW_Heading.result;
+      LF = 10500 + 500 + applyCommand[THROTTLE] * 10 - _PITCH.in.result + _ROLL.in.result - _YAW_Heading.result;
+      LR = 10500 + 500 + applyCommand[THROTTLE] * 10 + _PITCH.in.result + _ROLL.in.result + _YAW_Heading.result;
+      RR = 10500 + 500 + applyCommand[THROTTLE] * 10 + _PITCH.in.result - _ROLL.in.result - _YAW_Heading.result;
+      RF = 10500 + 500 + applyCommand[THROTTLE] * 10 - _PITCH.in.result - _ROLL.in.result + _YAW_Heading.result;
     }
   }
 
-  motorWriteAll();
+  //motorWriteAll();
 
 #if defined(USE_GPS) || defined(USE_MAG)
     if (sensors(SENSOR_GPS) || sensors(SENSOR_MAG)) {

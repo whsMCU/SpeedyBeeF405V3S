@@ -283,7 +283,7 @@ static void updateRcCommands(void)
     for (int axis = 0; axis < 3; axis++) {
         // non coupled PID reduction scaler used in PID controller 1 and PID controller 2.
 
-        float tmp = MIN(ABS((rcData[axis] - rxConfig.midrc) * 0.1f), 50);
+        float tmp = MIN(ABS((rcData[axis] - rxConfig.midrc)), 500);
         if (axis == ROLL || axis == PITCH) {
             if (tmp > rcControlsConfig.deadband) {
                 tmp -= rcControlsConfig.deadband;
@@ -297,7 +297,7 @@ static void updateRcCommands(void)
             } else {
                 tmp = 0;
             }
-            rcCommand[axis] = (tmp*10) * -GET_DIRECTION(rcControlsConfig.yaw_control_reversed);
+            rcCommand[axis] = tmp * -GET_DIRECTION(rcControlsConfig.yaw_control_reversed);
         }
         if (rcData[axis] < rxConfig.midrc) {
             rcCommand[axis] = -rcCommand[axis];
@@ -309,8 +309,7 @@ static void updateRcCommands(void)
 		tmp = constrain(rcData[THROTTLE], rxConfig.mincheck, PWM_RANGE_MAX);
 		tmp = (uint32_t)(tmp - rxConfig.mincheck) * PWM_RANGE_MIN / (PWM_RANGE_MAX - rxConfig.mincheck);
 
-		rcCommand[THROTTLE] = tmp;
-    //rcCommand[THROTTLE] = rcLookupThrottle(tmp) - 1000.0f;
+    rcCommand[THROTTLE] = rcLookupThrottle(tmp);
 
 	if (FLIGHT_MODE(HEADFREE_MODE)) {
 	 static t_fp_vector_def  rcCommandBuff;

@@ -217,7 +217,7 @@ void resetMulticopterAltitudeController(void)
 
     sqrtControllerInit(
         &alt_hold_sqrt_controller,
-        _ALT.out.kp,
+        posControl.pids.pos[Z].param.kP,
         -fabsf(nav_speed_down),
         nav_speed_up,
         nav_accel_z
@@ -240,7 +240,7 @@ static void applyMulticopterAltitudeController(timeUs_t currentTimeUs)
                 const navEstimatedPosVel_t *posToUse = navGetCurrentActualPositionAndVelocity();
 
                 posControl.desiredState.vel.z = -navConfig.general.max_manual_climb_rate;
-                posControl.desiredState.pos.z = posToUse->pos.z - (navConfig.general.max_manual_climb_rate / _ALT.out.kp);
+                posControl.desiredState.pos.z = posToUse->pos.z - (navConfig.general.max_manual_climb_rate / posControl.pids.pos[Z].param.kP);
                 posControl.pids.vel[Z].integrator = -500.0f;
                 pt1FilterReset(&altholdThrottleFilterState, -500.0f);
                 prepareForTakeoffOnReset = false;
@@ -260,10 +260,10 @@ static void applyMulticopterAltitudeController(timeUs_t currentTimeUs)
     }
 
     // Update throttle controller
-    rcCommand[THROTTLE] = scaleRangef(posControl.rcAdjustment[THROTTLE], 1000.0f, 2000.0f, 0.0f, 1000.0f);
+    rcCommand[THROTTLE] = posControl.rcAdjustment[THROTTLE];
 
     // Save processed throttle for future use
-    rcCommandAdjustedThrottle = posControl.rcAdjustment[THROTTLE];
+    rcCommandAdjustedThrottle = rcCommand[THROTTLE];
 }
 
 /*-----------------------------------------------------------
@@ -406,8 +406,8 @@ bool adjustMulticopterPositionFromRCInput(int16_t rcPitchAdjustment, int16_t rcR
             const float neuVelY = rcVelX * posControl.actualState.sinYaw + rcVelY * posControl.actualState.cosYaw;
 
             // Calculate new position target, so Pos-to-Vel P-controller would yield desired velocity
-            posControl.desiredState.pos.x = navGetCurrentActualPositionAndVelocity()->pos.x + (neuVelX / _POS.out.kp * 100.0f);
-            posControl.desiredState.pos.y = navGetCurrentActualPositionAndVelocity()->pos.y + (neuVelY / _POS.out.kp * 100.0f);
+            posControl.desiredState.pos.x = navGetCurrentActualPositionAndVelocity()->pos.x + (neuVelX / posControl.pids.pos[X].param.kP);
+            posControl.desiredState.pos.y = navGetCurrentActualPositionAndVelocity()->pos.y + (neuVelY / posControl.pids.pos[Y].param.kP);
         }
 
         return true;
