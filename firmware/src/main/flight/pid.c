@@ -220,12 +220,10 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 
   applyWaypointNavigationAndAltitudeHold();
 
-
   applyCommand[ROLL]      = scaleRangef(rcCommand[ROLL],  -500.0f, 500.0f, -30.0f,  30.f);
   applyCommand[PITCH]     = scaleRangef(rcCommand[PITCH], -500.0f, 500.0f, -30.0f,  30.f);
   applyCommand[YAW]       = scaleRangef(rcCommand[YAW],   -500.0f, 500.0f, -500.0f, 500.f);
   applyCommand[THROTTLE]  = scaleRangef(rcCommand[THROTTLE] + throttleAngleCorrection, 1000.0f, 2000.0f, 0.0f, 1000.0f);
-
 
   PID_Calculation(&_ROLL.out, applyCommand[ROLL], imu_roll, bmi270.gyroADCf[X], dT);
   PID_Calculation(&_ROLL.in, _ROLL.out.result, bmi270.gyroADCf[X], 0, dT);
@@ -255,7 +253,6 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 //  DEBUG_SET(DEBUG_PIDLOOP, 13, (_PITCH.in.measured));
 //  DEBUG_SET(DEBUG_PIDLOOP, 14, (_PITCH.in.derivative));
 //  DEBUG_SET(DEBUG_PIDLOOP, 15, (_PITCH.in.derivative_filter));
-
 
   if((rcData[THROTTLE] < 1030 || !ARMING_FLAG(ARMED))&& _PID_Test.pid_test_flag == 0)
   {
@@ -309,7 +306,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     }
   }
 
-  //motorWriteAll();
+  motorWriteAll();
 
 #if defined(USE_GPS) || defined(USE_MAG)
     if (sensors(SENSOR_GPS) || sensors(SENSOR_MAG)) {
