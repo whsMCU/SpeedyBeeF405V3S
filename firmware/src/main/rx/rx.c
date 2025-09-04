@@ -707,16 +707,9 @@ void processRxModes(uint32_t currentTimeUs)
     if(!FLIGHT_MODE(RANGEFINDER_MODE))
     {
       ENABLE_FLIGHT_MODE(RANGEFINDER_MODE);
-
-
       resetAltitudeController(true);     // Make sure surface tracking is not enabled - RTH uses global altitude, not AGL
       setupAltitudeController();
-
-
-      _ALT.in.integral = 0;
-      _ALT.in.result = 0;
-      _ALT.out.integral = 0;
-      _ALT.out.result = 0;
+      setDesiredPosition(&navGetCurrentActualPositionAndVelocity()->pos, posControl.actualState.yaw, NAV_POS_UPDATE_Z);  // This will reset surface offset
     }
   }else
   {
@@ -729,6 +722,9 @@ void processRxModes(uint32_t currentTimeUs)
     {
       ENABLE_FLIGHT_MODE(OPFLOW_HOLD_MODE);
       resetPositionController();
+      fpVector3_t targetHoldPos;
+      calculateInitialHoldPosition(&targetHoldPos);
+      setDesiredPosition(&targetHoldPos, posControl.actualState.yaw, NAV_POS_UPDATE_XY | NAV_POS_UPDATE_HEADING);
     }
   }else
   {

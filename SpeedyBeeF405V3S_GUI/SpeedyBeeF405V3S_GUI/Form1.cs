@@ -2256,7 +2256,7 @@ namespace SpeedyBeeF405V3S_GUI
             passed_data[4] = BitConverter.ToInt16(payload, 8) / 10;                  // RC_ROLL
             passed_data[5] = BitConverter.ToInt16(payload, 10) / 10;                 // RC_PITCH
             passed_data[6] = BitConverter.ToInt16(payload, 12);                      // RC_YAW
-            passed_data[7] = BitConverter.ToInt16(payload, 14) / 10;                 // RC_Throttole
+            passed_data[7] = (BitConverter.ToInt16(payload, 14)-1000) / 10;                 // RC_Throttole
             passed_data[8] = BitConverter.ToInt32(payload, 16);     // posllh.lat
             passed_data[9] = BitConverter.ToInt32(payload, 20);     // posllh.lon
             passed_data[10] = BitConverter.ToInt16(payload, 24);    // batteryVoltage

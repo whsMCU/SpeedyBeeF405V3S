@@ -437,8 +437,8 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
 
           sbufWriteU16(dst, (getEstimatedAltitudeCm()*10));
 
-          sbufWriteU16(dst, (int16_t)(rcCommand[ROLL]*100));
-          sbufWriteU16(dst, (int16_t)(rcCommand[PITCH]*100));
+          sbufWriteU16(dst, (int16_t)(rcCommand[ROLL]*10));
+          sbufWriteU16(dst, (int16_t)(rcCommand[PITCH]*10));
           sbufWriteU16(dst, (int16_t)(rcCommand[YAW]));
           sbufWriteU16(dst, rcCommand[THROTTLE]);
 

@@ -277,7 +277,7 @@ int16_t navAccNEU[3];
 //
 //static void calculateAndSetActiveWaypoint(const navWaypoint_t * waypoint);
 //static void calculateAndSetActiveWaypointToLocalPosition(const fpVector3_t * pos);
-//void calculateInitialHoldPosition(fpVector3_t * pos);
+void calculateInitialHoldPosition(fpVector3_t * pos);
 //void calculateFarAwayTarget(fpVector3_t * farAwayPos, int32_t bearing, int32_t distance);
 //static bool isWaypointReached(const fpVector3_t * waypointPos, const int32_t * waypointBearing);
 //bool isWaypointAltitudeReached(void);
@@ -2769,19 +2769,14 @@ static void updateNavigationFlightStatistics(void)
 //{
 //    return lrintf(posControl.totalTripDistance);
 //}
-//
-///*-----------------------------------------------------------
-// * Calculate platform-specific hold position (account for deceleration)
-// *-----------------------------------------------------------*/
-//void calculateInitialHoldPosition(fpVector3_t * pos)
-//{
-//    if (STATE(FIXED_WING_LEGACY)) { // FIXED_WING_LEGACY
-//        calculateFixedWingInitialHoldPosition(pos);
-//    }
-//    else {
-//        calculateMulticopterInitialHoldPosition(pos);
-//    }
-//}
+
+/*-----------------------------------------------------------
+ * Calculate platform-specific hold position (account for deceleration)
+ *-----------------------------------------------------------*/
+void calculateInitialHoldPosition(fpVector3_t * pos)
+{
+    calculateMulticopterInitialHoldPosition(pos);
+}
 
 /*-----------------------------------------------------------
  * Set active XYZ-target and desired heading
