@@ -137,7 +137,7 @@ void rxConfig_Init(void)
 //	rxConfig.spektrum_sat_bind = 0;
 //	rxConfig.spektrum_sat_bind_autoreset = 1;
 	rxConfig.midrc = RX_MID_USEC;
-	rxConfig.mincheck = 1000;
+	rxConfig.mincheck = 1050;
 	rxConfig.maxcheck = 1900;
 
 //	rxConfig.rx_min_usec = RX_MIN_USEC;          // any of first 4 channels below this value will trigger rx loss detection
@@ -708,7 +708,7 @@ void processRxModes(uint32_t currentTimeUs)
     {
       ENABLE_FLIGHT_MODE(RANGEFINDER_MODE);
 
-      resetPositionController();
+
       resetAltitudeController(true);     // Make sure surface tracking is not enabled - RTH uses global altitude, not AGL
       setupAltitudeController();
 
@@ -728,10 +728,7 @@ void processRxModes(uint32_t currentTimeUs)
     if(!FLIGHT_MODE(OPFLOW_HOLD_MODE))
     {
       ENABLE_FLIGHT_MODE(OPFLOW_HOLD_MODE);
-      opflow.poshold.integral_Pixel[X] = 0;
-      opflow.poshold.integral_Pixel[Y] = 0;
-      opflow.poshold.target_Angle[X] = 0;
-      opflow.poshold.target_Angle[Y] = 0;
+      resetPositionController();
     }
   }else
   {

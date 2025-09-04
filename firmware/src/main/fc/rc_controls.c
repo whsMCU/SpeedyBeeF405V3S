@@ -32,6 +32,7 @@
 
 //#include "fc/core.h"
 //#include "rc.h"
+
 #include "fc/runtime_config.h"
 
 #include "flight/pid.h"
@@ -63,6 +64,7 @@ void rcControlsConfig_Init(void)
 	rcControlsConfig.pos_hold_deadband = 10;
 	rcControlsConfig.alt_hold_deadband = 40;
 	rcControlsConfig.alt_hold_fast_change = 1;
+	rcControlsConfig.mid_throttle_deadband = 50;
 	rcControlsConfig.yaw_control_reversed = true;
 }
 
@@ -424,4 +426,23 @@ void rcControlsInit(void)
 {
     //analyzeModeActivationConditions();
     //isUsingSticksToArm = !isModeActivationConditionPresent(BOXARM) && systemConfig.enableStickArming;
+}
+
+throttleStatus_e FAST_CODE NOINLINE calculateThrottleStatus(throttleStatusType_e type)
+{
+  UNUSED(type);
+  int value = rcData[THROTTLE];    // THROTTLE_STATUS_TYPE_RC
+
+  //const uint16_t mid_throttle_deadband = rcControlsConfig.mid_throttle_deadband;
+  //bool midThrottle = value > (PWM_RANGE_MIDDLE - mid_throttle_deadband) && value < (PWM_RANGE_MIDDLE + mid_throttle_deadband);
+  if ((value < rxConfig.mincheck)) {
+      return THROTTLE_LOW;
+  }
+
+  return THROTTLE_HIGH;
+}
+
+bool throttleStickIsLow(void)
+{
+    return calculateThrottleStatus(THROTTLE_STATUS_TYPE_RC) == THROTTLE_LOW;
 }

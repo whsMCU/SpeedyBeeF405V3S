@@ -53,6 +53,11 @@ typedef enum {
 #define AIRMODEDEADBAND 12
 
 typedef enum {
+    THROTTLE_STATUS_TYPE_RC = 0,
+    THROTTLE_STATUS_TYPE_COMMAND
+} throttleStatusType_e;
+
+typedef enum {
     NOT_CENTERED = 0,
     CENTERED
 } rollPitchStatus_e;
@@ -115,6 +120,7 @@ typedef struct rcControlsConfig_s {
     uint8_t pos_hold_deadband;              // Deadband for position hold
     uint8_t alt_hold_deadband;              // defines the neutral zone of throttle stick during altitude hold, default setting is +/-40
     uint8_t alt_hold_fast_change;           // when disabled, turn off the althold when throttle stick is out of deadband defined with alt_hold_deadband; when enabled, altitude changes slowly proportional to stick movement
+    uint16_t mid_throttle_deadband;         // default throttle deadband from MIDRC
     bool yaw_control_reversed;            // invert control direction of yaw
 } rcControlsConfig_t;
 
@@ -153,3 +159,6 @@ bool isUsingSticksForArming(void);
 
 int32_t getRcStickDeflection(int32_t axis, uint16_t midrc);
 void rcControlsInit(void);
+
+rollPitchStatus_e calculateRollPitchCenterStatus(void);
+bool throttleStickIsLow(void);

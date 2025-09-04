@@ -177,7 +177,7 @@ bool adjustMulticopterAltitudeFromRCInput(void)
 
 void setupMulticopterAltitudeController(void)
 {
-    const bool throttleIsLow = rcData[THROTTLE] < 1030;
+    const bool throttleIsLow = throttleStickIsLow();
 
     altHoldThrottleRCZero = rcData[THROTTLE];
 
