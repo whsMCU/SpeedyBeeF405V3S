@@ -152,7 +152,7 @@ void flight3DConfig_Init(void);
 bool areUsingSticksToArm(void);
 
 bool areSticksInApModePosition(uint16_t ap_mode);
-//throttleStatus_e calculateThrottleStatus(void);
+throttleStatus_e calculateThrottleStatus(throttleStatusType_e type);
 void processRcStickPositions();
 
 bool isUsingSticksForArming(void);

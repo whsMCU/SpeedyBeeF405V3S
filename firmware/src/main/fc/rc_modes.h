@@ -22,60 +22,63 @@
 
 #include <stdbool.h>
 
+#include "common/bitarray.h"
+
 #define BOXID_NONE 255
 
 typedef enum {
-    // ARM flag
-    BOXARM = 0,
-    // FLIGHT_MODE
-    BOXANGLE,
-    BOXHORIZON,
-    BOXMAG,
-    BOXHEADFREE,
-    BOXPASSTHRU,
-    BOXFAILSAFE,
-    BOXGPSRESCUE,
-    BOXID_FLIGHTMODE_LAST = BOXGPSRESCUE,
-
-// When new flight modes are added, the parameter group version for 'modeActivationConditions' in src/main/fc/rc_modes.c has to be incremented to ensure that the RC modes configuration is reset.
-
-    // RCMODE flags
-    BOXANTIGRAVITY,
-    BOXHEADADJ,
-    BOXCAMSTAB,
-    BOXBEEPERON,
-    BOXLEDLOW,
-    BOXCALIB,
-    BOXOSD,
-    BOXTELEMETRY,
-    BOXSERVO1,
-    BOXSERVO2,
-    BOXSERVO3,
-    BOXBLACKBOX,
-    BOXAIRMODE,
-    BOX3D,
-    BOXFPVANGLEMIX,
-    BOXBLACKBOXERASE,
-    BOXCAMERA1,
-    BOXCAMERA2,
-    BOXCAMERA3,
-    BOXFLIPOVERAFTERCRASH,
-    BOXPREARM,
-    BOXBEEPGPSCOUNT,
-    BOXVTXPITMODE,
-    BOXPARALYZE,
-    BOXUSER1,
-    BOXUSER2,
-    BOXUSER3,
-    BOXUSER4,
-    BOXPIDAUDIO,
-    BOXACROTRAINER,
-    BOXVTXCONTROLDISABLE,
-    BOXLAUNCHCONTROL,
-    BOXMSPOVERRIDE,
-    BOXSTICKCOMMANDDISABLE,
-    BOXBEEPERMUTE,
-    CHECKBOX_ITEM_COUNT
+  BOXARM           = 0,
+  BOXANGLE         = 1,
+  BOXHORIZON       = 2,
+  BOXNAVALTHOLD    = 3,    // old BOXBARO
+  BOXHEADINGHOLD   = 4,    // old MAG
+  BOXHEADFREE      = 5,
+  BOXHEADADJ       = 6,
+  BOXCAMSTAB       = 7,
+  BOXNAVRTH        = 8,    // old GPSHOME
+  BOXNAVPOSHOLD    = 9,    // old GPSHOLD
+  BOXMANUAL        = 10,
+  BOXBEEPERON      = 11,
+  BOXLEDLOW        = 12,
+  BOXLIGHTS        = 13,
+  BOXNAVLAUNCH     = 14,
+  BOXOSD           = 15,
+  BOXTELEMETRY     = 16,
+  BOXBLACKBOX      = 17,
+  BOXFAILSAFE      = 18,
+  BOXNAVWP         = 19,
+  BOXAIRMODE       = 20,
+  BOXHOMERESET     = 21,
+  BOXGCSNAV        = 22,
+  BOXKILLSWITCH    = 23,   // old HEADING LOCK
+  BOXSURFACE       = 24,
+  BOXFLAPERON      = 25,
+  BOXTURNASSIST    = 26,
+  BOXAUTOTRIM      = 27,
+  BOXAUTOTUNE      = 28,
+  BOXCAMERA1       = 29,
+  BOXCAMERA2       = 30,
+  BOXCAMERA3       = 31,
+  BOXOSDALT1       = 32,
+  BOXOSDALT2       = 33,
+  BOXOSDALT3       = 34,
+  BOXNAVCOURSEHOLD = 35,
+  BOXBRAKING       = 36,
+  BOXUSER1         = 37,
+  BOXUSER2         = 38,
+  BOXFPVANGLEMIX   = 39,
+  BOXLOITERDIRCHN  = 40,
+  BOXMSPRCOVERRIDE = 41,
+  BOXPREARM        = 42,
+  BOXTURTLE        = 43,
+  BOXNAVCRUISE     = 44,
+  BOXAUTOLEVEL     = 45,
+  BOXPLANWPMISSION = 46,
+  BOXSOARING       = 47,
+  BOXUSER3         = 48,
+  BOXUSER4         = 49,
+  BOXCHANGEMISSION = 50,
+  CHECKBOX_ITEM_COUNT
 } boxId_e;
 
 typedef enum {
@@ -86,16 +89,18 @@ typedef enum {
 // type to hold enough bits for CHECKBOX_ITEM_COUNT. Struct used for value-like behavior
 typedef struct boxBitmask_s { uint32_t bits[(CHECKBOX_ITEM_COUNT + 31) / 32]; } boxBitmask_t;
 
-#define MAX_MODE_ACTIVATION_CONDITION_COUNT 20
+#define MAX_MODE_ACTIVATION_CONDITION_COUNT 40
 
 #define CHANNEL_RANGE_MIN 900
 #define CHANNEL_RANGE_MAX 2100
 
-#define MODE_STEP_TO_CHANNEL_VALUE(step) (CHANNEL_RANGE_MIN + 25 * step)
-#define CHANNEL_VALUE_TO_STEP(channelValue) ((constrain(channelValue, CHANNEL_RANGE_MIN, CHANNEL_RANGE_MAX) - CHANNEL_RANGE_MIN) / 25)
+#define CHANNEL_RANGE_STEP_WIDTH 25
+
+#define MODE_STEP_TO_CHANNEL_VALUE(step) (CHANNEL_RANGE_MIN + CHANNEL_RANGE_STEP_WIDTH * step)
+#define CHANNEL_VALUE_TO_STEP(channelValue) ((constrain(channelValue, CHANNEL_RANGE_MIN, CHANNEL_RANGE_MAX) - CHANNEL_RANGE_MIN) / CHANNEL_RANGE_STEP_WIDTH)
 
 #define MIN_MODE_RANGE_STEP 0
-#define MAX_MODE_RANGE_STEP ((CHANNEL_RANGE_MAX - CHANNEL_RANGE_MIN) / 25)
+#define MAX_MODE_RANGE_STEP ((CHANNEL_RANGE_MAX - CHANNEL_RANGE_MIN) / CHANNEL_RANGE_STEP_WIDTH)
 
 // steps are 25 apart
 // a value of 0 corresponds to a channel value of 900 or less

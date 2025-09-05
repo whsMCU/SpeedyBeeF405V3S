@@ -26,7 +26,7 @@ typedef enum {
 #define GPS_LAG 0.5f                          //UBLOX GPS has a smaller lag than MTK and other
 
 /************************        AP FlightMode        **********************************/
-/* Temporarily Disables GPS_HOLD_MODE to be able to make it possible to adjust the Hold-position when moving the sticks.*/
+/* Temporarily Disables NAV_POSHOLD_MODE to be able to make it possible to adjust the Hold-position when moving the sticks.*/
 #define AP_MODE 40  // Create a deadspan for GPS.
 
 #define TASK_GPS_RATE       100

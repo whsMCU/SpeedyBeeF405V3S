@@ -375,7 +375,7 @@ void taskUpdateRxMain(uint32_t currentTimeUs)
     switch (rxState) {
     default:
     case RX_STATE_CHECK:
-        calculateRxChannels(currentTimeUs);
+        processRx(currentTimeUs);
         rxState = RX_STATE_MODES;
         break;
 
@@ -632,8 +632,15 @@ static void readRxChannelsApplyRanges(void)
 //    DEBUG_SET(DEBUG_RX_SIGNAL_LOSS, 3, rcData[THROTTLE]);
 //}
 
-bool calculateRxChannels(uint32_t currentTimeUs)
+bool calculateRxChannelsAndUpdateFailsafe(uint32_t currentTimeUs)
 {
+
+  if (!rxDataProcessingRequired) {
+      return false;
+  }
+
+  rxDataProcessingRequired = false;
+
     readRxChannelsApplyRanges();            // returns rcRaw
     //detectAndApplySignalLossBehaviour();    // returns rcData
 
@@ -641,6 +648,32 @@ bool calculateRxChannels(uint32_t currentTimeUs)
 
     return true;
 }
+
+/*
+ * processRx called from taskUpdateRxMain
+ */
+bool processRx(timeUs_t currentTimeUs)
+{
+    if (!calculateRxChannelsAndUpdateFailsafe(currentTimeUs)) {
+        return false;
+    }
+
+    updateRcRefreshRate(currentTimeUs);
+
+    updateRSSI(currentTimeUs);
+
+    //const throttleStatus_e throttleStatus = calculateThrottleStatus(THROTTLE_STATUS_TYPE_RC);
+    //const uint8_t throttlePercent = calculateThrottlePercentAbs();
+
+//    /* In airmode iterm should be prevented to grow when Low thottle and Roll + Pitch Centered.
+//     This is needed to prevent iterm winding on the ground, but keep full stabilisation on 0 throttle while in air */
+//    if (throttleStatus == THROTTLE_LOW && !airmodeIsActivated && !launchControlActive) {
+//      Reset_All_PID_Integrator();
+//    }
+
+    return true;
+}
+
 unsigned short rx_SwArm_Prev = 0;
 void processRxModes(uint32_t currentTimeUs)
 {
@@ -687,9 +720,9 @@ void processRxModes(uint32_t currentTimeUs)
 
 	if(rcData[SC] >= 1500)
 	{
-    if(!FLIGHT_MODE(BARO_MODE))
+    if(!FLIGHT_MODE(NAV_ALTHOLD_MODE))
     {
-      ENABLE_FLIGHT_MODE(BARO_MODE);
+      ENABLE_FLIGHT_MODE(NAV_ALTHOLD_MODE);
       AltHold = getEstimatedAltitudeCm();
       initialThrottleHold = rcCommand[THROTTLE];
       _ALT.in.integral = 0;
@@ -699,7 +732,7 @@ void processRxModes(uint32_t currentTimeUs)
     }
 	}else
 	{
-	  DISABLE_FLIGHT_MODE(BARO_MODE);
+	  DISABLE_FLIGHT_MODE(NAV_ALTHOLD_MODE);
 	}
 
   if(rcData[SB] >= 1500)
@@ -735,18 +768,18 @@ void processRxModes(uint32_t currentTimeUs)
   static uint8_t GPSNavReset = 1;
   if (STATE(GPS_FIX) && GpsNav.GPS_numSat >= 5 ) {
     if (rcData[SC] >= 1500) {  // if both GPS_HOME & GPS_HOLD are checked => GPS_HOME is the priority
-      if (!FLIGHT_MODE(GPS_HOME_MODE))  {
-        ENABLE_FLIGHT_MODE(GPS_HOME_MODE);
-        DISABLE_FLIGHT_MODE(GPS_HOLD_MODE);
+      if (!FLIGHT_MODE(NAV_RTH_MODE))  {
+        ENABLE_FLIGHT_MODE(NAV_RTH_MODE);
+        DISABLE_FLIGHT_MODE(NAV_POSHOLD_MODE);
         GPSNavReset = 0;
         GPS_set_next_wp(&GpsNav.GPS_home[LAT],&GpsNav.GPS_home[LON]);
         GpsNav.nav_mode = NAV_MODE_WP;
       }
     } else {
-      DISABLE_FLIGHT_MODE(GPS_HOME_MODE);
+      DISABLE_FLIGHT_MODE(NAV_RTH_MODE);
       if ((rcData[SC] >= 1950) && abs(rcCommand[ROLL])< AP_MODE && abs(rcCommand[PITCH]) < AP_MODE) {
-        if (!FLIGHT_MODE(GPS_HOLD_MODE)) {
-          ENABLE_FLIGHT_MODE(GPS_HOLD_MODE);
+        if (!FLIGHT_MODE(NAV_POSHOLD_MODE)) {
+          ENABLE_FLIGHT_MODE(NAV_POSHOLD_MODE);
           GPSNavReset = 0;
           GpsNav.GPS_hold[LAT] = GpsNav.GPS_coord[LAT];
           GpsNav.GPS_hold[LON] = GpsNav.GPS_coord[LON];
@@ -754,7 +787,7 @@ void processRxModes(uint32_t currentTimeUs)
           GpsNav.nav_mode = NAV_MODE_POSHOLD;
         }
       } else {
-        DISABLE_FLIGHT_MODE(GPS_HOLD_MODE);
+        DISABLE_FLIGHT_MODE(NAV_POSHOLD_MODE);
         // both boxes are unselected here, nav is reset if not already done
         if (GPSNavReset == 0 ) {
           GPSNavReset = 1;
@@ -763,8 +796,8 @@ void processRxModes(uint32_t currentTimeUs)
       }
     }
   } else {
-    DISABLE_FLIGHT_MODE(GPS_HOME_MODE);
-    DISABLE_FLIGHT_MODE(GPS_HOLD_MODE);
+    DISABLE_FLIGHT_MODE(NAV_RTH_MODE);
+    DISABLE_FLIGHT_MODE(NAV_POSHOLD_MODE);
 
     GpsNav.nav_mode = NAV_MODE_NONE;
   }
@@ -786,6 +819,9 @@ void processRxModes(uint32_t currentTimeUs)
   {
     processRcStickPositions();
   }
+
+  updateActivatedModes();
+
   if (!ARMING_FLAG(ARMED)) {
       processRcAdjustments();
   }
@@ -1030,6 +1066,11 @@ int8_t calculateThrottlePercent(void)
 
     ret = ABS(constrain(((channelData - rxConfig.mincheck) * 100) / (PWM_RANGE_MAX - rxConfig.mincheck), 0, 100));
     return ret;
+}
+
+uint8_t calculateThrottlePercentAbs(void)
+{
+    return ABS(calculateThrottlePercent());
 }
 
 #ifdef _USE_HW_CLI

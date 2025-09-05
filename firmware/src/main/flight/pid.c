@@ -175,8 +175,6 @@ void Reset_All_PID_Integrator(void)
   _PITCH.in.integral = 0;
   _YAW_Heading.integral = 0;
   _YAW_Rate.integral = 0;
-  _ALT.in.integral = 0;
-  _ALT.out.integral = 0;
 }
 
 float yaw_heading_reference;
@@ -195,7 +193,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   previousUpdateTimeUs = currentTimeUs;
 
 #ifdef USE_GPS1
-  if ( (FLIGHT_MODE(GPS_HOME_MODE) || FLIGHT_MODE(GPS_HOLD_MODE)) && STATE(GPS_FIX_HOME) ) {
+  if ( (FLIGHT_MODE(NAV_RTH_MODE) || FLIGHT_MODE(NAV_POSHOLD_MODE)) && STATE(GPS_FIX_HOME) ) {
     float sin_yaw_y = sin(heading*0.0174532925f);
     float cos_yaw_x = cos(heading*0.0174532925f);
     #if defined(NAV_SLEW_RATE)

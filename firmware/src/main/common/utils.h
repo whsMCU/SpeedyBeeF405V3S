@@ -27,6 +27,7 @@
 
 #define ARRAYLEN(x) (sizeof(x) / sizeof((x)[0]))
 #define ARRAYEND(x) (&(x)[ARRAYLEN(x)])
+#define ZERO_FARRAY(a) memset(a, 0, sizeof(a))
 
 #define CONST_CAST(type, value) ((type)(value))
 

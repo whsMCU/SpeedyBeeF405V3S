@@ -126,7 +126,7 @@
 // MSP commands for Cleanflight original features
 //
 #define MSP_MODE_RANGES                 34    //out message         Returns all mode ranges
-#define MSP_SET_MODE_RANGE              35    //in message          Sets a single mode range
+//#define MSP_SET_MODE_RANGE              35    //in message          Sets a single mode range
 
 #define MSP_FEATURE                     36
 #define MSP_SET_FEATURE                 37

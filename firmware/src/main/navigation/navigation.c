@@ -31,6 +31,8 @@
 
 //#include "config/parameter_group.h"
 //#include "config/parameter_group_ids.h"
+#include "config/feature.h"
+
 
 #include "drivers/gps/gps.h"
 
@@ -39,7 +41,7 @@
 //#include "fc/fc_core.h"
 //#include "fc/config.h"
 #include "fc/rc_controls.h"
-//#include "fc/rc_modes.h"
+#include "fc/rc_modes.h"
 #include "fc/runtime_config.h"
 #ifdef USE_MULTI_MISSION
 #include "fc/rc_adjustments.h"
@@ -249,7 +251,7 @@ void posControlConfig_Init(void)
 {
   posControl.flags.isTerrainFollowEnabled = true;
 }
-//navSystemStatus_t NAV_Status;
+navSystemStatus_t NAV_Status;
 
 multicopterPosXyCoefficients_t multicopterPosXyCoefficients;
 
@@ -280,20 +282,19 @@ int16_t navAccNEU[3];
 //
 //static void calculateAndSetActiveWaypoint(const navWaypoint_t * waypoint);
 //static void calculateAndSetActiveWaypointToLocalPosition(const fpVector3_t * pos);
-void calculateInitialHoldPosition(fpVector3_t * pos);
 //void calculateFarAwayTarget(fpVector3_t * farAwayPos, int32_t bearing, int32_t distance);
 //static bool isWaypointReached(const fpVector3_t * waypointPos, const int32_t * waypointBearing);
 //bool isWaypointAltitudeReached(void);
 //static void mapWaypointToLocalPosition(fpVector3_t * localPos, const navWaypoint_t * waypoint, geoAltitudeConversionMode_e altConv);
 //static navigationFSMEvent_t nextForNonGeoStates(void);
-//static bool isWaypointMissionValid(void);
+static bool isWaypointMissionValid(void);
 //void missionPlannerSetWaypoint(void);
 //
 //void initializeRTHSanityChecker(void);
 //bool validateRTHSanityChecker(void);
 //void updateHomePosition(void);
 //bool abortLaunchAllowed(void);
-//
+
 //static bool rthAltControlStickOverrideCheck(unsigned axis);
 //
 //static void updateRthTrackback(bool forceSaveTrackPoint);
@@ -1873,87 +1874,87 @@ navigationFSMStateFlags_t navGetCurrentStateFlags(void)
 //
 //    return NAV_FSM_EVENT_NONE;
 //}
-//
-//static navigationFSMState_t navSetNewFSMState(navigationFSMState_t newState)
-//{
-//    navigationFSMState_t previousState;
-//
-//    previousState = posControl.navState;
-//    if (posControl.navState != newState) {
-//        posControl.navState = newState;
-//        posControl.navPersistentId = navFSM[newState].persistentId;
-//    }
-//    return previousState;
-//}
-//
-//static void navProcessFSMEvents(navigationFSMEvent_t injectedEvent)
-//{
-//    const timeMs_t currentMillis = millis();
-//    navigationFSMState_t previousState;
-//    static timeMs_t lastStateProcessTime = 0;
-//
-//    /* Process new injected event if event defined,
-//     * otherwise process timeout event if defined */
-//    if (injectedEvent != NAV_FSM_EVENT_NONE && navFSM[posControl.navState].onEvent[injectedEvent] != NAV_STATE_UNDEFINED) {
-//        /* Update state */
-//        previousState = navSetNewFSMState(navFSM[posControl.navState].onEvent[injectedEvent]);
-//    } else if ((navFSM[posControl.navState].timeoutMs > 0) && (navFSM[posControl.navState].onEvent[NAV_FSM_EVENT_TIMEOUT] != NAV_STATE_UNDEFINED) &&
-//            ((currentMillis - lastStateProcessTime) >= navFSM[posControl.navState].timeoutMs)) {
-//        /* Update state */
-//        previousState = navSetNewFSMState(navFSM[posControl.navState].onEvent[NAV_FSM_EVENT_TIMEOUT]);
-//    }
-//
-//    if (previousState) {    /* If state updated call new state's entry function */
-//        while (navFSM[posControl.navState].onEntry) {
-//            navigationFSMEvent_t newEvent = navFSM[posControl.navState].onEntry(previousState);
-//
-//            if ((newEvent != NAV_FSM_EVENT_NONE) && (navFSM[posControl.navState].onEvent[newEvent] != NAV_STATE_UNDEFINED)) {
-//                previousState = navSetNewFSMState(navFSM[posControl.navState].onEvent[newEvent]);
-//            }
-//            else {
-//                break;
-//            }
-//        }
-//
-//        lastStateProcessTime = currentMillis;
-//    }
-//
-//    /* Update public system state information */
-//    NAV_Status.mode = MW_GPS_MODE_NONE;
-//
-//    if (ARMING_FLAG(ARMED)) {
-//        navigationFSMStateFlags_t navStateFlags = navGetStateFlags(posControl.navState);
-//
-//        if (navStateFlags & NAV_AUTO_RTH) {
-//            NAV_Status.mode = MW_GPS_MODE_RTH;
-//        }
-//        else if (navStateFlags & NAV_AUTO_WP) {
-//            NAV_Status.mode = MW_GPS_MODE_NAV;
-//        }
-//        else if (navStateFlags & NAV_CTL_EMERG) {
-//            NAV_Status.mode = MW_GPS_MODE_EMERG;
-//        }
-//        else if (navStateFlags & NAV_CTL_POS) {
-//            NAV_Status.mode = MW_GPS_MODE_HOLD;
-//        }
-//    }
-//
-//    NAV_Status.state = navFSM[posControl.navState].mwState;
-//    NAV_Status.error = navFSM[posControl.navState].mwError;
-//
-//    NAV_Status.flags = 0;
-//    if (posControl.flags.isAdjustingPosition)   NAV_Status.flags |= MW_NAV_FLAG_ADJUSTING_POSITION;
-//    if (posControl.flags.isAdjustingAltitude)   NAV_Status.flags |= MW_NAV_FLAG_ADJUSTING_ALTITUDE;
-//
-//    NAV_Status.activeWpIndex = posControl.activeWaypointIndex - posControl.startWpIndex;
-//    NAV_Status.activeWpNumber = NAV_Status.activeWpIndex + 1;
-//
-//    NAV_Status.activeWpAction = 0;
-//    if ((posControl.activeWaypointIndex >= 0) && (posControl.activeWaypointIndex < NAV_MAX_WAYPOINTS)) {
-//        NAV_Status.activeWpAction = posControl.waypointList[posControl.activeWaypointIndex].action;
-//    }
-//}
-//
+
+static navigationFSMState_t navSetNewFSMState(navigationFSMState_t newState)
+{
+    navigationFSMState_t previousState;
+
+    previousState = posControl.navState;
+    if (posControl.navState != newState) {
+        posControl.navState = newState;
+        posControl.navPersistentId = navFSM[newState].persistentId;
+    }
+    return previousState;
+}
+
+static void navProcessFSMEvents(navigationFSMEvent_t injectedEvent)
+{
+    const timeMs_t currentMillis = millis();
+    navigationFSMState_t previousState;
+    static timeMs_t lastStateProcessTime = 0;
+
+    /* Process new injected event if event defined,
+     * otherwise process timeout event if defined */
+    if (injectedEvent != NAV_FSM_EVENT_NONE && navFSM[posControl.navState].onEvent[injectedEvent] != NAV_STATE_UNDEFINED) {
+        /* Update state */
+        previousState = navSetNewFSMState(navFSM[posControl.navState].onEvent[injectedEvent]);
+    } else if ((navFSM[posControl.navState].timeoutMs > 0) && (navFSM[posControl.navState].onEvent[NAV_FSM_EVENT_TIMEOUT] != NAV_STATE_UNDEFINED) &&
+            ((currentMillis - lastStateProcessTime) >= navFSM[posControl.navState].timeoutMs)) {
+        /* Update state */
+        previousState = navSetNewFSMState(navFSM[posControl.navState].onEvent[NAV_FSM_EVENT_TIMEOUT]);
+    }
+
+    if (previousState) {    /* If state updated call new state's entry function */
+        while (navFSM[posControl.navState].onEntry) {
+            navigationFSMEvent_t newEvent = navFSM[posControl.navState].onEntry(previousState);
+
+            if ((newEvent != NAV_FSM_EVENT_NONE) && (navFSM[posControl.navState].onEvent[newEvent] != NAV_STATE_UNDEFINED)) {
+                previousState = navSetNewFSMState(navFSM[posControl.navState].onEvent[newEvent]);
+            }
+            else {
+                break;
+            }
+        }
+
+        lastStateProcessTime = currentMillis;
+    }
+
+    /* Update public system state information */
+    NAV_Status.mode = MW_GPS_MODE_NONE;
+
+    if (ARMING_FLAG(ARMED)) {
+        navigationFSMStateFlags_t navStateFlags = navGetStateFlags(posControl.navState);
+
+        if (navStateFlags & NAV_AUTO_RTH) {
+            NAV_Status.mode = MW_GPS_MODE_RTH;
+        }
+        else if (navStateFlags & NAV_AUTO_WP) {
+            NAV_Status.mode = MW_GPS_MODE_NAV;
+        }
+        else if (navStateFlags & NAV_CTL_EMERG) {
+            NAV_Status.mode = MW_GPS_MODE_EMERG;
+        }
+        else if (navStateFlags & NAV_CTL_POS) {
+            NAV_Status.mode = MW_GPS_MODE_HOLD;
+        }
+    }
+
+    NAV_Status.state = navFSM[posControl.navState].mwState;
+    NAV_Status.error = navFSM[posControl.navState].mwError;
+
+    NAV_Status.flags = 0;
+    if (posControl.flags.isAdjustingPosition)   NAV_Status.flags |= MW_NAV_FLAG_ADJUSTING_POSITION;
+    if (posControl.flags.isAdjustingAltitude)   NAV_Status.flags |= MW_NAV_FLAG_ADJUSTING_ALTITUDE;
+
+    NAV_Status.activeWpIndex = posControl.activeWaypointIndex - posControl.startWpIndex;
+    NAV_Status.activeWpNumber = NAV_Status.activeWpIndex + 1;
+
+    NAV_Status.activeWpAction = 0;
+    if ((posControl.activeWaypointIndex >= 0) && (posControl.activeWaypointIndex < NAV_MAX_WAYPOINTS)) {
+        NAV_Status.activeWpAction = posControl.waypointList[posControl.activeWaypointIndex].action;
+    }
+}
+
 //static fpVector3_t * rthGetHomeTargetPosition(rthTargetMode_e mode)
 //{
 //    posControl.rthState.homeTmpWaypoint = posControl.rthState.homePosition.pos;
@@ -3541,236 +3542,201 @@ void applyWaypointNavigationAndAltitudeHold(void)
 /*-----------------------------------------------------------
  * desired NAV_MODE from combination of FLIGHT_MODE flags
  *-----------------------------------------------------------*/
-//static bool canActivateAltHoldMode(void)
-//{
-//    return (posControl.flags.estAltStatus >= EST_USABLE);
-//}
-//
-//static bool canActivatePosHoldMode(void)
-//{
-//    return (posControl.flags.estPosStatus >= EST_USABLE) && (posControl.flags.estVelStatus == EST_TRUSTED) && (posControl.flags.estHeadingStatus >= EST_USABLE);
-//}
-//
-//static bool canActivateNavigationModes(void)
-//{
-//    return (posControl.flags.estPosStatus == EST_TRUSTED) && (posControl.flags.estVelStatus == EST_TRUSTED) && (posControl.flags.estHeadingStatus >= EST_USABLE);
-//}
-//
-//static bool isWaypointMissionValid(void)
-//{
-//    return posControl.waypointListValid && (posControl.waypointCount > 0);
-//}
-//
-//static void checkManualEmergencyLandingControl(void)
-//{
-//    static timeMs_t timeout = 0;
-//    static int8_t counter = 0;
-//    static bool toggle;
-//    timeMs_t currentTimeMs = millis();
-//
-//    if (timeout && currentTimeMs > timeout) {
-//        timeout += 1000;
-//        counter -= counter ? 1 : 0;
-//        if (!counter) {
-//            timeout = 0;
-//        }
-//    }
-//    if (IS_RC_MODE_ACTIVE(BOXNAVPOSHOLD)) {
-//        if (!timeout && toggle) {
-//            timeout = currentTimeMs + 4000;
-//        }
-//        counter += toggle;
-//        toggle = false;
-//    } else {
-//        toggle = true;
-//    }
-//
-//    // Emergency landing toggled ON or OFF after 5 cycles of Poshold mode @ 1Hz minimum rate
-//    if (counter >= 5) {
-//        counter = 0;
-//        posControl.flags.manualEmergLandActive = !posControl.flags.manualEmergLandActive;
-//
-//        if (!posControl.flags.manualEmergLandActive) {
-//            navProcessFSMEvents(NAV_FSM_EVENT_SWITCH_TO_IDLE);
-//        }
-//    }
-//}
-//
-//static navigationFSMEvent_t selectNavEventFromBoxModeInput(void)
-//{
-//    static bool canActivateWaypoint = false;
-//    static bool canActivateLaunchMode = false;
-//
-//    //We can switch modes only when ARMED
-//    if (ARMING_FLAG(ARMED)) {
-//        // Ask failsafe system if we can use navigation system
+static bool canActivateAltHoldMode(void)
+{
+    return (posControl.flags.estAltStatus >= EST_USABLE);
+}
+
+static bool canActivatePosHoldMode(void)
+{
+    return (posControl.flags.estPosStatus >= EST_USABLE) && (posControl.flags.estVelStatus == EST_TRUSTED) && (posControl.flags.estHeadingStatus >= EST_USABLE);
+}
+
+static bool canActivateNavigationModes(void)
+{
+    return (posControl.flags.estPosStatus == EST_TRUSTED) && (posControl.flags.estVelStatus == EST_TRUSTED) && (posControl.flags.estHeadingStatus >= EST_USABLE);
+}
+
+static bool isWaypointMissionValid(void)
+{
+    return posControl.waypointListValid && (posControl.waypointCount > 0);
+}
+
+static void checkManualEmergencyLandingControl(void)
+{
+    static timeMs_t timeout = 0;
+    static int8_t counter = 0;
+    static bool toggle;
+    timeMs_t currentTimeMs = millis();
+
+    if (timeout && currentTimeMs > timeout) {
+        timeout += 1000;
+        counter -= counter ? 1 : 0;
+        if (!counter) {
+            timeout = 0;
+        }
+    }
+    if (IS_RC_MODE_ACTIVE(BOXNAVPOSHOLD)) {
+        if (!timeout && toggle) {
+            timeout = currentTimeMs + 4000;
+        }
+        counter += toggle;
+        toggle = false;
+    } else {
+        toggle = true;
+    }
+
+    // Emergency landing toggled ON or OFF after 5 cycles of Poshold mode @ 1Hz minimum rate
+    if (counter >= 5) {
+        counter = 0;
+        posControl.flags.manualEmergLandActive = !posControl.flags.manualEmergLandActive;
+
+        if (!posControl.flags.manualEmergLandActive) {
+            navProcessFSMEvents(NAV_FSM_EVENT_SWITCH_TO_IDLE);
+        }
+    }
+}
+
+static navigationFSMEvent_t selectNavEventFromBoxModeInput(void)
+{
+    static bool canActivateWaypoint = false;
+    static bool canActivateLaunchMode = false;
+
+    //We can switch modes only when ARMED
+    if (ARMING_FLAG(ARMED)) {
+        // Ask failsafe system if we can use navigation system
 //        if (failsafeBypassNavigation()) {
 //            return NAV_FSM_EVENT_SWITCH_TO_IDLE;
 //        }
-//
-//        // Flags if we can activate certain nav modes (check if we have required sensors and they provide valid data)
-//        const bool canActivateAltHold    = canActivateAltHoldMode();
-//        const bool canActivatePosHold    = canActivatePosHoldMode();
-//        const bool canActivateNavigation = canActivateNavigationModes();
-//        const bool isExecutingRTH        = navGetStateFlags(posControl.navState) & NAV_AUTO_RTH;
-//#ifdef USE_SAFE_HOME
-//        checkSafeHomeState(isExecutingRTH || posControl.flags.forcedRTHActivated);
-//#endif
-//        // deactivate rth trackback if RTH not active
-//        if (posControl.flags.rthTrackbackActive) {
-//            posControl.flags.rthTrackbackActive = isExecutingRTH;
-//        }
-//
-//        /* Emergency landing controlled manually by rapid switching of Poshold mode.
-//         * Landing toggled ON or OFF for each Poshold activation sequence */
-//        checkManualEmergencyLandingControl();
-//
-//        /* Emergency landing triggered by failsafe Landing or manually initiated */
-//        if (posControl.flags.forcedEmergLandingActivated || posControl.flags.manualEmergLandActive) {
-//            return NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING;
-//        }
-//
-//        /* Keep Emergency landing mode active once triggered.
-//         * If caused by sensor failure - landing auto cancelled if sensors working again or when WP and RTH deselected or if Althold selected.
-//         * If caused by RTH Sanity Checking - landing cancelled if RTH deselected.
-//         * Remains active if failsafe active regardless of mode selections */
-//        if (navigationIsExecutingAnEmergencyLanding()) {
-//            bool autonomousNavIsPossible = canActivateNavigation && canActivateAltHold && STATE(GPS_FIX_HOME);
-//            bool emergLandingCancel = (!autonomousNavIsPossible &&
-//                                      ((IS_RC_MODE_ACTIVE(BOXNAVALTHOLD) && canActivateAltHold) || !(IS_RC_MODE_ACTIVE(BOXNAVWP) || IS_RC_MODE_ACTIVE(BOXNAVRTH)))) ||
-//                                      (autonomousNavIsPossible && !IS_RC_MODE_ACTIVE(BOXNAVRTH));
-//
-//            if ((!posControl.rthSanityChecker.rthSanityOK || !autonomousNavIsPossible) && (!emergLandingCancel || FLIGHT_MODE(FAILSAFE_MODE))) {
-//                return NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING;
-//            }
-//        }
-//        posControl.rthSanityChecker.rthSanityOK = true;
-//
-//        // Keep canActivateWaypoint flag at FALSE if there is no mission loaded
-//        // Also block WP mission if we are executing RTH
-//        if (!isWaypointMissionValid() || isExecutingRTH) {
-//            canActivateWaypoint = false;
-//        }
-//
-//        /* Airplane specific modes */
-//        if (STATE(AIRPLANE)) {
-//            // LAUNCH mode has priority over any other NAV mode
-//            if (isNavLaunchEnabled()) {     // FIXME: Only available for fixed wing aircrafts now
-//                if (canActivateLaunchMode) {
-//                    canActivateLaunchMode = false;
-//                    return NAV_FSM_EVENT_SWITCH_TO_LAUNCH;
-//                }
-//                else if FLIGHT_MODE(NAV_LAUNCH_MODE) {
-//                    // Make sure we don't bail out to IDLE
-//                    return NAV_FSM_EVENT_NONE;
-//                }
-//            }
-//            else {
-//                // If we were in LAUNCH mode - force switch to IDLE only if the throttle is low or throttle stick < launch idle throttle
-//                if (FLIGHT_MODE(NAV_LAUNCH_MODE)) {
-//                    if (abortLaunchAllowed()) {
-//                        return NAV_FSM_EVENT_SWITCH_TO_IDLE;
-//                    } else {
-//                        return NAV_FSM_EVENT_NONE;
-//                    }
-//                }
-//            }
-//
-//            /* Soaring mode, disables altitude control in Position hold and Course hold modes.
-//             * Pitch allowed to freefloat within defined Angle mode deadband */
-//            if (IS_RC_MODE_ACTIVE(BOXSOARING) && (FLIGHT_MODE(NAV_POSHOLD_MODE) || FLIGHT_MODE(NAV_COURSE_HOLD_MODE))) {
-//                if (!FLIGHT_MODE(SOARING_MODE)) {
-//                    ENABLE_FLIGHT_MODE(SOARING_MODE);
-//                }
-//            } else {
-//                DISABLE_FLIGHT_MODE(SOARING_MODE);
-//            }
-//        }
-//
-//        // Failsafe_RTH (can override MANUAL)
-//        if (posControl.flags.forcedRTHActivated) {
-//            // If we request forced RTH - attempt to activate it no matter what
-//            // This might switch to emergency landing controller if GPS is unavailable
-//            return NAV_FSM_EVENT_SWITCH_TO_RTH;
-//        }
-//
-//        /* Pilot-triggered RTH (can override MANUAL), also fall-back for WP if there is no mission loaded
-//         * Prevent MANUAL falling back to RTH if selected during active mission (canActivateWaypoint is set false on MANUAL selection)
-//         * Also prevent WP falling back to RTH if WP mission planner is active */
-//        const bool blockWPFallback = IS_RC_MODE_ACTIVE(BOXMANUAL) || posControl.flags.wpMissionPlannerActive;
-//        if (IS_RC_MODE_ACTIVE(BOXNAVRTH) || (IS_RC_MODE_ACTIVE(BOXNAVWP) && !canActivateWaypoint && !blockWPFallback)) {
-//            // Check for isExecutingRTH to prevent switching our from RTH in case of a brief GPS loss
-//            // If don't keep this, loss of any of the canActivateNavigation && canActivateAltHold
-//            // will kick us out of RTH state machine via NAV_FSM_EVENT_SWITCH_TO_IDLE and will prevent any of the fall-back
-//            // logic to kick in (waiting for GPS on airplanes, switch to emergency landing etc)
-//            if (isExecutingRTH || (canActivateNavigation && canActivateAltHold && STATE(GPS_FIX_HOME))) {
-//                return NAV_FSM_EVENT_SWITCH_TO_RTH;
-//            }
-//        }
-//
-//        // MANUAL mode has priority over WP/PH/AH
-//        if (IS_RC_MODE_ACTIVE(BOXMANUAL)) {
-//            canActivateWaypoint = false;    // Block WP mode if we are in PASSTHROUGH mode
-//            return NAV_FSM_EVENT_SWITCH_TO_IDLE;
-//        }
-//
-//        // Pilot-activated waypoint mission. Fall-back to RTH in case of no mission loaded
-//        // Block activation if using WP Mission Planner
-//        // Also check multimission mission change status before activating WP mode
-//#ifdef USE_MULTI_MISSION
-//        if (updateWpMissionChange() && IS_RC_MODE_ACTIVE(BOXNAVWP) && !posControl.flags.wpMissionPlannerActive) {
-//#else
-//        if (IS_RC_MODE_ACTIVE(BOXNAVWP) && !posControl.flags.wpMissionPlannerActive) {
-//#endif
-//            if (FLIGHT_MODE(NAV_WP_MODE) || (canActivateWaypoint && canActivateNavigation && canActivateAltHold && STATE(GPS_FIX_HOME)))
-//                return NAV_FSM_EVENT_SWITCH_TO_WAYPOINT;
-//        }
-//        else {
-//            // Arm the state variable if the WP BOX mode is not enabled
-//            canActivateWaypoint = true;
-//        }
-//
-//        if (IS_RC_MODE_ACTIVE(BOXNAVPOSHOLD)) {
-//            if (FLIGHT_MODE(NAV_POSHOLD_MODE) || (canActivatePosHold && canActivateAltHold))
-//                return NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D;
-//        }
-//
-//        // CRUISE has priority over COURSE_HOLD and AH
-//        if (IS_RC_MODE_ACTIVE(BOXNAVCRUISE)) {
-//            if ((FLIGHT_MODE(NAV_COURSE_HOLD_MODE) && FLIGHT_MODE(NAV_ALTHOLD_MODE)) || (canActivatePosHold && canActivateAltHold))
-//                return NAV_FSM_EVENT_SWITCH_TO_CRUISE;
-//        }
-//
-//        // PH has priority over COURSE_HOLD
-//        // CRUISE has priority on AH
-//        if (IS_RC_MODE_ACTIVE(BOXNAVCOURSEHOLD)) {
-//            if (IS_RC_MODE_ACTIVE(BOXNAVALTHOLD) && ((FLIGHT_MODE(NAV_COURSE_HOLD_MODE) && FLIGHT_MODE(NAV_ALTHOLD_MODE)) || (canActivatePosHold && canActivateAltHold))) {
-//                return NAV_FSM_EVENT_SWITCH_TO_CRUISE;
-//            }
-//
-//            if (FLIGHT_MODE(NAV_COURSE_HOLD_MODE) || (canActivatePosHold)) {
-//                return NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD;
-//            }
-//        }
-//
-//        if (IS_RC_MODE_ACTIVE(BOXNAVALTHOLD)) {
-//            if ((FLIGHT_MODE(NAV_ALTHOLD_MODE)) || (canActivateAltHold))
-//                return NAV_FSM_EVENT_SWITCH_TO_ALTHOLD;
-//        }
-//    }
-//    else {
-//        canActivateWaypoint = false;
-//
-//        // Launch mode can be activated if feature FW_LAUNCH is enabled or BOX is turned on prior to arming (avoid switching to LAUNCH in flight)
-//        canActivateLaunchMode = isNavLaunchEnabled();
-//    }
-//
-//    return NAV_FSM_EVENT_SWITCH_TO_IDLE;
-//}
-//
-///*-----------------------------------------------------------
-// * An indicator that throttle tilt compensation is forced
-// *-----------------------------------------------------------*/
+
+        // Flags if we can activate certain nav modes (check if we have required sensors and they provide valid data)
+        const bool canActivateAltHold    = canActivateAltHoldMode();
+        const bool canActivatePosHold    = canActivatePosHoldMode();
+        const bool canActivateNavigation = canActivateNavigationModes();
+        const bool isExecutingRTH        = navGetStateFlags(posControl.navState) & NAV_AUTO_RTH;
+#ifdef USE_SAFE_HOME
+        checkSafeHomeState(isExecutingRTH || posControl.flags.forcedRTHActivated);
+#endif
+        // deactivate rth trackback if RTH not active
+        if (posControl.flags.rthTrackbackActive) {
+            posControl.flags.rthTrackbackActive = isExecutingRTH;
+        }
+
+        /* Emergency landing controlled manually by rapid switching of Poshold mode.
+         * Landing toggled ON or OFF for each Poshold activation sequence */
+        checkManualEmergencyLandingControl();
+
+        /* Emergency landing triggered by failsafe Landing or manually initiated */
+        if (posControl.flags.forcedEmergLandingActivated || posControl.flags.manualEmergLandActive) {
+            return NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING;
+        }
+
+        /* Keep Emergency landing mode active once triggered.
+         * If caused by sensor failure - landing auto cancelled if sensors working again or when WP and RTH deselected or if Althold selected.
+         * If caused by RTH Sanity Checking - landing cancelled if RTH deselected.
+         * Remains active if failsafe active regardless of mode selections */
+        if (navigationIsExecutingAnEmergencyLanding()) {
+            bool autonomousNavIsPossible = canActivateNavigation && canActivateAltHold && STATE(GPS_FIX_HOME);
+            bool emergLandingCancel = (!autonomousNavIsPossible &&
+                                      ((IS_RC_MODE_ACTIVE(BOXNAVALTHOLD) && canActivateAltHold) || !(IS_RC_MODE_ACTIVE(BOXNAVWP) || IS_RC_MODE_ACTIVE(BOXNAVRTH)))) ||
+                                      (autonomousNavIsPossible && !IS_RC_MODE_ACTIVE(BOXNAVRTH));
+
+            if ((!posControl.rthSanityChecker.rthSanityOK || !autonomousNavIsPossible) && (!emergLandingCancel || FLIGHT_MODE(FAILSAFE_MODE))) {
+                return NAV_FSM_EVENT_SWITCH_TO_EMERGENCY_LANDING;
+            }
+        }
+        posControl.rthSanityChecker.rthSanityOK = true;
+
+        // Keep canActivateWaypoint flag at FALSE if there is no mission loaded
+        // Also block WP mission if we are executing RTH
+        if (!isWaypointMissionValid() || isExecutingRTH) {
+            canActivateWaypoint = false;
+        }
+
+        // Failsafe_RTH (can override MANUAL)
+        if (posControl.flags.forcedRTHActivated) {
+            // If we request forced RTH - attempt to activate it no matter what
+            // This might switch to emergency landing controller if GPS is unavailable
+            return NAV_FSM_EVENT_SWITCH_TO_RTH;
+        }
+
+        /* Pilot-triggered RTH (can override MANUAL), also fall-back for WP if there is no mission loaded
+         * Prevent MANUAL falling back to RTH if selected during active mission (canActivateWaypoint is set false on MANUAL selection)
+         * Also prevent WP falling back to RTH if WP mission planner is active */
+        const bool blockWPFallback = IS_RC_MODE_ACTIVE(BOXMANUAL) || posControl.flags.wpMissionPlannerActive;
+        if (IS_RC_MODE_ACTIVE(BOXNAVRTH) || (IS_RC_MODE_ACTIVE(BOXNAVWP) && !canActivateWaypoint && !blockWPFallback)) {
+            // Check for isExecutingRTH to prevent switching our from RTH in case of a brief GPS loss
+            // If don't keep this, loss of any of the canActivateNavigation && canActivateAltHold
+            // will kick us out of RTH state machine via NAV_FSM_EVENT_SWITCH_TO_IDLE and will prevent any of the fall-back
+            // logic to kick in (waiting for GPS on airplanes, switch to emergency landing etc)
+            if (isExecutingRTH || (canActivateNavigation && canActivateAltHold && STATE(GPS_FIX_HOME))) {
+                return NAV_FSM_EVENT_SWITCH_TO_RTH;
+            }
+        }
+
+        // MANUAL mode has priority over WP/PH/AH
+        if (IS_RC_MODE_ACTIVE(BOXMANUAL)) {
+            canActivateWaypoint = false;    // Block WP mode if we are in PASSTHROUGH mode
+            return NAV_FSM_EVENT_SWITCH_TO_IDLE;
+        }
+
+        // Pilot-activated waypoint mission. Fall-back to RTH in case of no mission loaded
+        // Block activation if using WP Mission Planner
+        // Also check multimission mission change status before activating WP mode
+#ifdef USE_MULTI_MISSION
+        if (updateWpMissionChange() && IS_RC_MODE_ACTIVE(BOXNAVWP) && !posControl.flags.wpMissionPlannerActive) {
+#else
+        if (IS_RC_MODE_ACTIVE(BOXNAVWP) && !posControl.flags.wpMissionPlannerActive) {
+#endif
+            if (FLIGHT_MODE(NAV_WP_MODE) || (canActivateWaypoint && canActivateNavigation && canActivateAltHold && STATE(GPS_FIX_HOME)))
+                return NAV_FSM_EVENT_SWITCH_TO_WAYPOINT;
+        }
+        else {
+            // Arm the state variable if the WP BOX mode is not enabled
+            canActivateWaypoint = true;
+        }
+
+        if (IS_RC_MODE_ACTIVE(BOXNAVPOSHOLD)) {
+            if (FLIGHT_MODE(NAV_POSHOLD_MODE) || (canActivatePosHold && canActivateAltHold))
+                return NAV_FSM_EVENT_SWITCH_TO_POSHOLD_3D;
+        }
+
+        // CRUISE has priority over COURSE_HOLD and AH
+        if (IS_RC_MODE_ACTIVE(BOXNAVCRUISE)) {
+            if ((FLIGHT_MODE(NAV_COURSE_HOLD_MODE) && FLIGHT_MODE(NAV_ALTHOLD_MODE)) || (canActivatePosHold && canActivateAltHold))
+                return NAV_FSM_EVENT_SWITCH_TO_CRUISE;
+        }
+
+        // PH has priority over COURSE_HOLD
+        // CRUISE has priority on AH
+        if (IS_RC_MODE_ACTIVE(BOXNAVCOURSEHOLD)) {
+            if (IS_RC_MODE_ACTIVE(BOXNAVALTHOLD) && ((FLIGHT_MODE(NAV_COURSE_HOLD_MODE) && FLIGHT_MODE(NAV_ALTHOLD_MODE)) || (canActivatePosHold && canActivateAltHold))) {
+                return NAV_FSM_EVENT_SWITCH_TO_CRUISE;
+            }
+
+            if (FLIGHT_MODE(NAV_COURSE_HOLD_MODE) || (canActivatePosHold)) {
+                return NAV_FSM_EVENT_SWITCH_TO_COURSE_HOLD;
+            }
+        }
+
+        if (IS_RC_MODE_ACTIVE(BOXNAVALTHOLD)) {
+            if ((FLIGHT_MODE(NAV_ALTHOLD_MODE)) || (canActivateAltHold))
+                return NAV_FSM_EVENT_SWITCH_TO_ALTHOLD;
+        }
+    }
+    else {
+        canActivateWaypoint = false;
+
+        // Launch mode can be activated if feature FW_LAUNCH is enabled or BOX is turned on prior to arming (avoid switching to LAUNCH in flight)
+        canActivateLaunchMode = isNavLaunchEnabled();
+    }
+
+    return NAV_FSM_EVENT_SWITCH_TO_IDLE;
+}
+
+/*-----------------------------------------------------------
+ * An indicator that throttle tilt compensation is forced
+ *-----------------------------------------------------------*/
 //bool navigationRequiresThrottleTiltCompensation(void)
 //{
 //    return !STATE(FIXED_WING_LEGACY) && (navGetStateFlags(posControl.navState) & NAV_REQUIRE_THRTILT);
@@ -3823,12 +3789,12 @@ void applyWaypointNavigationAndAltitudeHold(void)
 //        return NAV_HEADING_CONTROL_NONE;
 //    }
 //}
-//
-//bool navigationTerrainFollowingEnabled(void)
-//{
-//    return posControl.flags.isTerrainFollowEnabled;
-//}
-//
+
+bool navigationTerrainFollowingEnabled(void)
+{
+    return posControl.flags.isTerrainFollowEnabled;
+}
+
 //uint32_t distanceToFirstWP(void)
 //{
 //    fpVector3_t startingWaypointPos;
@@ -4007,7 +3973,7 @@ void updateWaypointsAndNavigationMode(void)
     //updateFlightBehaviorModifiers();
 
     // Process switch to a different navigation mode (if needed)
-    //navProcessFSMEvents(selectNavEventFromBoxModeInput());
+    navProcessFSMEvents(selectNavEventFromBoxModeInput());
 
     // Process pilot's RC input to adjust behaviour
     processNavigationRCAdjustments();
@@ -4277,12 +4243,12 @@ void navigationInit(void)
 //    return (navGetStateFlags(posControl.navState) & NAV_AUTO_RTH) && IS_RC_MODE_ACTIVE(BOXNAVWP) &&
 //           !(IS_RC_MODE_ACTIVE(BOXNAVRTH) || posControl.flags.forcedRTHActivated);
 //}
-//
-//bool navigationIsExecutingAnEmergencyLanding(void)
-//{
-//    return navGetCurrentStateFlags() & NAV_CTL_EMERG;
-//}
-//
+
+bool navigationIsExecutingAnEmergencyLanding(void)
+{
+    return navGetCurrentStateFlags() & NAV_CTL_EMERG;
+}
+
 //bool navigationInAutomaticThrottleMode(void)
 //{
 //    navigationFSMStateFlags_t stateFlags = navGetCurrentStateFlags();
@@ -4319,12 +4285,12 @@ void navigationInit(void)
 //    return allow == NAV_RTH_ALLOW_LANDING_ALWAYS ||
 //        (allow == NAV_RTH_ALLOW_LANDING_FS_ONLY && FLIGHT_MODE(FAILSAFE_MODE));
 //}
-//
-//bool isNavLaunchEnabled(void)
-//{
-//    return IS_RC_MODE_ACTIVE(BOXNAVLAUNCH) || feature(FEATURE_FW_LAUNCH);
-//}
-//
+
+bool isNavLaunchEnabled(void)
+{
+    return IS_RC_MODE_ACTIVE(BOXNAVLAUNCH) || feature(FEATURE_FW_LAUNCH);
+}
+
 //bool abortLaunchAllowed(void)
 //{
 //    // allow NAV_LAUNCH_MODE to be aborted if throttle is low or throttle stick position is < launch idle throttle setting

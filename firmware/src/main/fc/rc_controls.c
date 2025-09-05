@@ -424,7 +424,7 @@ int32_t getRcStickDeflection(int32_t axis, uint16_t midrc) {
 
 void rcControlsInit(void)
 {
-    //analyzeModeActivationConditions();
+    analyzeModeActivationConditions();
     //isUsingSticksToArm = !isModeActivationConditionPresent(BOXARM) && systemConfig.enableStickArming;
 }
 

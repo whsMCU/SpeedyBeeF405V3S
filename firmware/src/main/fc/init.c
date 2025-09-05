@@ -81,6 +81,7 @@
 
 //#include "msp/msp.h"
 //#include "msp/msp_serial.h"
+#include "msp/fc_msp.h"
 
 #include "navigation/navigation.h"
 
@@ -183,6 +184,21 @@ void init(void)
 	////////////////////////////////////////
 
 	imuInit();
+
+  DISABLE_STATE(FIXED_WING_LEGACY);
+  DISABLE_STATE(MULTIROTOR);
+  DISABLE_STATE(ROVER);
+  DISABLE_STATE(BOAT);
+  DISABLE_STATE(AIRPLANE);
+  DISABLE_STATE(MOVE_FORWARD_ONLY);
+
+  ENABLE_STATE(MULTIROTOR);
+  ENABLE_STATE(ALTITUDE_CONTROL);
+
+  // Sensors have now been detected, mspFcInit() can now be called
+  // to set the boxes up
+  mspFcInit();
+
 //    failsafeInit();
 //
     rxInit();
@@ -235,6 +251,14 @@ void init(void)
     telemetryInit();
 #endif
     tasksInit();
+
+    MSP_SET_MODE_RANGE(0,  0, 0, 1700, 2100); // SE : Arming
+    MSP_SET_MODE_RANGE(1,  5, 1, 1700, 2100); // SA : HEADFREE
+    MSP_SET_MODE_RANGE(2,  3, 2, 1300, 2100); // SB : ALTHOLD
+    MSP_SET_MODE_RANGE(3, 11, 2, 1700, 2100); // SB : POSHOLD
+    MSP_SET_MODE_RANGE(4, 27, 4, 1700, 2100); // SD : FALISAFE
+    MSP_SET_MODE_RANGE(5, 30, 5, 1700, 2100); // SF : HOME RESET
+    //MSP_SET_MODE_RANGE(6, 39, 4, 1700, 2100);
 }
 
 void Param_Config_Init(void)

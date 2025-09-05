@@ -102,6 +102,7 @@
 #include "msp/msp.h"
 #include "msp/msp_protocol.h"
 #include "msp/msp_serial.h"
+#include "msp/msp_box.h"
 
 #include "navigation/navigation.h"
 #include "navigation/navigation_private.h" //for MSP_SIMULATOR
@@ -1835,7 +1836,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
 //            return MSP_RESULT_ERROR;
         break;
 
-    case MSP_SET_MODE_RANGE:
+//    case MSP_SET_MODE_RANGE:
 //        sbufReadU8Safe(&tmp_u8, src);
 //        if ((dataSize == 5) && (tmp_u8 < MAX_MODE_ACTIVATION_CONDITION_COUNT)) {
 //            modeActivationCondition_t *mac = modeActivationConditionsMutable(tmp_u8);
@@ -1854,7 +1855,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
 //        } else {
 //            return MSP_RESULT_ERROR;
 //        }
-        break;
+//        break;
 
     case MSP_SET_ADJUSTMENT_RANGE:
 //        sbufReadU8Safe(&tmp_u8, src);
@@ -3982,7 +3983,7 @@ mspResult_e mspFcProcessCommand(mspPacket_t *cmd, mspPacket_t *reply, mspPostPro
 /*
  * Return a pointer to the process command function
  */
-//void mspFcInit(void)
-//{
-//    initActiveBoxIds();
-//}
+void mspFcInit(void)
+{
+    initActiveBoxIds();
+}

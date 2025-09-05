@@ -453,7 +453,6 @@ void gpsSetFixState(bool state)
 {
     if (state) {
         ENABLE_STATE(GPS_FIX);
-        ENABLE_STATE(GPS_FIX_EVER);
     } else {
         DISABLE_STATE(GPS_FIX);
     }
@@ -611,7 +610,7 @@ void gpsUpdate(uint32_t currentTimeUs)
 {
   if(STATE(GPS_FIX) && GpsNav.GPS_numSat >= 5)
   {
-    if(!FLIGHT_MODE(GPS_HOME_MODE) && ARMING_FLAG(ARMED))    //if home is not set set home position to WP#0 and activate it
+    if(!FLIGHT_MODE(NAV_RTH_MODE) && ARMING_FLAG(ARMED))    //if home is not set set home position to WP#0 and activate it
     {
       GPS_reset_home_position();
     }
@@ -633,7 +632,7 @@ void gpsUpdate(uint32_t currentTimeUs)
     //calculate the current velocity based on gps coordinates continously to get a valid speed at the moment when we start navigating
     GPS_calc_velocity();
 
-    if (STATE(GPS_HOLD_MODE) || STATE(GPS_HOME_MODE)){    //ok we are navigating
+    if (STATE(NAV_POSHOLD_MODE) || STATE(NAV_RTH_MODE)){    //ok we are navigating
       //do gps nav calculations here, these are common for nav and poshold
       #if defined(GPS_LEAD_FILTER)
         GPS_distance_cm_bearing(&GPS_coord_lead[LAT],&GPS_coord_lead[LON],&GPS_WP[LAT],&GPS_WP[LON],&wp_distance,&target_bearing);

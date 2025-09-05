@@ -654,3 +654,5 @@ extern uint16_t navFlags;
 extern uint16_t navEPH;
 extern uint16_t navEPV;
 extern int16_t navAccNEU[3];
+
+void calculateInitialHoldPosition(fpVector3_t * pos);

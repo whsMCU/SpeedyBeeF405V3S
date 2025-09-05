@@ -22,6 +22,8 @@
 
 #include "hw.h"
 
+#include "common/time.h"
+
 
 #define STICK_CHANNEL_COUNT 4
 
@@ -243,7 +245,7 @@ bool rxUpdateCheck(uint32_t currentTimeUs, int32_t currentDeltaTimeUs);
 void rxFrameCheck(uint32_t currentTimeUs, int32_t currentDeltaTimeUs);
 bool rxIsReceivingSignal(void);
 bool rxAreFlightChannelsValid(void);
-bool calculateRxChannels(uint32_t currentTimeUs);
+bool calculateRxChannelsAndUpdateFailsafe(uint32_t currentTimeUs);
 
 struct rxConfig_s;
 
@@ -288,6 +290,9 @@ int32_t rxGetFrameDelta(int32_t *frameAgeUs);
 uint32_t rxFrameTimeUs(void);
 
 int8_t calculateThrottlePercent(void);
+uint8_t calculateThrottlePercentAbs(void);
 
 void taskUpdateRxMain(uint32_t currentTimeUs);
 void processRxModes(uint32_t currentTimeUs);
+
+bool processRx(timeUs_t currentTimeUs);

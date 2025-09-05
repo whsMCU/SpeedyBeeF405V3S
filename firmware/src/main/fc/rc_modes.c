@@ -35,7 +35,7 @@
 
 #include "rc_modes.h"
 
-//#include "msp_box.h"
+#include "msp_box.h"
 
 #define STICKY_MODE_BOOT_DELAY_US 5e6
 
@@ -82,8 +82,8 @@ bool isRangeActive(uint8_t auxChannelIndex, const channelRange_t *range) {
     }
 
     const uint16_t channelValue = constrain(rcData[auxChannelIndex + NON_AUX_CHANNEL_COUNT], CHANNEL_RANGE_MIN, CHANNEL_RANGE_MAX - 1);
-    return (channelValue >= 900 + (range->startStep * 25) &&
-            channelValue < 900 + (range->endStep * 25));
+    return (channelValue >= 900 + (range->startStep * CHANNEL_RANGE_STEP_WIDTH) &&
+            channelValue < 900 + (range->endStep * CHANNEL_RANGE_STEP_WIDTH));
 }
 
 /*
@@ -140,7 +140,7 @@ void updateActivatedModes(void)
     memset(&andMask, 0, sizeof(andMask));
     memset(&newMask, 0, sizeof(newMask));
     memset(&stickyModes, 0, sizeof(stickyModes));
-    bitArraySet(&stickyModes, BOXPARALYZE);
+    //bitArraySet(&stickyModes, BOXFAILSAFE);
 
     // determine which conditions set/clear the mode
     for (int i = 0; i < activeMacCount; i++) {
@@ -251,26 +251,26 @@ void analyzeModeActivationConditions(void)
 #endif
 }
 
-//void MSP_SET_MODE_RANGE(uint32_t i, uint8_t boxId, uint8_t auxChannelIndex, uint32_t start, uint32_t end){
-//	uint32_t start_value = CHANNEL_VALUE_TO_STEP(start);
-//	uint32_t end_value = CHANNEL_VALUE_TO_STEP(end);
-//	  //i = sbufReadU8(src);
-//	  if (i < MAX_MODE_ACTIVATION_CONDITION_COUNT) {
-//	      modeActivationCondition_t *mac = &modeActivationConditions[i];
-//	      //i = sbufReadU8(src);
-//	      const box_t *box = findBoxByPermanentId(boxId);
-//	      if (box) {
-//	          mac->modeId = box->boxId;
-//	          mac->auxChannelIndex = auxChannelIndex;
-//	          mac->range.startStep = (uint8_t)start_value;
-//	          mac->range.endStep = (uint8_t)end_value;
-////	          if (sbufBytesRemaining(src) != 0) {
-////	              mac->modeLogic = sbufReadU8(src);
-////
-////	              i = sbufReadU8(src);
-////	              mac->linkedTo = findBoxByPermanentId(i)->boxId;
-////	          }
-//	          rcControlsInit();
-//	      }
-//	  }
-//}
+void MSP_SET_MODE_RANGE(uint32_t i, uint8_t boxId, uint8_t auxChannelIndex, uint32_t start, uint32_t end){
+	uint32_t start_value = CHANNEL_VALUE_TO_STEP(start);
+	uint32_t end_value = CHANNEL_VALUE_TO_STEP(end);
+	  //i = sbufReadU8(src);
+	  if (i < MAX_MODE_ACTIVATION_CONDITION_COUNT) {
+	      modeActivationCondition_t *mac = &modeActivationConditions[i];
+	      //i = sbufReadU8(src);
+	      const box_t *box = findBoxByPermanentId(boxId);
+	      if (box) {
+	          mac->modeId = box->boxId;
+	          mac->auxChannelIndex = auxChannelIndex;
+	          mac->range.startStep = (uint8_t)start_value;
+	          mac->range.endStep = (uint8_t)end_value;
+//	          if (sbufBytesRemaining(src) != 0) {
+//	              mac->modeLogic = sbufReadU8(src);
+//
+//	              i = sbufReadU8(src);
+//	              mac->linkedTo = findBoxByPermanentId(i)->boxId;
+//	          }
+	          rcControlsInit();
+	      }
+	  }
+}
