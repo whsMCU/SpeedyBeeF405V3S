@@ -124,6 +124,15 @@ static void updateAltitudeThrottleController_MC(timeDelta_t deltaMicros)
     posControl.rcAdjustment[THROTTLE] = constrain(posControl.rcAdjustment[THROTTLE], thrAdjustmentMin, thrAdjustmentMax);
 
     posControl.rcAdjustment[THROTTLE] = constrain((int16_t)1500 + posControl.rcAdjustment[THROTTLE], 1050, 2000);
+
+    DEBUG_SET(DEBUG_PIDLOOP, 0, (posControl.desiredState.vel.z));
+    DEBUG_SET(DEBUG_PIDLOOP, 1, (navGetCurrentActualPositionAndVelocity()->vel.z));
+    DEBUG_SET(DEBUG_PIDLOOP, 2, (posControl.pids.vel[Z].proportional));
+    DEBUG_SET(DEBUG_PIDLOOP, 3, (posControl.pids.vel[Z].integral));
+    DEBUG_SET(DEBUG_PIDLOOP, 4, (posControl.pids.vel[Z].derivative));
+    DEBUG_SET(DEBUG_PIDLOOP, 5, (posControl.pids.vel[Z].output_constrained));
+    DEBUG_SET(DEBUG_PIDLOOP, 6, (posControl.pids.vel[Z].feedForward));
+    DEBUG_SET(DEBUG_PIDLOOP, 7, (posControl.rcAdjustment[THROTTLE]));
 }
 
 bool adjustMulticopterAltitudeFromRCInput(void)
@@ -625,7 +634,7 @@ static void updatePositionAccelController_MC(timeDelta_t deltaMicros, float maxA
         newAccelX = newAccelX * (1.0f + boostFactor);
         newAccelY = newAccelY * (1.0f + boostFactor);
 
-        maxBankAngle = DEGREES_TO_DECIDEGREES(navConfig()->mc.braking_bank_angle);
+        maxBankAngle = DEGREES_TO_DECIDEGREES(navConfig.mc.braking_bank_angle);
     }
 #endif
 

@@ -271,6 +271,7 @@ typedef struct navConfig_s {
 
     struct {
         uint8_t  max_bank_angle;                // multicopter max banking angle (deg)
+        uint8_t  braking_bank_angle;            // Max angle [deg] that MR is allowed duing braking boost phase
 
 #ifdef USE_MR_BRAKING_MODE
         uint16_t braking_speed_threshold;       // above this speed braking routine might kick in

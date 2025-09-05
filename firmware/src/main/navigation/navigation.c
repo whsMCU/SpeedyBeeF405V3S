@@ -32,6 +32,8 @@
 //#include "config/parameter_group.h"
 //#include "config/parameter_group_ids.h"
 
+#include "drivers/gps/gps.h"
+
 //#include "drivers/time.h"
 
 //#include "fc/fc_core.h"
@@ -114,6 +116,7 @@ void navConfig_Init(void)
   navConfig.mc.max_angle_inclination[FD_PITCH] = 300; // Max possible inclination (roll and pitch axis separately)
   navConfig.mc.slowDownForTurning = true;             //When ON, NAV engine will slow down when switching to the next waypoint. This prioritizes turning over forward movement. When OFF, NAV engine will continue to the next waypoint and turn as it goes.
   navConfig.mc.max_bank_angle = 30;                   //Maximum banking angle (deg) that multicopter navigation is allowed to set. Machine must be able to satisfy this angle without loosing altitude
+  navConfig.mc.braking_bank_angle = 40;               //max angle that MR is allowed to bank in BOOST mode
   navConfig.mc.posDecelerationTime = 120;             //Used for stoping distance calculation. Stop position is computed as _speed_ * _nav_mc_pos_deceleration_time_ from the place where sticks are released. Braking mode overrides this setting
   navConfig.mc.posResponseExpo = 10;                  //Expo for PosHold control
 }
@@ -4327,31 +4330,31 @@ void navigationInit(void)
 //    // allow NAV_LAUNCH_MODE to be aborted if throttle is low or throttle stick position is < launch idle throttle setting
 //    return throttleStickIsLow() || throttleStickMixedValue() < currentBatteryProfile->nav.fw.launch_idle_throttle;
 //}
-//
-//int32_t navigationGetHomeHeading(void)
-//{
-//    return posControl.rthState.homePosition.heading;
-//}
-//
-//// returns m/s
+
+int32_t navigationGetHomeHeading(void)
+{
+    return posControl.rthState.homePosition.heading;
+}
+
+// returns m/s
 //float calculateAverageSpeed() {
 //    float flightTime = getFlightTime();
 //    if (flightTime == 0.0f) return 0;
 //    return (float)getTotalTravelDistance() / (flightTime * 100);
 //}
-//
-//const navigationPIDControllers_t* getNavigationPIDControllers(void) {
-//    return &posControl.pids;
-//}
-//
-//bool isAdjustingPosition(void) {
-//    return posControl.flags.isAdjustingPosition;
-//}
-//
-//bool isAdjustingHeading(void) {
-//    return posControl.flags.isAdjustingHeading;
-//}
-//
-//int32_t getCruiseHeadingAdjustment(void) {
-//    return wrap_18000(posControl.cruise.course - posControl.cruise.previousCourse);
-//}
+
+const navigationPIDControllers_t* getNavigationPIDControllers(void) {
+    return &posControl.pids;
+}
+
+bool isAdjustingPosition(void) {
+    return posControl.flags.isAdjustingPosition;
+}
+
+bool isAdjustingHeading(void) {
+    return posControl.flags.isAdjustingHeading;
+}
+
+int32_t getCruiseHeadingAdjustment(void) {
+    return wrap_18000(posControl.cruise.course - posControl.cruise.previousCourse);
+}

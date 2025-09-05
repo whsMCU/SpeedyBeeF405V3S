@@ -245,14 +245,6 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 //  DEBUG_SET(DEBUG_PIDLOOP, 5, (_PITCH.out.result));
 //  DEBUG_SET(DEBUG_PIDLOOP, 6, (bmi270.gyroADCf[Y]));
 //  DEBUG_SET(DEBUG_PIDLOOP, 7, (_PITCH.in.error));
-//  DEBUG_SET(DEBUG_PIDLOOP, 8, (_PITCH.in.result_p));
-//  DEBUG_SET(DEBUG_PIDLOOP, 9, (_PITCH.in.result_i));
-//  DEBUG_SET(DEBUG_PIDLOOP, 10, (_PITCH.in.result_d));
-//  DEBUG_SET(DEBUG_PIDLOOP, 11, (_PITCH.in.result));
-//  DEBUG_SET(DEBUG_PIDLOOP, 12, (_PITCH.in.pre_measured));
-//  DEBUG_SET(DEBUG_PIDLOOP, 13, (_PITCH.in.measured));
-//  DEBUG_SET(DEBUG_PIDLOOP, 14, (_PITCH.in.derivative));
-//  DEBUG_SET(DEBUG_PIDLOOP, 15, (_PITCH.in.derivative_filter));
 
   if((rcData[THROTTLE] < 1030 || !ARMING_FLAG(ARMED))&& _PID_Test.pid_test_flag == 0)
   {
