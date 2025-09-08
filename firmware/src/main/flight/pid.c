@@ -59,6 +59,8 @@ FAST_DATA_ZERO_INIT PID _YAW_Rate;
 
 FAST_DATA_ZERO_INIT PID_Test _PID_Test;
 
+int16_t headFreeModeHold;
+static FAST_DATA_ZERO_INIT int16_t headingHoldTarget;
 FAST_DATA_ZERO_INIT float applyCommand[4];
 static FAST_DATA_ZERO_INIT int throttleAngleCorrection;
 
@@ -136,8 +138,8 @@ void PID_Calculation(PID* axis, float set_point, float measured1, float measured
 
   if (strcmp(axis->pidName, "YAW_Heading") == 0)
   {
-    if (axis->error > 180.0f)  axis->error -= 360.0f;
-    if (axis->error < -180.0f) axis->error += 360.0f;
+    if (axis->error >= 180.0f)  axis->error -= 360.0f;
+    if (axis->error <= -180.0f) axis->error += 360.0f;
   }
 
   axis->integral += axis->error * dt;
@@ -314,4 +316,9 @@ int16_t pidAngleToRcCommand(float angleDeciDegrees, int16_t maxInclination)
 {
     angleDeciDegrees = constrainf(angleDeciDegrees, (float) -maxInclination, (float) maxInclination);
     return scaleRangef((float) angleDeciDegrees, (float) -maxInclination, (float) maxInclination, -500.0f, 500.0f);
+}
+
+void updateHeadingHoldTarget(int16_t heading)
+{
+    headingHoldTarget = heading;
 }

@@ -871,24 +871,24 @@ void calculateMulticopterInitialHoldPosition(fpVector3_t * pos)
     pos->y = navGetCurrentActualPositionAndVelocity()->pos.y + stoppingDistanceY;
 }
 
-//void resetMulticopterHeadingController(void)
-//{
-//    updateHeadingHoldTarget(CENTIDEGREES_TO_DEGREES(posControl.actualState.yaw));
-//}
-//
-//static void applyMulticopterHeadingController(void)
-//{
-//    updateHeadingHoldTarget(CENTIDEGREES_TO_DEGREES(posControl.desiredState.yaw));
-//}
+void resetMulticopterHeadingController(void)
+{
+    updateHeadingHoldTarget(CENTIDEGREES_TO_DEGREES(posControl.actualState.yaw));
+}
+
+static void applyMulticopterHeadingController(void)
+{
+    updateHeadingHoldTarget(CENTIDEGREES_TO_DEGREES(posControl.desiredState.yaw));
+}
 
 void applyMulticopterNavigationController(navigationFSMStateFlags_t navStateFlags, timeUs_t currentTimeUs)
 {
-  if (FLIGHT_MODE(RANGEFINDER_MODE))//navStateFlags & NAV_CTL_ALT
+  if (navStateFlags & NAV_CTL_ALT)
       applyMulticopterAltitudeController(currentTimeUs);
 
-  if (FLIGHT_MODE(OPFLOW_HOLD_MODE))//navStateFlags & NAV_CTL_POS
+  if (navStateFlags & NAV_CTL_POS)
       applyMulticopterPositionController(currentTimeUs);
 
-//  if (navStateFlags & NAV_CTL_YAW)
-//      applyMulticopterHeadingController();
+  if (navStateFlags & NAV_CTL_YAW)
+      applyMulticopterHeadingController();
 }

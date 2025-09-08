@@ -85,6 +85,9 @@ void mixerSetThrottleAngleCorrection(int correctionValue);
 
 int16_t pidAngleToRcCommand(float angleDeciDegrees, int16_t maxInclination);
 
+void updateHeadingHoldTarget(int16_t heading);
+
+extern int16_t headFreeModeHold;
 extern float yaw_heading_reference;
 
 #ifdef __cplusplus

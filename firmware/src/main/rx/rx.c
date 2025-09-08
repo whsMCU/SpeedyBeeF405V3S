@@ -676,15 +676,17 @@ bool processRx(timeUs_t currentTimeUs)
 }
 
 unsigned short rx_SwArm_Prev = 0;
+bool armingSwitchIsActive;
 void processRxModes(uint32_t currentTimeUs)
 {
+  armingSwitchIsActive= IS_RC_MODE_ACTIVE(BOXARM);
 	if(rcData[ARM] == 2000 && rx_SwArm_Prev != 2000)
 	{
 		if(rcData[THROTTLE] <1030)
 		{
 			ENABLE_ARMING_FLAG(ARMED);
 			yaw_heading_reference = (float)DECIDEGREES_TO_DEGREES(attitude.values.yaw);
-
+			headFreeModeHold = DECIDEGREES_TO_DEGREES(attitude.values.yaw);
 			imuQuaternionHeadfreeOffsetSet();
 
 #if defined(USE_DYN_NOTCH_FILTER)
@@ -709,61 +711,61 @@ void processRxModes(uint32_t currentTimeUs)
 		statsOnDisarm();
 	}
 
-	if(rcData[SD] == 2000)
-	{
-		ENABLE_FAILSAFE(FAILSAFE_RX_SWITCH);
-	}
-	else
-	{
-		DISABLE_FAILSAFE(FAILSAFE_RX_SWITCH);
-	}
+//	if(rcData[SD] == 2000)
+//	{
+//		ENABLE_FAILSAFE(FAILSAFE_RX_SWITCH);
+//	}
+//	else
+//	{
+//		DISABLE_FAILSAFE(FAILSAFE_RX_SWITCH);
+//	}
 	ENABLE_FLIGHT_MODE(ANGLE_MODE);
 
-	if(rcData[SC] >= 1500)
-	{
-    if(!FLIGHT_MODE(NAV_ALTHOLD_MODE))
-    {
-      ENABLE_FLIGHT_MODE(NAV_ALTHOLD_MODE);
-      AltHold = getEstimatedAltitudeCm();
-      initialThrottleHold = rcCommand[THROTTLE];
-      _ALT.in.integral = 0;
-      _ALT.in.result = 0;
-      _ALT.out.integral = 0;
-      _ALT.out.result = 0;
-    }
-	}else
-	{
-	  DISABLE_FLIGHT_MODE(NAV_ALTHOLD_MODE);
-	}
-
-  if(rcData[SB] >= 1500)
-  {
-    if(!FLIGHT_MODE(RANGEFINDER_MODE))
-    {
-      ENABLE_FLIGHT_MODE(RANGEFINDER_MODE);
-      resetAltitudeController(true);     // Make sure surface tracking is not enabled - RTH uses global altitude, not AGL
-      setupAltitudeController();
-      setDesiredPosition(&navGetCurrentActualPositionAndVelocity()->pos, posControl.actualState.yaw, NAV_POS_UPDATE_Z);  // This will reset surface offset
-    }
-  }else
-  {
-    DISABLE_FLIGHT_MODE(RANGEFINDER_MODE);
-  }
-
-  if(rcData[SB] >= 1900)
-  {
-    if(!FLIGHT_MODE(OPFLOW_HOLD_MODE))
-    {
-      ENABLE_FLIGHT_MODE(OPFLOW_HOLD_MODE);
-      resetPositionController();
-      fpVector3_t targetHoldPos;
-      calculateInitialHoldPosition(&targetHoldPos);
-      setDesiredPosition(&targetHoldPos, posControl.actualState.yaw, NAV_POS_UPDATE_XY | NAV_POS_UPDATE_HEADING);
-    }
-  }else
-  {
-    DISABLE_FLIGHT_MODE(OPFLOW_HOLD_MODE);
-  }
+//	if(rcData[SC] >= 1500)
+//	{
+//    if(!FLIGHT_MODE(NAV_ALTHOLD_MODE))
+//    {
+//      ENABLE_FLIGHT_MODE(NAV_ALTHOLD_MODE);
+//      AltHold = getEstimatedAltitudeCm();
+//      initialThrottleHold = rcCommand[THROTTLE];
+//      _ALT.in.integral = 0;
+//      _ALT.in.result = 0;
+//      _ALT.out.integral = 0;
+//      _ALT.out.result = 0;
+//    }
+//	}else
+//	{
+//	  DISABLE_FLIGHT_MODE(NAV_ALTHOLD_MODE);
+//	}
+//
+//  if(rcData[SB] >= 1500)
+//  {
+//    if(!FLIGHT_MODE(RANGEFINDER_MODE))
+//    {
+//      ENABLE_FLIGHT_MODE(RANGEFINDER_MODE);
+//      resetAltitudeController(true);     // Make sure surface tracking is not enabled - RTH uses global altitude, not AGL
+//      setupAltitudeController();
+//      setDesiredPosition(&navGetCurrentActualPositionAndVelocity()->pos, posControl.actualState.yaw, NAV_POS_UPDATE_Z);  // This will reset surface offset
+//    }
+//  }else
+//  {
+//    DISABLE_FLIGHT_MODE(RANGEFINDER_MODE);
+//  }
+//
+//  if(rcData[SB] >= 1900)
+//  {
+//    if(!FLIGHT_MODE(OPFLOW_HOLD_MODE))
+//    {
+//      ENABLE_FLIGHT_MODE(OPFLOW_HOLD_MODE);
+//      resetPositionController();
+//      fpVector3_t targetHoldPos;
+//      calculateInitialHoldPosition(&targetHoldPos);
+//      setDesiredPosition(&targetHoldPos, posControl.actualState.yaw, NAV_POS_UPDATE_XY | NAV_POS_UPDATE_HEADING);
+//    }
+//  }else
+//  {
+//    DISABLE_FLIGHT_MODE(OPFLOW_HOLD_MODE);
+//  }
 
 #ifdef USE_GPS1
   static uint8_t GPSNavReset = 1;
@@ -814,7 +816,7 @@ void processRxModes(uint32_t currentTimeUs)
             DISABLE_FLIGHT_MODE(HEADFREE_MODE);
         }
         if (IS_RC_MODE_ACTIVE(BOXHEADADJ)) {
-            //headFreeModeHold = DECIDEGREES_TO_DEGREES(attitude.values.yaw); // acquire new heading
+            headFreeModeHold = DECIDEGREES_TO_DEGREES(attitude.values.yaw); // acquire new heading
         }
     }
 #endif
