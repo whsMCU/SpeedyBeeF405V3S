@@ -3531,13 +3531,13 @@ void applyWaypointNavigationAndAltitudeHold(void)
 /*-----------------------------------------------------------
  * Set CF's FLIGHT_MODE from current NAV_MODE
  *-----------------------------------------------------------*/
-//void switchNavigationFlightModes(void)
-//{
-//    const flightModeFlags_e enabledNavFlightModes = navGetMappedFlightModes(posControl.navState);
-//    const flightModeFlags_e disabledFlightModes = (NAV_ALTHOLD_MODE | NAV_RTH_MODE | NAV_POSHOLD_MODE | NAV_WP_MODE | NAV_LAUNCH_MODE | NAV_COURSE_HOLD_MODE) & (~enabledNavFlightModes);
-//    DISABLE_FLIGHT_MODE(disabledFlightModes);
-//    ENABLE_FLIGHT_MODE(enabledNavFlightModes);
-//}
+void switchNavigationFlightModes(void)
+{
+    const flightModeFlags_e enabledNavFlightModes = navGetMappedFlightModes(posControl.navState);
+    const flightModeFlags_e disabledFlightModes = (NAV_ALTHOLD_MODE | NAV_RTH_MODE | NAV_POSHOLD_MODE | NAV_WP_MODE | NAV_LAUNCH_MODE | NAV_COURSE_HOLD_MODE) & (~enabledNavFlightModes);
+    DISABLE_FLIGHT_MODE(disabledFlightModes);
+    ENABLE_FLIGHT_MODE(enabledNavFlightModes);
+}
 
 /*-----------------------------------------------------------
  * desired NAV_MODE from combination of FLIGHT_MODE flags
@@ -3979,7 +3979,7 @@ void updateWaypointsAndNavigationMode(void)
     processNavigationRCAdjustments();
 
     // Map navMode back to enabled flight modes
-    //switchNavigationFlightModes();
+    switchNavigationFlightModes();
 
     // Update WP mission planner
     //updateWpMissionPlanner();

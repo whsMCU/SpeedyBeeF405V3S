@@ -59,6 +59,7 @@
 #include "rx/crsf.h"
 #include "scheduler/tasks.h"
 
+#include "sensors/sensors.h"
 #include "sensors/opflow.h"
 #include "sensors/rangefinder.h"
 
@@ -803,17 +804,20 @@ void processRxModes(uint32_t currentTimeUs)
   }
 #endif
 
-  if(rcData[SA] == 2000)
-  {
-    if(!FLIGHT_MODE(HEADFREE_MODE))
-    {
-      ENABLE_FLIGHT_MODE(HEADFREE_MODE);
+#if defined(USE_MAG)
+    if (sensors(SENSOR_ACC) || sensors(SENSOR_MAG)) {
+        if (IS_RC_MODE_ACTIVE(BOXHEADFREE)) {
+            if (!FLIGHT_MODE(HEADFREE_MODE)) {
+                ENABLE_FLIGHT_MODE(HEADFREE_MODE);
+            }
+        } else {
+            DISABLE_FLIGHT_MODE(HEADFREE_MODE);
+        }
+        if (IS_RC_MODE_ACTIVE(BOXHEADADJ)) {
+            //headFreeModeHold = DECIDEGREES_TO_DEGREES(attitude.values.yaw); // acquire new heading
+        }
     }
-  }
-  else
-  {
-    DISABLE_FLIGHT_MODE(HEADFREE_MODE);
-  }
+#endif
 
   if (!ARMING_FLAG(ARMED))
   {
