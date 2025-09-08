@@ -137,23 +137,23 @@ static void updateAltitudeThrottleController_MC(timeDelta_t deltaMicros)
 
 bool adjustMulticopterAltitudeFromRCInput(void)
 {
-//    if (posControl.flags.isTerrainFollowEnabled) {
-//        const float altTarget = scaleRangef(rcData[THROTTLE], getThrottleIdleValue(), motorConfig()->maxthrottle, 0, navConfig()->general.max_terrain_follow_altitude);
-//
-//        // In terrain follow mode we apply different logic for terrain control
-//        if (posControl.flags.estAglStatus == EST_TRUSTED && altTarget > 10.0f) {
-//            // We have solid terrain sensor signal - directly map throttle to altitude
-//            updateClimbRateToAltitudeController(0, ROC_TO_ALT_RESET);
-//            posControl.desiredState.pos.z = altTarget;
-//        }
-//        else {
-//            updateClimbRateToAltitudeController(-50.0f, ROC_TO_ALT_NORMAL);
-//        }
-//
-//        // In surface tracking we always indicate that we're adjusting altitude
-//        return true;
-//    }
-//    else {
+    if (posControl.flags.isTerrainFollowEnabled) {
+        const float altTarget = scaleRangef(rcData[THROTTLE], 1050, 2000, 0, navConfig.general.max_terrain_follow_altitude);
+
+        // In terrain follow mode we apply different logic for terrain control
+        if (posControl.flags.estAglStatus == EST_TRUSTED && altTarget > 10.0f) {
+            // We have solid terrain sensor signal - directly map throttle to altitude
+            updateClimbRateToAltitudeController(0, ROC_TO_ALT_RESET);
+            posControl.desiredState.pos.z = altTarget;
+        }
+        else {
+            updateClimbRateToAltitudeController(-50.0f, ROC_TO_ALT_NORMAL);
+        }
+
+        // In surface tracking we always indicate that we're adjusting altitude
+        return true;
+    }
+    else {
         const int16_t rcThrottleAdjustment = applyDeadbandRescaled(rcData[THROTTLE] - altHoldThrottleRCZero, rcControlsConfig.alt_hold_deadband, -500, 500);
         if (rcThrottleAdjustment) {
             // set velocity proportional to stick movement
@@ -181,7 +181,7 @@ bool adjustMulticopterAltitudeFromRCInput(void)
 
             return false;
         }
-//    }
+    }
 }
 
 void setupMulticopterAltitudeController(void)

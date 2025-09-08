@@ -55,7 +55,7 @@ void updatePositionEstimator_SurfaceTopic(timeUs_t currentTimeUs, float newSurfa
     posEstimator.surface.lastUpdateTime = currentTimeUs;
 
     if (newSurfaceAlt >= 0) {
-        if (newSurfaceAlt <= positionEstimationConfig.max_surface_altitude) {//positionEstimationConfig()->max_surface_altitude
+        if (newSurfaceAlt <= positionEstimationConfig.max_surface_altitude) {
             newReliabilityMeasurement = 1.0f;
             surfaceMeasurementWithinRange = true;
             posEstimator.surface.alt = newSurfaceAlt;

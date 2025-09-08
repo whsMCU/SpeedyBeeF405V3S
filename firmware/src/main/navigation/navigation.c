@@ -114,6 +114,7 @@ void navConfig_Init(void)
   navConfig.general.max_manual_climb_rate = 50; //Maximum climb/descent rate firmware is allowed when processing pilot input for ALTHOLD control mode [cm/s]
   navConfig.general.auto_speed = 300;           //Speed in fully autonomous modes (RTH, WP) [cm/s]. Used for WP mode when no specific WP speed set. [Multirotor only]
   navConfig.general.flags.user_control_mode = NAV_GPS_ATTI;
+  navConfig.general.max_terrain_follow_altitude = 200; // max altitude in centimeters in terrain following mode
   navConfig.mc.max_angle_inclination[FD_ROLL] = 300;  // Max possible inclination (roll and pitch axis separately)
   navConfig.mc.max_angle_inclination[FD_PITCH] = 300; // Max possible inclination (roll and pitch axis separately)
   navConfig.mc.slowDownForTurning = true;             //When ON, NAV engine will slow down when switching to the next waypoint. This prioritizes turning over forward movement. When OFF, NAV engine will continue to the next waypoint and turn as it goes.
