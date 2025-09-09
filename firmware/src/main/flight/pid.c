@@ -24,14 +24,15 @@
 
 #include "build/debug.h"
 
-#include "drivers/gps/gps.h"
+#include "common/filter.h"
 
-#include "pid.h"
+#include "drivers/gps/gps.h"
 
 #include "sensors/gyro.h"
 
 #include "flight/imu.h"
 #include "flight/position.h"
+#include "flight/pid.h"
 
 #include "fc/rc_controls.h"
 
@@ -61,6 +62,7 @@ FAST_DATA_ZERO_INIT PID_Test _PID_Test;
 
 int16_t headFreeModeHold;
 static FAST_DATA_ZERO_INIT int16_t headingHoldTarget;
+static FAST_DATA_ZERO_INIT pt1Filter_inav_t headingHoldRateFilter;
 FAST_DATA_ZERO_INIT float applyCommand[4];
 static FAST_DATA_ZERO_INIT int throttleAngleCorrection;
 
@@ -321,4 +323,10 @@ int16_t pidAngleToRcCommand(float angleDeciDegrees, int16_t maxInclination)
 void updateHeadingHoldTarget(int16_t heading)
 {
     headingHoldTarget = heading;
+}
+
+void resetHeadingHoldTarget(int16_t heading)
+{
+    updateHeadingHoldTarget(heading);
+    pt1FilterReset(&headingHoldRateFilter, 0.0f);
 }

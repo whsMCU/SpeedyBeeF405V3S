@@ -3445,7 +3445,7 @@ static void processNavigationRCAdjustments(void)
         posControl.flags.isAdjustingAltitude = false;
     }
 
-    if (FLIGHT_MODE(OPFLOW_HOLD_MODE)) {
+    if (navStateFlags & NAV_RC_POS) {
         posControl.flags.isAdjustingPosition = adjustPositionFromRCInput() && !FLIGHT_MODE(FAILSAFE_MODE);
 //        if (STATE(MULTIROTOR) && FLIGHT_MODE(FAILSAFE_MODE)) {
 //            resetMulticopterBrakingMode();
