@@ -253,7 +253,7 @@ navigationPosControl_t posControlConfig;
 
 void posControlConfig_Init(void)
 {
-  posControl.flags.isTerrainFollowEnabled = true;
+  posControl.flags.isTerrainFollowEnabled = false;
 }
 navSystemStatus_t NAV_Status;
 
