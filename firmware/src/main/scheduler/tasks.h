@@ -28,6 +28,3 @@ void tasksInitData(void);
 void tasksInit(void);
 task_t *getTask(unsigned taskId);
 
-void Encode_Msg_AHRS(unsigned char* telemetry_tx_buf);
-extern uint8_t telemetry_tx_buf[150];
-

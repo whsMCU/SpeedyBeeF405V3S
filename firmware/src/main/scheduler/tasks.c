@@ -44,6 +44,8 @@
 
 #include "flight/pid.h"
 
+#include "io/ledstrip.h"
+
 #include "scheduler/scheduler.h"
 #include "scheduler/tasks.h"
 
@@ -244,7 +246,7 @@ task_attribute_t task_attributes[TASK_COUNT] = {
 #endif
 
 #ifdef USE_LED_STRIP
-    [TASK_LEDSTRIP] = DEFINE_TASK("LEDSTRIP", NULL, NULL, ledStripUpdate, TASK_PERIOD_HZ(100), TASK_PRIORITY_LOW),
+    [TASK_LEDSTRIP] = DEFINE_TASK("LEDSTRIP", ledStripUpdate, TASK_PERIOD_HZ(100), TASK_PRIORITY_LOW),
 #endif
 
 #ifdef USE_ADC_INTERNAL

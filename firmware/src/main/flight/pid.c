@@ -277,13 +277,13 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   {
 	  PID_Calculation(&_YAW_Heading, yaw_heading_reference, imu_yaw, -bmi270.gyroADCf[Z], dT);
 
-    DEBUG_SET(DEBUG_PIDLOOP, 0, (yaw_heading_reference));
-    DEBUG_SET(DEBUG_PIDLOOP, 1, (imu_yaw));
-	  DEBUG_SET(DEBUG_PIDLOOP, 2, (_YAW_Heading.error));
-	  DEBUG_SET(DEBUG_PIDLOOP, 3, (_YAW_Heading.result_p));
-	  DEBUG_SET(DEBUG_PIDLOOP, 4, (_YAW_Heading.result_i));
-    DEBUG_SET(DEBUG_PIDLOOP, 5, (_YAW_Heading.result_d));
-	  DEBUG_SET(DEBUG_PIDLOOP, 6, (_YAW_Heading.result));
+//    DEBUG_SET(DEBUG_PIDLOOP, 0, (yaw_heading_reference));
+//    DEBUG_SET(DEBUG_PIDLOOP, 1, (imu_yaw));
+//	  DEBUG_SET(DEBUG_PIDLOOP, 2, (_YAW_Heading.error));
+//	  DEBUG_SET(DEBUG_PIDLOOP, 3, (_YAW_Heading.result_p));
+//	  DEBUG_SET(DEBUG_PIDLOOP, 4, (_YAW_Heading.result_i));
+//    DEBUG_SET(DEBUG_PIDLOOP, 5, (_YAW_Heading.result_d));
+//	  DEBUG_SET(DEBUG_PIDLOOP, 6, (_YAW_Heading.result));
 
     if(_PID_Test.pid_test_flag == 1)
     {

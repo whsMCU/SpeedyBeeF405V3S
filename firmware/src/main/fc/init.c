@@ -35,7 +35,7 @@
 #include "common/printf_serial.h"
 
 //#include "config/config.h"
-//#include "config/feature.h"
+#include "config/feature.h"
 #include "config/sdcard.h"
 
 #include "drivers/accgyro/accgyro.h"
@@ -50,6 +50,7 @@
 //#include "drivers/vtx_table.h"
 
 //#include "io/displayport_max7456.h"
+#include "io/ledstrip.h"
 
 #include "fc/board_info.h"
 #include "fc/dispatch.h"
@@ -209,6 +210,14 @@ void init(void)
     gpsInit();
 #endif
 
+#ifdef USE_LED_STRIP
+    ledStripInit();
+
+    if (featureConfigured(FEATURE_LED_STRIP)) {
+        ledStripEnable();
+    }
+#endif
+
 //#ifdef USE_ACC
 //    if (mixerConfig.mixerMode == MIXER_GIMBAL) {
 //        accStartCalibration();
@@ -304,6 +313,8 @@ void Param_Config_Init(void)
 	rcControlsConfig_Init();
 	armingConfig_Init();
 	flight3DConfig_Init();
+	ledStripConfig_Init();
+	ledStripStatusModeConfig_Init();
 #ifdef USE_OSD
 	vcdProfile_Init();
 	osdConfig_Init();

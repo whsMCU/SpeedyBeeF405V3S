@@ -91,7 +91,7 @@
 //#include "io/gps.h"
 #include "io/opflow.h"
 #include "io/rangefinder.h"
-//#include "io/ledstrip.h"
+#include "io/ledstrip.h"
 //#include "io/osd.h"
 //#include "io/serial.h"
 //#include "io/serial_4way.h"
@@ -1120,7 +1120,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
 #ifdef USE_LED_STRIP
     case MSP_LED_COLORS:
         for (int i = 0; i < LED_CONFIGURABLE_COLOR_COUNT; i++) {
-            const hsvColor_t *color = &ledStripConfig()->colors[i];
+            const hsvColor_t *color = &ledStripStatusModeConfig.colors[i];
             sbufWriteU16(dst, color->h);
             sbufWriteU8(dst, color->s);
             sbufWriteU8(dst, color->v);
@@ -1129,7 +1129,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
 
     case MSP_LED_STRIP_CONFIG:
         for (int i = 0; i < LED_MAX_STRIP_LENGTH; i++) {
-            const ledConfig_t *ledConfig = &ledStripConfig()->ledConfigs[i];
+            const ledConfig_t *ledConfig = &ledStripStatusModeConfig.ledConfigs[i];
 
             uint32_t legacyLedConfig = ledConfig->led_position;
             int shiftCount = 8;
@@ -1149,7 +1149,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
 
     case MSP2_INAV_LED_STRIP_CONFIG_EX:
         for (int i = 0; i < LED_MAX_STRIP_LENGTH; i++) {
-            const ledConfig_t *ledConfig = &ledStripConfig()->ledConfigs[i];
+            const ledConfig_t *ledConfig = &ledStripStatusModeConfig.ledConfigs[i];
             sbufWriteDataSafe(dst, ledConfig, sizeof(ledConfig_t));
         }
         break;
@@ -1160,14 +1160,14 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
             for (int j = 0; j < LED_DIRECTION_COUNT; j++) {
                 sbufWriteU8(dst, i);
                 sbufWriteU8(dst, j);
-                sbufWriteU8(dst, ledStripConfig()->modeColors[i].color[j]);
+                sbufWriteU8(dst, ledStripStatusModeConfig.modeColors[i].color[j]);
             }
         }
 
         for (int j = 0; j < LED_SPECIAL_COLOR_COUNT; j++) {
             sbufWriteU8(dst, LED_MODE_COUNT);
             sbufWriteU8(dst, j);
-            sbufWriteU8(dst, ledStripConfig()->specialColors.color[j]);
+            sbufWriteU8(dst, ledStripStatusModeConfig.specialColors.color[j]);
         }
         break;
 #endif
@@ -2941,7 +2941,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
             if (tmp_u8 >= LED_MAX_STRIP_LENGTH) {
                 return MSP_RESULT_ERROR;
             }
-            ledConfig_t *ledConfig = &ledStripConfigMutable()->ledConfigs[tmp_u8];
+            ledConfig_t *ledConfig = &ledStripStatusModeConfig.ledConfigs[tmp_u8];
 
             uint32_t legacyConfig = sbufReadU32(src);
 
@@ -2963,7 +2963,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
             if (tmp_u8 >= LED_MAX_STRIP_LENGTH) {
                 return MSP_RESULT_ERROR;
             }
-            ledConfig_t *ledConfig = &ledStripConfigMutable()->ledConfigs[tmp_u8];
+            ledConfig_t *ledConfig = &ledStripStatusModeConfig.ledConfigs[tmp_u8];
             sbufReadDataSafe(src, ledConfig, sizeof(ledConfig_t));
             reevaluateLedConfig();
         } else
