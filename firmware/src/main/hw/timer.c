@@ -11,7 +11,7 @@
 TIM_HandleTypeDef htim4;
 TIM_HandleTypeDef htim5;
 TIM_HandleTypeDef htim8;
-DMA_HandleTypeDef hdma_tim8_up;
+DMA_HandleTypeDef hdma_tim8_ch4_trig_com;
 
 static void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
@@ -127,9 +127,9 @@ bool timerInit()
 
   /* USER CODE END TIM8_Init 1 */
   htim8.Instance = TIM8;
-  htim8.Init.Prescaler = 3;
+  htim8.Init.Prescaler = 3;//(0)
   htim8.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim8.Init.Period = 52; // 800kHz
+  htim8.Init.Period = 52; // 800kHz, (104) 1.25us period
   htim8.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim8.Init.RepetitionCounter = 0;
   htim8.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -142,19 +142,20 @@ bool timerInit()
   {
     Error_Handler();
   }
-  if (HAL_TIM_OC_Init(&htim8) != HAL_OK)
+  if (HAL_TIM_PWM_Init(&htim8) != HAL_OK)
   {
     Error_Handler();
   }
-  sMasterConfig2.MasterOutputTrigger = TIM_TRGO_RESET;
-  sMasterConfig2.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim8, &sMasterConfig2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sConfigOC2.OCMode = TIM_OCMODE_TIMING;
+//  sMasterConfig2.MasterOutputTrigger = TIM_TRGO_RESET;
+//  sMasterConfig2.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+//  if (HAL_TIMEx_MasterConfigSynchronization(&htim8, &sMasterConfig2) != HAL_OK)
+//  {
+//    Error_Handler();
+//  }
+  sConfigOC2.OCMode = TIM_OCMODE_PWM1;
   sConfigOC2.Pulse = 0;
   sConfigOC2.OCPolarity = TIM_OCPOLARITY_HIGH;
+  //sConfigOC2.OCNPolarity = TIM_OCNPOLARITY_LOW;
   sConfigOC2.OCFastMode = TIM_OCFAST_DISABLE;
   sConfigOC2.OCIdleState = TIM_OCIDLESTATE_RESET;
   sConfigOC2.OCNIdleState = TIM_OCNIDLESTATE_RESET;
@@ -162,21 +163,26 @@ bool timerInit()
   {
     Error_Handler();
   }
-  sBreakDeadTimeConfig2.OffStateRunMode = TIM_OSSR_DISABLE;
-  sBreakDeadTimeConfig2.OffStateIDLEMode = TIM_OSSI_DISABLE;
-  sBreakDeadTimeConfig2.LockLevel = TIM_LOCKLEVEL_OFF;
-  sBreakDeadTimeConfig2.DeadTime = 0;
-  sBreakDeadTimeConfig2.BreakState = TIM_BREAK_DISABLE;
-  sBreakDeadTimeConfig2.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
-  sBreakDeadTimeConfig2.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
-  if (HAL_TIMEx_ConfigBreakDeadTime(&htim8, &sBreakDeadTimeConfig2) != HAL_OK)
-  {
-    Error_Handler();
-  }
+//  sBreakDeadTimeConfig2.OffStateRunMode = TIM_OSSR_DISABLE;
+//  sBreakDeadTimeConfig2.OffStateIDLEMode = TIM_OSSI_DISABLE;
+//  sBreakDeadTimeConfig2.LockLevel = TIM_LOCKLEVEL_OFF;
+//  sBreakDeadTimeConfig2.DeadTime = 0;
+//  sBreakDeadTimeConfig2.BreakState = TIM_BREAK_DISABLE;
+//  sBreakDeadTimeConfig2.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
+//  sBreakDeadTimeConfig2.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
+//  if (HAL_TIMEx_ConfigBreakDeadTime(&htim8, &sBreakDeadTimeConfig2) != HAL_OK)
+//  {
+//    Error_Handler();
+//  }
   /* USER CODE BEGIN TIM8_Init 2 */
 
   /* USER CODE END TIM8_Init 2 */
   HAL_TIM_MspPostInit(&htim8);
+
+  if (HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_4) != HAL_OK) {
+      /* Starting PWM generation Error */
+    Error_Handler();
+  }
 
 	return ret;
 }
@@ -219,31 +225,42 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
 	  /* USER CODE BEGIN TIM8_MspInit 0 */
 
 	  /* USER CODE END TIM8_MspInit 0 */
-	    /* TIM8 clock enable */
-	    __HAL_RCC_TIM8_CLK_ENABLE();
+      /* TIM8 clock enable */
+      __HAL_RCC_TIM8_CLK_ENABLE();
 
-	    /* TIM8 DMA Init */
-	    /* TIM8_UP Init */
-	    hdma_tim8_up.Instance = DMA2_Stream1;
-	    hdma_tim8_up.Init.Channel = DMA_CHANNEL_7;
-	    hdma_tim8_up.Init.Direction = DMA_MEMORY_TO_PERIPH;
-	    hdma_tim8_up.Init.PeriphInc = DMA_PINC_DISABLE;
-	    hdma_tim8_up.Init.MemInc = DMA_MINC_ENABLE;
-	    hdma_tim8_up.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
-	    hdma_tim8_up.Init.MemDataAlignment = DMA_MDATAALIGN_WORD;
-	    hdma_tim8_up.Init.Mode = DMA_NORMAL;
-	    hdma_tim8_up.Init.Priority = DMA_PRIORITY_HIGH;
-	    hdma_tim8_up.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
-	    if (HAL_DMA_Init(&hdma_tim8_up) != HAL_OK)
-	    {
-	      Error_Handler();
-	    }
+      /* TIM8 DMA Init */
+      /* TIM8_CH4_TRIG_COM Init */
+      hdma_tim8_ch4_trig_com.Instance = DMA2_Stream7;
+      hdma_tim8_ch4_trig_com.Init.Channel = DMA_CHANNEL_7;
+      hdma_tim8_ch4_trig_com.Init.Direction = DMA_MEMORY_TO_PERIPH;
+      hdma_tim8_ch4_trig_com.Init.PeriphInc = DMA_PINC_DISABLE;
+      hdma_tim8_ch4_trig_com.Init.MemInc = DMA_MINC_ENABLE;
+      hdma_tim8_ch4_trig_com.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
+      hdma_tim8_ch4_trig_com.Init.MemDataAlignment = DMA_MDATAALIGN_WORD;
+      hdma_tim8_ch4_trig_com.Init.Mode = DMA_NORMAL;
+      hdma_tim8_ch4_trig_com.Init.Priority = DMA_PRIORITY_HIGH;
+      hdma_tim8_ch4_trig_com.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+      if (HAL_DMA_Init(&hdma_tim8_ch4_trig_com) != HAL_OK)
+      {
+        Error_Handler();
+      }
 
-	    __HAL_LINKDMA(tim_baseHandle,hdma[TIM_DMA_ID_CC4],hdma_tim8_up);
+      /* Several peripheral DMA handle pointers point to the same DMA handle.
+       Be aware that there is only one stream to perform all the requested DMAs. */
+      __HAL_LINKDMA(tim_baseHandle,hdma[TIM_DMA_ID_CC4],hdma_tim8_ch4_trig_com);
+      //__HAL_LINKDMA(tim_baseHandle,hdma[TIM_DMA_ID_TRIGGER],hdma_tim8_ch4_trig_com);
+      //__HAL_LINKDMA(tim_baseHandle,hdma[TIM_DMA_ID_COMMUTATION],hdma_tim8_ch4_trig_com);
 
 	    /* TIM8 interrupt Init */
 	    HAL_NVIC_SetPriority(TIM8_CC_IRQn, 0, 0);
 	    HAL_NVIC_EnableIRQ(TIM8_CC_IRQn);
+	  }
+}
+
+void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim) {
+    if (htim->Instance == TIM8) {
+        HAL_TIM_PWM_Stop_DMA(htim, TIM_CHANNEL_4);
+    }
 }
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef* timHandle)
@@ -339,6 +356,8 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 
     /* TIM8 DMA DeInit */
     HAL_DMA_DeInit(tim_baseHandle->hdma[TIM_DMA_ID_CC4]);
+    HAL_DMA_DeInit(tim_baseHandle->hdma[TIM_DMA_ID_TRIGGER]);
+    HAL_DMA_DeInit(tim_baseHandle->hdma[TIM_DMA_ID_COMMUTATION]);
 
     /* TIM8 interrupt Deinit */
     HAL_NVIC_DisableIRQ(TIM8_CC_IRQn);

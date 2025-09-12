@@ -68,7 +68,6 @@ uint32_t ledStripDMABuffer[WS2811_DMA_BUFFER_SIZE];
 #endif
 #endif
 
-static ioTag_t ledStripIoTag;
 static bool ws2811Initialised = false;
 volatile bool ws2811LedDataTransferInProgress = false;
 static unsigned usedLedCount = 0;
@@ -127,8 +126,6 @@ void setUsedLedCount(unsigned ledCount)
 void ws2811LedStripInit(void)
 {
     memset(ledStripDMABuffer, 0, sizeof(ledStripDMABuffer));
-
-    ledStripIoTag = ioTag;
 }
 
 void ws2811LedStripEnable(void)

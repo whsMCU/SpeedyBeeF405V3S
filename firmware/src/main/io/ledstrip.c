@@ -44,6 +44,7 @@
 //#include "pg/rx.h"
 
 #include "drivers/light_ws2811strip.h"
+#include "drivers/gps/gps.h"
 //#include "drivers/serial.h"
 //#include "drivers/time.h"
 //#include "drivers/vtx_common.h"
@@ -566,18 +567,18 @@ static void applyLedWarningLayer(bool updateNow, timeUs_t *timer)
 
         if (warningFlashCounter == 0) {      // update when old flags was processed
             warningFlags = 0;
-            if (batteryConfig()->voltageMeterSource != VOLTAGE_METER_NONE && getBatteryState() != BATTERY_OK) {
+            if (batteryConfig.voltageMeterSource != VOLTAGE_METER_NONE && getBatteryState() != BATTERY_OK) {
                 warningFlags |= 1 << WARNING_LOW_BATTERY;
             }
-            if (failsafeIsActive()) {
-                warningFlags |= 1 << WARNING_FAILSAFE;
-            }
+//            if (failsafeIsActive()) {
+//                warningFlags |= 1 << WARNING_FAILSAFE;
+//            }
             if (!ARMING_FLAG(ARMED) && isArmingDisabled()) {
                 warningFlags |= 1 << WARNING_ARMING_DISABLED;
             }
-            if (isFlipOverAfterCrashActive()) {
-                warningFlags |= 1 << WARNING_CRASH_FLIP_ACTIVE;
-            }
+//            if (isFlipOverAfterCrashActive()) {
+//                warningFlags |= 1 << WARNING_CRASH_FLIP_ACTIVE;
+//            }
         }
         *timer += HZ_TO_US(10);
     }
@@ -605,9 +606,9 @@ static void applyLedWarningLayer(bool updateNow, timeUs_t *timer)
             }
         }
     } else {
-        if (isBeeperOn()) {
-            warningColor = &hsv[ledStripConfig.ledstrip_visual_beeper_color];
-        }
+//        if (isBeeperOn()) {
+//            warningColor = &hsv[ledStripConfig.ledstrip_visual_beeper_color];
+//        }
     }
 
     if (warningColor) {
@@ -784,7 +785,7 @@ static void applyLedGpsLayer(bool updateNow, timeUs_t *timer)
         static uint8_t gpsFlashCounter = 0;
         if (gpsPauseCounter > 0) {
             gpsPauseCounter--;
-        } else if (gpsFlashCounter >= gpsSol.numSat) {
+        } else if (gpsFlashCounter >= GpsNav.GPS_numSat) {
             gpsFlashCounter = 0;
             gpsPauseCounter = blinkPauseLength;
         } else {
@@ -796,7 +797,7 @@ static void applyLedGpsLayer(bool updateNow, timeUs_t *timer)
 
     const hsvColor_t *gpsColor;
 
-    if (gpsSol.numSat == 0 || !sensors(SENSOR_GPS)) {
+    if (GpsNav.GPS_numSat == 0 || !sensors(SENSOR_GPS)) {
         gpsColor = getSC(LED_SCOLOR_GPSNOSATS);
     } else {
         bool colorOn = gpsPauseCounter == 0;  // each interval starts with pause
@@ -998,7 +999,7 @@ typedef enum {
 static timeUs_t timerVal[timTimerCount];
 static uint16_t disabledTimerMask;
 
-STATIC_ASSERT(timTimerCount <= sizeof(disabledTimerMask) * 8, disabledTimerMask_too_small);
+//STATIC_ASSERT(timTimerCount <= sizeof(disabledTimerMask) * 8, disabledTimerMask_too_small);
 
 // function to apply layer.
 // function must replan self using timer pointer
@@ -1184,7 +1185,7 @@ void ledStripInit(void)
 
 static uint8_t selectVisualBeeperColor(uint8_t colorIndex)
 {
-    if (ledStripConfig.ledstrip_visual_beeper && isBeeperOn()) {
+    if (ledStripConfig.ledstrip_visual_beeper && false) { //isBeeperOn()
         return ledStripConfig.ledstrip_visual_beeper_color;
     } else {
         return colorIndex;
@@ -1200,7 +1201,7 @@ static void applySimpleProfile(timeUs_t currentTimeUs)
     unsigned flashPeriod;
     unsigned onPercent;
 
-    if (IS_RC_MODE_ACTIVE(BOXBEEPERON) || failsafeIsActive()) {
+    if (IS_RC_MODE_ACTIVE(BOXBEEPERON)) { //|| failsafeIsActive()
         // RX_SET or failsafe - force the beacon on and override the profile settings
         blinkLed = true;
         visualBeeperOverride = false; // prevent the visual beeper from interfering

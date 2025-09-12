@@ -23,12 +23,12 @@
 #define _DEF_LED4           3
 
 #define _DEF_USB            0
-#define _DEF_UART1          1  // GCS
+#define _DEF_UART1          1  // GPS
 #define _DEF_UART2          2  // Radio
 #define _DEF_UART3          3  // Rangefinder, opticalflow
 #define _DEF_UART4          4  // bluetooth
 #define _DEF_UART5          5  // ESC telemetry
-#define _DEF_UART6          6  // GPS
+#define _DEF_UART6          6  // GCS
 
 #define _DEF_SPI1             0
 #define _DEF_SPI2             1

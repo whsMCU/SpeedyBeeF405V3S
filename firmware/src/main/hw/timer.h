@@ -16,6 +16,8 @@
 
 extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim5;
+extern TIM_HandleTypeDef htim8;
+extern DMA_HandleTypeDef hdma_tim8_ch4_trig_com;
 
 typedef enum {
     TIMER_OUTPUT_NONE      = 0,

@@ -37,10 +37,10 @@
 
 #include "light_ws2811strip.h"
 
-void WS2811_DMA_IRQHandler(dmaChannelDescriptor_t* descriptor)
+void WS2811_DMA_IRQHandler(void)
 {
-    HAL_DMA_IRQHandler(TimHandle.hdma[descriptor->userParam]);
-    TIM_DMACmd(&TimHandle, timerChannel, DISABLE);
+    //TIM_DMACmd(&TimHandle, timerChannel, DISABLE);
+    __HAL_TIM_DISABLE_DMA(&htim8, TIM_DMA_CC4);
     ws2811LedDataTransferInProgress = false;
 }
 
@@ -54,53 +54,20 @@ bool ws2811LedStripHardwareInit(void)
     BIT_COMPARE_1 = period / 3 * 2;
     BIT_COMPARE_0 = period / 3;
 
-
-
-    if (HAL_TIM_PWM_Init(&TimHandle) != HAL_OK) {
-        /* Initialization Error */
-        return false;
-    }
-
-
-    TIM_OC_InitTypeDef TIM_OCInitStructure;
-
-    /* PWM1 Mode configuration: Channel1 */
-    TIM_OCInitStructure.OCMode = TIM_OCMODE_PWM1;
-    TIM_OCInitStructure.OCIdleState = TIM_OCIDLESTATE_RESET;
-    TIM_OCInitStructure.OCPolarity = (timerHardware->output & TIMER_OUTPUT_INVERTED) ? TIM_OCPOLARITY_LOW : TIM_OCPOLARITY_HIGH;
-    TIM_OCInitStructure.OCNIdleState = TIM_OCNIDLESTATE_RESET;
-    TIM_OCInitStructure.OCNPolarity = (timerHardware->output & TIMER_OUTPUT_INVERTED) ? TIM_OCNPOLARITY_LOW : TIM_OCNPOLARITY_HIGH;
-    TIM_OCInitStructure.Pulse = 0;
-    TIM_OCInitStructure.OCFastMode = TIM_OCFAST_DISABLE;
-    if (HAL_TIM_PWM_ConfigChannel(&TimHandle, &TIM_OCInitStructure, timerChannel) != HAL_OK) {
-        /* Configuration Error */
-        return false;
-    }
-    if (timerHardware->output & TIMER_OUTPUT_N_CHANNEL) {
-        if (HAL_TIMEx_PWMN_Start(&TimHandle, timerChannel) != HAL_OK) {
-            /* Starting PWM generation Error */
-            return false;
-        }
-    } else {
-        if (HAL_TIM_PWM_Start(&TimHandle, timerChannel) != HAL_OK) {
-            /* Starting PWM generation Error */
-            return false;
-        }
-    }
-
     return true;
 }
 
 void ws2811LedStripDMAEnable(void)
 {
-    if (DMA_SetCurrDataCounter(&TimHandle, timerChannel, ledStripDMABuffer, WS2811_DMA_BUFFER_SIZE) != HAL_OK) {
+    if (HAL_TIM_PWM_Start_DMA(&htim8, TIM_DMA_CC4, ledStripDMABuffer, WS2811_DMA_BUFFER_SIZE) != HAL_OK) {
         /* DMA set error */
         ws2811LedDataTransferInProgress = false;
         return;
     }
     /* Reset timer counter */
-    __HAL_TIM_SET_COUNTER(&TimHandle,0);
+    __HAL_TIM_SET_COUNTER(&htim8,0);
     /* Enable channel DMA requests */
-    TIM_DMACmd(&TimHandle,timerChannel,ENABLE);
+    //TIM_DMACmd(&TimHandle,timerChannel,ENABLE);
+    __HAL_TIM_ENABLE_DMA(&htim8, TIM_DMA_CC4);
 }
 #endif

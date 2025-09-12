@@ -21,6 +21,7 @@
 #pragma once
 
 #include "hw.h"
+#include "common/color.h"
 
 //#include "drivers/io_types.h"
 
@@ -67,6 +68,8 @@ typedef enum {
     LED_RGB,
     LED_GRBW
 } ledStripFormatRGB_e;
+
+void WS2811_DMA_IRQHandler(void);
 
 void ws2811LedStripInit(void);
 void ws2811LedStripEnable(void);

@@ -1128,29 +1128,31 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         break;
 
     case MSP_LED_STRIP_CONFIG:
-        for (int i = 0; i < LED_MAX_STRIP_LENGTH; i++) {
-            const ledConfig_t *ledConfig = &ledStripStatusModeConfig.ledConfigs[i];
+      for (int i = 0; i < LED_MAX_STRIP_LENGTH; i++) {
+#ifdef USE_LED_STRIP_STATUS_MODE
+          const ledConfig_t *ledConfig = &ledStripStatusModeConfig.ledConfigs[i];
+          sbufWriteU32(dst, *ledConfig);
+#else
+          sbufWriteU32(dst, 0);
+#endif
+      }
 
-            uint32_t legacyLedConfig = ledConfig->led_position;
-            int shiftCount = 8;
-            legacyLedConfig |= ledConfig->led_function << shiftCount;
-            shiftCount += 4;
-            legacyLedConfig |= (ledConfig->led_overlay & 0x3F) << (shiftCount);
-            shiftCount += 6;
-            legacyLedConfig |= (ledConfig->led_color) << (shiftCount);
-            shiftCount += 4;
-            legacyLedConfig |= (ledConfig->led_direction) << (shiftCount);
-            shiftCount += 6;
-            legacyLedConfig |= (ledConfig->led_params) << (shiftCount);
-
-            sbufWriteU32(dst, legacyLedConfig);
-        }
-        break;
+      // API 1.41 - add indicator for advanced profile support and the current profile selection
+      // 0 = basic ledstrip available
+      // 1 = advanced ledstrip available
+#ifdef USE_LED_STRIP_STATUS_MODE
+      sbufWriteU8(dst, 1);   // advanced ledstrip available
+#else
+      sbufWriteU8(dst, 0);   // only simple ledstrip available
+#endif
+      sbufWriteU8(dst, ledStripConfig.ledstrip_profile);
+      break;
+#endif
 
     case MSP2_INAV_LED_STRIP_CONFIG_EX:
         for (int i = 0; i < LED_MAX_STRIP_LENGTH; i++) {
             const ledConfig_t *ledConfig = &ledStripStatusModeConfig.ledConfigs[i];
-            sbufWriteDataSafe(dst, ledConfig, sizeof(ledConfig_t));
+            sbufWriteData(dst, ledConfig, sizeof(ledConfig_t));
         }
         break;
 
@@ -1170,7 +1172,6 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
             sbufWriteU8(dst, ledStripStatusModeConfig.specialColors.color[j]);
         }
         break;
-#endif
 
     case MSP_DATAFLASH_SUMMARY:
 //        serializeDataflashSummaryReply(dst);
@@ -2926,7 +2927,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
     case MSP_SET_LED_COLORS:
         if (dataSize == LED_CONFIGURABLE_COLOR_COUNT * 4) {
             for (int i = 0; i < LED_CONFIGURABLE_COLOR_COUNT; i++) {
-                hsvColor_t *color = &ledStripConfigMutable()->colors[i];
+                hsvColor_t *color = &ledStripStatusModeConfig.colors[i];
                 color->h = sbufReadU16(src);
                 color->s = sbufReadU8(src);
                 color->v = sbufReadU8(src);
@@ -2936,26 +2937,25 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         break;
 
     case MSP_SET_LED_STRIP_CONFIG:
-        if (dataSize == (1 + sizeof(uint32_t))) {
-            tmp_u8 = sbufReadU8(src);
-            if (tmp_u8 >= LED_MAX_STRIP_LENGTH) {
-                return MSP_RESULT_ERROR;
-            }
-            ledConfig_t *ledConfig = &ledStripStatusModeConfig.ledConfigs[tmp_u8];
-
-            uint32_t legacyConfig = sbufReadU32(src);
-
-            ledConfig->led_position = legacyConfig & 0xFF;
-            ledConfig->led_function = (legacyConfig >> 8) & 0xF;
-            ledConfig->led_overlay = (legacyConfig >> 12) & 0x3F;
-            ledConfig->led_color = (legacyConfig >> 18) & 0xF;
-            ledConfig->led_direction = (legacyConfig >> 22) & 0x3F;
-            ledConfig->led_params = (legacyConfig >> 28) & 0xF;
-
-            reevaluateLedConfig();
-        } else
+    {
+        int i = sbufReadU8(src);
+        if (i >= LED_MAX_STRIP_LENGTH || dataSize != (1 + 4)) {
             return MSP_RESULT_ERROR;
-        break;
+        }
+#ifdef USE_LED_STRIP_STATUS_MODE
+        ledConfig_t *ledConfig = &ledStripStatusModeConfig.ledConfigs[i];
+        *ledConfig = sbufReadU32(src);
+        reevaluateLedConfig();
+#else
+        sbufReadU32(src);
+#endif
+        // API 1.41 - selected ledstrip_profile
+        if (sbufBytesRemaining(src) >= 1) {
+            ledStripConfig.ledstrip_profile = sbufReadU8(src);
+        }
+    }
+    break;
+#endif
 
     case MSP2_INAV_SET_LED_STRIP_CONFIG_EX:
         if (dataSize == (1 + sizeof(ledConfig_t))) {
@@ -2964,7 +2964,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
                 return MSP_RESULT_ERROR;
             }
             ledConfig_t *ledConfig = &ledStripStatusModeConfig.ledConfigs[tmp_u8];
-            sbufReadDataSafe(src, ledConfig, sizeof(ledConfig_t));
+            sbufReadData(src, ledConfig, sizeof(ledConfig_t));
             reevaluateLedConfig();
         } else
             return MSP_RESULT_ERROR;
@@ -2981,7 +2981,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         } else
             return MSP_RESULT_ERROR;
         break;
-#endif
+
 
 #ifdef NAV_NON_VOLATILE_WAYPOINT_STORAGE
     case MSP_WP_MISSION_LOAD:

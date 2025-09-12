@@ -538,9 +538,9 @@ void mspSerialInit(void)
 {
     memset(mspPorts, 0, sizeof(mspPorts));
 
-    uartOpen(_DEF_UART1, 115200);
-    uartOpen(_DEF_UART3, 115200);
-    uartOpen(_DEF_UART4, 115200);
+    uartOpen(_DEF_UART3, 115200); //OPFLOW, RANGEFINDER
+    uartOpen(_DEF_UART4, 115200); //ESC
+    uartOpen(_DEF_UART6, 115200); //GCS
     mspSerialAllocatePorts();
 }
 

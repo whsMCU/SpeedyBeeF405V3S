@@ -163,6 +163,6 @@ void delayMicroseconds(uint32_t us)
 
 int __io_putchar(int ch)
 {
-  uartWrite(_DEF_UART1, (uint8_t *)&ch, 1);
+  uartWrite(_DEF_UART6, (uint8_t *)&ch, 1);
   return 1;
 }
