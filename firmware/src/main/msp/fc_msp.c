@@ -1771,6 +1771,7 @@ static void mspFcDataFlashReadCommand(sbuf_t *dst, sbuf_t *src)
 
 static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
 {
+    uint32_t i;
     uint8_t tmp_u8;
     uint16_t tmp_u16;
 
@@ -2938,7 +2939,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
 
     case MSP_SET_LED_STRIP_CONFIG:
     {
-        int i = sbufReadU8(src);
+        i = sbufReadU8(src);
         if (i >= LED_MAX_STRIP_LENGTH || dataSize != (1 + 4)) {
             return MSP_RESULT_ERROR;
         }
