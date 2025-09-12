@@ -179,10 +179,10 @@ bool timerInit()
   /* USER CODE END TIM8_Init 2 */
   HAL_TIM_MspPostInit(&htim8);
 
-  if (HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_4) != HAL_OK) {
-      /* Starting PWM generation Error */
-    Error_Handler();
-  }
+//  if (HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_4) != HAL_OK) {
+//      /* Starting PWM generation Error */
+//    Error_Handler();
+//  }
 
 	return ret;
 }

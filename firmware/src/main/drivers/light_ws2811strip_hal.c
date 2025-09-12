@@ -59,15 +59,15 @@ bool ws2811LedStripHardwareInit(void)
 
 void ws2811LedStripDMAEnable(void)
 {
-    if (HAL_TIM_PWM_Start_DMA(&htim8, TIM_DMA_CC4, ledStripDMABuffer, WS2811_DMA_BUFFER_SIZE) != HAL_OK) {
+    if (HAL_TIM_PWM_Start_DMA(&htim8, TIM_CHANNEL_4, ledStripDMABuffer, WS2811_DMA_BUFFER_SIZE) != HAL_OK) {
         /* DMA set error */
         ws2811LedDataTransferInProgress = false;
         return;
     }
     /* Reset timer counter */
-    __HAL_TIM_SET_COUNTER(&htim8,0);
+    //__HAL_TIM_SET_COUNTER(&htim8,0);
     /* Enable channel DMA requests */
     //TIM_DMACmd(&TimHandle,timerChannel,ENABLE);
-    __HAL_TIM_ENABLE_DMA(&htim8, TIM_DMA_CC4);
+    //__HAL_TIM_ENABLE_DMA(&htim8, TIM_DMA_CC4);
 }
 #endif

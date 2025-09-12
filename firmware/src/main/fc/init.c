@@ -212,7 +212,7 @@ void init(void)
 
 #ifdef USE_LED_STRIP
     ledStripInit();
-
+    featureSet(FEATURE_LED_STRIP);
     if (featureConfigured(FEATURE_LED_STRIP)) {
         ledStripEnable();
     }
@@ -268,6 +268,14 @@ void init(void)
     MSP_SET_MODE_RANGE(4, 33, 2, 1300, 2100); // SB : SURFACE
     MSP_SET_MODE_RANGE(5, 27, 4, 1700, 2100); // SD : FALISAFE
     MSP_SET_MODE_RANGE(6, 30, 5, 1700, 2100); // SF : HOME RESET
+    int i = 0;
+    uint32_t src = 0xFFFF;
+    ledConfig_t *ledConfig = &ledStripStatusModeConfig.ledConfigs[i];
+    *ledConfig = src;
+    *ledConfig |= src << 8;
+    *ledConfig |= src << 16;
+    *ledConfig |= src << 24;
+    reevaluateLedConfig();
 
 }
 

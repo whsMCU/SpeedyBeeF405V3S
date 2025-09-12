@@ -27,6 +27,7 @@
 #include "common/utils.h"
 
 #include "config/sdcard.h"
+#include "config/feature.h"
 
 #include "fc/dispatch.h"
 #include "fc/runtime_config.h"
@@ -348,10 +349,10 @@ void tasksInit(void)
     rescheduleTask(TASK_TELEMETRY, TASK_PERIOD_HZ(250));
 #endif
 
-//#ifdef USE_LED_STRIP
-//    setTaskEnabled(TASK_LEDSTRIP, featureIsEnabled(FEATURE_LED_STRIP));
-//#endif
-//
+#ifdef USE_LED_STRIP
+    setTaskEnabled(TASK_LEDSTRIP, featureConfigured(FEATURE_LED_STRIP));
+#endif
+
 //#ifdef USE_TRANSPONDER
 //    setTaskEnabled(TASK_TRANSPONDER, featureIsEnabled(FEATURE_TRANSPONDER));
 //#endif

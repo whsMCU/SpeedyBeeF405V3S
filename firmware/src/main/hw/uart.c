@@ -23,8 +23,8 @@ static bool is_open[UART_MAX_CH];
 #define MAX_SIZE 128
 
 static qbuffer_t ring_buffer[UART_MAX_CH];
-static volatile uint8_t rx_buf[UART_MAX_CH-1][MAX_SIZE];
-static volatile uint8_t rx_ringbuf[UART_MAX_CH-1][MAX_SIZE];
+static volatile uint8_t rx_buf[UART_MAX_CH][MAX_SIZE];
+static volatile uint8_t rx_ringbuf[UART_MAX_CH][MAX_SIZE];
 
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
@@ -927,7 +927,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
   if(huart->Instance == USART1)
   {
-    GPS_Passer(rx_buf[_DEF_UART6][0]);
+    GPS_Passer(rx_buf[_DEF_UART1][0]);
     HAL_UART_Receive_IT(&huart1, (uint8_t *)&rx_buf[_DEF_UART1][0], 1);
 //    HAL_UARTEx_ReceiveToIdle_DMA(&huart1, (uint8_t *)&rx_buf[_DEF_UART1][0], MAX_SIZE);
 //    __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
