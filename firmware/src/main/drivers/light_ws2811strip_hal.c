@@ -39,8 +39,6 @@
 
 void WS2811_DMA_IRQHandler(void)
 {
-    //TIM_DMACmd(&TimHandle, timerChannel, DISABLE);
-    __HAL_TIM_DISABLE_DMA(&htim8, TIM_DMA_CC4);
     ws2811LedDataTransferInProgress = false;
 }
 
@@ -48,8 +46,8 @@ bool ws2811LedStripHardwareInit(void)
 {
 
     /* Compute the prescaler value */
-    uint16_t prescaler = 3;//timerGetPrescalerByDesiredMhz(timer, WS2811_TIMER_MHZ);
-    uint16_t period = 52;//timerGetPeriodByPrescaler(timer, prescaler, WS2811_CARRIER_HZ);
+    uint16_t prescaler = 0;//timerGetPrescalerByDesiredMhz(timer, WS2811_TIMER_MHZ);
+    uint16_t period = 209;//timerGetPeriodByPrescaler(timer, prescaler, WS2811_CARRIER_HZ);
 
     BIT_COMPARE_1 = period / 3 * 2;
     BIT_COMPARE_0 = period / 3;
@@ -59,15 +57,11 @@ bool ws2811LedStripHardwareInit(void)
 
 void ws2811LedStripDMAEnable(void)
 {
+    __HAL_TIM_SET_COUNTER(&htim8,0);
     if (HAL_TIM_PWM_Start_DMA(&htim8, TIM_CHANNEL_4, ledStripDMABuffer, WS2811_DMA_BUFFER_SIZE) != HAL_OK) {
         /* DMA set error */
         ws2811LedDataTransferInProgress = false;
         return;
     }
-    /* Reset timer counter */
-    //__HAL_TIM_SET_COUNTER(&htim8,0);
-    /* Enable channel DMA requests */
-    //TIM_DMACmd(&TimHandle,timerChannel,ENABLE);
-    //__HAL_TIM_ENABLE_DMA(&htim8, TIM_DMA_CC4);
 }
 #endif

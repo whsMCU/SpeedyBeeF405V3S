@@ -269,13 +269,13 @@ void init(void)
     MSP_SET_MODE_RANGE(5, 27, 4, 1700, 2100); // SD : FALISAFE
     MSP_SET_MODE_RANGE(6, 30, 5, 1700, 2100); // SF : HOME RESET
     int i = 0;
-    uint32_t src = 0xFFFF;
+    uint32_t src = 0xFFFFFFFF;
     ledConfig_t *ledConfig = &ledStripStatusModeConfig.ledConfigs[i];
     *ledConfig = src;
-    *ledConfig |= src << 8;
-    *ledConfig |= src << 16;
-    *ledConfig |= src << 24;
     reevaluateLedConfig();
+
+    setModeColor(LED_AUX_CHANNEL, 0, 10);
+
 
 }
 

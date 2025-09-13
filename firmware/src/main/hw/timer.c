@@ -7,6 +7,7 @@
 
 
 #include "timer.h"
+#include "light_ws2811strip.h"
 
 TIM_HandleTypeDef htim4;
 TIM_HandleTypeDef htim5;
@@ -118,7 +119,7 @@ bool timerInit()
 	HAL_TIM_Base_Start(&htim5);
 
 	///////////////////////////////////////////////////////////////////////////
-	 TIM_ClockConfigTypeDef sClockSourceConfig2 = {0};
+	TIM_ClockConfigTypeDef sClockSourceConfig2 = {0};
   TIM_MasterConfigTypeDef sMasterConfig2 = {0};
   TIM_OC_InitTypeDef sConfigOC2 = {0};
   TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig2 = {0};
@@ -127,9 +128,9 @@ bool timerInit()
 
   /* USER CODE END TIM8_Init 1 */
   htim8.Instance = TIM8;
-  htim8.Init.Prescaler = 3;//(0)
+  htim8.Init.Prescaler = 0;//(3)
   htim8.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim8.Init.Period = 52; // 800kHz, (104) 1.25us period
+  htim8.Init.Period = 209; // 800kHz, (52) 1.25us period
   htim8.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim8.Init.RepetitionCounter = 0;
   htim8.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -155,7 +156,6 @@ bool timerInit()
   sConfigOC2.OCMode = TIM_OCMODE_PWM1;
   sConfigOC2.Pulse = 0;
   sConfigOC2.OCPolarity = TIM_OCPOLARITY_HIGH;
-  //sConfigOC2.OCNPolarity = TIM_OCNPOLARITY_LOW;
   sConfigOC2.OCFastMode = TIM_OCFAST_DISABLE;
   sConfigOC2.OCIdleState = TIM_OCIDLESTATE_RESET;
   sConfigOC2.OCNIdleState = TIM_OCNIDLESTATE_RESET;
@@ -252,7 +252,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
       //__HAL_LINKDMA(tim_baseHandle,hdma[TIM_DMA_ID_COMMUTATION],hdma_tim8_ch4_trig_com);
 
 	    /* TIM8 interrupt Init */
-	    HAL_NVIC_SetPriority(TIM8_CC_IRQn, 0, 0);
+	    HAL_NVIC_SetPriority(TIM8_CC_IRQn, 1, 2);
 	    HAL_NVIC_EnableIRQ(TIM8_CC_IRQn);
 	  }
 }
@@ -260,6 +260,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
 void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim) {
     if (htim->Instance == TIM8) {
         HAL_TIM_PWM_Stop_DMA(htim, TIM_CHANNEL_4);
+        WS2811_DMA_IRQHandler();
     }
 }
 
