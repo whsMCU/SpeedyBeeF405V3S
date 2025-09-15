@@ -49,8 +49,8 @@ bool ws2811LedStripHardwareInit(void)
     uint16_t prescaler = 0;//timerGetPrescalerByDesiredMhz(timer, WS2811_TIMER_MHZ);
     uint16_t period = 209;//timerGetPeriodByPrescaler(timer, prescaler, WS2811_CARRIER_HZ);
 
-    BIT_COMPARE_1 = 118;//period / 3 * 2;
-    BIT_COMPARE_0 = 59;//period / 3;
+    BIT_COMPARE_1 = 118;//period / 3 * 2; //118
+    BIT_COMPARE_0 = 59;//period / 3; //59
 
     return true;
 }

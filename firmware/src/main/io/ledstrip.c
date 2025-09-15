@@ -472,6 +472,7 @@ static void applyLedFixedLayers(void)
     for (int ledIndex = 0; ledIndex < ledCounts.count; ledIndex++) {
         const ledConfig_t *ledConfig = &ledStripStatusModeConfig.ledConfigs[ledIndex];
         hsvColor_t color = *getSC(LED_SCOLOR_BACKGROUND);
+        color = ledStripStatusModeConfig.colors[ledGetColor(ledConfig)];
 
         int fn = ledGetFunction(ledConfig);
         int hOffset = HSV_HUE_MAX + 1;
@@ -741,7 +742,7 @@ static void applyLedBatteryLayer(bool updateNow, timeUs_t *timer)
 
     if (!flash) {
        const hsvColor_t *bgc = getSC(LED_SCOLOR_BACKGROUND);
-       applyLedHsv(LED_MOV_FUNCTION(LED_FUNCTION_BATTERY), bgc);
+     //  applyLedHsv(LED_MOV_FUNCTION(LED_FUNCTION_BATTERY), bgc);
     }
 }
 
@@ -808,7 +809,7 @@ static void applyLedGpsLayer(bool updateNow, timeUs_t *timer)
         }
     }
 
-    applyLedHsv(LED_MOV_FUNCTION(LED_FUNCTION_GPS), gpsColor);
+    //applyLedHsv(LED_MOV_FUNCTION(LED_FUNCTION_GPS), gpsColor);
 }
 #endif
 
