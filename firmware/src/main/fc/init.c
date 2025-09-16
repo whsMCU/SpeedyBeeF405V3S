@@ -270,7 +270,7 @@ void init(void)
     MSP_SET_MODE_RANGE(6, 30, 5, 1700, 2100); // SF : HOME RESET
 
     ledConfig_t src = 0xFFD01FFF;
-    for(int i=0; i<8; i++)
+    for(int i=0; i<16; i++)
     {
       ledStripStatusModeConfig.ledConfigs[i] = src;
     }

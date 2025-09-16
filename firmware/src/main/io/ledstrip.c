@@ -124,15 +124,15 @@ void ledStripConfig_Init(void)
 {
     ledStripConfig.ledstrip_visual_beeper = 0;
 #ifdef USE_LED_STRIP_STATUS_MODE
-    ledStripConfig.ledstrip_profile = LED_PROFILE_STATUS;
+    ledStripConfig.ledstrip_profile = LED_PROFILE_BEACON;//LED_PROFILE_STATUS;
 #else
     ledStripConfig.ledstrip_profile = LED_PROFILE_RACE;
 #endif
     ledStripConfig.ledstrip_race_color = COLOR_ORANGE;
     ledStripConfig.ledstrip_beacon_color = COLOR_WHITE;
-    ledStripConfig.ledstrip_beacon_period_ms = 500;    // 0.5 second (2hz)
-    ledStripConfig.ledstrip_beacon_percent = 50;       // 50% duty cycle
-    ledStripConfig.ledstrip_beacon_armed_only = false; // blink always
+    ledStripConfig.ledstrip_beacon_period_ms = 1000;    // (1Hz), 0.5 second (2hz)
+    ledStripConfig.ledstrip_beacon_percent = 20;       // 20%, 50% duty cycle
+    ledStripConfig.ledstrip_beacon_armed_only = true; // blink always
     ledStripConfig.ledstrip_visual_beeper_color = VISUAL_BEEPER_COLOR;
     ledStripConfig.ledstrip_brightness = 100;
 }
