@@ -472,7 +472,6 @@ static void applyLedFixedLayers(void)
     for (int ledIndex = 0; ledIndex < ledCounts.count; ledIndex++) {
         const ledConfig_t *ledConfig = &ledStripStatusModeConfig.ledConfigs[ledIndex];
         hsvColor_t color = *getSC(LED_SCOLOR_BACKGROUND);
-        color = ledStripStatusModeConfig.colors[ledGetColor(ledConfig)];
 
         int fn = ledGetFunction(ledConfig);
         int hOffset = HSV_HUE_MAX + 1;
@@ -533,6 +532,7 @@ static void applyLedFixedLayers(void)
         if ((fn != LED_FUNCTION_COLOR) && ledGetOverlayBit(ledConfig, LED_OVERLAY_THROTTLE)) {
             const int auxInput = rcData[ledStripStatusModeConfig.ledstrip_aux_channel];
             hOffset += scaleRange(auxInput, PWM_RANGE_MIN, PWM_RANGE_MAX, 0, HSV_HUE_MAX + 1);
+            color = ledStripStatusModeConfig.colors[ledGetColor(ledConfig)];
         }
 
         color.h = (color.h + hOffset) % (HSV_HUE_MAX + 1);
