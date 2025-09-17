@@ -64,6 +64,11 @@ typedef union rollAndPitchTrims_u {
     rollAndPitchTrims_t_def values;
 } rollAndPitchTrims_t;
 
+typedef struct {
+    float min;
+    float max;
+} acc_extremes_t;
+
 typedef struct gyro_s {
     uint16_t sampleRateHz;
     uint32_t targetLooptime;
@@ -137,6 +142,8 @@ typedef struct gyro_s {
     float accADC[XYZ_AXIS_COUNT];
     float accADCf[XYZ_AXIS_COUNT];
     float accPrevious[XYZ_AXIS_COUNT];
+    acc_extremes_t extremes[XYZ_AXIS_COUNT];
+    float maxG;
 
     uint16_t acc_lpf_hz;                    // cutoff frequency for the low pass filter used on the acc z-axis for althold in Hz
     uint16_t accLpfCutHz;
@@ -178,3 +185,4 @@ void setAccelerationTrims(union flightDynamicsTrims_u *accelerationTrimsToUse);
 
 uint32_t accGetClipCount(void);
 bool accIsClipped(void);
+void updateAccExtremes(void);

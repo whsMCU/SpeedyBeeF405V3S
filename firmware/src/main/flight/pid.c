@@ -25,6 +25,7 @@
 #include "build/debug.h"
 
 #include "common/filter.h"
+#include "common/time.h"
 
 #include "drivers/gps/gps.h"
 
@@ -38,6 +39,8 @@
 
 #include "rx/rx.h"
 
+#include "scheduler/scheduler.h"
+
 #include "drivers/motor.h"
 
 #include "fc/runtime_config.h"
@@ -48,6 +51,10 @@
 #include "navigation/navigation.h"
 #include "navigation/navigation_private.h"
 #include "navigation/sqrt_controller.h"
+
+timeDelta_t cycleTime = 0;         // this is the number in micro second to achieve a full loop, it can differ a little and is taken into account in the PID loop
+static timeUs_t flightTime = 0;
+static timeUs_t armTime = 0;
 
 FAST_DATA_ZERO_INIT DoublePID _ROLL;
 FAST_DATA_ZERO_INIT DoublePID _PITCH;
@@ -195,6 +202,20 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   static timeUs_t previousUpdateTimeUs;
   float dT = (float)US2S(currentTimeUs - previousUpdateTimeUs);
   previousUpdateTimeUs = currentTimeUs;
+
+  cycleTime = getTaskDeltaTimeUs(TASK_SELF);
+
+  if (ARMING_FLAG(ARMED)) {
+      flightTime += cycleTime;
+      armTime += cycleTime;
+      updateAccExtremes();
+  }
+
+  if (!ARMING_FLAG(ARMED)) {
+      armTime = 0;
+
+      //processDelayedSave();
+  }
 
 #ifdef USE_GPS1
   if ( (FLIGHT_MODE(NAV_RTH_MODE) || FLIGHT_MODE(NAV_POSHOLD_MODE)) && STATE(GPS_FIX_HOME) ) {

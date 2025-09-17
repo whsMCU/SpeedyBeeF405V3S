@@ -543,3 +543,15 @@ bool accIsClipped(void)
 {
     return bmi270.isClipped;
 }
+
+// Record extremes: min/max for each axis and acceleration vector modulus
+void updateAccExtremes(void)
+{
+    for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+        if (bmi270.accADCf[axis] < bmi270.extremes[axis].min) bmi270.extremes[axis].min = bmi270.accADCf[axis];
+        if (bmi270.accADCf[axis] > bmi270.extremes[axis].max) bmi270.extremes[axis].max = bmi270.accADCf[axis];
+    }
+
+    float gforce = calc_length_pythagorean_3D(bmi270.accADCf[X], bmi270.accADCf[Y], bmi270.accADCf[Z]);
+    if (gforce > bmi270.maxG) bmi270.maxG = gforce;
+}

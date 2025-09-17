@@ -236,6 +236,17 @@ void setTaskEnabled(taskId_e taskId, bool enabled)
     }
 }
 
+timeDelta_t getTaskDeltaTimeUs(taskId_e taskId)
+{
+    if (taskId == TASK_SELF) {
+        return currentTask->taskLatestDeltaTimeUs;
+    } else if (taskId < TASK_COUNT) {
+        return getTask(taskId)->taskLatestDeltaTimeUs;
+    } else {
+        return 0;
+    }
+}
+
 // Called by tasks executing what are known to be short states
 void schedulerIgnoreTaskStateTime()
 {
@@ -258,17 +269,6 @@ void schedulerIgnoreTaskExecTime()
 bool schedulerGetIgnoreTaskExecTime()
 {
     return ignoreCurrentTaskExecTime;
-}
-
-timeDelta_t getTaskDeltaTimeUs(taskId_e taskId)
-{
-    if (taskId == TASK_SELF) {
-        return currentTask->taskLatestDeltaTimeUs;
-    } else if (taskId < TASK_COUNT) {
-        return getTask(taskId)->taskLatestDeltaTimeUs;
-    } else {
-        return 0;
-    }
 }
 
 void schedulerResetTaskStatistics(taskId_e taskId)
