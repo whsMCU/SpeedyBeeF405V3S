@@ -29,6 +29,12 @@
 #include "common/time.h"
 #include "common/axis.h"
 
+enum {
+   HEADING_HOLD_DISABLED = 0,
+   HEADING_HOLD_UPDATE_HEADING,
+   HEADING_HOLD_ENABLED
+};
+
 // PID 구조체 정의
 typedef struct _PID{
   const char * pidName;

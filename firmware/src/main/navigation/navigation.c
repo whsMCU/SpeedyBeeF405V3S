@@ -3762,30 +3762,30 @@ static navigationFSMEvent_t selectNavEventFromBoxModeInput(void)
 //        return false;
 //    }
 //}
-//
-///**
-// * An indicator that NAV is in charge of heading control (a signal to disable other heading controllers)
-// */
-//int8_t navigationGetHeadingControlState(void)
-//{
-//    // For airplanes report as manual heading control
-//    if (STATE(FIXED_WING_LEGACY)) {
-//        return NAV_HEADING_CONTROL_MANUAL;
-//    }
-//
-//    // For multirotors it depends on navigation system mode
-//    if (navGetStateFlags(posControl.navState) & NAV_REQUIRE_MAGHOLD) {
-//        if (posControl.flags.isAdjustingHeading) {
-//            return NAV_HEADING_CONTROL_MANUAL;
-//        }
-//        else {
-//            return NAV_HEADING_CONTROL_AUTO;
-//        }
-//    }
-//    else {
-//        return NAV_HEADING_CONTROL_NONE;
-//    }
-//}
+
+/**
+ * An indicator that NAV is in charge of heading control (a signal to disable other heading controllers)
+ */
+int8_t navigationGetHeadingControlState(void)
+{
+    // For airplanes report as manual heading control
+    if (STATE(FIXED_WING_LEGACY)) {
+        return NAV_HEADING_CONTROL_MANUAL;
+    }
+
+    // For multirotors it depends on navigation system mode
+    if (navGetStateFlags(posControl.navState) & NAV_REQUIRE_MAGHOLD) {
+        if (posControl.flags.isAdjustingHeading) {
+            return NAV_HEADING_CONTROL_MANUAL;
+        }
+        else {
+            return NAV_HEADING_CONTROL_AUTO;
+        }
+    }
+    else {
+        return NAV_HEADING_CONTROL_NONE;
+    }
+}
 
 bool navigationTerrainFollowingEnabled(void)
 {

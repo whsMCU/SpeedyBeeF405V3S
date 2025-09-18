@@ -68,6 +68,7 @@ FAST_DATA_ZERO_INIT PID _YAW_Rate;
 FAST_DATA_ZERO_INIT PID_Test _PID_Test;
 
 int16_t headFreeModeHold;
+static float headingHoldCosZLimit;
 static FAST_DATA_ZERO_INIT int16_t headingHoldTarget;
 static FAST_DATA_ZERO_INIT pt1Filter_inav_t headingHoldRateFilter;
 FAST_DATA_ZERO_INIT float applyCommand[4];
@@ -75,6 +76,9 @@ static FAST_DATA_ZERO_INIT int throttleAngleCorrection;
 
 void pidInit(void)
 {
+
+  headingHoldCosZLimit = cos_approx(DECIDEGREES_TO_RADIANS(300)) * cos_approx(DECIDEGREES_TO_RADIANS(300)); //navConfig.mc.max_angle_inclination[FD_ROLL]
+
   _ROLL.in.pidName = "ROLL_IN";
   _ROLL.in.kp = 10;
   _ROLL.in.ki = 0;
@@ -191,7 +195,7 @@ void Reset_All_PID_Integrator(void)
 static uint8_t getHeadingHoldState(void)
 {
     // Don't apply heading hold if overall tilt is greater than maximum angle inclination
-    if (calculateCosTiltAngle() < headingHoldCosZLimit) {
+    if (getCosTiltAngle() < headingHoldCosZLimit) {
         return HEADING_HOLD_DISABLED;
     }
 
@@ -240,6 +244,18 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 
       //processDelayedSave();
   }
+
+//  uint8_t headingHoldState = getHeadingHoldState();
+//
+//  // In case Yaw override is active, we engage the Heading Hold state
+//  if (isFlightAxisAngleOverrideActive(FD_YAW)) {
+//      headingHoldState = HEADING_HOLD_ENABLED;
+//      headingHoldTarget = getFlightAxisAngleOverride(FD_YAW, 0);
+//  }
+//
+//  if (headingHoldState == HEADING_HOLD_UPDATE_HEADING) {
+//      updateHeadingHoldTarget(DECIDEGREES_TO_DEGREES(attitude.values.yaw));
+//  }
 
 #ifdef USE_GPS1
   if ( (FLIGHT_MODE(NAV_RTH_MODE) || FLIGHT_MODE(NAV_POSHOLD_MODE)) && STATE(GPS_FIX_HOME) ) {
