@@ -188,6 +188,30 @@ void Reset_All_PID_Integrator(void)
   _YAW_Rate.integral = 0;
 }
 
+static uint8_t getHeadingHoldState(void)
+{
+    // Don't apply heading hold if overall tilt is greater than maximum angle inclination
+    if (calculateCosTiltAngle() < headingHoldCosZLimit) {
+        return HEADING_HOLD_DISABLED;
+    }
+
+    int navHeadingState = navigationGetHeadingControlState();
+    // NAV will prevent MAG_MODE from activating, but require heading control
+    if (navHeadingState != NAV_HEADING_CONTROL_NONE) {
+        // Apply maghold only if heading control is in auto mode
+        if (navHeadingState == NAV_HEADING_CONTROL_AUTO) {
+            return HEADING_HOLD_ENABLED;
+        }
+    }
+    else if (ABS(rcCommand[YAW]) == 0 && FLIGHT_MODE(HEADING_MODE)) {
+        return HEADING_HOLD_ENABLED;
+    } else {
+        return HEADING_HOLD_UPDATE_HEADING;
+    }
+
+    return HEADING_HOLD_UPDATE_HEADING;
+}
+
 float yaw_heading_reference;
 
 // Function for loop trigger
