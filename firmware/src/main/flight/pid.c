@@ -320,19 +320,10 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 
 	  PID_Calculation(&_YAW_Rate, applyCommand[YAW], -bmi270.gyroADCf[Z], 0, dT);//left -, right +
 
-	  if(_PID_Test.pid_test_flag == 1)
-	  {
-	    LF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result + _ROLL.in.result - _YAW_Rate.result;
-	    LR = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 + _PITCH.in.result + _ROLL.in.result + _YAW_Rate.result;
-	    RR = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 + _PITCH.in.result - _ROLL.in.result - _YAW_Rate.result;
-	    RF = 10500 + 500 + (_PID_Test.pid_test_throttle - 1000) * 10 - _PITCH.in.result - _ROLL.in.result + _YAW_Rate.result;
-	  }else
-	  {
-	    LF = 10500 + 500 + applyCommand[THROTTLE] * 10 - _PITCH.in.result + _ROLL.in.result - _YAW_Rate.result;
-	    LR = 10500 + 500 + applyCommand[THROTTLE] * 10 + _PITCH.in.result + _ROLL.in.result + _YAW_Rate.result;
-	    RR = 10500 + 500 + applyCommand[THROTTLE] * 10 + _PITCH.in.result - _ROLL.in.result - _YAW_Rate.result;
-	    RF = 10500 + 500 + applyCommand[THROTTLE] * 10 - _PITCH.in.result - _ROLL.in.result + _YAW_Rate.result;
-	  }
+    LF = 10500 + 500 + applyCommand[THROTTLE] * 10 - _PITCH.in.result + _ROLL.in.result - _YAW_Rate.result;
+    LR = 10500 + 500 + applyCommand[THROTTLE] * 10 + _PITCH.in.result + _ROLL.in.result + _YAW_Rate.result;
+    RR = 10500 + 500 + applyCommand[THROTTLE] * 10 + _PITCH.in.result - _ROLL.in.result - _YAW_Rate.result;
+    RF = 10500 + 500 + applyCommand[THROTTLE] * 10 - _PITCH.in.result - _ROLL.in.result + _YAW_Rate.result;
   }
   else
   {
