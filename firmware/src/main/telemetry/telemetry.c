@@ -57,7 +57,7 @@
 
 telemetryConfig_t telemetryConfig;
 
-static void telemetryConfig_Init(void)
+void telemetryConfig_Init(void)
 {
 
   telemetryConfig.gpsNoFixLatitude = 0;

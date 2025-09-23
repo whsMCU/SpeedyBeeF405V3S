@@ -99,7 +99,7 @@
 #include "sensors/adcinternal.h"
 #include "sensors/boardalignment.h"
 #include "sensors/compass.h"
-//#include "sensors/esc_sensor.h"
+#include "sensors/esc_sensor.h"
 #include "sensors/gyro.h"
 #include "sensors/gyro_init.h"
 #include "sensors/opflow.h"
@@ -218,6 +218,13 @@ void init(void)
     }
 #endif
 
+#ifdef USE_ESC_SENSOR
+    featureSet(FEATURE_ESC_SENSOR);
+    if (featureConfigured(FEATURE_ESC_SENSOR)) {
+        escSensorInit();
+    }
+#endif
+
 //#ifdef USE_ACC
 //    if (mixerConfig.mixerMode == MIXER_GIMBAL) {
 //        accStartCalibration();
@@ -319,6 +326,7 @@ void Param_Config_Init(void)
 	positionConfig_Init();
 	posControlConfig_Init();
 	rcControlsConfig_Init();
+	telemetryConfig_Init();
 	armingConfig_Init();
 	flight3DConfig_Init();
 	ledStripConfig_Init();

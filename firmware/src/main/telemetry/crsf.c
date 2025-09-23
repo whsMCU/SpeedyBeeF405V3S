@@ -34,7 +34,7 @@
 #include "common/utils.h"
 #include "common/printf.h"
 
-//#include "config/feature.h"
+#include "config/feature.h"
 
 //#include "drivers/serial.h"
 //#include "drivers/time.h"
@@ -42,12 +42,12 @@
 
 //#include "fc/config.h"
 #include "fc/rc_controls.h"
-//#include "fc/rc_modes.h"
+#include "fc/rc_modes.h"
 #include "fc/runtime_config.h"
 
 #include "flight/imu.h"
 
-#include "drivers/gps/M8N.h"
+#include "drivers/gps/gps.h"
 //#include "io/serial.h"
 
 #include "navigation/navigation.h"
@@ -205,32 +205,32 @@ uint16_t    GPS heading ( degree / 100 )
 uint16      Altitude ( meter ­1000m offset )
 uint8_t     Satellites in use ( counter )
 */
-//static void crsfFrameGps(sbuf_t *dst)
-//{
-//    // use sbufWrite since CRC does not include frame length
-//    sbufWriteU8(dst, CRSF_FRAME_GPS_PAYLOAD_SIZE + CRSF_FRAME_LENGTH_TYPE_CRC);
-//    crsfSerialize8(dst, CRSF_FRAMETYPE_GPS);
-//    crsfSerialize32(dst, posllh.lat); // CRSF and betaflight use same units for degrees
-//    crsfSerialize32(dst, posllh.lon);
-//    crsfSerialize16(dst, (gpsSol.groundSpeed * 36 + 50) / 100); // gpsSol.groundSpeed is in cm/s
-//    crsfSerialize16(dst, DECIDEGREES_TO_CENTIDEGREES(gpsSol.groundCourse)); // gpsSol.groundCourse is 0.1 degrees, need 0.01 deg
-//    const uint16_t altitude = (getEstimatedActualPosition(Z) / 100) + 1000;
-//    crsfSerialize16(dst, altitude);
-//    crsfSerialize8(dst, gpsSol.numSat);
-//}
+static void crsfFrameGps(sbuf_t *dst)
+{
+    // use sbufWrite since CRC does not include frame length
+    sbufWriteU8(dst, CRSF_FRAME_GPS_PAYLOAD_SIZE + CRSF_FRAME_LENGTH_TYPE_CRC);
+    crsfSerialize8(dst, CRSF_FRAMETYPE_GPS);
+    crsfSerialize32(dst, posllh.lat); // CRSF and betaflight use same units for degrees
+    crsfSerialize32(dst, posllh.lon);
+    crsfSerialize16(dst, (GpsNav.groundSpeed * 36 + 50) / 100); // gpsSol.groundSpeed is in cm/s
+    crsfSerialize16(dst, DECIDEGREES_TO_CENTIDEGREES(GpsNav.groundCourse)); // gpsSol.groundCourse is 0.1 degrees, need 0.01 deg
+    const uint16_t altitude = (getEstimatedActualPosition(Z) / 100) + 1000;
+    crsfSerialize16(dst, altitude);
+    crsfSerialize8(dst, GpsNav.GPS_numSat);
+}
 
 /*
 0x07 Vario sensor
 Payload:
 int16      Vertical speed ( cm/s )
 */
-//static void crsfFrameVarioSensor(sbuf_t *dst)
-//{
-//    // use sbufWrite since CRC does not include frame length
-//    sbufWriteU8(dst, CRSF_FRAME_VARIO_SENSOR_PAYLOAD_SIZE + CRSF_FRAME_LENGTH_TYPE_CRC);
-//    crsfSerialize8(dst, CRSF_FRAMETYPE_VARIO_SENSOR);
-//    crsfSerialize16(dst, lrintf(getEstimatedActualVelocity(Z)));
-//}
+static void crsfFrameVarioSensor(sbuf_t *dst)
+{
+    // use sbufWrite since CRC does not include frame length
+    sbufWriteU8(dst, CRSF_FRAME_VARIO_SENSOR_PAYLOAD_SIZE + CRSF_FRAME_LENGTH_TYPE_CRC);
+    crsfSerialize8(dst, CRSF_FRAMETYPE_VARIO_SENSOR);
+    crsfSerialize16(dst, lrintf(getEstimatedActualVelocity(Z)));
+}
 
 /*
 0x08 Battery sensor
@@ -325,31 +325,31 @@ static void crsfFrameFlightMode(sbuf_t *dst)
     // use same logic as OSD, so telemetry displays same flight text as OSD when armed
     const char *flightMode = "OK";
     if (ARMING_FLAG(ARMED)) {
-//        if (STATE(AIRMODE_ACTIVE)) {
-//            flightMode = "AIR";
-//        } else {
-//            flightMode = "ACRO";
-//        }
+        if (STATE(AIRMODE_ACTIVE)) {
+            flightMode = "AIR";
+        } else {
+            flightMode = "ACRO";
+        }
         if (FLIGHT_MODE(FAILSAFE_MODE)) {
             flightMode = "!FS!";
         }
-//        else if (IS_RC_MODE_ACTIVE(BOXHOMERESET) && !FLIGHT_MODE(NAV_RTH_MODE) && !FLIGHT_MODE(NAV_WP_MODE)) {
-//            flightMode = "HRST";
-//        } else if (FLIGHT_MODE(MANUAL_MODE)) {
-//            flightMode = "MANU";
-//        } else if (FLIGHT_MODE(NAV_RTH_MODE)) {
-//            flightMode = "RTH";
-//        } else if (FLIGHT_MODE(NAV_POSHOLD_MODE)) {
-//            flightMode = "HOLD";
-//        } else if (FLIGHT_MODE(NAV_COURSE_HOLD_MODE) && FLIGHT_MODE(NAV_ALTHOLD_MODE)) {
-//            flightMode = "CRUZ";
-//        } else if (FLIGHT_MODE(NAV_COURSE_HOLD_MODE)) {
-//            flightMode = "CRSH";
-//        } else if (FLIGHT_MODE(NAV_WP_MODE)) {
-//            flightMode = "WP";
-//        } else if (FLIGHT_MODE(NAV_ALTHOLD_MODE)) {
-//            flightMode = "AH";
-//        }
+        else if (IS_RC_MODE_ACTIVE(BOXHOMERESET) && !FLIGHT_MODE(NAV_RTH_MODE) && !FLIGHT_MODE(NAV_WP_MODE)) {
+            flightMode = "HRST";
+        } else if (FLIGHT_MODE(MANUAL_MODE)) {
+            flightMode = "MANU";
+        } else if (FLIGHT_MODE(NAV_RTH_MODE)) {
+            flightMode = "RTH";
+        } else if (FLIGHT_MODE(NAV_POSHOLD_MODE)) {
+            flightMode = "HOLD";
+        } else if (FLIGHT_MODE(NAV_COURSE_HOLD_MODE) && FLIGHT_MODE(NAV_ALTHOLD_MODE)) {
+            flightMode = "CRUZ";
+        } else if (FLIGHT_MODE(NAV_COURSE_HOLD_MODE)) {
+            flightMode = "CRSH";
+        } else if (FLIGHT_MODE(NAV_WP_MODE)) {
+            flightMode = "WP";
+        } else if (FLIGHT_MODE(NAV_ALTHOLD_MODE)) {
+            flightMode = "AH";
+        }
         else if (FLIGHT_MODE(ANGLE_MODE)) {
             flightMode = "ANGL";
         } else if (FLIGHT_MODE(HORIZON_MODE)) {
@@ -464,19 +464,19 @@ static void processCrsf(void)
         crsfFrameFlightMode(dst);
         crsfFinalize(dst);
     }
-//#ifdef USE_GPS
-//    if (currentSchedule & BV(CRSF_FRAME_GPS_INDEX)) {
-//        crsfInitializeFrame(dst);
-//        crsfFrameGps(dst);
-//        crsfFinalize(dst);
-//    }
-//#endif
+#ifdef USE_GPS
+    if (currentSchedule & BV(CRSF_FRAME_GPS_INDEX)) {
+        crsfInitializeFrame(dst);
+        crsfFrameGps(dst);
+        crsfFinalize(dst);
+    }
+#endif
 #if defined(USE_BARO) || defined(USE_GPS)
-//    if (currentSchedule & BV(CRSF_FRAME_VARIO_SENSOR_INDEX)) {
-//        crsfInitializeFrame(dst);
-//        crsfFrameVarioSensor(dst);
-//        crsfFinalize(dst);
-//    }
+    if (currentSchedule & BV(CRSF_FRAME_VARIO_SENSOR_INDEX)) {
+        crsfInitializeFrame(dst);
+        crsfFrameVarioSensor(dst);
+        crsfFinalize(dst);
+    }
 #endif
     crsfScheduleIndex = (crsfScheduleIndex + 1) % crsfScheduleCount;
 }
@@ -505,9 +505,9 @@ void initCrsfTelemetry(void)
     crsfSchedule[index++] = BV(CRSF_FRAME_GPS_INDEX);
 #endif
 #if defined(USE_BARO) || defined(USE_GPS)
-//    if (sensors(SENSOR_BARO) || (STATE(FIXED_WING_LEGACY) && feature(FEATURE_GPS))) {
-//        crsfSchedule[index++] = BV(CRSF_FRAME_VARIO_SENSOR_INDEX);
-//    }
+    if (sensors(SENSOR_BARO) || (STATE(FIXED_WING_LEGACY) && feature(FEATURE_GPS))) {
+        crsfSchedule[index++] = BV(CRSF_FRAME_VARIO_SENSOR_INDEX);
+    }
 #endif
     crsfScheduleCount = (uint8_t)index;
 }
@@ -578,14 +578,14 @@ int getCrsfFrame(uint8_t *frame, crsfFrameType_e frameType)
     case CRSF_FRAMETYPE_FLIGHT_MODE:
         crsfFrameFlightMode(sbuf);
         break;
-//#if defined(USE_GPS)
-//    case CRSF_FRAMETYPE_GPS:
-//        crsfFrameGps(sbuf);
-//        break;
-//#endif
-//    case CRSF_FRAMETYPE_VARIO_SENSOR:
-//        crsfFrameVarioSensor(sbuf);
-//        break;
+#if defined(USE_GPS)
+    case CRSF_FRAMETYPE_GPS:
+        crsfFrameGps(sbuf);
+        break;
+#endif
+    case CRSF_FRAMETYPE_VARIO_SENSOR:
+        crsfFrameVarioSensor(sbuf);
+        break;
     }
     const int frameSize = crsfFinalizeBuf(sbuf, frame);
     return frameSize;

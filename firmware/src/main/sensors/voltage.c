@@ -35,7 +35,7 @@
 #include "sensors/adcinternal.h"
 #include "sensors/voltage.h"
 #include "sensors/battery.h"
-//#include "sensors/esc_sensor.h"
+#include "sensors/esc_sensor.h"
 
 const char * const voltageMeterSourceNames[VOLTAGE_METER_COUNT] = {
     "NONE", "ADC", "ESC"
@@ -251,7 +251,7 @@ void voltageMeterESCInit(void)
 {
 #ifdef USE_ESC_SENSOR
     memset(&voltageMeterESCState, 0, sizeof(voltageMeterESCState_t));
-    pt1FilterInit(&voltageMeterESCState.displayFilter, pt1FilterGain(GET_BATTERY_LPF_FREQUENCY(batteryConfig()->vbatDisplayLpfPeriod), HZ_TO_INTERVAL(isSagCompensationConfigured() ? FAST_VOLTAGE_TASK_FREQ_HZ : SLOW_VOLTAGE_TASK_FREQ_HZ)));
+    pt1FilterInit(&voltageMeterESCState.displayFilter, pt1FilterGain(GET_BATTERY_LPF_FREQUENCY(batteryConfig.vbatDisplayLpfPeriod), HZ_TO_INTERVAL(isSagCompensationConfigured() ? FAST_VOLTAGE_TASK_FREQ_HZ : SLOW_VOLTAGE_TASK_FREQ_HZ)));
 #endif
 }
 

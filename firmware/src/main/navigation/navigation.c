@@ -4150,22 +4150,22 @@ void navigationInit(void)
 #endif
 }
 
-///*-----------------------------------------------------------
-// * Access to estimated position/velocity data
-// *-----------------------------------------------------------*/
-//float getEstimatedActualVelocity(int axis)
-//{
-//    return navGetCurrentActualPositionAndVelocity()->vel.v[axis];
-//}
-//
-//float getEstimatedActualPosition(int axis)
-//{
-//    return navGetCurrentActualPositionAndVelocity()->pos.v[axis];
-//}
-//
-///*-----------------------------------------------------------
-// * Ability to execute RTH on external event
-// *-----------------------------------------------------------*/
+/*-----------------------------------------------------------
+ * Access to estimated position/velocity data
+ *-----------------------------------------------------------*/
+float getEstimatedActualVelocity(int axis)
+{
+    return navGetCurrentActualPositionAndVelocity()->vel.v[axis];
+}
+
+float getEstimatedActualPosition(int axis)
+{
+    return navGetCurrentActualPositionAndVelocity()->pos.v[axis];
+}
+
+/*-----------------------------------------------------------
+ * Ability to execute RTH on external event
+ *-----------------------------------------------------------*/
 //void activateForcedRTH(void)
 //{
 //    abortFixedWingLaunch();

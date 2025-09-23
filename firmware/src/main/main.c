@@ -60,6 +60,7 @@ void run(void);
 
 int main(void)
 {
+
   initialiseMemorySections();
 
   HAL_Init();

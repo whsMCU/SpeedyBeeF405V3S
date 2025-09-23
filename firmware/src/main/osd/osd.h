@@ -27,7 +27,7 @@
 //#include "drivers/display.h"
 
 
-//#include "sensors/esc_sensor.h"
+#include "sensors/esc_sensor.h"
 
 #define OSD_NUM_TIMER_TYPES 4
 extern const char * const osdTimerSourceNames[OSD_NUM_TIMER_TYPES];

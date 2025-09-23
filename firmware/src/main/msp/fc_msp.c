@@ -125,7 +125,8 @@
 #include "sensors/gyro.h"
 #include "sensors/opflow.h"
 //#include "sensors/temperature.h"
-//#include "sensors/esc_sensor.h"
+#include "sensors/esc_sensor.h"
+#include "sensors/adcinternal.h"
 
 #include "scheduler/tasks.h"
 
@@ -521,7 +522,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
 
           sbufWriteU32(dst, GpsNav.GPS_headVeh);
 
-          sbufWriteU32(dst, baro.baroTemperature);
+          sbufWriteU32(dst, getCoreTemperatureCelsius());
         }
         break;
 

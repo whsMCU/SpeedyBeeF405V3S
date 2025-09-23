@@ -75,6 +75,8 @@ extern telemetryConfig_t telemetryConfig;
 //#define TELEMETRY_SHAREABLE_PORT_FUNCTIONS_MASK (FUNCTION_TELEMETRY_FRSKY | FUNCTION_TELEMETRY_LTM | FUNCTION_TELEMETRY_IBUS)
 //extern serialPort_t *telemetrySharedPort;
 
+void telemetryConfig_Init(void);
+
 void telemetryInit(void);
 //bool telemetryCheckRxPortShared(const serialPortConfig_t *portConfig);
 

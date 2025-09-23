@@ -149,6 +149,9 @@ typedef enum {
 #ifdef USE_LED_STRIP
     TASK_LEDSTRIP,
 #endif
+#ifdef USE_ESC_SENSOR
+    TASK_ESC_SENSOR,
+#endif
 
 #ifdef USE_OSD
     TASK_OSD,

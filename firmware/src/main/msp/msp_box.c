@@ -300,7 +300,7 @@ void initActiveBoxIds(void)
     ADD_ACTIVE_BOX(BOXOSD);
 
 #ifdef USE_TELEMETRY
-    if (feature(FEATURE_TELEMETRY) && telemetryConfig()->telemetry_switch) {
+    if (feature(FEATURE_TELEMETRY) && telemetryConfig.telemetry_switch) {
         ADD_ACTIVE_BOX(BOXTELEMETRY);
     }
 #endif

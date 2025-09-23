@@ -2631,7 +2631,7 @@ namespace SpeedyBeeF405V3S_GUI
 
             lb_gps_fix.Text = passed_data[44].ToString();
 
-            lb_fc_temp.Text = passed_data[61].ToString("F1", CultureInfo.InvariantCulture);
+            lb_fc_temp.Text = passed_data[61].ToString();
 
             if (rb_roll.Checked == true || rb_pitch.Checked == true ||
                rb_yaw.Checked == true || rb_roll_pitch.Checked == true ||

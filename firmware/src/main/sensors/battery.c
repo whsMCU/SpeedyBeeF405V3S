@@ -29,7 +29,7 @@
 #include "common/utils.h"
 
 //#include "config/config.h"
-//#include "config/feature.h"
+#include "config/feature.h"
 
 //#include "fc/runtime_config.h"
 //#include "fc/rc_controls.h"
@@ -131,7 +131,7 @@ void batteryUpdateVoltage(timeUs_t currentTimeUs)
     switch (batteryConfig.voltageMeterSource) {
 #ifdef USE_ESC_SENSOR
         case VOLTAGE_METER_ESC:
-            if (featureIsEnabled(FEATURE_ESC_SENSOR)) {
+            if (featureConfigured(FEATURE_ESC_SENSOR)) {
                 voltageMeterESCRefresh();
                 voltageMeterESCReadCombined(&voltageMeter);
             }
@@ -441,7 +441,7 @@ void batteryUpdateCurrentMeter(timeUs_t currentTimeUs)
 
         case CURRENT_METER_ESC:
 #ifdef USE_ESC_SENSOR
-            if (featureIsEnabled(FEATURE_ESC_SENSOR)) {
+            if (featureConfigured(FEATURE_ESC_SENSOR)) {
                 currentMeterESCRefresh(lastUpdateAt);
                 currentMeterESCReadCombined(&currentMeter);
             }
