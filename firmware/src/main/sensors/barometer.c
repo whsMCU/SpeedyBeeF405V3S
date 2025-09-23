@@ -36,6 +36,8 @@
 
 #include "scheduler/scheduler.h"
 
+#include "navigation/navigation.h"
+
 #ifdef USE_BARO_DPS310
 
 #ifdef _USE_HW_CLI

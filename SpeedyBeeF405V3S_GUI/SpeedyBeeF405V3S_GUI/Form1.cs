@@ -2334,6 +2334,8 @@ namespace SpeedyBeeF405V3S_GUI
 
             passed_data[60] = BitConverter.ToInt32(payload, 174);    // GPS_Heading
 
+            passed_data[61] = BitConverter.ToInt32(payload, 178);    // FC_Temp
+
             if (cb_record.Checked == true)
             {
                 Check_Data_Log(PID_log_filePath, passed_data);
@@ -2628,6 +2630,8 @@ namespace SpeedyBeeF405V3S_GUI
             lb_sat_num.Text = passed_data[43].ToString();
 
             lb_gps_fix.Text = passed_data[44].ToString();
+
+            lb_fc_temp.Text = passed_data[61].ToString("F1", CultureInfo.InvariantCulture);
 
             if (rb_roll.Checked == true || rb_pitch.Checked == true ||
                rb_yaw.Checked == true || rb_roll_pitch.Checked == true ||
