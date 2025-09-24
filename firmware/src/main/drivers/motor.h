@@ -33,6 +33,8 @@ typedef struct motorConfig_s {
     uint16_t maxthrottle;                   // This is the maximum value for the ESCs at full power this value can be increased up to 2000
     uint16_t mincommand;                    // This is the value for the ESCs when they are not armed. In some cases, this value must be lowered down to 900 for some specific ESCs
     uint8_t motorPoleCount;                // Magnetic poles in the motors for calculating actual RPM from eRPM provided by ESC telemetry
+    uint8_t motorCount;
+    bool enabled;
 } motorConfig_t;
 
 typedef struct motor_s {
@@ -57,4 +59,6 @@ void motorConfig_Init(void);
 void motorWriteAll(void);
 void motorDisable(void);
 void motorEnable(void);
+bool motorIsEnabled(void);
 void motorShutdown(void); // Replaces stopPwmAllMotors
+uint8_t getMotorCount(void);

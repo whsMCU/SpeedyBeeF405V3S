@@ -1687,8 +1687,8 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
             uint8_t motorCount = getMotorCount();
 
             for (uint8_t i = 0; i < motorCount; i++){
-                const escSensorData_t *escState = getEscTelemetry(i); //Get ESC telemetry
-                sbufWriteU32(dst, escState->rpm);
+                //const escSensorData_t *escState = getEscTelemetry(i); //Get ESC telemetry
+                //sbufWriteU32(dst, escState->rpm);
             }
         }
         break;

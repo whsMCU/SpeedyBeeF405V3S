@@ -63,11 +63,14 @@ void motorConfig_Init(void)
   motorConfig.mincommand = 1000;
   motorConfig.digitalIdleOffsetValue = 550;
   motorConfig.motorPoleCount = 14;   // Most brushes motors that we use are 14 poles
+  motorConfig.motorCount = 4;
+  motorConfig.enabled = false;
+
 }
 
 void motorShutdown(void)
 {
-
+  motorConfig.enabled = false;
 }
 
 FAST_CODE void motorWriteAll(void)
@@ -119,6 +122,7 @@ FAST_CODE void motorWriteAll(void)
 
 void motorDisable(void)
 {
+  motorConfig.enabled = false;
   TIM4->CCR1 = 10500;
   TIM4->CCR2 = 10500;
   TIM4->CCR3 = 10500;
@@ -127,10 +131,15 @@ void motorDisable(void)
 
 void motorEnable(void)
 {
-
+  motorConfig.enabled = true;
 }
 
 bool motorIsEnabled(void)
 {
-    return false;
+    return motorConfig.enabled;
+}
+
+uint8_t getMotorCount(void)
+{
+    return motorConfig.motorCount;
 }

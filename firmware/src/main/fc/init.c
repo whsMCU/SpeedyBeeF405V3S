@@ -253,10 +253,10 @@ void init(void)
 #endif
 
 
-//#ifdef USE_MOTOR
-//    motorPostInit();
-//    motorEnable();
-//#endif
+#ifdef USE_MOTOR
+    //motorPostInit();
+    motorEnable();
+#endif
 
 #ifdef USE_OSD
 	osdInit();
