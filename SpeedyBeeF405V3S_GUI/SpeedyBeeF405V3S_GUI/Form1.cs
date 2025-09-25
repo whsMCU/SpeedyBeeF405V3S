@@ -17,9 +17,6 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Globalization;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
-using static GMap.NET.Entity.OpenStreetMapRouteEntity;
 
 namespace SpeedyBeeF405V3S_GUI
 {
@@ -155,6 +152,9 @@ namespace SpeedyBeeF405V3S_GUI
         LineItem _debug_6_curve;
         PointPairList _debug_7_points = new PointPairList();
         LineItem _debug_7_curve;
+        PointPairList _drone_position_points = new PointPairList();
+        LineItem _drone_position_curve;
+
 
         class Item
         {
@@ -1775,6 +1775,23 @@ namespace SpeedyBeeF405V3S_GUI
             zedGraphControl1.Refresh();
         }
 
+        private void rb_DronePosition_MouseDown(object sender, MouseEventArgs e)
+        {
+            _myPane.CurveList.Clear();
+            _myPane.XAxis.Scale.Min = -100;
+            _myPane.XAxis.Scale.Max = 100;
+            _myPane.YAxis.Scale.Min = -100;
+            _myPane.YAxis.Scale.Max = 100;
+
+            _drone_position_curve = _myPane.AddCurve("Drone Path", _drone_position_points, Color.Blue, SymbolType.None);
+            _drone_position_curve.Line.Width = 2;
+            _drone_position_points.Clear();
+
+            zedGraphControl1.AxisChange();
+            zedGraphControl1.Invalidate();
+            zedGraphControl1.Refresh();
+        }
+
         private void bt_zoom_p_Click(object sender, EventArgs e)
         {
             gMapControl1.Zoom++;
@@ -2336,6 +2353,9 @@ namespace SpeedyBeeF405V3S_GUI
 
             passed_data[61] = BitConverter.ToInt32(payload, 178);    // FC_Temp
 
+            passed_data[62] = BitConverter.ToInt32(payload, 182);    // Drone_Position_X
+            passed_data[63] = BitConverter.ToInt32(payload, 186);    // Drone_Position_Y
+
             if (cb_record.Checked == true)
             {
                 Check_Data_Log(PID_log_filePath, passed_data);
@@ -2555,6 +2575,15 @@ namespace SpeedyBeeF405V3S_GUI
                 _myPane.XAxis.Scale.Max = 300 + time_count;
             }
 
+            if (rb_DronePosition.Checked == true)
+            {
+                _drone_position_points.Add(passed_data[62], passed_data[63]);  // XY 쌍 추가
+                if (_drone_position_points.Count > 1000)
+                {
+                    _drone_position_points.RemoveAt(0);
+                }
+            }
+
             attitudeIndicatorInstrumentControl1.SetAttitudeIndicatorParameters(-passed_data[1]/10, passed_data[0]/10);
             headingIndicatorInstrumentControl1.SetHeadingIndicatorParameters((int)passed_data[2]);
 
@@ -2633,12 +2662,16 @@ namespace SpeedyBeeF405V3S_GUI
 
             lb_fc_temp.Text = passed_data[61].ToString();
 
+            lb_Position_X.Text = passed_data[62].ToString();
+            lb_Position_Y.Text = passed_data[63].ToString();
+
             if (rb_roll.Checked == true || rb_pitch.Checked == true ||
                rb_yaw.Checked == true || rb_roll_pitch.Checked == true ||
                rb_roll_setpoint.Checked == true || rb_pitch_setpoint.Checked == true ||
                rb_yaw_setpoint.Checked == true || rb_altitude.Checked == true ||
                rb_gyro.Checked == true || rb_motor.Checked == true ||
-               rb_debug.Checked == true || rb_alt_setpoint.Checked == true || rb_alt_range_setpoint.Checked == true)
+               rb_debug.Checked == true || rb_alt_setpoint.Checked == true || rb_alt_range_setpoint.Checked == true ||
+               rb_DronePosition.Checked == true)
             {
                 zedGraphControl1.AxisChange();
                 zedGraphControl1.Invalidate();

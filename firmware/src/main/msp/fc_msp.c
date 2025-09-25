@@ -523,6 +523,9 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU32(dst, GpsNav.GPS_headVeh);
 
           sbufWriteU32(dst, getCoreTemperatureCelsius());
+
+          sbufWriteU32(dst, (int32_t)navGetCurrentActualPositionAndVelocity()->pos.x);
+          sbufWriteU32(dst, (int32_t)navGetCurrentActualPositionAndVelocity()->pos.y);
         }
         break;
 

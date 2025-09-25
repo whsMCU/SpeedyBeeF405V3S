@@ -97,6 +97,9 @@
             this.label25 = new System.Windows.Forms.Label();
             this.label26 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label106 = new System.Windows.Forms.Label();
+            this.lb_fc_temp = new System.Windows.Forms.Label();
+            this.label108 = new System.Windows.Forms.Label();
             this.lb_althold = new System.Windows.Forms.Label();
             this.label91 = new System.Windows.Forms.Label();
             this.label75 = new System.Windows.Forms.Label();
@@ -108,7 +111,7 @@
             this.label60 = new System.Windows.Forms.Label();
             this.label59 = new System.Windows.Forms.Label();
             this.label58 = new System.Windows.Forms.Label();
-            this.label37 = new System.Windows.Forms.Label();
+            this.lb_Position_X = new System.Windows.Forms.Label();
             this.label38 = new System.Windows.Forms.Label();
             this.label22 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -308,6 +311,7 @@
             this.label61 = new System.Windows.Forms.Label();
             this.gMapControl1 = new GMap.NET.WindowsForms.GMapControl();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.rb_DronePosition = new System.Windows.Forms.RadioButton();
             this.comboBox_Debug = new System.Windows.Forms.ComboBox();
             this.rb_alt_range_setpoint = new System.Windows.Forms.RadioButton();
             this.rb_alt_setpoint = new System.Windows.Forms.RadioButton();
@@ -381,9 +385,8 @@
             this.tb_msp_error = new System.Windows.Forms.TextBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.tb_msp_period = new System.Windows.Forms.TextBox();
-            this.label106 = new System.Windows.Forms.Label();
-            this.lb_fc_temp = new System.Windows.Forms.Label();
-            this.label108 = new System.Windows.Forms.Label();
+            this.lb_Position_Y = new System.Windows.Forms.Label();
+            this.label109 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -671,6 +674,8 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.lb_Position_Y);
+            this.groupBox4.Controls.Add(this.label109);
             this.groupBox4.Controls.Add(this.label106);
             this.groupBox4.Controls.Add(this.lb_fc_temp);
             this.groupBox4.Controls.Add(this.label108);
@@ -685,7 +690,7 @@
             this.groupBox4.Controls.Add(this.label60);
             this.groupBox4.Controls.Add(this.label59);
             this.groupBox4.Controls.Add(this.label58);
-            this.groupBox4.Controls.Add(this.label37);
+            this.groupBox4.Controls.Add(this.lb_Position_X);
             this.groupBox4.Controls.Add(this.label38);
             this.groupBox4.Controls.Add(this.label22);
             this.groupBox4.Controls.Add(this.label5);
@@ -708,6 +713,37 @@
             this.groupBox4.TabIndex = 65;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Telemetry passed_data";
+            // 
+            // label106
+            // 
+            this.label106.AutoSize = true;
+            this.label106.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label106.Location = new System.Drawing.Point(295, 146);
+            this.label106.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label106.Name = "label106";
+            this.label106.Size = new System.Drawing.Size(26, 21);
+            this.label106.TabIndex = 99;
+            this.label106.Text = "°C";
+            // 
+            // lb_fc_temp
+            // 
+            this.lb_fc_temp.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_fc_temp.Location = new System.Drawing.Point(251, 146);
+            this.lb_fc_temp.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_fc_temp.Name = "lb_fc_temp";
+            this.lb_fc_temp.Size = new System.Drawing.Size(36, 19);
+            this.lb_fc_temp.TabIndex = 101;
+            this.lb_fc_temp.Text = "-";
+            // 
+            // label108
+            // 
+            this.label108.AutoSize = true;
+            this.label108.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.label108.Location = new System.Drawing.Point(147, 145);
+            this.label108.Name = "label108";
+            this.label108.Size = new System.Drawing.Size(80, 21);
+            this.label108.TabIndex = 100;
+            this.label108.Text = "FC Temp : ";
             // 
             // lb_althold
             // 
@@ -828,15 +864,15 @@
             this.label58.TabIndex = 53;
             this.label58.Text = "Gyro[X]";
             // 
-            // label37
+            // lb_Position_X
             // 
-            this.label37.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label37.Location = new System.Drawing.Point(120, 164);
-            this.label37.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(45, 20);
-            this.label37.TabIndex = 51;
-            this.label37.Text = "-";
+            this.lb_Position_X.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_Position_X.Location = new System.Drawing.Point(100, 164);
+            this.lb_Position_X.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_Position_X.Name = "lb_Position_X";
+            this.lb_Position_X.Size = new System.Drawing.Size(45, 20);
+            this.lb_Position_X.TabIndex = 51;
+            this.lb_Position_X.Text = "-";
             // 
             // label38
             // 
@@ -845,9 +881,9 @@
             this.label38.Location = new System.Drawing.Point(9, 164);
             this.label38.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label38.Name = "label38";
-            this.label38.Size = new System.Drawing.Size(97, 21);
+            this.label38.Size = new System.Drawing.Size(84, 21);
             this.label38.TabIndex = 50;
-            this.label38.Text = "Temperature";
+            this.label38.Text = "Position[X]";
             // 
             // label22
             // 
@@ -2929,6 +2965,7 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.rb_DronePosition);
             this.tabPage3.Controls.Add(this.comboBox_Debug);
             this.tabPage3.Controls.Add(this.rb_alt_range_setpoint);
             this.tabPage3.Controls.Add(this.rb_alt_setpoint);
@@ -2969,6 +3006,17 @@
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "그래프";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // rb_DronePosition
+            // 
+            this.rb_DronePosition.AutoSize = true;
+            this.rb_DronePosition.Location = new System.Drawing.Point(263, 533);
+            this.rb_DronePosition.Name = "rb_DronePosition";
+            this.rb_DronePosition.Size = new System.Drawing.Size(105, 16);
+            this.rb_DronePosition.TabIndex = 88;
+            this.rb_DronePosition.Text = "Drone Position";
+            this.rb_DronePosition.UseVisualStyleBackColor = true;
+            this.rb_DronePosition.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rb_DronePosition_MouseDown);
             // 
             // comboBox_Debug
             // 
@@ -3774,36 +3822,26 @@
             this.tb_msp_period.TabIndex = 95;
             this.tb_msp_period.Text = "-";
             // 
-            // label106
+            // lb_Position_Y
             // 
-            this.label106.AutoSize = true;
-            this.label106.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label106.Location = new System.Drawing.Point(286, 146);
-            this.label106.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label106.Name = "label106";
-            this.label106.Size = new System.Drawing.Size(26, 21);
-            this.label106.TabIndex = 99;
-            this.label106.Text = "°C";
+            this.lb_Position_Y.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_Position_Y.Location = new System.Drawing.Point(243, 166);
+            this.lb_Position_Y.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_Position_Y.Name = "lb_Position_Y";
+            this.lb_Position_Y.Size = new System.Drawing.Size(45, 20);
+            this.lb_Position_Y.TabIndex = 103;
+            this.lb_Position_Y.Text = "-";
             // 
-            // lb_fc_temp
+            // label109
             // 
-            this.lb_fc_temp.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_fc_temp.Location = new System.Drawing.Point(251, 146);
-            this.lb_fc_temp.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lb_fc_temp.Name = "lb_fc_temp";
-            this.lb_fc_temp.Size = new System.Drawing.Size(36, 19);
-            this.lb_fc_temp.TabIndex = 101;
-            this.lb_fc_temp.Text = "-";
-            // 
-            // label108
-            // 
-            this.label108.AutoSize = true;
-            this.label108.Font = new System.Drawing.Font("Segoe UI", 12F);
-            this.label108.Location = new System.Drawing.Point(147, 145);
-            this.label108.Name = "label108";
-            this.label108.Size = new System.Drawing.Size(80, 21);
-            this.label108.TabIndex = 100;
-            this.label108.Text = "FC Temp : ";
+            this.label109.AutoSize = true;
+            this.label109.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label109.Location = new System.Drawing.Point(149, 166);
+            this.label109.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label109.Name = "label109";
+            this.label109.Size = new System.Drawing.Size(84, 21);
+            this.label109.TabIndex = 102;
+            this.label109.Text = "Position[Y]";
             // 
             // Form1
             // 
@@ -3891,7 +3929,7 @@
         private System.Windows.Forms.Label label25;
         private System.Windows.Forms.Label label26;
         private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.Label label37;
+        private System.Windows.Forms.Label lb_Position_X;
         private System.Windows.Forms.Label label38;
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.Label label5;
@@ -4186,6 +4224,9 @@
         private System.Windows.Forms.Label label106;
         private System.Windows.Forms.Label lb_fc_temp;
         private System.Windows.Forms.Label label108;
+        private System.Windows.Forms.RadioButton rb_DronePosition;
+        private System.Windows.Forms.Label lb_Position_Y;
+        private System.Windows.Forms.Label label109;
     }
 }
 
