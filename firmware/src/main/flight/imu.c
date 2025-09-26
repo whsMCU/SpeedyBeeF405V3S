@@ -151,6 +151,10 @@ void imuConfigure(uint16_t throttle_correction_angle, uint8_t throttle_correctio
 
     smallAngleCosZ = cos_approx(degreesToRadians(imuConfig.small_angle));
 
+    for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+        imuMeasuredAccelBF.v[axis] = 0;
+    }
+
     fc_acc = calculateAccZLowPassFilterRCTimeConstant(5.0f); // Set to fix value
     throttleAngleScale = calculateThrottleAngleScale(throttle_correction_angle);
 
