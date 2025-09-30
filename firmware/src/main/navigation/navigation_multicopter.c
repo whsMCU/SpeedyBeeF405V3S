@@ -31,6 +31,7 @@
 #include "common/utils.h"
 
 #include "drivers/gps/gps.h"
+#include "drivers/motor.h"
 
 #include "sensors/sensors.h"
 //#include "sensors/acceleration.h"
@@ -114,8 +115,8 @@ static void updateAltitudeVelocityController_MC(timeDelta_t deltaMicros)
 static void updateAltitudeThrottleController_MC(timeDelta_t deltaMicros)
 {
     // Calculate min and max throttle boundaries (to compensate for integral windup)
-    const int16_t thrAdjustmentMin = (int16_t)1050 - (int16_t)1500;
-    const int16_t thrAdjustmentMax = (int16_t)2000 - (int16_t)1500;
+    const int16_t thrAdjustmentMin = (int16_t)motorConfig.minthrottle - (int16_t)navConfig.mc.hover_throttle;
+    const int16_t thrAdjustmentMax = (int16_t)motorConfig.maxthrottle - (int16_t)navConfig.mc.hover_throttle;
 
     float velocity_controller = navPidApply2(&posControl.pids.vel[Z], posControl.desiredState.vel.z, navGetCurrentActualPositionAndVelocity()->vel.z, US2S(deltaMicros), thrAdjustmentMin, thrAdjustmentMax, 0);
 
@@ -123,7 +124,7 @@ static void updateAltitudeThrottleController_MC(timeDelta_t deltaMicros)
 
     posControl.rcAdjustment[THROTTLE] = constrain(posControl.rcAdjustment[THROTTLE], thrAdjustmentMin, thrAdjustmentMax);
 
-    posControl.rcAdjustment[THROTTLE] = constrain((int16_t)1500 + posControl.rcAdjustment[THROTTLE], 1050, 2000);
+    posControl.rcAdjustment[THROTTLE] = constrain((int16_t)navConfig.mc.hover_throttle + posControl.rcAdjustment[THROTTLE], motorConfig.minthrottle, motorConfig.maxthrottle);
 
 }
 
@@ -154,11 +155,11 @@ bool adjustMulticopterAltitudeFromRCInput(void)
             // Make sure we can satisfy max_manual_climb_rate in both up and down directions
             if (rcThrottleAdjustment > 0) {
                 // Scaling from altHoldThrottleRCZero to maxthrottle
-                rcClimbRate = rcThrottleAdjustment * navConfig.general.max_manual_climb_rate / (float)(2000 - altHoldThrottleRCZero - rcControlsConfig.alt_hold_deadband);
+                rcClimbRate = rcThrottleAdjustment * navConfig.general.max_manual_climb_rate / (float)(motorConfig.maxthrottle - altHoldThrottleRCZero - rcControlsConfig.alt_hold_deadband);
             }
             else {
                 // Scaling from minthrottle to altHoldThrottleRCZero
-                rcClimbRate = rcThrottleAdjustment * navConfig.general.max_manual_climb_rate / (float)(altHoldThrottleRCZero - 1050 - rcControlsConfig.alt_hold_deadband);
+                rcClimbRate = rcThrottleAdjustment * navConfig.general.max_manual_climb_rate / (float)(altHoldThrottleRCZero - motorConfig.minthrottle - rcControlsConfig.alt_hold_deadband);
             }
 
             updateClimbRateToAltitudeController(rcClimbRate, ROC_TO_ALT_NORMAL);
@@ -182,10 +183,23 @@ void setupMulticopterAltitudeController(void)
 
     altHoldThrottleRCZero = rcData[THROTTLE];
 
+    if (navConfig.general.flags.use_thr_mid_for_althold) {
+        altHoldThrottleRCZero = navConfig.mc.hover_throttle;
+    }
+    else {
+        // If throttle is LOW - use Thr Mid anyway
+        if (throttleIsLow) {
+            altHoldThrottleRCZero = navConfig.mc.hover_throttle;
+        }
+        else {
+            altHoldThrottleRCZero = rcCommand[THROTTLE];
+        }
+    }
+
     // Make sure we are able to satisfy the deadband
     altHoldThrottleRCZero = constrain(altHoldThrottleRCZero,
-                                      1050 + rcControlsConfig.alt_hold_deadband + 10,
-                                      2000 - rcControlsConfig.alt_hold_deadband - 10);
+                                      motorConfig.minthrottle + rcControlsConfig.alt_hold_deadband + 10,
+                                      motorConfig.maxthrottle - rcControlsConfig.alt_hold_deadband - 10);
 
     // Force AH controller to initialize althold integral for pending takeoff on reset
     // Signal for that is low throttle _and_ low actual altitude
@@ -253,12 +267,12 @@ static void applyMulticopterAltitudeController(timeUs_t currentTimeUs)
 
             DEBUG_SET(DEBUG_PIDLOOP, 0, (posControl.desiredState.pos.z));
             DEBUG_SET(DEBUG_PIDLOOP, 1, (navGetCurrentActualPositionAndVelocity()->pos.z));
-            DEBUG_SET(DEBUG_PIDLOOP, 2, (posControl.pids.pos[Z].output_constrained));
-            DEBUG_SET(DEBUG_PIDLOOP, 3, (posControl.desiredState.vel.z));
-            DEBUG_SET(DEBUG_PIDLOOP, 4, (navGetCurrentActualPositionAndVelocity()->vel.z));
-            DEBUG_SET(DEBUG_PIDLOOP, 5, (posControl.pids.vel[Z].proportional));
-            DEBUG_SET(DEBUG_PIDLOOP, 6, (posControl.pids.vel[Z].integral));
-            DEBUG_SET(DEBUG_PIDLOOP, 7, (posControl.pids.vel[Z].derivative));
+            DEBUG_SET(DEBUG_PIDLOOP, 2, (posControl.desiredState.vel.z));
+            DEBUG_SET(DEBUG_PIDLOOP, 3, (navGetCurrentActualPositionAndVelocity()->vel.z));
+            DEBUG_SET(DEBUG_PIDLOOP, 4, (posControl.pids.vel[Z].proportional));
+            DEBUG_SET(DEBUG_PIDLOOP, 5, (posControl.pids.vel[Z].integral));
+            DEBUG_SET(DEBUG_PIDLOOP, 6, (posControl.pids.vel[Z].derivative));
+            DEBUG_SET(DEBUG_PIDLOOP, 7, (posControl.rcAdjustment[THROTTLE]));
         }
         else {
             // Position update has not occurred in time (first start or glitch), reset altitude controller

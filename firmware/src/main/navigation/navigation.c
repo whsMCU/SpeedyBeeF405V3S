@@ -116,6 +116,9 @@ void navConfig_Init(void)
   navConfig.general.flags.user_control_mode = NAV_GPS_ATTI;
   navConfig.general.max_terrain_follow_altitude = 200; // max altitude in centimeters in terrain following mode
   navConfig.general.pos_failure_timeout = 5;          //If GPS fails wait for this much seconds before switching to emergency landing mode (0 - disable)
+  navConfig.general.flags.use_thr_mid_for_althold = false; //If set to OFF, the FC remembers your throttle stick position when enabling ALTHOLD and treats it as a neutral midpoint for holding altitude
+
+
   navConfig.mc.max_angle_inclination[FD_ROLL] = 300;  // Max possible inclination (roll and pitch axis separately)
   navConfig.mc.max_angle_inclination[FD_PITCH] = 300; // Max possible inclination (roll and pitch axis separately)
   navConfig.mc.slowDownForTurning = true;             //When ON, NAV engine will slow down when switching to the next waypoint. This prioritizes turning over forward movement. When OFF, NAV engine will continue to the next waypoint and turn as it goes.
@@ -123,6 +126,7 @@ void navConfig_Init(void)
   navConfig.mc.braking_bank_angle = 40;               //max angle that MR is allowed to bank in BOOST mode
   navConfig.mc.posDecelerationTime = 120;             //Used for stoping distance calculation. Stop position is computed as _speed_ * _nav_mc_pos_deceleration_time_ from the place where sticks are released. Braking mode overrides this setting
   navConfig.mc.posResponseExpo = 10;                  //Expo for PosHold control
+  navConfig.mc.hover_throttle = 1500;                 // multicopter hover throttle
 
   navConfig.fw.cruise_yaw_rate = 20;                  //Max YAW rate when NAV CRUISE mode is enabled (0=disable control via yaw stick) [dps]
 }
@@ -2184,24 +2188,24 @@ const navEstimatedPosVel_t * navGetCurrentActualPositionAndVelocity(void)
 /*-----------------------------------------------------------
  * Calculates distance and bearing to destination point
  *-----------------------------------------------------------*/
-//static uint32_t calculateDistanceFromDelta(float deltaX, float deltaY)
-//{
-//    return calc_length_pythagorean_2D(deltaX, deltaY);
-//}
+static uint32_t calculateDistanceFromDelta(float deltaX, float deltaY)
+{
+    return calc_length_pythagorean_2D(deltaX, deltaY);
+}
 
 static int32_t calculateBearingFromDelta(float deltaX, float deltaY)
 {
     return wrap_36000(RADIANS_TO_CENTIDEGREES(atan2_approx(deltaY, deltaX)));
 }
 
-//uint32_t calculateDistanceToDestination(const fpVector3_t * destinationPos)
-//{
-//    const navEstimatedPosVel_t *posvel = navGetCurrentActualPositionAndVelocity();
-//    const float deltaX = destinationPos->x - posvel->pos.x;
-//    const float deltaY = destinationPos->y - posvel->pos.y;
-//
-//    return calculateDistanceFromDelta(deltaX, deltaY);
-//}
+uint32_t calculateDistanceToDestination(const fpVector3_t * destinationPos)
+{
+    const navEstimatedPosVel_t *posvel = navGetCurrentActualPositionAndVelocity();
+    const float deltaX = destinationPos->x - posvel->pos.x;
+    const float deltaY = destinationPos->y - posvel->pos.y;
+
+    return calculateDistanceFromDelta(deltaX, deltaY);
+}
 
 int32_t calculateBearingToDestination(const fpVector3_t * destinationPos)
 {
