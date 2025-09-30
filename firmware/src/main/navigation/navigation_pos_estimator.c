@@ -447,10 +447,6 @@ static void updateIMUTopic(timeUs_t currentTimeUs)
         accelBF.y = imuMeasuredAccelBF.y;
         accelBF.z = imuMeasuredAccelBF.z;
 
-        DEBUG_SET(DEBUG_PIDLOOP, 0, accelBF.x);
-        DEBUG_SET(DEBUG_PIDLOOP, 1, accelBF.y);
-        DEBUG_SET(DEBUG_PIDLOOP, 2, accelBF.z);
-
         /* Correct accelerometer bias */
         accelBF.x -= posEstimator.imu.accelBias.x;
         accelBF.y -= posEstimator.imu.accelBias.y;
@@ -463,10 +459,6 @@ static void updateIMUTopic(timeUs_t currentTimeUs)
         posEstimator.imu.accelNEU.x = accelBF.x;
         posEstimator.imu.accelNEU.y = accelBF.y;
         posEstimator.imu.accelNEU.z = accelBF.z;
-
-        DEBUG_SET(DEBUG_PIDLOOP, 3, accelBF.x);
-        DEBUG_SET(DEBUG_PIDLOOP, 4, accelBF.y);
-        DEBUG_SET(DEBUG_PIDLOOP, 5, accelBF.z);
 
         /* When unarmed, assume that accelerometer should measure 1G. Use that to correct accelerometer gain */
         if (bmi270.init_gyro_cal_enabled) {

@@ -251,14 +251,14 @@ static void applyMulticopterAltitudeController(timeUs_t currentTimeUs)
             updateAltitudeVelocityController_MC(deltaMicrosPositionUpdate);
             updateAltitudeThrottleController_MC(deltaMicrosPositionUpdate);
 
-//            DEBUG_SET(DEBUG_PIDLOOP, 0, (posControl.desiredState.pos.z));
-//            DEBUG_SET(DEBUG_PIDLOOP, 1, (navGetCurrentActualPositionAndVelocity()->pos.z));
-//            DEBUG_SET(DEBUG_PIDLOOP, 2, (posControl.pids.pos[Z].output_constrained));
-//            DEBUG_SET(DEBUG_PIDLOOP, 3, (posControl.desiredState.vel.z));
-//            DEBUG_SET(DEBUG_PIDLOOP, 4, (navGetCurrentActualPositionAndVelocity()->vel.z));
-//            DEBUG_SET(DEBUG_PIDLOOP, 5, (posControl.pids.vel[Z].proportional));
-//            DEBUG_SET(DEBUG_PIDLOOP, 6, (posControl.pids.vel[Z].integral));
-//            DEBUG_SET(DEBUG_PIDLOOP, 7, (posControl.pids.vel[Z].derivative));
+            DEBUG_SET(DEBUG_PIDLOOP, 0, (posControl.desiredState.pos.z));
+            DEBUG_SET(DEBUG_PIDLOOP, 1, (navGetCurrentActualPositionAndVelocity()->pos.z));
+            DEBUG_SET(DEBUG_PIDLOOP, 2, (posControl.pids.pos[Z].output_constrained));
+            DEBUG_SET(DEBUG_PIDLOOP, 3, (posControl.desiredState.vel.z));
+            DEBUG_SET(DEBUG_PIDLOOP, 4, (navGetCurrentActualPositionAndVelocity()->vel.z));
+            DEBUG_SET(DEBUG_PIDLOOP, 5, (posControl.pids.vel[Z].proportional));
+            DEBUG_SET(DEBUG_PIDLOOP, 6, (posControl.pids.vel[Z].integral));
+            DEBUG_SET(DEBUG_PIDLOOP, 7, (posControl.pids.vel[Z].derivative));
         }
         else {
             // Position update has not occurred in time (first start or glitch), reset altitude controller
