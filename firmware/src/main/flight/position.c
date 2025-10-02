@@ -131,7 +131,6 @@ void position_Init(void)
 
 
 static int32_t estimatedAltitudeCm = 0;                // in cm
-int32_t AltHold = 0;
 
 #define BARO_UPDATE_FREQUENCY_40HZ (1000 * 25)
 

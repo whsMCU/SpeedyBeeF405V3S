@@ -34,7 +34,6 @@ typedef struct positionConfig_s {
 } positionConfig_t;
 
 extern positionConfig_t positionConfig;
-extern int32_t AltHold;
 
 typedef struct laggedMovingAverageCombined_s {
      laggedMovingAverage_t filter;

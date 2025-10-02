@@ -495,21 +495,21 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
 
           sbufWriteU32(dst, (int32_t)(yaw_heading_reference) * 1000.0f);
 
-          sbufWriteU32(dst, AltHold);
+          sbufWriteU32(dst, GpsNav.GPS_headVeh);
 
           sbufWriteU16(dst, GpsNav.GPS_numSat);
 
           sbufWriteU16(dst, STATE(GPS_FIX));
 
-          sbufWriteU32(dst, initialThrottleHold);
+          sbufWriteU32(dst, (int32_t)navGetCurrentActualPositionAndVelocity()->pos.x);
 
-          sbufWriteU32(dst, _ALT.out.result);
+          sbufWriteU32(dst, (int32_t)navGetCurrentActualPositionAndVelocity()->pos.y);
 
           sbufWriteU32(dst, getAmperage()); // send amperage in 0.01 A steps
 
           sbufWriteU32(dst, getMAhDrawn()); // milliamp hours drawn from battery
 
-          sbufWriteU32(dst, 0);//rangefinder.althold.target_Height
+          sbufWriteU32(dst, getCoreTemperatureCelsius());
 
           sbufWriteU32(dst, debug[4]);
           sbufWriteU32(dst, debug[5]);
@@ -519,13 +519,6 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU16(dst, pvt.year);
           sbufWriteU16(dst, pvt.month);
           sbufWriteU32(dst, ((pvt.day) | (pvt.hour<<8) | (pvt.min<<16) | (pvt.sec<<24)));
-
-          sbufWriteU32(dst, GpsNav.GPS_headVeh);
-
-          sbufWriteU32(dst, getCoreTemperatureCelsius());
-
-          sbufWriteU32(dst, (int32_t)navGetCurrentActualPositionAndVelocity()->pos.x);
-          sbufWriteU32(dst, (int32_t)navGetCurrentActualPositionAndVelocity()->pos.y);
         }
         break;
 

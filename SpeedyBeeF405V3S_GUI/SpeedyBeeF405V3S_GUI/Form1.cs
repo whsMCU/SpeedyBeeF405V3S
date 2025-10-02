@@ -2318,20 +2318,20 @@ namespace SpeedyBeeF405V3S_GUI
 
             passed_data[41] = (float)(BitConverter.ToInt32(payload, 118)) / 1000;  // yaw_heading_reference
 
-            passed_data[42] = BitConverter.ToInt32(payload, 122);  // altHold
+            passed_data[42] = BitConverter.ToInt32(payload, 122);  // GPS_Heading
 
             passed_data[43] = BitConverter.ToUInt16(payload, 126);  // GPS_SAT_NUM
 
             passed_data[44] = BitConverter.ToUInt16(payload, 128);  // GPS_FIX
 
-            passed_data[45] = BitConverter.ToInt32(payload, 130);  // initialThrottleHold
+            passed_data[45] = BitConverter.ToInt32(payload, 130);  // Drone_Position_X
 
-            passed_data[46] = BitConverter.ToInt32(payload, 134);  // _ALT.result
+            passed_data[46] = BitConverter.ToInt32(payload, 134);  // Drone_Position_Y
 
             passed_data[47] = BitConverter.ToInt32(payload, 138);  // BAT_A
             passed_data[48] = BitConverter.ToInt32(payload, 142);  // BAT_mAh
 
-            passed_data[49] = BitConverter.ToInt32(payload, 146);  // ALT_Range_Hold
+            passed_data[49] = BitConverter.ToInt32(payload, 146);  // FC_Temp
 
             passed_data[50] = BitConverter.ToInt32(payload, 150);    // Debug[4]
             passed_data[51] = BitConverter.ToInt32(payload, 154);    // Debug[5]
@@ -2348,13 +2348,6 @@ namespace SpeedyBeeF405V3S_GUI
             passed_data[59] = (float)((packedTime >> 24) & 0xFF);   // sec
             
             lb_gps_time.Text = $"{(int)passed_data[54]:D4}-{(int)passed_data[55]:D2}-{(int)passed_data[56]:D2} {(int)passed_data[57]:D2}:{(int)passed_data[58]:D2}:{(int)passed_data[59]:D2}";
-
-            passed_data[60] = BitConverter.ToInt32(payload, 174);    // GPS_Heading
-
-            passed_data[61] = BitConverter.ToInt32(payload, 178);    // FC_Temp
-
-            passed_data[62] = BitConverter.ToInt32(payload, 182);    // Drone_Position_X
-            passed_data[63] = BitConverter.ToInt32(payload, 186);    // Drone_Position_Y
 
             if (cb_record.Checked == true)
             {
@@ -2462,17 +2455,17 @@ namespace SpeedyBeeF405V3S_GUI
             if (rb_alt_setpoint.Checked == true)
             {
                 _alt_points.Add(time_count + 150, passed_data[3]);
-                _alt_reference_points.Add(time_count + 150, passed_data[42]);
-                _Throttle_Hold_points.Add(time_count + 150, passed_data[45]);
-                _alt_pidresult_points.Add(time_count + 150, passed_data[46]);
+                //_alt_reference_points.Add(time_count + 150, passed_data[42]);
+                //_Throttle_Hold_points.Add(time_count + 150, passed_data[45]);
+                //_alt_pidresult_points.Add(time_count + 150, passed_data[46]);
                 _Throttle_points.Add(time_count + 150, passed_data[7]*10);
 
                 if (_alt_points.Count > 1000)
                 {
                     _alt_points.RemoveAt(0);
-                    _alt_reference_points.RemoveAt(0);
-                    _Throttle_Hold_points.RemoveAt(0);
-                    _alt_pidresult_points.RemoveAt(0);
+                    //_alt_reference_points.RemoveAt(0);
+                    //_Throttle_Hold_points.RemoveAt(0);
+                    //_alt_pidresult_points.RemoveAt(0);
                     _Throttle_points.RemoveAt(0);
                 }
 
@@ -2484,14 +2477,14 @@ namespace SpeedyBeeF405V3S_GUI
             {
                 _alt_points.Add(time_count + 150, passed_data[3]);
                 _alt_range_points.Add(time_count + 150, passed_data[38]);
-                _alt_range_Hold_points.Add(time_count + 150, passed_data[49]);
+                //_alt_range_Hold_points.Add(time_count + 150, passed_data[49]);
                 _Throttle_points.Add(time_count + 150, passed_data[7] * 10);
 
                 if (_alt_points.Count > 1000)
                 {
                     _alt_points.RemoveAt(0);
                     _alt_range_points.RemoveAt(0);
-                    _alt_range_Hold_points.RemoveAt(0);
+                    //_alt_range_Hold_points.RemoveAt(0);
                     _Throttle_points.RemoveAt(0);
                 }
 
@@ -2577,7 +2570,7 @@ namespace SpeedyBeeF405V3S_GUI
 
             if (rb_DronePosition.Checked == true)
             {
-                _drone_position_points.Add(passed_data[62], passed_data[63]);  // XY 쌍 추가
+                _drone_position_points.Add(passed_data[45], passed_data[46]);  // XY 쌍 추가
                 if (_drone_position_points.Count > 1000)
                 {
                     _drone_position_points.RemoveAt(0);
@@ -2654,16 +2647,16 @@ namespace SpeedyBeeF405V3S_GUI
             tb_rx_error.Text = passed_data[39].ToString();
             lb_fc_load.Text = passed_data[40].ToString();
 
-            lb_althold.Text = passed_data[42].ToString();
+            //lb_althold.Text = passed_data[42].ToString();
 
             lb_sat_num.Text = passed_data[43].ToString();
 
             lb_gps_fix.Text = passed_data[44].ToString();
 
-            lb_fc_temp.Text = passed_data[61].ToString();
+            lb_Position_X.Text = passed_data[45].ToString();
+            lb_Position_Y.Text = passed_data[46].ToString();
 
-            lb_Position_X.Text = passed_data[62].ToString();
-            lb_Position_Y.Text = passed_data[63].ToString();
+            lb_fc_temp.Text = passed_data[49].ToString();
 
             if (rb_roll.Checked == true || rb_pitch.Checked == true ||
                rb_yaw.Checked == true || rb_roll_pitch.Checked == true ||

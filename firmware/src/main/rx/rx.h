@@ -127,8 +127,6 @@ extern const char rcChannelLetters[];
 
 extern uint16_t rcData[MAX_SUPPORTED_RC_CHANNEL_COUNT];       // interval [1000;2000]
 
-extern float initialThrottleHold;
-
 #define RSSI_SCALE_MIN 1
 #define RSSI_SCALE_MAX 255
 

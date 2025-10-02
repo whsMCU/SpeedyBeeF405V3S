@@ -480,8 +480,8 @@ static void imuCalculateEstimatedAttitude(timeUs_t currentTimeUs)
 #if defined(USE_GPS)
     if (!useMag && STATE(GPS_FIX) && GpsNav.GPS_numSat >= 5 && GpsNav.groundSpeed >= GPS_COG_MIN_GROUNDSPEED) {
         // Use GPS course over ground to correct attitude.values.yaw
-		courseOverGround = DECIDEGREES_TO_RADIANS(GpsNav.groundCourse);
-		useCOG = true;
+        courseOverGround = DECIDEGREES_TO_RADIANS(GpsNav.groundCourse);
+        useCOG = true;
 
         if (useCOG && shouldInitializeGPSHeading()) {
             // Reset our reference and reinitialize quaternion.  This will likely ideally happen more than once per flight, but for now,
