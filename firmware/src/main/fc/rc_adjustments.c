@@ -43,6 +43,8 @@
 #include "flight/pid.h"
 //#include "flight/pid_init.h"
 
+#include "io/ledstrip.h"
+
 #include "osd/osd.h"
 
 #include "rx/rx.h"

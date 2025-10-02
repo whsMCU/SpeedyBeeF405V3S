@@ -224,6 +224,8 @@ void schedulerInit(void);
 void scheduler(void);
 uint32_t schedulerExecuteTask(task_t *selectedTask, uint32_t currentTimeUs);
 void taskSystemLoad(uint32_t currentTimeUs);
+void getCheckFuncInfo(cfCheckFuncInfo_t *checkFuncInfo);
+void getTaskInfo(taskId_e taskId, taskInfo_t * taskInfo);
 
 task_t *queueFirst(void);
 task_t *queueNext(void);

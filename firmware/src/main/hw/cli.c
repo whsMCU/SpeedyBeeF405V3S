@@ -8,8 +8,8 @@
 
 
 #include "hw/cli.h"
-//#include "scheduler/scheduler.h"
-//#include "scheduler/tasks.h"
+#include "scheduler/scheduler.h"
+#include "scheduler/tasks.h"
 
 typedef enum {
     REBOOT_TARGET_FIRMWARE,
@@ -135,7 +135,7 @@ bool cliInit(void)
 
   cliAdd("help", cliShowList);
   cliAdd("md"  , cliMemoryDump);
-//  cliAdd("tasks"  , cliTaskList);
+  cliAdd("tasks"  , cliTaskList);
 
   return true;
 }
@@ -769,38 +769,38 @@ void cliMemoryDump(cli_args_t *args)
   }
 }
 
-//void cliTaskList(cli_args_t *args)
-//{
-//  int averageLoadSum = 0;
-//
-//  cliPrintf("Task list             rate/hz  max/us  avg/us maxload avgload  total/ms   late    run reqd/us\r\n");
-//
-//    for (taskId_e taskId = 0; taskId < TASK_COUNT; taskId++) {
-//        taskInfo_t taskInfo;
-//        getTaskInfo(taskId, &taskInfo);
-//        if (taskInfo.isEnabled) {
-//            int taskFrequency = taskInfo.averageDeltaTime10thUs == 0 ? 0 : lrintf(1e7f / taskInfo.averageDeltaTime10thUs);
-//            cliPrintf("%02d - (%15s) ", taskId, taskInfo.taskName);
-//            const int maxLoad = taskInfo.maxExecutionTimeUs == 0 ? 0 : (taskInfo.maxExecutionTimeUs * taskFrequency) / 1000;
-//            const int averageLoad = taskInfo.averageExecutionTime10thUs == 0 ? 0 : (taskInfo.averageExecutionTime10thUs * taskFrequency) / 10000;
-//            if (taskId != TASK_SERIAL) {
-//                averageLoadSum += averageLoad;
-//            }
-//            if (systemConfig.task_statistics) {
-//              cliPrintf("%6d %7d %7d %4d.%1d%% %4d.%1d%% %9d %6d %6d %7d\r\n",
-//                      taskFrequency, taskInfo.maxExecutionTimeUs, taskInfo.averageExecutionTime10thUs / 10,
-//                      maxLoad/10, maxLoad%10, averageLoad/10, averageLoad%10,
-//                      taskInfo.totalExecutionTimeUs / 1000,
-//                      taskInfo.lateCount, taskInfo.runCount, taskInfo.execTime);
-//              schedulerResetTaskMaxExecutionTime(taskId);
-//            }
-//    }
-//    }
-//    if (systemConfig.task_statistics) {
-//        cfCheckFuncInfo_t checkFuncInfo;
-//        getCheckFuncInfo(&checkFuncInfo);
-//        cliPrintf("RX Check Function %19d %7d %25d\r\n", checkFuncInfo.maxExecutionTimeUs, checkFuncInfo.averageExecutionTimeUs, checkFuncInfo.totalExecutionTimeUs / 1000);
-//        cliPrintf("Total (excluding SERIAL) %33d.%1d%%\r\n", averageLoadSum/10, averageLoadSum%10);
-//        schedulerResetCheckFunctionMaxExecutionTime();
-//    }
-//}
+void cliTaskList(cli_args_t *args)
+{
+  int averageLoadSum = 0;
+
+  cliPrintf("Task list             rate/hz  max/us  avg/us maxload avgload  total/ms   late    run reqd/us\r\n");
+
+    for (taskId_e taskId = 0; taskId < TASK_COUNT; taskId++) {
+        taskInfo_t taskInfo;
+        getTaskInfo(taskId, &taskInfo);
+        if (taskInfo.isEnabled) {
+            int taskFrequency = taskInfo.averageDeltaTime10thUs == 0 ? 0 : lrintf(1e7f / taskInfo.averageDeltaTime10thUs);
+            cliPrintf("%02d - (%15s) ", taskId, taskInfo.taskName);
+            const int maxLoad = taskInfo.maxExecutionTimeUs == 0 ? 0 : (taskInfo.maxExecutionTimeUs * taskFrequency) / 1000;
+            const int averageLoad = taskInfo.averageExecutionTime10thUs == 0 ? 0 : (taskInfo.averageExecutionTime10thUs * taskFrequency) / 10000;
+            if (taskId != TASK_SERIAL) {
+                averageLoadSum += averageLoad;
+            }
+            if (true) { //systemConfig.task_statistics
+              cliPrintf("%6d %7d %7d %4d.%1d%% %4d.%1d%% %9d %6d %6d %7d\r\n",
+                      taskFrequency, taskInfo.maxExecutionTimeUs, taskInfo.averageExecutionTime10thUs / 10,
+                      maxLoad/10, maxLoad%10, averageLoad/10, averageLoad%10,
+                      taskInfo.totalExecutionTimeUs / 1000,
+                      taskInfo.lateCount, taskInfo.runCount, taskInfo.execTime);
+              schedulerResetTaskMaxExecutionTime(taskId);
+            }
+    }
+    }
+    if (true) { //systemConfig.task_statistics
+        cfCheckFuncInfo_t checkFuncInfo;
+        getCheckFuncInfo(&checkFuncInfo);
+        cliPrintf("RX Check Function %19d %7d %25d\r\n", checkFuncInfo.maxExecutionTimeUs, checkFuncInfo.averageExecutionTimeUs, checkFuncInfo.totalExecutionTimeUs / 1000);
+        cliPrintf("Total (excluding SERIAL) %33d.%1d%%\r\n", averageLoadSum/10, averageLoadSum%10);
+        schedulerResetCheckFunctionMaxExecutionTime();
+    }
+}
