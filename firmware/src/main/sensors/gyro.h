@@ -164,6 +164,7 @@ typedef struct gyro_s {
 } imu_t;
 
 extern imu_t bmi270;
+extern uint8_t activePidLoopDenom;
 
 void taskGyroUpdate(timeUs_t currentTimeUs);
 void gyroFiltering(timeUs_t currentTimeUs);

@@ -66,13 +66,13 @@
 
 
 typedef enum {
-    TASK_PRIORITY_MAX = 0,
-    TASK_PRIORITY_REALTIME, // Task will be run outside the scheduler logic
-    TASK_PRIORITY_HIGH,
-    TASK_PRIORITY_MEDIUM_HIGH,
-    TASK_PRIORITY_MEDIUM,
-    TASK_PRIORITY_LOW,
-    TASK_PRIORITY_LOWEST,
+  TASK_PRIORITY_REALTIME = -1, // Task will be run outside the scheduler logic
+  TASK_PRIORITY_LOWEST = 1,
+  TASK_PRIORITY_LOW = 2,
+  TASK_PRIORITY_MEDIUM = 3,
+  TASK_PRIORITY_MEDIUM_HIGH = 4,
+  TASK_PRIORITY_HIGH = 5,
+  TASK_PRIORITY_MAX = 255
 } taskPriority_e;
 
 typedef struct {
@@ -84,7 +84,7 @@ typedef struct {
 
 typedef struct {
     const char * taskName;
-//    const char * subTaskName;
+    const char * subTaskName;
     bool         isEnabled;
     int8_t       staticPriority;
     timeDelta_t  desiredPeriodUs;
@@ -171,6 +171,8 @@ typedef enum {
 typedef struct {
     // Configuration
     const char * taskName;
+    const char * subTaskName;
+    bool (*checkFunc)(timeUs_t currentTimeUs, timeDelta_t currentDeltaTimeUs);
     void (*taskFunc)(uint32_t currentTimeUs);
     int32_t desiredPeriodUs;            // target period of execution
     const int8_t staticPriority;        // dynamicPriority grows in steps of this size
@@ -185,8 +187,8 @@ typedef struct {
   uint16_t taskAgePeriods;
   timeDelta_t taskLatestDeltaTimeUs;
   uint32_t lastExecutedAtUs;          // last time of invocation
-
-  uint32_t taskPeriodTimeUs;
+  timeUs_t lastSignaledAtUs;          // time of invocation event for event-driven tasks
+  timeUs_t lastDesiredAt;             // time of last desired execution
 
   // Statistics
   float    movingAverageCycleTimeUs;
@@ -201,9 +203,6 @@ typedef struct {
   uint32_t lateCount;
   timeUs_t execTime;
 #endif
-
-  uint32_t taskExcutedEndUs;
-  uint32_t missedCount;
 } task_t;
 
 
@@ -230,4 +229,6 @@ void getTaskInfo(taskId_e taskId, taskInfo_t * taskInfo);
 task_t *queueFirst(void);
 task_t *queueNext(void);
 
+void schedulerEnableGyro(void);
 uint16_t getAverageSystemLoadPercent(void);
+float schedulerGetCycleTimeMultiplier(void);

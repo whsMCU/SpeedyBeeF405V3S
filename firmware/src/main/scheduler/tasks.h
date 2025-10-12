@@ -28,3 +28,7 @@ void tasksInitData(void);
 void tasksInit(void);
 task_t *getTask(unsigned taskId);
 
+void taskGyroSample(timeUs_t currentTimeUs);
+bool gyroFilterReady(void);
+bool pidLoopReady(void);
+

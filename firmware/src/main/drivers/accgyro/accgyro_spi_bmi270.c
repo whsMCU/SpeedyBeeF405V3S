@@ -261,7 +261,7 @@ void bmi270Config()
 }
 bool bmi270_Init(void)
 {
-    bool ret = false;
+  bool ret = false;
 	delay(35);
 	while (millis() < 100);
 
