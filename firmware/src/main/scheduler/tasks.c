@@ -107,7 +107,6 @@ static void taskHandleSerial(uint32_t currentTimeUs)
 
     // Allow MSP processing even if in CLI mode
     mspSerialProcess(ARMING_FLAG(ARMED) ? MSP_SKIP_NON_MSP_DATA : MSP_EVALUATE_NON_MSP_DATA, mspFcProcessCommand);
-    //SerialCom();
 }
 
 #ifdef USE_RANGEFINDER
