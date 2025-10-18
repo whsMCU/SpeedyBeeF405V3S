@@ -494,7 +494,10 @@ static void imuCalculateEstimatedAttitude(timeUs_t currentTimeUs)
 #endif
 
   float gyroAverage[XYZ_AXIS_COUNT];
-  gyroGetAccumulationAverage(gyroAverage);
+  //gyroGetAccumulationAverage(gyroAverage);
+  for (int axis = 0; axis < XYZ_AXIS_COUNT; ++axis) {
+      gyroAverage[axis] = gyroGetFilteredDownsampled(axis);
+  }
 
   if (accGetAccumulationAverage(accAverage)) {
       useAcc = imuIsAccelerometerHealthy(accAverage);

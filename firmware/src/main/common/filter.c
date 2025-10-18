@@ -45,8 +45,11 @@ FAST_CODE float nullFilterApply(filter_t *filter, float input)
 
 float pt1FilterGain(float f_cut, float dT)
 {
-    float RC = 1 / (2 * M_PIf * f_cut);
-    return dT / (RC + dT);
+//    float RC = 1 / (2 * M_PIf * f_cut);
+//    return dT / (RC + dT);
+
+    float omega = 2.0f * M_PIf * f_cut * dT;
+    return omega / (omega + 1.0f);
 }
 
 void pt1FilterInit(pt1Filter_t *filter, float k)

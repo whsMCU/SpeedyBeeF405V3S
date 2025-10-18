@@ -41,6 +41,8 @@
 #define ACC_VIBE_FLOOR_FILT_HZ          5.0f
 #define ACC_VIBE_FILT_HZ                2.0f
 
+#define GYRO_IMU_DOWNSAMPLE_CUTOFF_HZ 200
+
 typedef union gyroLowpassFilter_u {
     pt1Filter_t pt1FilterState;
     biquadFilter_t biquadFilterState;
@@ -108,6 +110,8 @@ typedef struct gyro_s {
     filterApplyFnPtr notchFilter2ApplyFn;
     biquadFilter_t notchFilter2[XYZ_AXIS_COUNT];
 
+    pt1Filter_t imuGyroFilter[XYZ_AXIS_COUNT];
+
     uint8_t *txBuf, *rxBuf;
     float gyroZero[XYZ_AXIS_COUNT];
     int16_t gyro_offset_yaw;
@@ -167,6 +171,7 @@ extern imu_t bmi270;
 
 void taskGyroUpdate(timeUs_t currentTimeUs);
 void gyroFiltering(timeUs_t currentTimeUs);
+float gyroGetFilteredDownsampled(int axis);
 bool gyroGetAccumulationAverage(float *accumulationAverage);
 void gyroStartCalibration(bool isFirstArmingCalibration);
 bool isFirstArmingGyroCalibrationRunning(void);

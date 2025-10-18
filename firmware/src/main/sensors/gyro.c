@@ -63,6 +63,10 @@ static bool yawSpinDetected;
 static timeUs_t yawSpinTimeUs;
 #endif
 
+static FAST_DATA_ZERO_INIT float gyroFilteredDownsampled[XYZ_AXIS_COUNT];
+
+static FAST_DATA_ZERO_INIT int16_t gyroSensorTemperature;
+
 uint8_t activePidLoopDenom = 1;
 
 static bool firstArmingCalibrationWasStarted = false;
@@ -337,13 +341,22 @@ void gyroFiltering(timeUs_t currentTimeUs)
 #endif
 
     if (!overflowDetected) {
+//      for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+//          // integrate using trapezium rule to avoid bias
+//          bmi270.gyro_accumulatedMeasurements[axis] += 0.5f * (bmi270.gyroPrevious[axis] + bmi270.gyroADCf[axis]) * bmi270.targetLooptime;
+//          bmi270.gyroPrevious[axis] = bmi270.gyroADCf[axis];
+//      }
+//      bmi270.gyro_accumulatedMeasurementCount++;
+
       for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-          // integrate using trapezium rule to avoid bias
-          bmi270.gyro_accumulatedMeasurements[axis] += 0.5f * (bmi270.gyroPrevious[axis] + bmi270.gyroADCf[axis]) * bmi270.targetLooptime;
-          bmi270.gyroPrevious[axis] = bmi270.gyroADCf[axis];
+          gyroFilteredDownsampled[axis] = pt1FilterApply(&bmi270.imuGyroFilter[axis], bmi270.gyroADCf[axis]);
       }
-      bmi270.gyro_accumulatedMeasurementCount++;
     }
+}
+
+float gyroGetFilteredDownsampled(int axis)
+{
+    return gyroFilteredDownsampled[axis];
 }
 
 bool gyroGetAccumulationAverage(float *accumulationAverage)

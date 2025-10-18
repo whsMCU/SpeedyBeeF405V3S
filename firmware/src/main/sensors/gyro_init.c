@@ -184,6 +184,11 @@ bool gyroInit(void)
     dynNotchInit(&bmi270.dynNotchConfig, bmi270.targetLooptime);
 #endif
 
+  const float k = pt1FilterGain(GYRO_IMU_DOWNSAMPLE_CUTOFF_HZ, bmi270.targetLooptime);
+  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+      pt1FilterInit(&bmi270.imuGyroFilter[axis], k);
+  }
+
     accInitFilters();
 
   return true;
