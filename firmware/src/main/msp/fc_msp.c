@@ -519,6 +519,10 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU16(dst, pvt.year);
           sbufWriteU16(dst, pvt.month);
           sbufWriteU32(dst, ((pvt.day) | (pvt.hour<<8) | (pvt.min<<16) | (pvt.sec<<24)));
+
+          sbufWriteU32(dst, (int32_t)(bmi270.gyroZero[X] * 1000.0f));
+          sbufWriteU32(dst, (int32_t)(bmi270.gyroZero[Y] * 1000.0f));
+          sbufWriteU32(dst, (int32_t)(bmi270.gyroZero[Z] * 1000.0f));
         }
         break;
 
@@ -2554,6 +2558,13 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
           #ifdef USE_MAG
             compassStartCalibration();
           #endif
+        }
+        break;
+
+    case MSP_GYRO_CALIBRATION:
+        if(!ARMING_FLAG(ARMED))
+        {
+          gyroStartCalibration(false);
         }
         break;
 

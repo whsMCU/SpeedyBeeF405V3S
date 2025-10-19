@@ -97,6 +97,8 @@
             this.label25 = new System.Windows.Forms.Label();
             this.label26 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.lb_Position_Y = new System.Windows.Forms.Label();
+            this.label109 = new System.Windows.Forms.Label();
             this.label106 = new System.Windows.Forms.Label();
             this.lb_fc_temp = new System.Windows.Forms.Label();
             this.label108 = new System.Windows.Forms.Label();
@@ -303,8 +305,6 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
-            this.headingIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.HeadingIndicatorInstrumentControl();
-            this.attitudeIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.AttitudeIndicatorInstrumentControl();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label62 = new System.Windows.Forms.Label();
             this.lb_route_distance = new System.Windows.Forms.Label();
@@ -385,8 +385,16 @@
             this.tb_msp_error = new System.Windows.Forms.TextBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.tb_msp_period = new System.Windows.Forms.TextBox();
-            this.lb_Position_Y = new System.Windows.Forms.Label();
-            this.label109 = new System.Windows.Forms.Label();
+            this.groupBox11 = new System.Windows.Forms.GroupBox();
+            this.label37 = new System.Windows.Forms.Label();
+            this.label107 = new System.Windows.Forms.Label();
+            this.label110 = new System.Windows.Forms.Label();
+            this.lb_gyroTrim_Y = new System.Windows.Forms.Label();
+            this.lb_gyroTrim_Z = new System.Windows.Forms.Label();
+            this.lb_gyroTrim_X = new System.Windows.Forms.Label();
+            this.bt_gyro_cal = new System.Windows.Forms.Button();
+            this.headingIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.HeadingIndicatorInstrumentControl();
+            this.attitudeIndicatorInstrumentControl1 = new AvionicsInstrumentControlDemo.AttitudeIndicatorInstrumentControl();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -411,6 +419,7 @@
             this.groupBox9.SuspendLayout();
             this.groupBox8.SuspendLayout();
             this.groupBox7.SuspendLayout();
+            this.groupBox11.SuspendLayout();
             this.SuspendLayout();
             // 
             // OpenClose
@@ -713,6 +722,27 @@
             this.groupBox4.TabIndex = 65;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Telemetry passed_data";
+            // 
+            // lb_Position_Y
+            // 
+            this.lb_Position_Y.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_Position_Y.Location = new System.Drawing.Point(243, 166);
+            this.lb_Position_Y.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_Position_Y.Name = "lb_Position_Y";
+            this.lb_Position_Y.Size = new System.Drawing.Size(45, 20);
+            this.lb_Position_Y.TabIndex = 103;
+            this.lb_Position_Y.Text = "-";
+            // 
+            // label109
+            // 
+            this.label109.AutoSize = true;
+            this.label109.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label109.Location = new System.Drawing.Point(149, 166);
+            this.label109.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label109.Name = "label109";
+            this.label109.Size = new System.Drawing.Size(84, 21);
+            this.label109.TabIndex = 102;
+            this.label109.Text = "Position[Y]";
             // 
             // label106
             // 
@@ -2871,22 +2901,6 @@
             this.groupBox10.TabStop = false;
             this.groupBox10.Text = "ATTITUDE";
             // 
-            // headingIndicatorInstrumentControl1
-            // 
-            this.headingIndicatorInstrumentControl1.Location = new System.Drawing.Point(153, 19);
-            this.headingIndicatorInstrumentControl1.Name = "headingIndicatorInstrumentControl1";
-            this.headingIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 142);
-            this.headingIndicatorInstrumentControl1.TabIndex = 1;
-            this.headingIndicatorInstrumentControl1.Text = "headingIndicatorInstrumentControl1";
-            // 
-            // attitudeIndicatorInstrumentControl1
-            // 
-            this.attitudeIndicatorInstrumentControl1.Location = new System.Drawing.Point(5, 18);
-            this.attitudeIndicatorInstrumentControl1.Name = "attitudeIndicatorInstrumentControl1";
-            this.attitudeIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 143);
-            this.attitudeIndicatorInstrumentControl1.TabIndex = 0;
-            this.attitudeIndicatorInstrumentControl1.Text = "attitudeIndicatorInstrumentControl1";
-            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.label62);
@@ -3358,6 +3372,8 @@
             // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.groupBox11);
+            this.tabPage4.Controls.Add(this.bt_gyro_cal);
             this.tabPage4.Controls.Add(this.groupBox9);
             this.tabPage4.Controls.Add(this.groupBox8);
             this.tabPage4.Controls.Add(this.groupBox7);
@@ -3492,7 +3508,7 @@
             this.groupBox8.Controls.Add(this.lb_magZero_Y);
             this.groupBox8.Controls.Add(this.lb_magZero_X);
             this.groupBox8.Controls.Add(this.label78);
-            this.groupBox8.Location = new System.Drawing.Point(361, 12);
+            this.groupBox8.Location = new System.Drawing.Point(354, 259);
             this.groupBox8.Name = "groupBox8";
             this.groupBox8.Size = new System.Drawing.Size(335, 177);
             this.groupBox8.TabIndex = 153;
@@ -3736,7 +3752,7 @@
             // 
             // bt_mag_cal
             // 
-            this.bt_mag_cal.Location = new System.Drawing.Point(450, 205);
+            this.bt_mag_cal.Location = new System.Drawing.Point(443, 452);
             this.bt_mag_cal.Name = "bt_mag_cal";
             this.bt_mag_cal.Size = new System.Drawing.Size(133, 23);
             this.bt_mag_cal.TabIndex = 149;
@@ -3822,26 +3838,112 @@
             this.tb_msp_period.TabIndex = 95;
             this.tb_msp_period.Text = "-";
             // 
-            // lb_Position_Y
+            // groupBox11
             // 
-            this.lb_Position_Y.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_Position_Y.Location = new System.Drawing.Point(243, 166);
-            this.lb_Position_Y.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lb_Position_Y.Name = "lb_Position_Y";
-            this.lb_Position_Y.Size = new System.Drawing.Size(45, 20);
-            this.lb_Position_Y.TabIndex = 103;
-            this.lb_Position_Y.Text = "-";
+            this.groupBox11.Controls.Add(this.label37);
+            this.groupBox11.Controls.Add(this.label107);
+            this.groupBox11.Controls.Add(this.label110);
+            this.groupBox11.Controls.Add(this.lb_gyroTrim_Y);
+            this.groupBox11.Controls.Add(this.lb_gyroTrim_Z);
+            this.groupBox11.Controls.Add(this.lb_gyroTrim_X);
+            this.groupBox11.Location = new System.Drawing.Point(365, 12);
+            this.groupBox11.Name = "groupBox11";
+            this.groupBox11.Size = new System.Drawing.Size(335, 177);
+            this.groupBox11.TabIndex = 154;
+            this.groupBox11.TabStop = false;
+            this.groupBox11.Text = "자이로계";
             // 
-            // label109
+            // label37
             // 
-            this.label109.AutoSize = true;
-            this.label109.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label109.Location = new System.Drawing.Point(149, 166);
-            this.label109.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label109.Name = "label109";
-            this.label109.Size = new System.Drawing.Size(84, 21);
-            this.label109.TabIndex = 102;
-            this.label109.Text = "Position[Y]";
+            this.label37.AutoSize = true;
+            this.label37.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.label37.Location = new System.Drawing.Point(258, 65);
+            this.label37.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label37.Name = "label37";
+            this.label37.Size = new System.Drawing.Size(60, 21);
+            this.label37.TabIndex = 97;
+            this.label37.Text = "Trim[Z]";
+            // 
+            // label107
+            // 
+            this.label107.AutoSize = true;
+            this.label107.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.label107.Location = new System.Drawing.Point(135, 65);
+            this.label107.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label107.Name = "label107";
+            this.label107.Size = new System.Drawing.Size(60, 21);
+            this.label107.TabIndex = 96;
+            this.label107.Text = "Trim[Y]";
+            // 
+            // label110
+            // 
+            this.label110.AutoSize = true;
+            this.label110.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.label110.Location = new System.Drawing.Point(19, 65);
+            this.label110.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label110.Name = "label110";
+            this.label110.Size = new System.Drawing.Size(60, 21);
+            this.label110.TabIndex = 95;
+            this.label110.Text = "Trim[X]";
+            // 
+            // lb_gyroTrim_Y
+            // 
+            this.lb_gyroTrim_Y.AutoSize = true;
+            this.lb_gyroTrim_Y.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_gyroTrim_Y.Location = new System.Drawing.Point(159, 38);
+            this.lb_gyroTrim_Y.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_gyroTrim_Y.Name = "lb_gyroTrim_Y";
+            this.lb_gyroTrim_Y.Size = new System.Drawing.Size(16, 21);
+            this.lb_gyroTrim_Y.TabIndex = 94;
+            this.lb_gyroTrim_Y.Text = "-";
+            // 
+            // lb_gyroTrim_Z
+            // 
+            this.lb_gyroTrim_Z.AutoSize = true;
+            this.lb_gyroTrim_Z.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_gyroTrim_Z.Location = new System.Drawing.Point(276, 38);
+            this.lb_gyroTrim_Z.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_gyroTrim_Z.Name = "lb_gyroTrim_Z";
+            this.lb_gyroTrim_Z.Size = new System.Drawing.Size(16, 21);
+            this.lb_gyroTrim_Z.TabIndex = 93;
+            this.lb_gyroTrim_Z.Text = "-";
+            // 
+            // lb_gyroTrim_X
+            // 
+            this.lb_gyroTrim_X.AutoSize = true;
+            this.lb_gyroTrim_X.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_gyroTrim_X.Location = new System.Drawing.Point(40, 38);
+            this.lb_gyroTrim_X.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_gyroTrim_X.Name = "lb_gyroTrim_X";
+            this.lb_gyroTrim_X.Size = new System.Drawing.Size(16, 21);
+            this.lb_gyroTrim_X.TabIndex = 92;
+            this.lb_gyroTrim_X.Text = "-";
+            // 
+            // bt_gyro_cal
+            // 
+            this.bt_gyro_cal.Location = new System.Drawing.Point(440, 205);
+            this.bt_gyro_cal.Name = "bt_gyro_cal";
+            this.bt_gyro_cal.Size = new System.Drawing.Size(133, 23);
+            this.bt_gyro_cal.TabIndex = 153;
+            this.bt_gyro_cal.Text = "자이로 캘리브레이션";
+            this.bt_gyro_cal.UseVisualStyleBackColor = true;
+            this.bt_gyro_cal.Click += new System.EventHandler(this.bt_gyro_cal_Click);
+            // 
+            // headingIndicatorInstrumentControl1
+            // 
+            this.headingIndicatorInstrumentControl1.Location = new System.Drawing.Point(153, 19);
+            this.headingIndicatorInstrumentControl1.Name = "headingIndicatorInstrumentControl1";
+            this.headingIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 142);
+            this.headingIndicatorInstrumentControl1.TabIndex = 1;
+            this.headingIndicatorInstrumentControl1.Text = "headingIndicatorInstrumentControl1";
+            // 
+            // attitudeIndicatorInstrumentControl1
+            // 
+            this.attitudeIndicatorInstrumentControl1.Location = new System.Drawing.Point(5, 18);
+            this.attitudeIndicatorInstrumentControl1.Name = "attitudeIndicatorInstrumentControl1";
+            this.attitudeIndicatorInstrumentControl1.Size = new System.Drawing.Size(141, 143);
+            this.attitudeIndicatorInstrumentControl1.TabIndex = 0;
+            this.attitudeIndicatorInstrumentControl1.Text = "attitudeIndicatorInstrumentControl1";
             // 
             // Form1
             // 
@@ -3907,6 +4009,8 @@
             this.groupBox8.PerformLayout();
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
+            this.groupBox11.ResumeLayout(false);
+            this.groupBox11.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -4227,6 +4331,14 @@
         private System.Windows.Forms.RadioButton rb_DronePosition;
         private System.Windows.Forms.Label lb_Position_Y;
         private System.Windows.Forms.Label label109;
+        private System.Windows.Forms.GroupBox groupBox11;
+        private System.Windows.Forms.Label label37;
+        private System.Windows.Forms.Label label107;
+        private System.Windows.Forms.Label label110;
+        private System.Windows.Forms.Label lb_gyroTrim_Y;
+        private System.Windows.Forms.Label lb_gyroTrim_Z;
+        private System.Windows.Forms.Label lb_gyroTrim_X;
+        private System.Windows.Forms.Button bt_gyro_cal;
     }
 }
 

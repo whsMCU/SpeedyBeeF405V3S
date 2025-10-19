@@ -46,6 +46,7 @@ namespace SpeedyBeeF405V3S_GUI
         bool pid_send_flag = false;
         bool pid_save_flag = false;
         bool acc_cal_flag = false;
+        bool gyro_cal_flag = false;
         bool mag_cal_flag = false;
         bool mag_cal_remain_time_flag = false;
         bool RP_Coupling = true;
@@ -955,6 +956,19 @@ namespace SpeedyBeeF405V3S_GUI
                 catch { Console.WriteLine("ACC Calibration Requset Error"); }
             }
 
+            if (gyro_cal_flag == true)
+            {
+
+                gyro_cal_flag = false;
+                drone_status_flag = true;
+                try
+                {
+                    mspProtocol.SendMspCommand(222);
+                    //Console.WriteLine("자이로센서 캘리브레이션 명령 전송 완료");
+                }
+                catch { Console.WriteLine("GYRO Calibration Requset Error"); }
+            }
+
             if (mag_cal_flag == true)
             {
                 mag_cal_flag = false;
@@ -1446,6 +1460,12 @@ namespace SpeedyBeeF405V3S_GUI
             mag_cal_flag = true;
             mag_cal_remain_time_flag = true;
             mag_cal_remain_time = 31;
+        }
+
+        private void bt_gyro_cal_Click(object sender, EventArgs e)
+        {
+            gyro_cal_flag = true;
+            drone_status_flag = false;
         }
 
         private void bt_pid_copy_Click(object sender, EventArgs e)
@@ -2346,7 +2366,11 @@ namespace SpeedyBeeF405V3S_GUI
             passed_data[57] = (float)((packedTime >> 8) & 0xFF);    // hour
             passed_data[58] = (float)((packedTime >> 16) & 0xFF);   // min
             passed_data[59] = (float)((packedTime >> 24) & 0xFF);   // sec
-            
+
+            passed_data[60] = (float)(BitConverter.ToInt32(payload, 174)) / 1000;   // gyroZero[X]
+            passed_data[61] = (float)(BitConverter.ToInt32(payload, 178)) / 1000;   // gyroZero[Y]
+            passed_data[62] = (float)(BitConverter.ToInt32(payload, 182)) / 1000;   // gyroZero[Z]
+
             lb_gps_time.Text = $"{(int)passed_data[54]:D4}-{(int)passed_data[55]:D2}-{(int)passed_data[56]:D2} {(int)passed_data[57]:D2}:{(int)passed_data[58]:D2}:{(int)passed_data[59]:D2}";
 
             if (cb_record.Checked == true)
@@ -2657,6 +2681,10 @@ namespace SpeedyBeeF405V3S_GUI
             lb_Position_Y.Text = passed_data[46].ToString();
 
             lb_fc_temp.Text = passed_data[49].ToString();
+
+            lb_gyroTrim_X.Text = passed_data[60].ToString("0.00");
+            lb_gyroTrim_Y.Text = passed_data[61].ToString("0.00");
+            lb_gyroTrim_Z.Text = passed_data[62].ToString("0.00");
 
             if (rb_roll.Checked == true || rb_pitch.Checked == true ||
                rb_yaw.Checked == true || rb_roll_pitch.Checked == true ||

@@ -110,6 +110,11 @@ float pt2FilterGain(float f_cut, float dT)
     // float RC = 1 / (2 * 1.553773974f * M_PIf * f_cut);
     // where 1.553773974 = 1 / sqrt( (2^(1 / order) - 1) ) and order is 2
     return dT / (RC + dT);
+//    // PTn cutoff correction = 1 / sqrt(2^(1/n) - 1)
+//    #define CUTOFF_CORRECTION_PT2 1.553773974f
+//
+//    // shift f_cut to satisfy -3dB cutoff condition
+//    return pt1FilterGain(f_cut * CUTOFF_CORRECTION_PT2, dT);
 }
 
 void pt2FilterInit(pt2Filter_t *filter, float k)
