@@ -561,7 +561,9 @@ static void estimationPredict(estimationContext_t * ctx)
     if ((ctx->newFlags & EST_Z_VALID)) {
         posEstimator.est.pos.z += posEstimator.est.vel.z * ctx->dt;
         posEstimator.est.pos.z += posEstimator.imu.accelNEU.z * sq(ctx->dt) / 2.0f * accWeight;
-        posEstimator.est.vel.z += posEstimator.imu.accelNEU.z * ctx->dt * sq(accWeight);
+        if (ARMING_FLAG(WAS_EVER_ARMED)) {   // Hold at zero until first armed
+          posEstimator.est.vel.z += posEstimator.imu.accelNEU.z * ctx->dt * sq(accWeight);
+        }
     }
 
     /* Prediction step: XY-axis */

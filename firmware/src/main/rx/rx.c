@@ -683,6 +683,7 @@ void processRxModes(uint32_t currentTimeUs)
 		if(rcData[THROTTLE] <1030)
 		{
 			ENABLE_ARMING_FLAG(ARMED);
+			ENABLE_ARMING_FLAG(WAS_EVER_ARMED);
 			yaw_heading_reference = (float)DECIDEGREES_TO_DEGREES(attitude.values.yaw);
 			headFreeModeHold = DECIDEGREES_TO_DEGREES(attitude.values.yaw);
 			imuQuaternionHeadfreeOffsetSet();
