@@ -88,7 +88,7 @@ static inline fpQuaternion_t * axisAngleToQuaternion(fpQuaternion_t * result, co
   return result;
 }
 
-static inline float quaternionNormSqared(const fpQuaternion_t * q)
+static inline float quaternionNormSquared(const fpQuaternion_t * q)
 {
     return sq(q->q0) + sq(q->q1) + sq(q->q2) + sq(q->q3);
 }
@@ -144,7 +144,7 @@ static inline quaternion * quaternionConjugate(quaternion * result, const quater
 
 static inline fpQuaternion_t * quaternionNormalize(fpQuaternion_t * result, const fpQuaternion_t * q)
 {
-    float mod = fast_fsqrtf(quaternionNormSqared(q));
+    float mod = fast_fsqrtf(quaternionNormSquared(q));
     if (mod < 1e-6f) {
         // Length is too small - re-initialize to zero rotation
         result->q0 = 1;
