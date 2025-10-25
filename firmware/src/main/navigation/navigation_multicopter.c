@@ -120,11 +120,11 @@ static void updateAltitudeThrottleController_MC(timeDelta_t deltaMicros)
 
     float velocity_controller = navPidApply2(&posControl.pids.vel[Z], posControl.desiredState.vel.z, navGetCurrentActualPositionAndVelocity()->vel.z, US2S(deltaMicros), thrAdjustmentMin, thrAdjustmentMax, 0);
 
-    posControl.rcAdjustment[THROTTLE] = pt1FilterApply4(&altholdThrottleFilterState, velocity_controller, NAV_THROTTLE_CUTOFF_FREQENCY_HZ, US2S(deltaMicros));
+    int16_t rcThrottleCorrection = pt1FilterApply4(&altholdThrottleFilterState, velocity_controller, NAV_THROTTLE_CUTOFF_FREQENCY_HZ, US2S(deltaMicros));
 
-    posControl.rcAdjustment[THROTTLE] = constrain(posControl.rcAdjustment[THROTTLE], thrAdjustmentMin, thrAdjustmentMax);
+    rcThrottleCorrection = constrain(rcThrottleCorrection, thrAdjustmentMin, thrAdjustmentMax);
 
-    posControl.rcAdjustment[THROTTLE] = constrain((int16_t)navConfig.mc.hover_throttle + posControl.rcAdjustment[THROTTLE], motorConfig.minthrottle, motorConfig.maxthrottle);
+    posControl.rcAdjustment[THROTTLE] = constrain((int16_t)navConfig.mc.hover_throttle + rcThrottleCorrection, motorConfig.minthrottle, motorConfig.maxthrottle);
 
 }
 
