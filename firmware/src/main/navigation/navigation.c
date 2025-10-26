@@ -126,7 +126,7 @@ void navConfig_Init(void)
   navConfig.mc.braking_bank_angle = 40;               //max angle that MR is allowed to bank in BOOST mode
   navConfig.mc.posDecelerationTime = 120;             //Used for stoping distance calculation. Stop position is computed as _speed_ * _nav_mc_pos_deceleration_time_ from the place where sticks are released. Braking mode overrides this setting
   navConfig.mc.posResponseExpo = 10;                  //Expo for PosHold control
-  navConfig.mc.hover_throttle = 1500;                 // multicopter hover throttle
+  navConfig.mc.hover_throttle = 1250;                 // multicopter hover throttle
 
   navConfig.fw.cruise_yaw_rate = 20;                  //Max YAW rate when NAV CRUISE mode is enabled (0=disable control via yaw stick) [dps]
 }
