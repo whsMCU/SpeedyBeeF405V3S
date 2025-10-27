@@ -362,7 +362,7 @@ namespace SpeedyBeeF405V3S_GUI
                 Console.WriteLine(log); // 콘솔에도 출력
 
                 log = "DateTime, Arming_Flag, Flight_Mode, Roll(Deg), Pitch(Deg), Yaw(Deg), Alt(CM), RollSetPoint(Deg), PitchSetPoint(Deg), Yaw SetPoint(Deg), Thorttle(%), yaw_heading_reference(Deg)," +
-                    " altHold, lattitude, longitude, Sat_Num, gps_fix, Throttle_Hold_point, Alt_PID_Result, MOTOR[Right_Rear](%), MOTOR[Right_Front](%), MOTOR[Left_Rear](%), MOTOR[Left_Front](%)," +
+                    " altHold, lattitude, longitude, Sat_Num, gps_fix, POSITION_X(CM), POSITION_Y(CM), MOTOR[Right_Rear](%), MOTOR[Right_Front](%), MOTOR[Left_Rear](%), MOTOR[Left_Front](%)," +
                     " BAT_V, BAT_A, BAT_mAh, Alt_Range(CM), Alt_Range_Hold(CM), GPS_HEADING(deg)," +
                     " Debug[0], Debug[1], Debug[2], Debug[3], Debug[4], Debug[5], Debug[6], Debug[7]";
                 writer.WriteLine(log);
