@@ -473,7 +473,7 @@ static void imuCalculateEstimatedAttitude(timeUs_t currentTimeUs)
 #ifdef USE_MAG
     if (sensors(SENSOR_MAG) && compassIsHealthy()) {
         useMag = true;
-        useMag = false;
+        //useMag = false;
     }
 #endif
 
