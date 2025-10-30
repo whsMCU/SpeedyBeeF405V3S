@@ -2645,6 +2645,15 @@ namespace SpeedyBeeF405V3S_GUI
             lb_debug6.Text = passed_data[52].ToString();
             lb_debug7.Text = passed_data[53].ToString();
 
+            lb_debug0_1.Text = passed_data[18].ToString();
+            lb_debug1_1.Text = passed_data[19].ToString();
+            lb_debug2_1.Text = passed_data[20].ToString();
+            lb_debug2_1.Text = passed_data[21].ToString();
+            lb_debug4_1.Text = passed_data[50].ToString();
+            lb_debug5_1.Text = passed_data[51].ToString();
+            lb_debug6_1.Text = passed_data[52].ToString();
+            lb_debug7_1.Text = passed_data[53].ToString();
+
             lb_gyro_X.Text = passed_data[22].ToString("0.00");
             lb_gyro_Y.Text = passed_data[23].ToString("0.00");
             lb_gyro_Z.Text = passed_data[24].ToString("0.00");
