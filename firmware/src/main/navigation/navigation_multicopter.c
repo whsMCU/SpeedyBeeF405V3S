@@ -714,6 +714,14 @@ static void applyMulticopterPositionController(timeUs_t currentTimeUs)
         rcCommand[PITCH] = pidAngleToRcCommand(posControl.rcAdjustment[PITCH], navConfig.mc.max_angle_inclination[FD_PITCH]);
         rcCommand[ROLL] = pidAngleToRcCommand(posControl.rcAdjustment[ROLL], navConfig.mc.max_angle_inclination[FD_ROLL]);
     }
+    DEBUG_SET(DEBUG_POS_HOLD, 0, (posControl.desiredState.pos.x));
+    DEBUG_SET(DEBUG_POS_HOLD, 1, (navGetCurrentActualPositionAndVelocity()->pos.x));
+    DEBUG_SET(DEBUG_POS_HOLD, 2, (posControl.desiredState.vel.x));
+    DEBUG_SET(DEBUG_POS_HOLD, 3, (navGetCurrentActualPositionAndVelocity()->vel.x));
+    DEBUG_SET(DEBUG_POS_HOLD, 4, (posControl.pids.vel[X].proportional));
+    DEBUG_SET(DEBUG_POS_HOLD, 5, (posControl.pids.vel[X].integral));
+    DEBUG_SET(DEBUG_POS_HOLD, 6, (posControl.pids.vel[X].derivative));
+    DEBUG_SET(DEBUG_POS_HOLD, 7, (posControl.rcAdjustment[ROLL]));
 }
 
 //bool isMulticopterFlying(void)
