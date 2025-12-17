@@ -137,9 +137,9 @@ static void accInitFilters(void)
 {
     // Only set the lowpass cutoff if the ACC sample rate is detected otherwise
     // the filter initialization is not defined (sample rate = 0)
-  bmi270.accLpfCutHz = (bmi270.sampleRateHz) ? bmi270.acc_lpf_hz : 0;
+  bmi270.accLpfCutHz = (bmi270.accSampleRateHz) ? bmi270.acc_lpf_hz : 0;
     if (bmi270.accLpfCutHz) {
-        const uint32_t accSampleTimeUs = 1e6 / bmi270.sampleRateHz;
+        const uint32_t accSampleTimeUs = 1e6 / bmi270.accSampleRateHz;
         for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
             biquadFilterInitLPF(&bmi270.accFilter[axis], bmi270.accLpfCutHz, accSampleTimeUs);
         }
