@@ -306,17 +306,21 @@ void tasksInit(void)
     const bool useBatteryAlerts = batteryConfig.useVBatAlerts || batteryConfig.useConsumptionAlerts;
     setTaskEnabled(TASK_BATTERY_ALERTS, (useBatteryVoltage || useBatteryCurrent) && useBatteryAlerts);
 
+    if (sensors(SENSOR_GYRO)) {
+      rescheduleTask(TASK_GYRO, bmi270.sampleLooptime);
+      rescheduleTask(TASK_FILTER, bmi270.targetLooptime);
+      setTaskEnabled(TASK_GYRO, true);
+      setTaskEnabled(TASK_FILTER, true);
+      setTaskEnabled(TASK_PID, true);
+    }
 
-	rescheduleTask(TASK_GYRO, bmi270.sampleLooptime);
-	rescheduleTask(TASK_FILTER, bmi270.targetLooptime);
-	setTaskEnabled(TASK_GYRO, true);
-	setTaskEnabled(TASK_FILTER, true);
-	setTaskEnabled(TASK_PID, true);
-
-
-	setTaskEnabled(TASK_ACCEL, true);
-	rescheduleTask(TASK_ACCEL, TASK_PERIOD_HZ(1000));
-	setTaskEnabled(TASK_ATTITUDE, true);
+#if defined(USE_ACC)
+	if (sensors(SENSOR_ACC) && bmi270.accSampleRateHz) {
+    setTaskEnabled(TASK_ACCEL, true);
+    rescheduleTask(TASK_ACCEL, TASK_PERIOD_HZ(bmi270.accSampleRateHz));
+    setTaskEnabled(TASK_ATTITUDE, true);
+	}
+#endif
 
   setTaskEnabled(TASK_RX, true);
 
