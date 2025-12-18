@@ -119,26 +119,26 @@ void pidInit(void)
   _ALT.in.pidName = "ALT_IN";
   _ALT.in.kp = 60;
   _ALT.in.ki = 50;
-  _ALT.in.kd = 10;
+  _ALT.in.kd = 20;
   _ALT.in.integral_windup = 200;
 
   _ALT.out.pidName = "ALT_OUT";
-  _ALT.out.kp = 50;
+  _ALT.out.kp = 60;
   _ALT.out.ki = 0;
   _ALT.out.kd = 0;
-  _ALT.out.integral_windup = 200;
+  _ALT.out.integral_windup = 300;
 
   _POS.in.pidName = "POS_IN";
   _POS.in.kp = 70;
   _POS.in.ki = 40;
-  _POS.in.kd = 60;
-  _POS.in.integral_windup = 200;
+  _POS.in.kd = 80;
+  _POS.in.integral_windup = 300;
 
   _POS.out.pidName = "POS_OUT";
   _POS.out.kp = 80;
   _POS.out.ki = 0;
   _POS.out.kd = 0;
-  _POS.out.integral_windup = 200;
+  _POS.out.integral_windup = 300;
 
   _PID_Test.pid_test_flag = 0;
   _PID_Test.pid_test_throttle = 0;

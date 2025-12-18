@@ -2763,7 +2763,7 @@ namespace SpeedyBeeF405V3S_GUI
             passed_data[25] = (float)(BitConverter.ToInt32(payload, 100)) / 10;  // POS_I_I
             passed_data[26] = (float)(BitConverter.ToInt32(payload, 104)) / 10;  // POS_I_D
 
-            passed_data[27] = (float)(BitConverter.ToInt32(payload, 108)) / 10;   // POS_O_P
+            passed_data[27] = (float)(BitConverter.ToInt32(payload, 108)) / 10;  // POS_O_P
             passed_data[28] = (float)(BitConverter.ToInt32(payload, 112)) / 10;  // POS_O_I
             passed_data[29] = (float)(BitConverter.ToInt32(payload, 116)) / 10;  // POS_O_D
 
