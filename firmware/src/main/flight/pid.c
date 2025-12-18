@@ -80,64 +80,64 @@ void pidInit(void)
   headingHoldCosZLimit = cos_approx(DECIDEGREES_TO_RADIANS(300)) * cos_approx(DECIDEGREES_TO_RADIANS(300)); //navConfig.mc.max_angle_inclination[FD_ROLL]
 
   _ROLL.in.pidName = "ROLL_IN";
-  _ROLL.in.kp = 10;
-  _ROLL.in.ki = 0;
-  _ROLL.in.kd = 0;
+  _ROLL.in.kp = 25;
+  _ROLL.in.ki = 10;
+  _ROLL.in.kd = 0.3;
   _ROLL.in.integral_windup = 500;
 
   _ROLL.out.pidName = "ROLL_OUT";
-  _ROLL.out.kp = 10;
-  _ROLL.out.ki = 0;
+  _ROLL.out.kp = 20;
+  _ROLL.out.ki = 5;
   _ROLL.out.kd = 0;
   _ROLL.out.integral_windup = 500;
 
   _PITCH.in.pidName = "PITCH_IN";
-  _PITCH.in.kp = 10;
-  _PITCH.in.ki = 0;
-  _PITCH.in.kd = 0;
+  _PITCH.in.kp = 25;
+  _PITCH.in.ki = 10;
+  _PITCH.in.kd = 0.3;
   _PITCH.in.integral_windup = 500;
 
   _PITCH.out.pidName = "PITCH_OUT";
-  _PITCH.out.kp = 10;
-  _PITCH.out.ki = 0;
+  _PITCH.out.kp = 20;
+  _PITCH.out.ki = 5;
   _PITCH.out.kd = 0;
   _PITCH.out.integral_windup = 500;
 
   _YAW_Heading.pidName = "YAW_Heading";
-  _YAW_Heading.kp = 10;
-  _YAW_Heading.ki = 0;
-  _YAW_Heading.kd = 0;
+  _YAW_Heading.kp = 45;
+  _YAW_Heading.ki = 5;
+  _YAW_Heading.kd = 0.2;
   _YAW_Heading.integral_windup = 500;
 
   _YAW_Rate.pidName = "YAW_Rate";
   _YAW_Rate.kp = 10;
-  _YAW_Rate.ki = 0;
+  _YAW_Rate.ki = 5;
   _YAW_Rate.kd = 0;
   _YAW_Rate.integral_windup = 500;
 
 
   _ALT.in.pidName = "ALT_IN";
-  _ALT.in.kp = 1;
-  _ALT.in.ki = 0;
-  _ALT.in.kd = 0;
+  _ALT.in.kp = 60;
+  _ALT.in.ki = 50;
+  _ALT.in.kd = 10;
   _ALT.in.integral_windup = 200;
 
   _ALT.out.pidName = "ALT_OUT";
-  _ALT.out.kp = 1.5f;
-  _ALT.out.ki = 0.1f;
-  _ALT.out.kd = 0.2f;
+  _ALT.out.kp = 50;
+  _ALT.out.ki = 0;
+  _ALT.out.kd = 0;
   _ALT.out.integral_windup = 200;
 
   _POS.in.pidName = "POS_IN";
-  _POS.in.kp = 1;
-  _POS.in.ki = 0;
-  _POS.in.kd = 0;
+  _POS.in.kp = 70;
+  _POS.in.ki = 40;
+  _POS.in.kd = 60;
   _POS.in.integral_windup = 200;
 
   _POS.out.pidName = "POS_OUT";
-  _POS.out.kp = 1.5f;
-  _POS.out.ki = 0.1f;
-  _POS.out.kd = 0.2f;
+  _POS.out.kp = 80;
+  _POS.out.ki = 0;
+  _POS.out.kd = 0;
   _POS.out.integral_windup = 200;
 
   _PID_Test.pid_test_flag = 0;
