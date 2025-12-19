@@ -2648,7 +2648,7 @@ namespace SpeedyBeeF405V3S_GUI
             lb_debug0_1.Text = passed_data[18].ToString();
             lb_debug1_1.Text = passed_data[19].ToString();
             lb_debug2_1.Text = passed_data[20].ToString();
-            lb_debug2_1.Text = passed_data[21].ToString();
+            lb_debug3_1.Text = passed_data[21].ToString();
             lb_debug4_1.Text = passed_data[50].ToString();
             lb_debug5_1.Text = passed_data[51].ToString();
             lb_debug6_1.Text = passed_data[52].ToString();
