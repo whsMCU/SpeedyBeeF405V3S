@@ -106,7 +106,7 @@
 
 #include "navigation/navigation.h"
 #include "navigation/navigation_private.h" //for MSP_SIMULATOR
-//#include "navigation/navigation_pos_estimator_private.h" //for MSP_SIMULATOR
+#include "navigation/navigation_pos_estimator_private.h" //for MSP_SIMULATOR
 
 #include "rx/rx.h"
 //#include "rx/msp.h"
@@ -460,6 +460,10 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU16(dst, motor.motor[R_F]);
           sbufWriteU16(dst, motor.motor[L_R]);
           sbufWriteU16(dst, motor.motor[L_F]);
+
+          //sbufWriteU32(dst, (int32_t) (posEstimator.imu.accelNEU.x * 1000.0f));
+          //sbufWriteU32(dst, (int32_t) (posEstimator.imu.accelNEU.y * 1000.0f));
+          //sbufWriteU32(dst, (int32_t) (posEstimator.imu.accelNEU.z * 1000.0f));
 
           sbufWriteU32(dst, debug[0]);
           sbufWriteU32(dst, debug[1]);

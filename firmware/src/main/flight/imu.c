@@ -663,13 +663,13 @@ void imuTransformVectorBodyToEarth(fpVector3_t * v)
     quaternionRotateVectorInv(v, v, &q);
 
     // HACK: This is needed to correctly transform from NED (sensor frame) to NEU (navigation)
-    v->y = -v->y;
+    v->x = -v->x;
 }
 
 void imuTransformVectorEarthToBody(fpVector3_t * v)
 {
     // HACK: This is needed to correctly transform from NED (sensor frame) to NEU (navigation)
-    v->y = -v->y;
+    v->x = -v->x;
 
     // From earth frame to body frame
     quaternionRotateVector(v, v, &q);
