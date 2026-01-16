@@ -461,10 +461,6 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU16(dst, motor.motor[L_R]);
           sbufWriteU16(dst, motor.motor[L_F]);
 
-          //sbufWriteU32(dst, (int32_t) (posEstimator.imu.accelNEU.x * 1000.0f));
-          //sbufWriteU32(dst, (int32_t) (posEstimator.imu.accelNEU.y * 1000.0f));
-          //sbufWriteU32(dst, (int32_t) (posEstimator.imu.accelNEU.z * 1000.0f));
-
           sbufWriteU32(dst, debug[0]);
           sbufWriteU32(dst, debug[1]);
           sbufWriteU32(dst, debug[2]);
@@ -514,6 +510,10 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU32(dst, getMAhDrawn()); // milliamp hours drawn from battery
 
           sbufWriteU32(dst, getCoreTemperatureCelsius());
+
+          //sbufWriteU32(dst, (int32_t) (posEstimator.imu.accelNEU.x * 1000.0f));
+          //sbufWriteU32(dst, (int32_t) (posEstimator.imu.accelNEU.y * 1000.0f));
+          //sbufWriteU32(dst, (int32_t) (posEstimator.imu.accelNEU.z * 1000.0f));
 
           sbufWriteU32(dst, debug[4]);
           sbufWriteU32(dst, debug[5]);

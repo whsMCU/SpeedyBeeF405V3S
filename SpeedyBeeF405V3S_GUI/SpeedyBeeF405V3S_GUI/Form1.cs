@@ -2594,7 +2594,7 @@ namespace SpeedyBeeF405V3S_GUI
 
             if (rb_DronePosition.Checked == true)
             {
-                _drone_position_points.Add(passed_data[45], passed_data[46]);  // XY 쌍 추가
+                _drone_position_points.Add(passed_data[46], passed_data[45]);  // XY 쌍 추가
                 if (_drone_position_points.Count > 1000)
                 {
                     _drone_position_points.RemoveAt(0);
