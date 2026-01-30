@@ -46,6 +46,8 @@
 #include "sensors/barometer.h"
 #include "sensors/gyro.h"
 
+#include "navigation/navigation_pos_estimator_private.h"
+
 
 typedef enum {
     DEFAULT = 0,
@@ -72,28 +74,28 @@ void kalmanInit(KalmanState* state) {
     state->altitude = 0.0f;
     state->velocity = 0.0f;
 
-    state->P[0][0] = 1.0f;
+    state->P[0][0] = 1000.0f;
     state->P[0][1] = 0.0f;
     state->P[1][0] = 0.0f;
-    state->P[1][1] = 1.0f;
+    state->P[1][1] = 1000.0f;
 }
 
-void kalmanUpdate(KalmanState* state, float acc_z_mps2, float pressure_alt_cm, float dt) {
+void kalmanUpdate(KalmanState* state, float acc_z_cmps2, float pressure_alt_cm, float dt) {
     // 상태 예측
-    state->altitude += state->velocity * dt + 0.5f * acc_z_mps2 * dt * dt;
-    state->velocity += acc_z_mps2 * dt;
+    state->altitude += state->velocity * dt + 0.5f * acc_z_cmps2 * dt * dt;
+    state->velocity += acc_z_cmps2 * dt;
 
     // 공분산 예측
-    float q_alt = 1.0f;  // 고도 예측 노이즈
-    float q_vel = 1.0f;  // 속도 예측 노이즈
+    float q_alt = 200.0f;  // 고도 예측 노이즈
+    float q_vel = 400.0f;  // 속도 예측 노이즈
 
-    state->P[0][0] += dt * (2 * state->P[0][1] + dt * state->P[1][1]) + q_alt;
+    state->P[0][0] += dt * (state->P[0][1] + state->P[1][1]) + state->P[1][1] * dt *dt + q_alt;
     state->P[0][1] += dt * state->P[1][1];
     state->P[1][0] += dt * state->P[1][1];
     state->P[1][1] += q_vel;
 
     // 측정 업데이트 (기압센서 고도)
-    float R = 50.0f;  // 측정 노이즈 공분산 (cm^2)
+    float R = 900.0f;  // 측정 노이즈 공분산 (cm^2)
     float z = pressure_alt_cm;
     float y = z - state->altitude;  // innovation
 
@@ -271,16 +273,17 @@ void calculateEstimatedAltitude(timeUs_t currentTimeUs)
     vel_z += bmi270.accADCf[YAW] * US2S(dTime);
     pos_z += vel_z * US2S(dTime);
 
-    kalmanUpdate(&kf, bmi270.accADCf[YAW], estimatedAltitudeCm, US2S(dTime));
+    kalmanUpdate(&kf, posEstimator.imu.accelNEU.z, estimatedAltitudeCm, US2S(dTime));
 
 
 
     DEBUG_SET(DEBUG_ALTITUDE, 0, (int32_t)(100 * gpsTrust));
     DEBUG_SET(DEBUG_ALTITUDE, 1, baroAlt);
     DEBUG_SET(DEBUG_ALTITUDE, 2, gpsAlt);
+    DEBUG_SET(DEBUG_ALTITUDE, 3, (int32_t)kf.altitude_est);
 
 #ifdef USE_VARIO
-    DEBUG_SET(DEBUG_ALTITUDE, 3, estimatedVario);
+    DEBUG_SET(DEBUG_ALTITUDE, 4, estimatedVario);
 #endif
 }
 

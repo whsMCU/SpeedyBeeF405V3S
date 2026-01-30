@@ -511,9 +511,9 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
 
           sbufWriteU32(dst, getCoreTemperatureCelsius());
 
-          //sbufWriteU32(dst, (int32_t) (posEstimator.imu.accelNEU.x * 1000.0f));
-          //sbufWriteU32(dst, (int32_t) (posEstimator.imu.accelNEU.y * 1000.0f));
-          //sbufWriteU32(dst, (int32_t) (posEstimator.imu.accelNEU.z * 1000.0f));
+          //sbufWriteU32(dst, (int32_t) posEstimator.imu.accelNEU.x);
+          //sbufWriteU32(dst, (int32_t) posEstimator.imu.accelNEU.y);
+          //sbufWriteU32(dst, (int32_t) posEstimator.imu.accelNEU.z);
 
           sbufWriteU32(dst, debug[4]);
           sbufWriteU32(dst, debug[5]);
