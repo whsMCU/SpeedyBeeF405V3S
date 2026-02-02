@@ -168,6 +168,7 @@ namespace SpeedyBeeF405V3S_GUI
             new Item() { Text = "DEBUG_NONE", Value = 0 },
             new Item() { Text = "DEBUG_ACCELEROMETER", Value = 4 },
             new Item() { Text = "DEBUG_PIDLOOP", Value = 5 },
+            new Item() { Text = "DEBUG_ALTITUDE", Value = 14 },
             new Item() { Text = "DEBUG_GYRO_RAW", Value = 20 },
             new Item() { Text = "DEBUG_RANGEFINDER", Value = 27 },
             new Item() { Text = "DEBUG_FLOW_RAW", Value = 71 },

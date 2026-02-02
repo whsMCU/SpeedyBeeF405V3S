@@ -86,13 +86,13 @@ void kalmanUpdate(KalmanState* state, float acc_z_cmps2, float pressure_alt_cm, 
     state->velocity += acc_z_cmps2 * dt;
 
     // 공분산 예측
-    //float q_alt = 200.0f;  // 고도 예측 노이즈
-    //float q_vel = 400.0f;  // 속도 예측 노이즈
+    float q_alt = 200.0f;  // 고도 예측 노이즈
+    float q_vel = 400.0f;  // 속도 예측 노이즈
 
-    float acc_var = 50.0f; // (cm/s²)²
+    //float acc_var = 50.0f; // (cm/s²)²
 
-    float q_alt = 0.25f * acc_var * dt*dt*dt*dt;
-    float q_vel = acc_var * dt*dt;
+    //float q_alt = 0.25f * acc_var * dt*dt*dt*dt;
+    //float q_vel = acc_var * dt*dt;
 
     state->P[0][0] += dt * (state->P[0][1] + state->P[1][0]) + state->P[1][1] * dt *dt + q_alt;
     state->P[0][1] += dt * state->P[1][1];
@@ -283,13 +283,14 @@ void calculateEstimatedAltitude(timeUs_t currentTimeUs)
 
 
 
-    DEBUG_SET(DEBUG_ALTITUDE, 0, (int32_t)(100 * gpsTrust));
-    DEBUG_SET(DEBUG_ALTITUDE, 1, baroAlt);
-    DEBUG_SET(DEBUG_ALTITUDE, 2, gpsAlt);
-    DEBUG_SET(DEBUG_ALTITUDE, 3, (int32_t)kf.altitude_est);
+    //DEBUG_SET(DEBUG_ALTITUDE, 0, (int32_t)(100 * gpsTrust));
+
+    //DEBUG_SET(DEBUG_ALTITUDE, 2, kf.velocity);
+    //DEBUG_SET(DEBUG_ALTITUDE, 2, gpsAlt);
+    //DEBUG_SET(DEBUG_ALTITUDE, 3, (int32_t)kf.altitude_est);
 
 #ifdef USE_VARIO
-    DEBUG_SET(DEBUG_ALTITUDE, 4, estimatedVario);
+    //DEBUG_SET(DEBUG_ALTITUDE, 4, estimatedVario);
 #endif
 }
 
