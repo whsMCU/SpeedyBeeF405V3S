@@ -86,10 +86,15 @@ void kalmanUpdate(KalmanState* state, float acc_z_cmps2, float pressure_alt_cm, 
     state->velocity += acc_z_cmps2 * dt;
 
     // 공분산 예측
-    float q_alt = 200.0f;  // 고도 예측 노이즈
-    float q_vel = 400.0f;  // 속도 예측 노이즈
+    //float q_alt = 200.0f;  // 고도 예측 노이즈
+    //float q_vel = 400.0f;  // 속도 예측 노이즈
 
-    state->P[0][0] += dt * (state->P[0][1] + state->P[1][1]) + state->P[1][1] * dt *dt + q_alt;
+    float acc_var = 50.0f; // (cm/s²)²
+
+    float q_alt = 0.25f * acc_var * dt*dt*dt*dt;
+    float q_vel = acc_var * dt*dt;
+
+    state->P[0][0] += dt * (state->P[0][1] + state->P[1][0]) + state->P[1][1] * dt *dt + q_alt;
     state->P[0][1] += dt * state->P[1][1];
     state->P[1][0] += dt * state->P[1][1];
     state->P[1][1] += q_vel;
@@ -100,6 +105,7 @@ void kalmanUpdate(KalmanState* state, float acc_z_cmps2, float pressure_alt_cm, 
     float y = z - state->altitude;  // innovation
 
     float S = state->P[0][0] + R;
+
     float K0 = state->P[0][0] / S;
     float K1 = state->P[1][0] / S;
 
