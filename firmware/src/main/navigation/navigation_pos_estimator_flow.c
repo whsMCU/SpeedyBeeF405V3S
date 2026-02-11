@@ -38,6 +38,8 @@
 #include "navigation/navigation_private.h"
 #include "navigation/navigation_pos_estimator_private.h"
 
+#include "navigation/kalman.h"
+
 #include "sensors/rangefinder.h"
 #include "sensors/opflow.h"
 
@@ -85,6 +87,9 @@ bool estimationCalculateCorrection_XY_FLOW(estimationContext_t * ctx)
 
     // At this point flowVel will hold linear velocities in earth frame
     imuTransformVectorBodyToEarth(&flowVel);
+
+    EKF_position.flowVel_X = flowVel.x;
+    EKF_position.flowVel_y = flowVel.y;
 
     // Calculate velocity correction
     const float flowVelXInnov = flowVel.x - posEstimator.est.vel.x;

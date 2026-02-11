@@ -46,6 +46,8 @@
 #include "navigation/navigation_private.h"
 #include "navigation/navigation_pos_estimator_private.h"
 
+#include "navigation/kalman.h"
+
 //#include "sensors/acceleration.h"
 #include "sensors/barometer.h"
 #include "sensors/compass.h"
@@ -57,6 +59,8 @@
 navigationPosEstimator_t posEstimator;
 
 positionEstimationConfig_t positionEstimationConfig;
+
+EKF_State EKF_position;
 
 void positionEstimationConfig_Init(void)
 {
@@ -77,6 +81,8 @@ void positionEstimationConfig_Init(void)
   positionEstimationConfig.w_z_res_v = 0.5;
   positionEstimationConfig.w_acc_bias = 0.01;
   positionEstimationConfig.baro_epv = 100;
+
+  init_ekf(&EKF_position);
 }
 
 //PG_REGISTER_WITH_RESET_TEMPLATE(positionEstimationConfig_t, positionEstimationConfig, PG_POSITION_ESTIMATION_CONFIG, 5);
@@ -579,6 +585,15 @@ static void estimationPredict(estimationContext_t * ctx)
             posEstimator.est.vel.x += posEstimator.imu.accelNEU.x * ctx->dt * sq(accWeight);
             posEstimator.est.vel.y += posEstimator.imu.accelNEU.y * ctx->dt * sq(accWeight);
         }
+
+        predict(&EKF_position, posEstimator.imu.accelNEU.x, posEstimator.imu.accelNEU.y, ctx->dt);
+        update(&EKF_position, EKF_position.flowVel_X, EKF_position.flowVel_y);
+
+        DEBUG_SET(DEBUG_POS_EST, 2, (int32_t) EKF_position.x);
+        DEBUG_SET(DEBUG_POS_EST, 3, (int32_t) EKF_position.y);
+
+        DEBUG_SET(DEBUG_POS_EST, 6, (int32_t) EKF_position.vx);
+        DEBUG_SET(DEBUG_POS_EST, 7, (int32_t) EKF_position.vy);
     }
 }
 
@@ -859,8 +874,8 @@ static void publishEstimatedTopic(timeUs_t currentTimeUs)
             //DEBUG_SET(DEBUG_POS_EST, 2, (int32_t) posEstimator.est.pos.z*1000.0F);            // Position estimate Z
             //DEBUG_SET(DEBUG_POS_EST, 5, (int32_t) posEstimator.est.vel.z*1000.0F);            // Speed estimate VZ
         //}
-        DEBUG_SET(DEBUG_POS_EST, 3, (int32_t) posEstimator.est.vel.x);                // Speed estimate VX
-        DEBUG_SET(DEBUG_POS_EST, 4, (int32_t) posEstimator.est.vel.y);                // Speed estimate VY
+        DEBUG_SET(DEBUG_POS_EST, 4, (int32_t) posEstimator.est.vel.x);                // Speed estimate VX
+        DEBUG_SET(DEBUG_POS_EST, 5, (int32_t) posEstimator.est.vel.y);                // Speed estimate VY
         //DEBUG_SET(DEBUG_POS_EST, 6, (int32_t) attitude.values.yaw);                           // Yaw estimate (4 bytes still available here)
         //DEBUG_SET(DEBUG_POS_EST, 7, (int32_t) (posEstimator.flags & 0b1111111)<<20 |          // navPositionEstimationFlags fit into 8bits
         //                                      (MIN(navEPH, 1000) & 0x3FF)<<10 |
