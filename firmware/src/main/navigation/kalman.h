@@ -18,7 +18,7 @@
 
 // EKF 상태 변수 구조체
 typedef struct {
-    float flowVel_X, flowVel_y;
+    float flowVel_x, flowVel_y;
 
     float x, y;       // 위치
     float vx, vy;     // 속도

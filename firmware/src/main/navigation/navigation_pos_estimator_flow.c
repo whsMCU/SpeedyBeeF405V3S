@@ -88,7 +88,7 @@ bool estimationCalculateCorrection_XY_FLOW(estimationContext_t * ctx)
     // At this point flowVel will hold linear velocities in earth frame
     imuTransformVectorBodyToEarth(&flowVel);
 
-    EKF_position.flowVel_X = flowVel.x;
+    EKF_position.flowVel_x = flowVel.x;
     EKF_position.flowVel_y = flowVel.y;
 
     // Calculate velocity correction
