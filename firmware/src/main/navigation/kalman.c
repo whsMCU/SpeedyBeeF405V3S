@@ -8,71 +8,199 @@
 
 #include "navigation/kalman.h"
 
+#include <math.h>
+#include <string.h>
 
-// 초기화 함수
-void init_ekf(EKF_State *f) {
 
-  for (int i = 0; i < STATE_DIM; i++) {
-      f->x[i] = 0.0f;
-      for (int j = 0; j < STATE_DIM; j++) {
-          f->P[i][j] = (i == j) ? 1.0f : 0.0f;  // P 초기값 (Identity)
-          f->Q[i][j] = 0.0f;
-      }
-  }
-  // 프로세스 노이즈 설정 (가속도 노이즈 영향)
-  f->Q[0][0] = 0.001f; f->Q[1][1] = 0.001f;
-  f->Q[2][2] = 0.01f;  f->Q[3][3] = 0.01f;
+/*
+ * ekf_xy_bias.c
+ *
+ * 6-State EKF for Drone XY Position
+ *
+ * State:
+ *   x = [ px, py, vx, vy, bax, bay ]
+ *
+ * Input:
+ *   ax_meas, ay_meas (earth frame accel measurement)
+ *
+ * Measurement:
+ *   Optical Flow velocity (vx, vy)
+ *
+ * Features:
+ *   - Acceleration bias estimation
+ *   - Full covariance prediction (FPF' + Q)
+ *   - Physically derived process noise
+ *   - Joseph form covariance update
+ *   - Innovation gating
+ *
+ * Author: 왕학승
+ */
 
-  // 광류 센서 측정 노이즈 (속도 측정의 불확실성)
-  f->R = 0.1f;
+/* ============================================================ */
+/* ================= MATRIX HELPERS ============================ */
+/* ============================================================ */
 
+static void mat6_mult(float A[6][6], float B[6][6], float C[6][6])
+{
+    for (int i=0;i<6;i++)
+        for (int j=0;j<6;j++)
+        {
+            C[i][j]=0;
+            for (int k=0;k<6;k++)
+                C[i][j]+=A[i][k]*B[k][j];
+        }
 }
 
-// 1. 예측 단계 (Predict Step)
-// ax, ay: 지구 좌표계 가속도(m/s^2), dt: 주기(s)
-void predict(EKF_State *f, float ax, float ay, float dt) {
-  // --- (1) 상태 예측 ---
-  f->x[0] += f->x[2] * dt + 0.5f * ax * dt * dt; // x = x + vx*dt + 0.5*a*dt^2
-  f->x[1] += f->x[3] * dt + 0.5f * ay * dt * dt; // y = y + vy*dt + 0.5*a*dt^2
-  f->x[2] += ax * dt;                            // vx = vx + a*dt
-  f->x[3] += ay * dt;                            // vy = vy + a*dt
-
-  // --- (2) 공분산 예측 (P = FPF' + Q) ---
-  // F = [[1, 0, dt, 0], [0, 1, 0, dt], [0, 0, 1, 0], [0, 0, 0, 1]]
-  // 행렬 곱 연산을 단순화하여 대각 및 관련 성분만 업데이트
-  for (int i = 0; i < 2; i++) {
-      f->P[i][i] += (f->P[i+2][i+2] * dt * dt) + (2.0f * f->P[i][i+2] * dt);
-      f->P[i][i+2] += f->P[i+2][i+2] * dt;
-      f->P[i+2][i] = f->P[i][i+2];
-  }
-
-  // Q 더하기
-  for (int i = 0; i < STATE_DIM; i++) f->P[i][i] += f->Q[i][i];
+static void mat6_transpose(float A[6][6], float AT[6][6])
+{
+    for (int i=0;i<6;i++)
+        for (int j=0;j<6;j++)
+            AT[j][i]=A[i][j];
 }
 
-// 2. 보정 단계 (Update Step)
-// flow_vx, flow_vy: 광류 센서에서 계산된 속도(m/s)
-void update(EKF_State *f, float flow_vx, float flow_vy) {
-  float z[2] = {flow_vx, flow_vy};
+/* ============================================================ */
+/* ================= INITIALIZE ================================ */
+/* ============================================================ */
 
-  // 관측 행렬 H는 [0, 0, 1, 0] (x_dot) 및 [0, 0, 0, 1] (y_dot)
-  for (int i = 0; i < 2; i++) {
-      int vel_idx = i + 2; // vx는 index 2, vy는 index 3
+void ekf_init(EKF_State *f)
+{
+    memset(f,0,sizeof(EKF_State));
 
-      // --- (1) 칼만 이득 계산 ---
-      // S = HPH' + R
-      float S = f->P[vel_idx][vel_idx] + f->R;
-      float K_pos = f->P[i][vel_idx] / S;       // 위치 수정 이득
-      float K_vel = f->P[vel_idx][vel_idx] / S; // 속도 수정 이득
+    for(int i=0;i<STATE_DIM;i++)
+        f->P[i][i]=1.0f;
 
-      // --- (2) 상태 수정 ---
-      float y = z[i] - f->x[vel_idx]; // 잔차
-      f->x[i] += K_pos * y;           // 위치 보정
-      f->x[vel_idx] += K_vel * y;     // 속도 보정
+    f->R[0]=0.05f;
+    f->R[1]=0.05f;
 
-      // --- (3) 공분산 수정 (P = (I-KH)P) ---
-      // 해당 축의 위치와 속도 관련 공분산만 간략 업데이트
-      f->P[i][i] -= K_pos * f->P[vel_idx][i];
-      f->P[vel_idx][vel_idx] -= K_vel * f->P[vel_idx][vel_idx];
-  }
+    f->accel_noise=0.8f;   // tune
+    f->bias_noise =0.02f;  // tune (very small)
 }
+
+/* ============================================================ */
+/* ================= BUILD PROCESS NOISE ======================= */
+/* ============================================================ */
+
+static void ekf_build_Q(EKF_State *f, float dt)
+{
+    float dt2=dt*dt;
+    float dt3=dt2*dt;
+    float dt4=dt3*dt;
+
+    float var_a=f->accel_noise*f->accel_noise;
+    float var_b=f->bias_noise*f->bias_noise;
+
+    memset(f->Q,0,sizeof(f->Q));
+
+    /* Acceleration driven noise (position/velocity) */
+    f->Q[0][0]=0.25f*dt4*var_a;
+    f->Q[1][1]=0.25f*dt4*var_a;
+    f->Q[0][2]=0.5f*dt3*var_a;
+    f->Q[1][3]=0.5f*dt3*var_a;
+    f->Q[2][0]=0.5f*dt3*var_a;
+    f->Q[3][1]=0.5f*dt3*var_a;
+    f->Q[2][2]=dt2*var_a;
+    f->Q[3][3]=dt2*var_a;
+
+    /* Bias random walk */
+    f->Q[4][4]=dt*var_b;
+    f->Q[5][5]=dt*var_b;
+}
+
+/* ============================================================ */
+/* ======================= PREDICT ============================= */
+/* ============================================================ */
+
+void ekf_predict(EKF_State *f, float ax_meas, float ay_meas, float dt)
+{
+    float bax=f->x[4];
+    float bay=f->x[5];
+
+    float ax=ax_meas - bax;
+    float ay=ay_meas - bay;
+
+    /* ---- State prediction ---- */
+
+    f->x[0]+=f->x[2]*dt + 0.5f*ax*dt*dt;
+    f->x[1]+=f->x[3]*dt + 0.5f*ay*dt*dt;
+    f->x[2]+=ax*dt;
+    f->x[3]+=ay*dt;
+
+    /* bias assumed random walk (no deterministic change) */
+
+    /* ---- State transition matrix F ---- */
+
+    float F[6][6]={0};
+
+    for(int i=0;i<6;i++) F[i][i]=1.0f;
+
+    F[0][2]=dt;
+    F[1][3]=dt;
+
+    F[0][4]=-0.5f*dt*dt;
+    F[1][5]=-0.5f*dt*dt;
+
+    F[2][4]=-dt;
+    F[3][5]=-dt;
+
+    float FT[6][6];
+    float FP[6][6];
+    float FPFt[6][6];
+
+    mat6_transpose(F,FT);
+
+    ekf_build_Q(f,dt);
+
+    mat6_mult(F,f->P,FP);
+    mat6_mult(FP,FT,FPFt);
+
+    for(int i=0;i<6;i++)
+        for(int j=0;j<6;j++)
+            f->P[i][j]=FPFt[i][j]+f->Q[i][j];
+}
+
+/* ============================================================ */
+/* ======================== UPDATE ============================= */
+/* ============================================================ */
+
+void ekf_update(EKF_State *f, float flow_vx, float flow_vy)
+{
+    float z[2]={flow_vx,flow_vy};
+
+    for(int axis=0;axis<2;axis++)
+    {
+        int vel=axis+2;
+
+        float y=z[axis]-f->x[vel];
+        float S=f->P[vel][vel]+f->R[axis];
+
+        if((y*y)/S > INNOVATION_GATE)
+            continue;
+
+        float K[6];
+        for(int i=0;i<6;i++)
+            K[i]=f->P[i][vel]/S;
+
+        /* State update */
+        for(int i=0;i<6;i++)
+            f->x[i]+=K[i]*y;
+
+        /* Joseph form */
+        float I_KH[6][6]={0};
+        for(int i=0;i<6;i++) I_KH[i][i]=1.0f;
+        for(int i=0;i<6;i++) I_KH[i][vel]-=K[i];
+
+        float temp[6][6];
+        float temp2[6][6];
+        float I_KH_T[6][6];
+
+        mat6_mult(I_KH,f->P,temp);
+        mat6_transpose(I_KH,I_KH_T);
+        mat6_mult(temp,I_KH_T,temp2);
+
+        for(int i=0;i<6;i++)
+            for(int j=0;j<6;j++)
+                f->P[i][j]=temp2[i][j] + K[i]*f->R[axis]*K[j];
+    }
+}
+
+

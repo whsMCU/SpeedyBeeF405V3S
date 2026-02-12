@@ -82,7 +82,7 @@ void positionEstimationConfig_Init(void)
   positionEstimationConfig.w_acc_bias = 0.01;
   positionEstimationConfig.baro_epv = 100;
 
-  init_ekf(&EKF_position);
+  ekf_init(&EKF_position);
 }
 
 //PG_REGISTER_WITH_RESET_TEMPLATE(positionEstimationConfig_t, positionEstimationConfig, PG_POSITION_ESTIMATION_CONFIG, 5);
@@ -586,8 +586,8 @@ static void estimationPredict(estimationContext_t * ctx)
             posEstimator.est.vel.y += posEstimator.imu.accelNEU.y * ctx->dt * sq(accWeight);
         }
 
-        predict(&EKF_position, posEstimator.imu.accelNEU.x, posEstimator.imu.accelNEU.y, ctx->dt);
-        update(&EKF_position, EKF_position.flowVel_x, EKF_position.flowVel_y);
+        ekf_predict(&EKF_position, posEstimator.imu.accelNEU.x, posEstimator.imu.accelNEU.y, ctx->dt);
+        ekf_update(&EKF_position, EKF_position.flowVel_x, EKF_position.flowVel_y);
 
         DEBUG_SET(DEBUG_POS_EST, 2, (int32_t) EKF_position.x[0]);
         //DEBUG_SET(DEBUG_POS_EST, 3, (int32_t) EKF_position.x[1]);

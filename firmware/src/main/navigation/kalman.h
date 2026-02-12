@@ -16,21 +16,35 @@
 #include "common/time.h"
 #include "common/axis.h"
 
-#define STATE_DIM 4
 
-// EKF 상태 변수 구조체
-typedef struct {
-    float flowVel_x, flowVel_y;
+#define STATE_DIM 6
+#define MEAS_DIM  2
 
-    float x[STATE_DIM];               // 상태: [0]=x, [1]=y, [2]=vx, [3]=vy
-    float P[STATE_DIM][STATE_DIM];    // 오차 공분산 행렬
-    float Q[STATE_DIM][STATE_DIM];    // 프로세스 노이즈
-    float R;                          // 광류 센서 측정 노이즈
+#define INNOVATION_GATE 5.99f   // Chi-square 95% (2 DOF)
+
+
+/* ============================================================ */
+/* ======================= STRUCT ============================== */
+/* ============================================================ */
+
+typedef struct
+{
+  float flowVel_x, flowVel_y;
+
+  float x[STATE_DIM];
+  float P[STATE_DIM][STATE_DIM];
+  float Q[STATE_DIM][STATE_DIM];
+
+  float R[MEAS_DIM];
+
+  float accel_noise;      // accel white noise std (m/s^2)
+  float bias_noise;       // bias random walk std (m/s^2)
+
 } EKF_State;
 
-void init_ekf(EKF_State *f);
-void predict(EKF_State *f, float ax, float ay, float dt);
-void update(EKF_State *f, float flow_vx, float flow_vy);
+void ekf_init(EKF_State *f);
+void ekf_predict(EKF_State *f, float ax, float ay, float dt);
+void ekf_update(EKF_State *f, float flow_vx, float flow_vy);
 
 
 #ifdef __cplusplus
