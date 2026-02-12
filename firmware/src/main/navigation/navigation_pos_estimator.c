@@ -589,11 +589,11 @@ static void estimationPredict(estimationContext_t * ctx)
         predict(&EKF_position, posEstimator.imu.accelNEU.x, posEstimator.imu.accelNEU.y, ctx->dt);
         update(&EKF_position, EKF_position.flowVel_x, EKF_position.flowVel_y);
 
-        DEBUG_SET(DEBUG_POS_EST, 2, (int32_t) EKF_position.x);
-        //DEBUG_SET(DEBUG_POS_EST, 3, (int32_t) EKF_position.y);
+        DEBUG_SET(DEBUG_POS_EST, 2, (int32_t) EKF_position.x[0]);
+        //DEBUG_SET(DEBUG_POS_EST, 3, (int32_t) EKF_position.x[1]);
 
-        DEBUG_SET(DEBUG_POS_EST, 6, (int32_t) EKF_position.vx);
-        //DEBUG_SET(DEBUG_POS_EST, 7, (int32_t) EKF_position.vy);
+        DEBUG_SET(DEBUG_POS_EST, 6, (int32_t) EKF_position.x[2]);
+        //DEBUG_SET(DEBUG_POS_EST, 7, (int32_t) EKF_position.x[3]);
     }
 }
 
