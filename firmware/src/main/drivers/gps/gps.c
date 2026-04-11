@@ -598,10 +598,12 @@ void GPS_calculateDistanceAndDirectionToHome(void)
         uint32_t dist;
         int32_t dir;
         GPS_distance_cm_bearing(&GpsNav.GPS_coord[LAT],&GpsNav.GPS_coord[LON],&GpsNav.GPS_home[LAT],&GpsNav.GPS_home[LON],&dist,&dir);
-        GpsNav.GPS_distanceToHome = dist/100;
+        GpsNav.GPS_distanceToHome = dist/100; //m
+        GpsNav.GPS_distanceToHomeCm = dist; //cm
         GpsNav.GPS_directionToHome = dir/100;
     } else {
       GpsNav.GPS_distanceToHome = 0;
+      GpsNav.GPS_distanceToHomeCm = 0;
       GpsNav.GPS_directionToHome = 0;
     }
 }

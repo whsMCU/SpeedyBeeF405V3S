@@ -20,6 +20,7 @@ typedef enum {
 } nav_mode_e;
 
 #define GPS_DEGREES_DIVIDER 10000000L
+#define EARTH_ANGLE_TO_CM (111.3195f * 1000 * 100 / GPS_DEGREES_DIVIDER) // 1.113195 cm per latitude unit at the equator (111.3195km/deg)
 #define GPS_X 1
 #define GPS_Y 0
 
@@ -87,6 +88,7 @@ typedef struct {
   uint8_t  GPS_numSat;
   int32_t  GPS_headVeh;
   uint16_t GPS_distanceToHome;                          // distance to home  - unit: meter
+  uint32_t GPS_distanceToHomeCm;                        // distance to home  - unit: centimeter
   int16_t  GPS_directionToHome;                         // direction to home - unit: degree
   uint32_t GPS_distanceFlownInCm;                       // distance flown since armed in centimeters
   uint16_t GPS_altitude;                                // GPS altitude      - unit: meter
