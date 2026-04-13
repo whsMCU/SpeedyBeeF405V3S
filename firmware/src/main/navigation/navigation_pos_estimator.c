@@ -82,7 +82,7 @@ void positionEstimationConfig_Init(void)
   positionEstimationConfig.w_acc_bias = 0.01;
   positionEstimationConfig.baro_epv = 100;
 
-  ekf_init(&EKF_position);
+  //ekf_init(&EKF_position);
 }
 
 //PG_REGISTER_WITH_RESET_TEMPLATE(positionEstimationConfig_t, positionEstimationConfig, PG_POSITION_ESTIMATION_CONFIG, 5);
@@ -586,13 +586,13 @@ static void estimationPredict(estimationContext_t * ctx)
             posEstimator.est.vel.y += posEstimator.imu.accelNEU.y * ctx->dt * sq(accWeight);
         }
 
-        ekf_predict(&EKF_position, posEstimator.imu.accelNEU.x, posEstimator.imu.accelNEU.y, ctx->dt);
-        ekf_update(&EKF_position, EKF_position.flowVel_x, EKF_position.flowVel_y);
+        //ekf_predict(&EKF_position, posEstimator.imu.accelNEU.x, posEstimator.imu.accelNEU.y, ctx->dt);
+        //ekf_update(&EKF_position, EKF_position.flowVel_x, EKF_position.flowVel_y);
 
-        DEBUG_SET(DEBUG_POS_EST, 2, (int32_t) EKF_position.x[0]);
+        //DEBUG_SET(DEBUG_POS_EST, 2, (int32_t) EKF_position.x[0]);
         //DEBUG_SET(DEBUG_POS_EST, 3, (int32_t) EKF_position.x[1]);
 
-        DEBUG_SET(DEBUG_POS_EST, 6, (int32_t) EKF_position.x[2]);
+        //DEBUG_SET(DEBUG_POS_EST, 6, (int32_t) EKF_position.x[2]);
         //DEBUG_SET(DEBUG_POS_EST, 7, (int32_t) EKF_position.x[3]);
     }
 }
@@ -865,7 +865,7 @@ static void publishEstimatedTopic(timeUs_t currentTimeUs)
 
 
         DEBUG_SET(DEBUG_POS_EST, 0, (int32_t) posEstimator.est.pos.x);                // Position estimate X
-        //DEBUG_SET(DEBUG_POS_EST, 1, (int32_t) posEstimator.est.pos.y);                // Position estimate Y
+        DEBUG_SET(DEBUG_POS_EST, 1, (int32_t) posEstimator.est.pos.y);                // Position estimate Y
         //if (IS_RC_MODE_ACTIVE(BOXSURFACE) && posEstimator.est.aglQual!=SURFACE_QUAL_LOW){
             // SURFACE (following) MODE
             //DEBUG_SET(DEBUG_POS_EST, 2, (int32_t) posControl.actualState.agl.pos.z*1000.0F);  // Position estimate Z
@@ -875,7 +875,7 @@ static void publishEstimatedTopic(timeUs_t currentTimeUs)
             //DEBUG_SET(DEBUG_POS_EST, 5, (int32_t) posEstimator.est.vel.z*1000.0F);            // Speed estimate VZ
         //}
         DEBUG_SET(DEBUG_POS_EST, 4, (int32_t) posEstimator.est.vel.x);                // Speed estimate VX
-        //DEBUG_SET(DEBUG_POS_EST, 5, (int32_t) posEstimator.est.vel.y);                // Speed estimate VY
+        DEBUG_SET(DEBUG_POS_EST, 5, (int32_t) posEstimator.est.vel.y);                // Speed estimate VY
         //DEBUG_SET(DEBUG_POS_EST, 6, (int32_t) attitude.values.yaw);                           // Yaw estimate (4 bytes still available here)
         //DEBUG_SET(DEBUG_POS_EST, 7, (int32_t) (posEstimator.flags & 0b1111111)<<20 |          // navPositionEstimationFlags fit into 8bits
         //                                      (MIN(navEPH, 1000) & 0x3FF)<<10 |

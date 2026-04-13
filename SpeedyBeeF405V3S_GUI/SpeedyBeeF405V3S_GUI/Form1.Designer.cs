@@ -97,6 +97,8 @@
             this.label25 = new System.Windows.Forms.Label();
             this.label26 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label114 = new System.Windows.Forms.Label();
+            this.label112 = new System.Windows.Forms.Label();
             this.lb_Position_Y = new System.Windows.Forms.Label();
             this.label109 = new System.Windows.Forms.Label();
             this.label106 = new System.Windows.Forms.Label();
@@ -411,8 +413,8 @@
             this.tb_msp_error = new System.Windows.Forms.TextBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.tb_msp_period = new System.Windows.Forms.TextBox();
-            this.label112 = new System.Windows.Forms.Label();
-            this.label114 = new System.Windows.Forms.Label();
+            this.label116 = new System.Windows.Forms.Label();
+            this.label118 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -742,6 +744,28 @@
             this.groupBox4.TabIndex = 65;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Telemetry passed_data";
+            // 
+            // label114
+            // 
+            this.label114.AutoSize = true;
+            this.label114.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.label114.Location = new System.Drawing.Point(123, 165);
+            this.label114.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label114.Name = "label114";
+            this.label114.Size = new System.Drawing.Size(31, 21);
+            this.label114.TabIndex = 105;
+            this.label114.Text = "cm";
+            // 
+            // label112
+            // 
+            this.label112.AutoSize = true;
+            this.label112.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.label112.Location = new System.Drawing.Point(293, 167);
+            this.label112.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label112.Name = "label112";
+            this.label112.Size = new System.Drawing.Size(31, 21);
+            this.label112.TabIndex = 104;
+            this.label112.Text = "cm";
             // 
             // lb_Position_Y
             // 
@@ -1570,6 +1594,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label118);
+            this.groupBox1.Controls.Add(this.label116);
             this.groupBox1.Controls.Add(this.label103);
             this.groupBox1.Controls.Add(this.label105);
             this.groupBox1.Controls.Add(this.label93);
@@ -4157,27 +4183,27 @@
             this.tb_msp_period.TabIndex = 95;
             this.tb_msp_period.Text = "-";
             // 
-            // label112
+            // label116
             // 
-            this.label112.AutoSize = true;
-            this.label112.Font = new System.Drawing.Font("Segoe UI", 12F);
-            this.label112.Location = new System.Drawing.Point(293, 167);
-            this.label112.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label112.Name = "label112";
-            this.label112.Size = new System.Drawing.Size(31, 21);
-            this.label112.TabIndex = 104;
-            this.label112.Text = "cm";
+            this.label116.AutoSize = true;
+            this.label116.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label116.Location = new System.Drawing.Point(120, 271);
+            this.label116.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label116.Name = "label116";
+            this.label116.Size = new System.Drawing.Size(144, 17);
+            this.label116.TabIndex = 188;
+            this.label116.Text = "Default : 40, 15, 100, 40";
             // 
-            // label114
+            // label118
             // 
-            this.label114.AutoSize = true;
-            this.label114.Font = new System.Drawing.Font("Segoe UI", 12F);
-            this.label114.Location = new System.Drawing.Point(123, 165);
-            this.label114.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label114.Name = "label114";
-            this.label114.Size = new System.Drawing.Size(31, 21);
-            this.label114.TabIndex = 105;
-            this.label114.Text = "cm";
+            this.label118.AutoSize = true;
+            this.label118.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label118.Location = new System.Drawing.Point(119, 339);
+            this.label118.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label118.Name = "label118";
+            this.label118.Size = new System.Drawing.Size(74, 17);
+            this.label118.TabIndex = 189;
+            this.label118.Text = "Default : 65";
             // 
             // Form1
             // 
@@ -4591,6 +4617,8 @@
         private System.Windows.Forms.Label lb_debug0_1;
         private System.Windows.Forms.Label label114;
         private System.Windows.Forms.Label label112;
+        private System.Windows.Forms.Label label118;
+        private System.Windows.Forms.Label label116;
     }
 }
 

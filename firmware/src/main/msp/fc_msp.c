@@ -2379,6 +2379,8 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         _POS.out.ki = (float)u.f;
         u.b = sbufReadU32(src);
         _POS.out.kd = (float)u.f;
+
+        navigationUsePIDs();
         break;
 
     case MSP_SET_INAV_PID:
