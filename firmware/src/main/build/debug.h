@@ -105,6 +105,7 @@ typedef enum {
     DEBUG_IMU,
     DEBUG_POS_EST,
     DEBUG_POS_HOLD,
+    DEBUG_GPS_DATA,
     DEBUG_COUNT
 } debugType_e;
 

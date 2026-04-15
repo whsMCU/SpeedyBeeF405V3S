@@ -176,6 +176,7 @@ namespace SpeedyBeeF405V3S_GUI
             new Item() { Text = "DEBUG_IMU", Value = 73 },
             new Item() { Text = "DEBUG_POS_EST", Value = 74 },
             new Item() { Text = "DEBUG_POS_HOLD", Value = 75 },
+            new Item() { Text = "DEBUG_GPS_DATA", Value = 76 },
         };
 
         public Form1()
@@ -1381,13 +1382,34 @@ namespace SpeedyBeeF405V3S_GUI
 
             }
 
-            if (battery_bar_level > 164) battery_bar_level = 124;
-            if (battery_bar_level < 110) battery_bar_level = 85;
-            if (battery_bar_level > 142) panel5.BackColor = Color.Lime;
-            else if (battery_bar_level > 132) panel5.BackColor = Color.Yellow;
+            if (battery_bar_level > 164)
+            {
+                panel5.BackColor = Color.Blue;
+            }
+            else if (battery_bar_level > 152)
+            {
+                panel5.BackColor = Color.Green;
+            }
+            else if (battery_bar_level > 144)
+            {
+                panel5.BackColor = Color.Yellow;
+            }
+            else if (battery_bar_level > 140)
+            {
+                panel5.BackColor = Color.Orange;
+            }
             else panel5.BackColor = Color.Red;
 
-            panel6.Size = new Size(34, 134 - ((battery_bar_level - 80) * 3));
+            int displaylevel = battery_bar_level;
+            if(displaylevel > 168) displaylevel = 168;
+            if(displaylevel < 132) displaylevel = 132;
+            float percentage = (float)(displaylevel - 132) / (168 - 132);
+
+            int newHeight = (int)(percentage * 124);
+
+
+            panel5.Size = new Size(40, newHeight);
+            panel5.Location = new Point(3, 124 - newHeight);
 
             textBox10.Text = gMapControl1.Zoom.ToString();
             tb_msp_error.Text = mspProtocol.GetMspError().ToString();

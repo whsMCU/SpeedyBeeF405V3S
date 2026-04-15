@@ -98,5 +98,10 @@ const char * const debugModeNames[DEBUG_COUNT] = {
     "RX_EXPRESSLRS_SPI",
     "RX_EXPRESSLRS_PHASELOCK",
     "RX_STATE_TIME",
-    "FLOW_RAW"
+    "FLOW_RAW",
+    "FLOW",
+    "IMU",
+    "POS_EST",
+    "POS_HOLD",
+    "GPS_DATA"
 };

@@ -8,6 +8,8 @@
 #include "hw.h"
 #ifdef USE_GPS
 
+#include "build/debug.h"
+
 #include "drivers/gps/gps.h"
 #include "fc/runtime_config.h"
 #include "common/maths.h"
@@ -671,6 +673,14 @@ void gpsUpdate(uint32_t currentTimeUs)
       }
     }
   }
+  DEBUG_SET(DEBUG_GPS_DATA, 0, (GpsNav.GPS_coord[LAT]));
+  DEBUG_SET(DEBUG_GPS_DATA, 1, (GpsNav.GPS_coord[LON]));
+  DEBUG_SET(DEBUG_GPS_DATA, 2, (GpsNav.GPS_home[LAT]));
+  DEBUG_SET(DEBUG_GPS_DATA, 3, (GpsNav.GPS_home[LON]));
+  DEBUG_SET(DEBUG_GPS_DATA, 4, (GpsNav.GPS_distanceToHome));
+  DEBUG_SET(DEBUG_GPS_DATA, 5, (GpsNav.GPS_distanceToHomeCm));
+  DEBUG_SET(DEBUG_GPS_DATA, 6, (GpsNav.GPS_directionToHome));
+  DEBUG_SET(DEBUG_GPS_DATA, 7, (GpsNav.dTnav));
 }
 
 bool isGPSHeadingValid(void)
