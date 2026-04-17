@@ -190,7 +190,7 @@ nav_pvt_t pvt;
 static bool next_fix;
 
 uint32_t posllh_dt, posllh_tmp, sat_dt, sat_tmp, status_dt, status_tmp;
-#define GPS_FILTERING
+//#define GPS_FILTERING
 void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t length) {
     if (cls == 0x01 && id == 0x02) {  // NAV-POSLLH
         if (length < 28) return;
@@ -614,10 +614,15 @@ void gpsUpdate(uint32_t currentTimeUs)
 {
   if(STATE(GPS_FIX) && GpsNav.GPS_numSat >= 5)
   {
+    // Set sensor as ready and available
+    sensorsSet(SENSOR_GPS);
     if(!FLIGHT_MODE(NAV_RTH_MODE) && ARMING_FLAG(ARMED))    //if home is not set set home position to WP#0 and activate it
     {
       GPS_reset_home_position();
     }
+
+    // Pass on GPS update to NAV and IMU
+    //onNewGPSData();
 
     //dTnav calculation
     //Time for calculating x,y speed and navigation pids

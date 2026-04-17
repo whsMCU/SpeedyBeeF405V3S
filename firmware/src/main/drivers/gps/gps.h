@@ -201,6 +201,13 @@ typedef struct {
   uint16_t magAcc;      // Magnetic declination accuracy (1e-2 deg)
 } nav_pvt_t;
 
+/* LLH Location in NEU axis system */
+typedef struct gpsLocation_s {
+    int32_t lat;    // Latitude * 1e+7
+    int32_t lon;    // Longitude * 1e+7
+    int32_t alt;    // Altitude in centimeters (meters * 100)
+} gpsLocation_t;
+
 extern UbxNavPosllh_t posllh;
 extern UbxNavSat_t sat;
 

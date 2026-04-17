@@ -84,6 +84,8 @@
 //#define USE_MAX7456
 #define USE_MOTOR
 
+#define NAV_AUTO_MAG_DECLINATION_PRECISE
+
 #define USE_MAG
 #define USE_OPFLOW
 #define USE_OPFLOW_MSP

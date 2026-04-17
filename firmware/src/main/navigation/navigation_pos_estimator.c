@@ -81,6 +81,7 @@ void positionEstimationConfig_Init(void)
   positionEstimationConfig.w_z_res_v = 0.5;
   positionEstimationConfig.w_acc_bias = 0.01;
   positionEstimationConfig.baro_epv = 100;
+  positionEstimationConfig.automatic_mag_declination = 1;
 
   //ekf_init(&EKF_position);
 }
@@ -211,13 +212,13 @@ static bool updateTimer(navigationTimer_t * tim, timeUs_t interval, timeUs_t cur
 //    return isGlitching;
 //}
 //#endif
-//
-///**
-// * Update GPS topic
-// *  Function is called on each GPS update
-// */
-//void onNewGPSData(void)
-//{
+
+/**
+ * Update GPS topic
+ *  Function is called on each GPS update
+ */
+void onNewGPSData(void)
+{
 //    static timeUs_t lastGPSNewDataTime;
 //    static int32_t previousLat;
 //    static int32_t previousLon;
@@ -227,9 +228,9 @@ static bool updateTimer(navigationTimer_t * tim, timeUs_t interval, timeUs_t cur
 //    gpsLocation_t newLLH;
 //    const timeUs_t currentTimeUs = micros();
 //
-//    newLLH.lat = gpsSol.llh.lat;
-//    newLLH.lon = gpsSol.llh.lon;
-//    newLLH.alt = gpsSol.llh.alt;
+//    newLLH.lat = GpsNav.GPS_coord[LAT];
+//    newLLH.lon = GpsNav.GPS_coord[LON];
+//    newLLH.alt = GpsNav.altCm;
 //
 //    if (sensors(SENSOR_GPS)) {
 //        if (!STATE(GPS_FIX)) {
@@ -244,9 +245,9 @@ static bool updateTimer(navigationTimer_t * tim, timeUs_t interval, timeUs_t cur
 //        /* Automatic magnetic declination calculation - do this once */
 //        if(STATE(GPS_FIX_HOME)){
 //            static bool magDeclinationSet = false;
-//            if (positionEstimationConfig()->automatic_mag_declination && !magDeclinationSet) {
+//            if (positionEstimationConfig.automatic_mag_declination && !magDeclinationSet) {
 //                const float declination = geoCalculateMagDeclination(&newLLH);
-//                imuSetMagneticDeclination(declination);
+//                //imuSetMagneticDeclination(declination);
 //                magDeclinationSet = true;
 //            }
 //        }
@@ -325,7 +326,7 @@ static bool updateTimer(navigationTimer_t * tim, timeUs_t interval, timeUs_t cur
 //    else {
 //        posEstimator.gps.lastUpdateTime = 0;
 //    }
-//}
+}
 //#endif
 
 #if defined(USE_BARO)
