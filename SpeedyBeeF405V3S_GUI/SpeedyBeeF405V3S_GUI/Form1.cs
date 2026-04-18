@@ -593,7 +593,7 @@ namespace SpeedyBeeF405V3S_GUI
                         OpenClose.Text = "Close";
                         comboBox_port.Enabled = false;  //COM포트설정 콤보박스 비활성화
 
-                        AHRS_Timer = new System.Timers.Timer(50);
+                        AHRS_Timer = new System.Timers.Timer(25);
                         AHRS_Timer.Elapsed += OnTimedEvent;
                         AHRS_Timer.AutoReset = true;
                         AHRS_Timer.Enabled = true;
@@ -658,13 +658,14 @@ namespace SpeedyBeeF405V3S_GUI
 
         private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
-            stopwatch.Stop();
+            //stopwatch.Stop();
             delta_t = stopwatch.Elapsed.TotalMilliseconds;
+            stopwatch.Restart();
             this.BeginInvoke((MethodInvoker)delegate
             {
                 tb_msp_period.Text = $"{delta_t:F1} ms";
             });
-            stopwatch.Restart();
+
             byte[] buff = new byte[20];
             if(drone_status_flag == true)
             {
@@ -688,8 +689,7 @@ namespace SpeedyBeeF405V3S_GUI
                 }
                 catch { Console.WriteLine("Debug Requset Error"); }
             }
-
-            if (pid_recive_flag == true)
+            else if (pid_recive_flag == true)
             {
                 pid_recive_flag = false;
                 drone_status_flag = true;
@@ -700,7 +700,7 @@ namespace SpeedyBeeF405V3S_GUI
                 }
                 catch { Console.WriteLine("PID Data Requset Error"); }
             }
-            if (pid_save_flag == true)
+            else if (pid_save_flag == true)
             {
                 pid_save_flag = false;
                 drone_status_flag = true;
@@ -711,7 +711,7 @@ namespace SpeedyBeeF405V3S_GUI
                 }
                 catch { Console.WriteLine("PID Save Requset Error"); }
             }
-            if (pid_send_flag == true)
+            else if (pid_send_flag == true)
             {
                 pid_send_flag = false;
                 drone_status_flag = true;
@@ -944,8 +944,7 @@ namespace SpeedyBeeF405V3S_GUI
                     InitLogger(PID_log_filePath);
                 }
             }
-
-            if (acc_cal_flag == true)
+            else if (acc_cal_flag == true)
             {
                 
                 acc_cal_flag = false;
@@ -957,8 +956,7 @@ namespace SpeedyBeeF405V3S_GUI
                 }
                 catch { Console.WriteLine("ACC Calibration Requset Error"); }
             }
-
-            if (gyro_cal_flag == true)
+            else if (gyro_cal_flag == true)
             {
 
                 gyro_cal_flag = false;
@@ -970,8 +968,7 @@ namespace SpeedyBeeF405V3S_GUI
                 }
                 catch { Console.WriteLine("GYRO Calibration Requset Error"); }
             }
-
-            if (mag_cal_flag == true)
+            else if (mag_cal_flag == true)
             {
                 mag_cal_flag = false;
                 drone_status_flag = true;
