@@ -400,7 +400,7 @@ namespace SpeedyBeeF405V3S_GUI
                     $" {data[41]}, {data[42]}, {(double)data[8]/10000000}, {(double)data[9]/10000000}, {data[43]}, {data[44]}, {data[45]}, {data[46]}, {scaleRangef(data[14], 11000, 21000, 0, 100)}," +
                     $" {scaleRangef(data[15], 11000, 21000, 0, 100)}, {scaleRangef(data[16], 11000, 21000, 0, 100)}, {scaleRangef(data[17], 11000, 21000, 0, 100)}," +
                     $" {data[10]/100}, {data[47]/100}, {data[48]}, {data[38]}, {data[49]}, {data[60]}," +
-                    $" {data[18]}, {data[19]}, {data[20]}, {data[21]}, {data[50]}, {data[51]}, {data[52]}, {data[53]}";
+                    $" {(double)data[18]/10000000}, {(double)data[19]/10000000}, {(double)data[20]/10000000}, {(double)data[21]/10000000}, {data[50]}, {data[51]}, {data[52]}, {data[53]}";
                 writer.WriteLine(log);
                 Console.WriteLine(log); // 콘솔에도 출력
             }
@@ -593,7 +593,7 @@ namespace SpeedyBeeF405V3S_GUI
                         OpenClose.Text = "Close";
                         comboBox_port.Enabled = false;  //COM포트설정 콤보박스 비활성화
 
-                        AHRS_Timer = new System.Timers.Timer(25);
+                        AHRS_Timer = new System.Timers.Timer(50);
                         AHRS_Timer.Elapsed += OnTimedEvent;
                         AHRS_Timer.AutoReset = true;
                         AHRS_Timer.Enabled = true;
@@ -2656,23 +2656,46 @@ namespace SpeedyBeeF405V3S_GUI
             Gauge_LR.Value = (int)scaleRangef(passed_data[16], 11000, 21000, 0, 100);
             Gauge_LF.Value = (int)scaleRangef(passed_data[17], 11000, 21000, 0, 100);
 
-            lb_debug0.Text = passed_data[18].ToString();
-            lb_debug1.Text = passed_data[19].ToString();
-            lb_debug2.Text = passed_data[20].ToString();
-            lb_debug3.Text = passed_data[21].ToString();
-            lb_debug4.Text = passed_data[50].ToString();
-            lb_debug5.Text = passed_data[51].ToString();
-            lb_debug6.Text = passed_data[52].ToString();
-            lb_debug7.Text = passed_data[53].ToString();
+            if(debugValue == 76)
+            {
+                lb_debug0.Text = ((double)passed_data[18] / 10000000).ToString("F7");
+                lb_debug1.Text = ((double)passed_data[19] / 10000000).ToString("F7");
+                lb_debug2.Text = ((double)passed_data[20] / 10000000).ToString("F7");
+                lb_debug3.Text = ((double)passed_data[21] / 10000000).ToString("F7");
+                lb_debug4.Text = passed_data[50].ToString();
+                lb_debug5.Text = passed_data[51].ToString();
+                lb_debug6.Text = passed_data[52].ToString();
+                lb_debug7.Text = passed_data[53].ToString();
 
-            lb_debug0_1.Text = passed_data[18].ToString();
-            lb_debug1_1.Text = passed_data[19].ToString();
-            lb_debug2_1.Text = passed_data[20].ToString();
-            lb_debug3_1.Text = passed_data[21].ToString();
-            lb_debug4_1.Text = passed_data[50].ToString();
-            lb_debug5_1.Text = passed_data[51].ToString();
-            lb_debug6_1.Text = passed_data[52].ToString();
-            lb_debug7_1.Text = passed_data[53].ToString();
+                lb_debug0_1.Text = ((double)passed_data[18] / 10000000).ToString("F7");
+                lb_debug1_1.Text = ((double)passed_data[19] / 10000000).ToString("F7");
+                lb_debug2_1.Text = ((double)passed_data[20] / 10000000).ToString("F7");
+                lb_debug3_1.Text = ((double)passed_data[21] / 10000000).ToString("F7");
+                lb_debug4_1.Text = passed_data[50].ToString();
+                lb_debug5_1.Text = passed_data[51].ToString();
+                lb_debug6_1.Text = passed_data[52].ToString();
+                lb_debug7_1.Text = passed_data[53].ToString();
+            }
+            else
+            {
+                lb_debug0.Text = passed_data[18].ToString();
+                lb_debug1.Text = passed_data[19].ToString();
+                lb_debug2.Text = passed_data[20].ToString();
+                lb_debug3.Text = passed_data[21].ToString();
+                lb_debug4.Text = passed_data[50].ToString();
+                lb_debug5.Text = passed_data[51].ToString();
+                lb_debug6.Text = passed_data[52].ToString();
+                lb_debug7.Text = passed_data[53].ToString();
+
+                lb_debug0_1.Text = passed_data[18].ToString();
+                lb_debug1_1.Text = passed_data[19].ToString();
+                lb_debug2_1.Text = passed_data[20].ToString();
+                lb_debug3_1.Text = passed_data[21].ToString();
+                lb_debug4_1.Text = passed_data[50].ToString();
+                lb_debug5_1.Text = passed_data[51].ToString();
+                lb_debug6_1.Text = passed_data[52].ToString();
+                lb_debug7_1.Text = passed_data[53].ToString();
+            }
 
             lb_gyro_X.Text = passed_data[22].ToString("0.00");
             lb_gyro_Y.Text = passed_data[23].ToString("0.00");

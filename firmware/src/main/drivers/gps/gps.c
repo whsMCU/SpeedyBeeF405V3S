@@ -616,10 +616,10 @@ void gpsUpdate(uint32_t currentTimeUs)
   {
     // Set sensor as ready and available
     sensorsSet(SENSOR_GPS);
-    if(!FLIGHT_MODE(NAV_RTH_MODE) && ARMING_FLAG(ARMED))    //if home is not set set home position to WP#0 and activate it
-    {
-      GPS_reset_home_position();
-    }
+//    if(!FLIGHT_MODE(NAV_RTH_MODE) && ARMING_FLAG(ARMED))    //if home is not set set home position to WP#0 and activate it
+//    {
+//      GPS_reset_home_position();
+//    }
 
     // Pass on GPS update to NAV and IMU
     //onNewGPSData();
@@ -682,10 +682,10 @@ void gpsUpdate(uint32_t currentTimeUs)
   DEBUG_SET(DEBUG_GPS_DATA, 1, (GpsNav.GPS_coord[LON]));
   DEBUG_SET(DEBUG_GPS_DATA, 2, (GpsNav.GPS_home[LAT]));
   DEBUG_SET(DEBUG_GPS_DATA, 3, (GpsNav.GPS_home[LON]));
-  DEBUG_SET(DEBUG_GPS_DATA, 4, (GpsNav.GPS_distanceToHome));
-  DEBUG_SET(DEBUG_GPS_DATA, 5, (GpsNav.GPS_distanceToHomeCm));
-  DEBUG_SET(DEBUG_GPS_DATA, 6, (GpsNav.GPS_directionToHome));
-  DEBUG_SET(DEBUG_GPS_DATA, 7, (GpsNav.dTnav));
+  DEBUG_SET(DEBUG_GPS_DATA, 4, (GpsNav.GPS_distanceToHomeCm));
+  DEBUG_SET(DEBUG_GPS_DATA, 5, (GpsNav.GPS_directionToHome));
+  DEBUG_SET(DEBUG_GPS_DATA, 6, (GpsNav.actual_speed[GPS_X]));
+  DEBUG_SET(DEBUG_GPS_DATA, 7, (GpsNav.actual_speed[GPS_Y]));
 }
 
 bool isGPSHeadingValid(void)
