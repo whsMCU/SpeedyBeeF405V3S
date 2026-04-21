@@ -189,7 +189,7 @@ nav_pvt_t pvt;
 
 static bool next_fix;
 
-uint32_t posllh_dt, posllh_tmp, sat_dt, sat_tmp, status_dt, status_tmp;
+uint32_t posllh_dt, posllh_tmp, sat_dt, sat_tmp, status_dt, status_tmp, pvt_dt, pvt_tmp;
 //#define GPS_FILTERING
 void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t length) {
     if (cls == 0x01 && id == 0x02) {  // NAV-POSLLH
@@ -260,6 +260,9 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
         gpsSetFixState(next_fix);
     } else if (cls == 0x01 && id == 0x07) { // NAV-PVT
       if (length < 92) return;  // 최소 메시지 길이 확인
+
+      pvt_dt = micros() - pvt_tmp;
+      pvt_tmp = micros();
 
       pvt.iTOW = (payload[0]) | (payload[1]<<8) | (payload[2]<<16) | (payload[3]<<24);
       pvt.year = (uint16_t)(payload[4] | payload[5]<<8);
@@ -678,6 +681,7 @@ void gpsUpdate(uint32_t currentTimeUs)
       }
     }
   }
+
   DEBUG_SET(DEBUG_GPS_DATA, 0, (GpsNav.GPS_coord[LAT]));
   DEBUG_SET(DEBUG_GPS_DATA, 1, (GpsNav.GPS_coord[LON]));
   DEBUG_SET(DEBUG_GPS_DATA, 2, (GpsNav.GPS_home[LAT]));
