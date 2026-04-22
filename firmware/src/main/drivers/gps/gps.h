@@ -57,6 +57,10 @@ typedef enum {
 //#define GPS_FILTERING                        // add a 5 element moving average filter to GPS coordinates, helps eliminate gps noise but adds latency comment out to disable
 
 void gpsInit(void);
+
+uint16_t gpsConstrainEPE(uint32_t epe);
+uint16_t gpsConstrainHDOP(uint32_t hdop);
+
 void gpsUpdate(uint32_t currentTimeUs);
 
 #define GPS_FILTER_VECTOR_LENGTH 5
@@ -80,6 +84,22 @@ typedef struct PID_ {
 } GPS_PID_t;
 
 typedef struct {
+
+  struct {
+      bool hasNewData;
+      bool gpsHeartbeat;  // Toggle each update
+      bool validVelNE;
+      bool validVelD;
+      bool validMag;
+      bool validEPE;      // EPH/EPV values are valid - actual accuracy
+      bool validTime;
+  } flags;
+
+  uint16_t eph;   // horizontal accuracy (cm)
+  uint16_t epv;   // vertical accuracy (cm)
+
+  uint16_t hdop;  // generic HDOP value (*HDOP_SCALE)
+
   GpsNavFilter_t GPS_filter;
   uint8_t nav_mode;
   int32_t  GPS_coord[2];

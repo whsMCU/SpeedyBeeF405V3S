@@ -105,6 +105,44 @@ const unsigned char UBX_CFG_CFG[] = {
 	0xBF
 };
 
+GpsNav_t GpsNav;
+
+UbxNavPosllh_t posllh;
+UbxNavSat_t sat;
+UbxNavStatus_t nav_status;
+nav_pvt_t pvt;
+
+static bool next_fix;
+
+enum {
+    FIX_NONE = 0,
+    FIX_DEAD_RECKONING = 1,
+    FIX_2D = 2,
+    FIX_3D = 3,
+    FIX_GPS_DEAD_RECKONING = 4,
+    FIX_TIME = 5
+} ubx_nav_fix_type;
+
+enum {
+    NAV_STATUS_FIX_VALID = 1,
+    NAV_STATUS_TIME_WEEK_VALID = 4,
+    NAV_STATUS_TIME_SECOND_VALID = 8
+} ubx_nav_status_bit;
+
+static void gpsResetSolution(void)
+{
+    GpsNav.eph = 9999;
+    GpsNav.epv = 9999;
+    GpsNav.GPS_numSat = 0;
+    GpsNav.hdop = 9999;
+
+    GpsNav.flags.validVelNE = false;
+    GpsNav.flags.validVelD = false;
+    GpsNav.flags.validMag = false;
+    GpsNav.flags.validEPE = false;
+    GpsNav.flags.validTime = false;
+}
+
 void gpsInit(void)
 {
 	uartOpen(_DEF_UART1, 9600);
@@ -123,6 +161,8 @@ void gpsInit(void)
 	HAL_Delay(100);
 	uartWrite(_DEF_UART1, (uint8_t*)&UBX_CFG_CFG[0], sizeof(UBX_CFG_CFG));
 
+  // Reset solution, timeout and prepare to start
+  gpsResetSolution();
 	GpsNav.nav_mode = NAV_MODE_NONE;
 	GpsNav.GPS_wp_radius = GPS_WP_RADIUS;
 	gps_set_home_point_once = false;
@@ -165,30 +205,6 @@ static void GPS_Filter(int32_t *GPS_coord)
   }
 }
 
-enum {
-    FIX_NONE = 0,
-    FIX_DEAD_RECKONING = 1,
-    FIX_2D = 2,
-    FIX_3D = 3,
-    FIX_GPS_DEAD_RECKONING = 4,
-    FIX_TIME = 5
-} ubx_nav_fix_type;
-
-enum {
-    NAV_STATUS_FIX_VALID = 1,
-    NAV_STATUS_TIME_WEEK_VALID = 4,
-    NAV_STATUS_TIME_SECOND_VALID = 8
-} ubx_nav_status_bit;
-
-GpsNav_t GpsNav;
-
-UbxNavPosllh_t posllh;
-UbxNavSat_t sat;
-UbxNavStatus_t nav_status;
-nav_pvt_t pvt;
-
-static bool next_fix;
-
 uint32_t posllh_dt, posllh_tmp, sat_dt, sat_tmp, status_dt, status_tmp, pvt_dt, pvt_tmp;
 //#define GPS_FILTERING
 void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t length) {
@@ -212,6 +228,11 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
         GpsNav.GPS_coord[LON] = posllh.lon;
         GpsNav.GPS_coord[LAT] = posllh.lat;
         GpsNav.altCm = posllh.height / 10;
+
+        GpsNav.eph = gpsConstrainEPE(posllh.hAcc / 10);
+        GpsNav.epv = gpsConstrainEPE(posllh.vAcc / 10);
+
+        GpsNav.flags.validEPE = true;
         #if defined(GPS_FILTERING)
           GPS_Filter(GpsNav.GPS_coord);
         #endif
@@ -282,6 +303,9 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
       pvt.hMSL = (int32_t)(payload[36] | (payload[37]<<8) | (payload[38]<<16) | (payload[39]<<24));
       pvt.hAcc = (uint32_t)(payload[40] | (payload[41]<<8) | (payload[42]<<16) | (payload[43]<<24));
       pvt.vAcc = (uint32_t)(payload[44] | (payload[45]<<8) | (payload[46]<<16) | (payload[47]<<24));
+      pvt.velN = (int32_t)(payload[48] | (payload[49]<<8) | (payload[50]<<16) | (payload[51]<<24));
+      pvt.velE = (int32_t)(payload[52] | (payload[53]<<8) | (payload[54]<<16) | (payload[55]<<24));
+      pvt.velD = (int32_t)(payload[56] | (payload[57]<<8) | (payload[58]<<16) | (payload[59]<<24));
       pvt.gSpeed = (int32_t)(payload[60] | (payload[61]<<8) | (payload[62]<<16) | (payload[63]<<24));
       pvt.headMot = (int32_t)(payload[64] | (payload[65]<<8) | (payload[66]<<16) | (payload[67]<<24));
       pvt.pDOP = (uint16_t)(payload[76] | (payload[77]<<8));
@@ -289,6 +313,12 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
     }
     GpsNav.GPS_numSat = pvt.numSV;
     GpsNav.GPS_headVeh = pvt.headVeh;
+    GpsNav.eph = gpsConstrainEPE(pvt.hAcc / 10);
+    GpsNav.epv = gpsConstrainEPE(pvt.vAcc / 10);
+    GpsNav.hdop = gpsConstrainHDOP(pvt.pDOP);
+    GpsNav.flags.validVelNE = true;
+    GpsNav.flags.validVelD = true;
+    GpsNav.flags.validEPE = true;
     GpsNav.groundSpeed = pvt.gSpeed / 10; // cm/s
     GpsNav.groundCourse = (uint16_t) (pvt.headMot / 10000); // Heading 2D deg * 100000 rescaled to deg * 10
 
@@ -611,6 +641,16 @@ void GPS_calculateDistanceAndDirectionToHome(void)
       GpsNav.GPS_distanceToHomeCm = 0;
       GpsNav.GPS_directionToHome = 0;
     }
+}
+
+uint16_t gpsConstrainEPE(uint32_t epe)
+{
+    return (epe > 9999) ? 9999 : epe; // max 99.99m error
+}
+
+uint16_t gpsConstrainHDOP(uint32_t hdop)
+{
+    return (hdop > 9999) ? 9999 : hdop; // max 99.99m error
 }
 
 void gpsUpdate(uint32_t currentTimeUs)
