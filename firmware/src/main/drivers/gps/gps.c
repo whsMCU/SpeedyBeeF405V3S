@@ -344,8 +344,32 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
 //
 float GPS_scaleLonDown = 1.0f;  // this is used to offset the shrinking longitude as we go towards the poles
 void GPS_calc_longitude_scaling(int32_t lat) {
-  float rads = (fabsf((float)lat) / 10000000.0f) * 0.0174532925f;
-  GPS_scaleLonDown = cos_approx(rads);
+  GPS_scaleLonDown = cos_approx(DEGREES_TO_RADIANS((float)lat / GPS_DEGREES_DIVIDER));
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+// Calculate the distance flown from gps position data
+//
+static void GPS_calculateDistanceFlown(bool initialize)
+{
+    static gpsLocation_t lastLLH = {0};
+
+    if (initialize) {
+        GpsNav.GPS_distanceFlownInCm = 0;
+    } else if (STATE(GPS_FIX_HOME) && ARMING_FLAG(ARMED)) {
+        uint16_t speed = GpsNav.groundSpeed;
+        // Only add up movement when speed is faster than minimum threshold
+        if (speed > GPS_DISTANCE_FLOWN_MIN_SPEED_THRESHOLD_CM_S) {
+            uint32_t dist;
+            int32_t dir;
+
+            GPS_distance_cm_bearing(&GpsNav.GPS_coord[LAT],&GpsNav.GPS_coord[LON],&lastLLH.lat,&lastLLH.lon,&dist,&dir);
+            GpsNav.GPS_distanceFlownInCm += dist;
+        }
+    }
+    lastLLH.lat = GpsNav.GPS_coord[LAT];
+    lastLLH.lon = GpsNav.GPS_coord[LON];
+
 }
 
 //*******************************************************************************************************
@@ -419,20 +443,21 @@ void GPS_set_next_wp(int32_t* lat, int32_t* lon) {
   GpsNav.waypoint_speed_gov = NAV_SPEED_MIN;
 }
 
-////////////////////////////////////////////////////////////////////////////////////
-#define DISTANCE_BETWEEN_TWO_LONGITUDE_POINTS_AT_EQUATOR_IN_HUNDREDS_OF_KILOMETERS 1.113195f
-#define TAN_89_99_DEGREES 5729.57795f
 // Get distance between two points in cm
 // Get bearing from pos1 to pos2, returns an 1deg = 100 precision
 void GPS_distance_cm_bearing(int32_t *currentLat1, int32_t *currentLon1, int32_t *destinationLat2, int32_t *destinationLon2, uint32_t *dist, int32_t *bearing)
 {
-    float dLat = *destinationLat2 - *currentLat1; // difference of latitude in 1/10 000 000 degrees
-    float dLon = (float)(*destinationLon2 - *currentLon1) * GPS_scaleLonDown;
-    *dist = sqrtf(sq(dLat) + sq(dLon)) * DISTANCE_BETWEEN_TWO_LONGITUDE_POINTS_AT_EQUATOR_IN_HUNDREDS_OF_KILOMETERS;
+    float dLat = (*destinationLat2 - *currentLat1) * EARTH_ANGLE_TO_CM; // difference of latitude in 1/10 000 000 degrees
+    float dLon = (float)(*destinationLon2 - *currentLon1) * GPS_scaleLonDown * EARTH_ANGLE_TO_CM;
+    float dAlt = 0;
 
-    *bearing = 9000.0f + atan2_approx(-dLat, dLon) * TAN_89_99_DEGREES;      // Convert the output radians to 100xdeg
-    if (*bearing < 0)
-        *bearing += 36000;
+    *dist = sqrtf(sq(dLat) + sq(dLon) + sq(dAlt));
+
+    int32_t bearing_temp = 9000.0f - RADIANS_TO_DEGREES(atan2_approx(dLat, dLon)) * 100.0f;      // Convert the output to 100xdeg / adjust to clockwise from North
+    if (bearing_temp < 0)
+        bearing_temp += 36000;
+
+    *bearing = bearing_temp;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -481,7 +506,7 @@ void GPS_reset_home_position(void) {
     //Set ground altitude
     ENABLE_STATE(GPS_FIX_HOME);
   }
-  //GPS_calculateDistanceFlownVerticalSpeed(true); //Initialize
+  GPS_calculateDistanceFlown(true); // Initialize
 }
 
 void gpsSetFixState(bool state)
@@ -677,9 +702,9 @@ void gpsUpdate(uint32_t currentTimeUs)
 
     GPS_calculateDistanceAndDirectionToHome();
 
-  //  if (ARMING_FLAG(ARMED)) {
-  //      GPS_calculateDistanceFlownVerticalSpeed(false);
-  //  }
+    if (ARMING_FLAG(ARMED)) {
+      GPS_calculateDistanceFlown(false);
+    }
 
     //calculate the current velocity based on gps coordinates continously to get a valid speed at the moment when we start navigating
     GPS_calc_velocity();
@@ -729,7 +754,7 @@ void gpsUpdate(uint32_t currentTimeUs)
   DEBUG_SET(DEBUG_GPS_DATA, 4, (GpsNav.GPS_distanceToHomeCm));
   DEBUG_SET(DEBUG_GPS_DATA, 5, (GpsNav.GPS_directionToHome));
   DEBUG_SET(DEBUG_GPS_DATA, 6, (GpsNav.actual_speed[GPS_X]));
-  DEBUG_SET(DEBUG_GPS_DATA, 7, (GpsNav.actual_speed[GPS_Y]));
+  DEBUG_SET(DEBUG_GPS_DATA, 7, (GpsNav.GPS_distanceFlownInCm));
 }
 
 bool isGPSHeadingValid(void)
