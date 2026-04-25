@@ -83,6 +83,13 @@ typedef struct PID_ {
   float   derivative;
 } GPS_PID_t;
 
+/* Only available on U-blox protocol */
+typedef struct gpsVelned_s {
+    int16_t velN; // north velocity, cm/s
+    int16_t velE; // east velocity, cm/s
+    int16_t velD; // down velocity, cm/s
+} gpsVelned_t;
+
 typedef struct {
 
   struct {
@@ -99,6 +106,8 @@ typedef struct {
   uint16_t epv;   // vertical accuracy (cm)
 
   uint16_t hdop;  // generic HDOP value (*HDOP_SCALE)
+
+  gpsVelned_t velned;
 
   GpsNavFilter_t GPS_filter;
   uint8_t nav_mode;
@@ -138,6 +147,8 @@ typedef struct {
   GPS_PID_t posholdPID[2];
   GPS_PID_t poshold_ratePID[2];
   GPS_PID_t navPID[2];
+
+  bool ubxHaveNewPositionAndNewSpeed;
 
 } GpsNav_t;
 
