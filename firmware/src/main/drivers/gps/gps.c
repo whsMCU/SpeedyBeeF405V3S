@@ -420,7 +420,6 @@ static void GPS_calc_velocity(){
 
 }
 
-////////////////////////////////////////////////////////////////////////////////////
 // Calculate a location error between two gps coordinates
 // Because we are using lat and lon to do our distance errors here's a quick chart:
 //   100  = 1m

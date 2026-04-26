@@ -123,7 +123,7 @@ void hwInit(void)
 
 void initialiseMemorySections(void)
 {
-#ifdef USE_FAST_DATA
+  #ifdef USE_FAST_DATA
     /* Load FAST_DATA variable initializers into DTCM RAM */
     extern uint8_t _sfastram_data;
     extern uint8_t _efastram_data;
@@ -135,7 +135,7 @@ void initialiseMemorySections(void)
     uint32_t *p = &__fastram_bss_start__;
     while (p < &__fastram_bss_end__)
         *p++ = 0;
-#endif
+  #endif
 }
 
 void SystemClock_Config(void)
