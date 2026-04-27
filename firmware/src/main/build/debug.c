@@ -103,5 +103,8 @@ const char * const debugModeNames[DEBUG_COUNT] = {
     "IMU",
     "POS_EST",
     "POS_HOLD",
-    "GPS_DATA"
+    "GPS_DATA",
+    "GPS_RESCUE_HEADING"
+    "GPS_RESCUE_TRACKING"
+    "GPS_RESCUE_VELOCITY"
 };

@@ -114,6 +114,10 @@ nav_pvt_t pvt;
 
 static bool next_fix;
 
+static float gpsDataIntervalSeconds = 0.1f;
+static float gpsDataFrequencyHz = 10.0f;
+static uint16_t currentGpsStamp = 0; // logical timer for received position update
+
 enum {
     FIX_NONE = 0,
     FIX_DEAD_RECKONING = 1,
@@ -208,6 +212,16 @@ static void GPS_Filter(int32_t *GPS_coord)
   }
 }
 
+static void calculateNavInterval(void)
+{
+    // calculate the interval between nav packets, handling iTow wraparound at the end of the week
+    const uint32_t weekDurationMs = 7 * 24 * 3600 * 1000;
+    const uint32_t navDeltaTimeMs = (weekDurationMs + GpsNav.time - GpsNav.lastNavSolTs) % weekDurationMs;
+    GpsNav.lastNavSolTs = GpsNav.time;
+    // constrain the interval between 50ms / 20hz or 2.5s, when we would get a connection failure anyway
+    GpsNav.navIntervalMs = constrain(navDeltaTimeMs, 50, 2500);
+}
+
 uint32_t posllh_dt, posllh_tmp, sat_dt, sat_tmp, status_dt, status_tmp, pvt_dt, pvt_tmp;
 //#define GPS_FILTERING
 void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t length) {
@@ -231,6 +245,9 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
         GpsNav.GPS_coord[LON] = posllh.lon;
         GpsNav.GPS_coord[LAT] = posllh.lat;
         GpsNav.altCm = posllh.height / 10;
+
+        GpsNav.time = posllh.iTOW;
+        calculateNavInterval();
 
         GpsNav.eph = gpsConstrainEPE(posllh.hAcc / 10);
         GpsNav.epv = gpsConstrainEPE(posllh.vAcc / 10);
@@ -314,6 +331,8 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
       pvt.pDOP = (uint16_t)(payload[76] | (payload[77]<<8));
       pvt.headVeh = (int32_t)(payload[84] | (payload[85]<<8) | (payload[86]<<16) | (payload[87]<<24));
     }
+    GpsNav.time = pvt.iTOW;
+    calculateNavInterval();
     GpsNav.GPS_numSat = pvt.numSV;
     GpsNav.GPS_headVeh = pvt.headVeh;
     GpsNav.eph = gpsConstrainEPE(pvt.hAcc / 10);
@@ -694,6 +713,11 @@ void gpsUpdate(uint32_t currentTimeUs)
       // Set sensor as ready and available
       sensorsSet(SENSOR_GPS);
 
+      currentGpsStamp++; // new GPS data available
+
+      gpsDataIntervalSeconds = GpsNav.navIntervalMs * 0.001f; // range for navIntervalMs is constrained to 50 - 2500
+      gpsDataFrequencyHz = 1.0f / gpsDataIntervalSeconds;
+
       //dTnav calculation
       //Time for calculating x,y speed and navigation pids
       static uint32_t nav_loopTimer;
@@ -763,6 +787,28 @@ void gpsUpdate(uint32_t currentTimeUs)
 bool isGPSHeadingValid(void)
 {
     return sensors(SENSOR_GPS) && STATE(GPS_FIX) && GpsNav.GPS_numSat >= 6;// && gpsSol.groundSpeed >= 300;
+}
+
+// check if new data has been received since last check
+// if client stamp is initialized to 0, gpsHasNewData will return false until first GPS position update
+// if client stamp is initialized to ~0, gpsHasNewData will return true on first call
+bool gpsHasNewData(uint16_t* stamp) {
+    if (*stamp != currentGpsStamp) {
+        *stamp = currentGpsStamp;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+float getGpsDataIntervalSeconds(void)
+{
+    return gpsDataIntervalSeconds;
+}
+
+float getGpsDataFrequencyHz(void)
+{
+    return gpsDataFrequencyHz;
 }
 
 #endif

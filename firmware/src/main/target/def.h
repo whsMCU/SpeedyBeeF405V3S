@@ -117,6 +117,8 @@
 
 #define USE_BOARD_INFO
 
+#define USE_GPS_RESCUE
+
 #define NOINLINE __attribute__((noinline))
 
 #ifdef USE_FAST_DATA

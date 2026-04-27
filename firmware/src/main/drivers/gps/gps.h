@@ -23,6 +23,7 @@ typedef enum {
 #define EARTH_ANGLE_TO_CM (111.3195f * 1000 * 100 / GPS_DEGREES_DIVIDER) // 1.113195 cm per latitude unit at the equator (111.3195km/deg)
 #define GPS_X 1
 #define GPS_Y 0
+#define GPS_MIN_SAT_COUNT 4     // number of sats to trigger low sat count sanity check
 
 #define GPS_LAG 0.5f                          //UBLOX GPS has a smaller lag than MTK and other
 
@@ -108,6 +109,11 @@ typedef struct {
   uint16_t hdop;  // generic HDOP value (*HDOP_SCALE)
 
   gpsVelned_t velned;
+
+  uint32_t time;
+
+  uint32_t lastNavSolTs;          // time stamp of last UBCX message.  Used to calculate message delta
+  uint32_t navIntervalMs;         // interval between nav solutions in ms
 
   GpsNavFilter_t GPS_filter;
   uint8_t nav_mode;
@@ -257,6 +263,10 @@ int32_t wrap_18000(int32_t ang);
 void GPS_reset_nav(void);
 
 bool isGPSHeadingValid(void);
+
+bool gpsHasNewData(uint16_t *stamp);
+float getGpsDataIntervalSeconds(void);  // range 0.05 - 2.5s
+float getGpsDataFrequencyHz(void);      // range 20Hz - 0.4Hz
 
 #ifdef __cplusplus
 }
