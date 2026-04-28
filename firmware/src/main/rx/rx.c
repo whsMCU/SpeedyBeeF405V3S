@@ -41,7 +41,7 @@
 
 #include "fc/rc_controls.h"
 #include "fc/rc_adjustments.h"
-//#include "fc/rc_modes.h"
+#include "fc/rc_modes.h"
 #include "fc/stats.h"
 #include "fc/rc.h"
 #include "fc/runtime_config.h"
@@ -775,6 +775,16 @@ void processRxModes(uint32_t currentTimeUs)
               headFreeModeHold = DECIDEGREES_TO_DEGREES(attitude.values.yaw); // acquire new heading
           }
       }
+  #endif
+
+  #ifdef USE_GPS_RESCUE
+    if (ARMING_FLAG(ARMED) && (IS_RC_MODE_ACTIVE(BOXGPSRESCUE))) { // || (failsafeIsActive() && failsafeConfig()->failsafe_procedure == FAILSAFE_PROCEDURE_GPS_RESCUE
+        if (!FLIGHT_MODE(GPS_RESCUE_MODE)) {
+            ENABLE_FLIGHT_MODE(GPS_RESCUE_MODE);
+        }
+    } else {
+        DISABLE_FLIGHT_MODE(GPS_RESCUE_MODE);
+    }
   #endif
 
   if (!ARMING_FLAG(ARMED))

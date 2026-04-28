@@ -44,6 +44,7 @@
 #include "drivers/motor.h"
 
 #include "flight/pid.h"
+#include "flight/gps_rescue_multirotor.h"
 
 #include "io/ledstrip.h"
 
@@ -149,6 +150,17 @@ FAST_CODE void taskFiltering(timeUs_t currentTimeUs)
 
 }
 
+#ifdef USE_GPS_RESCUE
+static void taskGpsRescue(timeUs_t currentTimeUs)
+{
+    UNUSED(currentTimeUs);
+
+    //if (gpsRescueIsConfigured()) {
+        gpsRescueUpdate();
+    //}
+}
+#endif
+
 #ifdef USE_TELEMETRY
 
 #define GYRO_TEMP_READ_DELAY_US 3e6    // Only read the gyro temp every 3 seconds
@@ -223,6 +235,10 @@ task_attribute_t task_attributes[TASK_COUNT] = {
 
 #ifdef USE_GPS
     [TASK_GPS] = DEFINE_TASK("GPS", gpsUpdate, TASK_PERIOD_HZ(TASK_GPS_RATE), TASK_PRIORITY_MEDIUM), // Required to prevent buffer overruns if running at 115200 baud (115 bytes / period < 256 bytes buffer)
+#endif
+
+#ifdef USE_GPS_RESCUE
+    [TASK_GPS_RESCUE] = DEFINE_TASK("GPS_RESCUE", taskGpsRescue, TASK_PERIOD_HZ(TASK_GPS_RESCUE_RATE_HZ), TASK_PRIORITY_MEDIUM),
 #endif
 
 #ifdef USE_MAG
@@ -332,6 +348,10 @@ void tasksInit(void)
 
 #ifdef USE_GPS
     setTaskEnabled(TASK_GPS, true);
+#endif
+
+#ifdef USE_GPS_RESCUE
+    setTaskEnabled(TASK_GPS_RESCUE, true);
 #endif
 
 #ifdef USE_MAG

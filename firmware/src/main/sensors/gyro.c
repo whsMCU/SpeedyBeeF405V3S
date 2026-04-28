@@ -30,6 +30,7 @@
 #include "common/maths.h"
 #include "common/filter.h"
 #include "common/sensor_alignment.h"
+#include "common/vector.h"
 
 //#include "config/feature.h"
 //#include "config/config.h"
@@ -499,6 +500,12 @@ void taskAccUpdate(timeUs_t currentTimeUs)
   DEBUG_SET(DEBUG_ACCELEROMETER, 5, (bmi270.accADC[Y]));
   DEBUG_SET(DEBUG_ACCELEROMETER, 6, (bmi270.accADC[Z]));
 
+  vector3_t accADC;
+  accADC.x = bmi270.accADC[X];
+  accADC.y = bmi270.accADC[Y];
+  accADC.z = bmi270.accADC[Z];
+
+  bmi270.accMagnitude = vector3Norm(&accADC) * bmi270.acc_1G_rec;
 
   // Calculate acceleration readings in G's
   for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {

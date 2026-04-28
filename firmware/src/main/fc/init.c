@@ -109,6 +109,7 @@
 #include "telemetry/telemetry.h"
 
 #include "flight/pid.h"
+#include "flight/gps_rescue_multirotor.h"
 
 //#include "drivers/gps/gps.h"
 #include "drivers/motor.h"
@@ -266,6 +267,13 @@ void init(void)
     // Telemetry will initialise displayport and register with CMS by itself.
     telemetryInit();
 #endif
+
+#ifdef USE_GPS_RESCUE
+    if (feature(FEATURE_GPS)) {
+        gpsRescueInit();
+    }
+#endif
+
     tasksInit();
 
     MSP_SET_MODE_RANGE(0,  0, 0, 1700, 2100); // SE : ARM

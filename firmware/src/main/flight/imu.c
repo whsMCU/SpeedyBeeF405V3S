@@ -28,6 +28,7 @@
 #include "build/debug.h"
 
 #include "common/quaternion.h"
+#include "common/vector.h"
 #include "drivers/gps/gps.h"
 
 #include "fc/runtime_config.h"

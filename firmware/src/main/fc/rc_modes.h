@@ -78,6 +78,7 @@ typedef enum {
   BOXUSER3         = 48,
   BOXUSER4         = 49,
   BOXCHANGEMISSION = 50,
+  BOXGPSRESCUE = 51,
   CHECKBOX_ITEM_COUNT
 } boxId_e;
 

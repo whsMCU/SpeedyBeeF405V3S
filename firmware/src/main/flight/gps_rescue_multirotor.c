@@ -51,6 +51,9 @@
 //#include "pg/autopilot.h"
 //#include "sensors/acceleration.h"
 #include "sensors/sensors.h"
+#include "sensors/gyro.h"
+
+#include "navigation/navigation_private.h"
 
 typedef enum {
     RESCUE_IDLE,
@@ -236,7 +239,8 @@ static void rescueAttainPosition(bool newGpsData)
         // Initialize internal variables each time GPS Rescue is started
         previousVelocityError = 0.0f;
         velocityI = 0.0f;
-        resetAltitudeControl();
+        resetMulticopterAltitudeController();
+        //resetAltitudeController();
         rescueState.intent.disarmThreshold = gpsRescueConfig.disarmThreshold * 0.1f;
         rescueState.sensor.imuYawCogGain = 1.0f;
         return;
@@ -252,7 +256,7 @@ static void rescueAttainPosition(bool newGpsData)
     /**
         Altitude (throttle) controller
     */
-    altitudeControl(rescueState.intent.targetAltitudeCm, taskIntervalSeconds, rescueState.intent.targetAltitudeStepCm);
+    //altitudeControl(rescueState.intent.targetAltitudeCm, taskIntervalSeconds, rescueState.intent.targetAltitudeStepCm);
 
     /**
         Heading / yaw controller
@@ -412,11 +416,11 @@ static void performSanityChecks(void)
     }
 
     // Crash detection is enabled in all rescues.  If triggered, immediately disarm.
-    if (crashRecoveryModeActive()) {
-        setArmingDisabled(ARMING_DISABLED_ARM_SWITCH);
-        disarm(DISARM_REASON_CRASH_PROTECTION);
-        rescueStop();
-    }
+//    if (crashRecoveryModeActive()) {
+//        setArmingDisabled(ARMING_DISABLED_ARM_SWITCH);
+//        disarm(DISARM_REASON_CRASH_PROTECTION);
+//        rescueStop();
+//    }
 
     // Check if GPS comms are healthy
     // ToDo - check if we have an altitude reading; if we have Baro, we can use Landing mode for controlled descent without GPS
@@ -649,9 +653,10 @@ static bool checkGPSRescueIsAvailable(void)
 
 static void disarmOnImpact(void)
 {
-    if (acc.accMagnitude > rescueState.intent.disarmThreshold) {
+    if (bmi270.accMagnitude > rescueState.intent.disarmThreshold) {
         setArmingDisabled(ARMING_DISABLED_ARM_SWITCH);
-        disarm(DISARM_REASON_GPS_RESCUE);
+        DISABLE_ARMING_FLAG(ARMED);
+        //disarm(DISARM_REASON_GPS_RESCUE);
         rescueStop();
     }
 }
@@ -868,7 +873,8 @@ void gpsRescueUpdate(void)
 
     case RESCUE_ABORT:
         setArmingDisabled(ARMING_DISABLED_ARM_SWITCH);
-        disarm(DISARM_REASON_FAILSAFE);
+        DISABLE_ARMING_FLAG(ARMED);
+        //disarm(DISARM_REASON_FAILSAFE);
         rescueState.intent.secondsFailing = 0; // reset sanity timers so we can re-arm
         rescueStop();
         break;
@@ -900,7 +906,7 @@ float gpsRescueGetImuYawCogGain(void)
 
 bool gpsRescueIsConfigured(void)
 {
-    return failsafeConfig()->failsafe_procedure == FAILSAFE_PROCEDURE_GPS_RESCUE || isModeActivationConditionPresent(BOXGPSRESCUE);
+    //return failsafeConfig()->failsafe_procedure == FAILSAFE_PROCEDURE_GPS_RESCUE || isModeActivationConditionPresent(BOXGPSRESCUE);
 }
 
 bool gpsRescueIsAvailable(void)
