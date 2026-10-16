@@ -111,11 +111,11 @@ void geoSetOrigin(gpsOrigin_t *origin, const gpsLocation_t *llh, geoOriginResetM
         origin->valid = true;
         origin->lat = llh->lat;
         origin->lon = llh->lon;
-        origin->alt = llh->alt;
+        origin->alt = llh->altCm;
         origin->scale = constrainf(cos_approx((ABS(origin->lat) / 10000000.0f) * 0.0174532925f), 0.01f, 1.0f);
     }
     else if (origin->valid && (resetMode == GEO_ORIGIN_RESET_ALTITUDE)) {
-        origin->alt = llh->alt;
+        origin->alt = llh->altCm;
     }
 }
 
@@ -127,9 +127,9 @@ bool geoConvertGeodeticToLocal(fpVector3_t *pos, const gpsOrigin_t *origin, cons
 
         // If flag GEO_ALT_RELATIVE, than llh altitude is already relative to origin
         if (altConv == GEO_ALT_RELATIVE) {
-            pos->z = llh->alt;
+            pos->z = llh->altCm;
         } else {
-            pos->z = llh->alt - origin->alt;
+            pos->z = llh->altCm - origin->alt;
         }
         return true;
     }
@@ -152,18 +152,18 @@ bool geoConvertLocalToGeodetic(gpsLocation_t *llh, const gpsOrigin_t * origin, c
     if (origin->valid) {
         llh->lat = origin->lat;
         llh->lon = origin->lon;
-        llh->alt = origin->alt;
+        llh->altCm = origin->alt;
         scaleLonDown = origin->scale;
     }
     else {
         llh->lat = 0;
         llh->lon = 0;
-        llh->alt = 0;
+        llh->altCm = 0;
         scaleLonDown = 1.0f;
     }
 
     llh->lat += lrintf(pos->x / DISTANCE_BETWEEN_TWO_LONGITUDE_POINTS_AT_EQUATOR);
     llh->lon += lrintf(pos->y / (DISTANCE_BETWEEN_TWO_LONGITUDE_POINTS_AT_EQUATOR * scaleLonDown));
-    llh->alt += lrintf(pos->z);
+    llh->altCm += lrintf(pos->z);
     return origin->valid;
 }

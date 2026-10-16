@@ -99,7 +99,7 @@ static bool opflowDetect(opflowDev_t * dev, uint8_t opflowHardwareToUse)
     }
 
     detectedSensors[SENSOR_INDEX_OPFLOW] = opflowHardware;
-    sensorsSet(SENSOR_OPFLOW);
+    sensorsSet(SENSOR_OPTICALFLOW);
     return true;
 }
 
@@ -117,7 +117,7 @@ bool opflowInit(void)
     }
 
     if (!opflow.dev.initFn(&opflow.dev)) {
-        sensorsClear(SENSOR_OPFLOW);
+        sensorsClear(SENSOR_OPTICALFLOW);
         return false;
     }
 

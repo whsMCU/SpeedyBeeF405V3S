@@ -276,7 +276,7 @@ FAST_CODE void gyroUpdate(timeUs_t currentTimeUs)
   // To make busy-waiting timeout work we need to account for time spent within busy-waiting loop
   const timeDelta_t currentDeltaTime = getTaskDeltaTimeUs(TASK_SELF);
 
-    if (sensors(SENSOR_OPFLOW)) {
+    if (sensors(SENSOR_OPTICALFLOW)) {
         opflowGyroUpdateCallback(currentDeltaTime);
     }
 #endif

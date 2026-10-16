@@ -8,6 +8,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
+#include "common/vector.h"
+
 typedef enum {
   LON,
   LAT
@@ -84,13 +86,6 @@ typedef struct PID_ {
   float   derivative;
 } GPS_PID_t;
 
-/* Only available on U-blox protocol */
-typedef struct gpsVelned_s {
-    int16_t velN; // north velocity, cm/s
-    int16_t velE; // east velocity, cm/s
-    int16_t velD; // down velocity, cm/s
-} gpsVelned_t;
-
 typedef struct {
 
   struct {
@@ -103,12 +98,12 @@ typedef struct {
       bool validTime;
   } flags;
 
+  bool gps_set_home_point_once;
+
   uint16_t eph;   // horizontal accuracy (cm)
   uint16_t epv;   // vertical accuracy (cm)
 
   uint16_t hdop;  // generic HDOP value (*HDOP_SCALE)
-
-  gpsVelned_t velned;
 
   uint32_t time;
 
@@ -181,6 +176,7 @@ typedef struct {
     uint8_t elev;      // 위성 고도 (deg)
     int16_t azim;      // 위성 방위각 (deg)
     int16_t prRes;     // 위성 의사거리 잔차 (cm)
+    uint32_t flags;     // 위성 상태 및 사용여부
 } UbxNavSat_SV_t;
 
 #define MAX_SATS 16
@@ -238,12 +234,104 @@ typedef struct {
   uint16_t magAcc;      // Magnetic declination accuracy (1e-2 deg)
 } nav_pvt_t;
 
+typedef struct gpsCoordinateDDDMMmmmm_s {
+    int16_t dddmm;
+    int16_t mmmm;
+} gpsCoordinateDDDMMmmmm_t;
+
 /* LLH Location in NEU axis system */
-typedef struct gpsLocation_s {
-    int32_t lat;    // Latitude * 1e+7
-    int32_t lon;    // Longitude * 1e+7
-    int32_t alt;    // Altitude in centimeters (meters * 100)
+typedef union gpsLocation_u {
+    struct {
+        int32_t lat;                // latitude * 1e+7
+        int32_t lon;                // longitude * 1e+7
+        int32_t altCm;              // altitude in 0.01m
+    };
+    int32_t coords[3];              // added to provide direct access within loops
 } gpsLocation_t;
+
+/* A value below 100 means great accuracy is possible with GPS satellite constellation */
+typedef struct gpsDilution_s {
+    uint16_t pdop;                  // positional DOP - 3D (* 100)
+    uint16_t hdop;                  // horizontal DOP - 2D (* 100)
+    uint16_t vdop;                  // vertical DOP   - 1D (* 100)
+} gpsDilution_t;
+
+/* Only available on U-blox protocol */
+typedef struct gpsAccuracy_s {
+    uint32_t hAcc;                  // horizontal accuracy in mm
+    uint32_t vAcc;                  // vertical accuracy in mm
+    uint32_t sAcc;                  // speed accuracy in mm/s
+    uint32_t headAcc;               // heading accuracy in degrees * 1e-5
+} gpsAccuracy_t;
+
+/* Only available on U-blox protocol */
+typedef struct gpsVelned_s {
+    int16_t velN; // north velocity, cm/s
+    int16_t velE; // east velocity, cm/s
+    int16_t velD; // down velocity, cm/s
+} gpsVelned_t;
+
+/* GPS date/time from NAV-PVT message */
+typedef struct gpsDateTime_s {
+    uint16_t year;
+    uint8_t month;
+    uint8_t day;
+    uint8_t hour;
+    uint8_t min;
+    uint8_t sec;
+    uint16_t millis;
+    bool valid;                     // true when date/time are valid from GPS
+} gpsDateTime_t;
+
+typedef struct gpsSolutionData_s {
+    gpsLocation_t llh;
+    gpsDilution_t dop;
+    gpsAccuracy_t acc;
+    gpsVelned_t velned;
+    uint16_t speed3d;               // speed in cm/s
+    uint16_t groundSpeed;           // speed in cm/s
+    uint16_t groundCourse;          // degrees * 10
+    uint8_t numSat;
+    uint32_t time;                  // GPS msToW
+    uint32_t navIntervalMs;         // interval between nav solutions in ms
+    gpsDateTime_t dateTime;         // GPS date/time from NAV-PVT
+} gpsSolutionData_t;
+
+typedef struct GPS_svinfo_s {
+    uint8_t chn;      // When NumCh is 16 or less: Channel number
+                      // When NumCh is more than 16: GNSS Id
+                      //   0 = GPS, 1 = SBAS, 2 = Galileo, 3 = BeiDou
+                      //   4 = IMES, 5 = QZSS, 6 = Glonass
+    uint8_t svid;     // Satellite ID
+    uint8_t quality;  // When NumCh is 16 or less: Bitfield Qualtity
+                      // When NumCh is more than 16: flags
+                      //   bits 2..0: signal quality indicator
+                      //     0 = no signal
+                      //     1 = searching signal
+                      //     2 = signal acquired
+                      //     3 = signal detected but unusable
+                      //     4 = code locked and time synchronized
+                      //     5,6,7 = code and carrier locked and time synchronized
+                      //   bit 3:
+                      //     1 = signal currently being used for navigaion
+                      //   bits 5..4: signal health flag
+                      //     0 = unknown
+                      //     1 = healthy
+                      //     2 = unhealthy
+                      //   bit 6:
+                      //     1 = differential correction data available for this SV
+                      //   bit 7:
+                      //     1 = carrier smoothed pseudorange used
+    uint8_t cno;      // Carrier to Noise Ratio (Signal Strength)
+} GPS_svinfo_t;
+
+#define GPS_SV_MAXSATS_LEGACY   16U
+#define GPS_SV_MAXSATS_M8N      32U                     // must be larger than MAXSATS_LEGACY
+
+
+extern GPS_svinfo_t GPS_svinfo[GPS_SV_MAXSATS_M8N];
+extern gpsSolutionData_t gpsSol;
+gpsVelned_t velned;
 
 extern UbxNavPosllh_t posllh;
 extern UbxNavSat_t sat;
@@ -267,6 +355,9 @@ bool isGPSHeadingValid(void);
 bool gpsHasNewData(uint16_t *stamp);
 float getGpsDataIntervalSeconds(void);  // range 0.05 - 2.5s
 float getGpsDataFrequencyHz(void);      // range 20Hz - 0.4Hz
+
+void GPS_distance2d(const gpsLocation_t *from, const gpsLocation_t *to, vector2_t *distance);
+
 
 #ifdef __cplusplus
 }

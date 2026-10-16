@@ -32,9 +32,8 @@
 #include "common/utils.h"
 
 //#include "config/config.h"
-//#include "drivers/time.h"
 
-//#include "fc/core.h"
+#include "fc/core.h"
 #include "fc/rc_controls.h"
 #include "fc/rc_modes.h"
 #include "fc/runtime_config.h"
@@ -44,6 +43,7 @@
 #include "flight/imu.h"
 #include "flight/pid.h"
 #include "flight/position.h"
+#include "flight/position_estimator.h"
 
 //#include "io/gps.h"
 #include "drivers/gps/gps.h"
@@ -52,6 +52,7 @@
 //#include "sensors/acceleration.h"
 #include "sensors/sensors.h"
 #include "sensors/gyro.h"
+#include "sensors/compass.h"
 
 #include "navigation/navigation_private.h"
 
@@ -59,12 +60,13 @@ typedef enum {
     RESCUE_IDLE,
     RESCUE_INITIALIZE,
     RESCUE_ATTAIN_ALT,
+    RESCUE_PITCH_FORWARD,
     RESCUE_ROTATE,
     RESCUE_FLY_HOME,
     RESCUE_DESCENT,
     RESCUE_LANDING,
+    RESCUE_EMERG_DESCENT,
     RESCUE_DO_NOTHING,
-    RESCUE_ABORT
 } rescuePhase_e;
 
 typedef enum {
@@ -75,7 +77,9 @@ typedef enum {
     RESCUE_CRASHFLIP_DETECTED,
     RESCUE_STALLED,
     RESCUE_TOO_CLOSE,
-    RESCUE_NO_HOME_POINT
+    RESCUE_NO_HOME_POINT,
+    RESCUE_NO_ALTITUDE,
+    RESCUE_NO_HEADING,
 } rescueFailureState_e;
 
 typedef struct {
@@ -83,33 +87,35 @@ typedef struct {
     float returnAltitudeCm;
     float targetAltitudeCm;
     float targetAltitudeStepCm;
-    float targetVelocityCmS;
+    float targetAltitudeVelCmS;
     float pitchAngleLimitDeg;
     float rollAngleLimitDeg;
+    float descentDistanceCm;
     float descentDistanceM;
     int8_t secondsFailing;
     float yawAttenuator;
-    float disarmThreshold;
-    float velocityITermAccumulator;
-    float velocityPidCutoff;
-    float velocityPidCutoffModifier;
-    float velocityItermAttenuator;
-    float velocityItermRelax;
+    float targetVelocityCmS;
+    float xyAttenuator;
+    float proximityAttenuator;
+    vector2_t stepEF; // distance to move the craft along the path each iteration
+    float cmToEarthAngle;
+    float initialClimbCm;
 } rescueIntent_s;
 
 typedef struct {
+    bool gpsHealthy;
+    bool isHeadingOK;
+    bool newGpsData;
+    bool positionXYAvailable;
+    float aircraftHeadingDeg;
+    float bearingToHomeDeg;
+    float errorAngleDeg;
     float distanceToHomeCm;
-    float distanceToHomeM;
-    uint16_t groundSpeedCmS;
-    int16_t directionToHome;
-    bool healthy;
-    float errorAngle;
-    float gpsDataIntervalSeconds;
-    float velocityToHomeCmS;
-    float alitutudeStepCm;
-    float maxPitchStep;
-    float absErrorAngle;
-    float imuYawCogGain;
+    float velocityCmS; // for debugs only
+    vector2_t currentVelocityV;
+    vector2_t currentPositionV; // relative to arming location, not absolute
+    vector2_t previousPositionV;
+        float currentAltitudeCm;
 } rescueSensorData_s;
 
 typedef struct {
@@ -118,13 +124,16 @@ typedef struct {
     rescueSensorData_s sensor;
     rescueIntent_s intent;
     bool isAvailable;
+    bool isOK;
 } rescueState_s;
 
-
-
 #define GPS_RESCUE_MAX_YAW_RATE          180    // deg/sec max yaw rate
-#define GPS_RESCUE_MAX_THROTTLE_ITERM    200    // max iterm value for throttle in degrees * 100
 #define GPS_RESCUE_ALLOWED_YAW_RANGE   30.0f   // yaw error must be less than this to enter fly home phase, and to pitch during descend()
+#define GPS_RESCUE_ACCEPT_RADIUS       20.0f // ignore closer than this Cm
+#if !ENABLE_RESCUE_PLAN
+static const float gpsRescueTaskIntervalSeconds = HZ_TO_INTERVAL(TASK_GPS_RESCUE_RATE_HZ); // i.e. 0.01s
+#endif
+static float rescueYawRate = 0.0f;
 
 static const float taskIntervalSeconds = HZ_TO_INTERVAL(TASK_GPS_RESCUE_RATE_HZ); // i.e. 0.01 s
 static float rescueYaw;
@@ -166,25 +175,48 @@ void gpsRescueConfig_Init(void)
 
 void gpsRescueInit(void)
 {
-    float cutoffHz, gain;
-    cutoffHz = gpsRescueConfig.pitchCutoffHz / 100.0f;
-    rescueState.intent.velocityPidCutoff = cutoffHz;
-    rescueState.intent.velocityPidCutoffModifier = 1.0f;
-    gain = pt1FilterGain(cutoffHz, 1.0f);
-    pt1FilterInit(&velocityDLpf, gain);
-    cutoffHz *= 4.0f;
-    gain = pt3FilterGain(cutoffHz, taskIntervalSeconds);
-    pt3FilterInit(&velocityUpsampleLpf, gain);
+    rescueState.intent.cmToEarthAngle = 1.0f / EARTH_ANGLE_TO_CM; // approx 0.898 cm per unit lat at equator
+    rescueState.intent.initialClimbCm = gpsRescueConfig.initialClimbM * 100.0f;
+    rescueState.intent.descentDistanceCm = gpsRescueConfig.descentDistanceM * 100.0f;
+    rescueState.sensor.currentPositionV  = (vector2_t){{0.0f, 0.0f}};
+    rescueState.intent.targetAltitudeVelCmS = 0.0f;
+
+    rescueState.sensor.previousPositionV = rescueState.sensor.currentPositionV;
+    // Zero out flight angles to keep the craft flat on initiation
+    autopilotAngle[AI_ROLL] = 0.0f;
+    autopilotAngle[AI_PITCH] = 0.0f;
+    rescueState.isAvailable = true;
+    rescueState.sensor.isHeadingOK = true;
+    rescueState.isOK = true;
+
 }
 
+#if !ENABLE_RESCUE_PLAN
 static void rescueStart(void)
 {
+    initPositionHold(); // initialise position hold at current location
+
     rescueState.phase = RESCUE_INITIALIZE;
 }
 
 static void rescueStop(void)
 {
     rescueState.phase = RESCUE_IDLE;
+    pitchForwardOverride(false);
+}
+#endif // !ENABLE_RESCUE_PLAN
+// While idle, update the altitude targets
+static void updateMaxAltitude(void)
+{
+    // While disarmed, force maxAltitude to zero, unless set_home_point_once is true, when maxAlt is only reset on a power cycle
+    if (!ARMING_FLAG(ARMED) && !GpsNav.gps_set_home_point_once) {
+        rescueState.intent.maxAltitudeCm = 0.0f;
+        return;
+    }
+    // Otherwise store maxAltitude for this armed period
+    rescueState.intent.maxAltitudeCm = fmaxf(rescueState.sensor.currentAltitudeCm, rescueState.intent.maxAltitudeCm);
+    rescueState.intent.targetAltitudeCm = rescueState.sensor.currentAltitudeCm;
+
 }
 
 // Things that need to run when GPS Rescue is enabled, and while armed, but while there is no Rescue in place

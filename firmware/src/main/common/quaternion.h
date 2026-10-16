@@ -93,9 +93,9 @@ static inline float quaternionNormSquared(const fpQuaternion_t * q)
     return sq(q->q0) + sq(q->q1) + sq(q->q2) + sq(q->q3);
 }
 
-static inline quaternion * quaternionMultiply(quaternion * result, const quaternion * a, const quaternion * b)
+static inline quaternion_t * quaternionMultiply(quaternion_t * result, const quaternion_t * a, const quaternion_t * b)
 {
-  quaternion p;
+  quaternion_t p;
 
   p.w = a->w * b->w - a->x * b->x - a->y * b->y - a->z * b->z;
   p.x = a->w * b->x + a->x * b->w + a->y * b->z - a->z * b->y;
@@ -132,7 +132,7 @@ static inline fpQuaternion_t * quaternionAdd(fpQuaternion_t * result, const fpQu
     return result;
 }
 
-static inline quaternion * quaternionConjugate(quaternion * result, const quaternion * q)
+static inline quaternion_t * quaternionConjugate(quaternion_t * result, const quaternion_t * q)
 {
     result->w =  q->w;
     result->x = -q->x;
@@ -162,9 +162,9 @@ static inline fpQuaternion_t * quaternionNormalize(fpQuaternion_t * result, cons
     return result;
 }
 
-static inline fpVector3_t * quaternionRotateVector(fpVector3_t * result, const fpVector3_t * vect, const quaternion * ref)
+static inline fpVector3_t * quaternionRotateVector(fpVector3_t * result, const fpVector3_t * vect, const quaternion_t * ref)
 {
-  quaternion vectQuat, refConj;
+  quaternion_t vectQuat, refConj;
 
     vectQuat.w = 0;
     vectQuat.x = vect->x;
@@ -181,9 +181,9 @@ static inline fpVector3_t * quaternionRotateVector(fpVector3_t * result, const f
     return result;
 }
 
-static inline fpVector3_t * quaternionRotateVectorInv(fpVector3_t * result, const fpVector3_t * vect, const quaternion * ref)
+static inline fpVector3_t * quaternionRotateVectorInv(fpVector3_t * result, const fpVector3_t * vect, const quaternion_t * ref)
 {
-  quaternion vectQuat, refConj;
+  quaternion_t vectQuat, refConj;
 
     vectQuat.w = 0;
     vectQuat.x = vect->x;

@@ -161,7 +161,7 @@ void taskUpdateRangefinder(timeUs_t currentTimeUs)
 #ifdef USE_OPTICALFLOW
 void taskUpdateOpticalFlow(timeUs_t currentTimeUs)
 {
-    if (!sensors(SENSOR_OPFLOW))
+    if (!sensors(SENSOR_OPTICALFLOW))
         return;
 
     opflowUpdate(currentTimeUs);
@@ -446,7 +446,7 @@ void tasksInit(void)
 #endif
 
 #ifdef USE_OPTICALFLOW
-    setTaskEnabled(TASK_OPTICALFLOW, sensors(SENSOR_OPFLOW));
+    setTaskEnabled(TASK_OPTICALFLOW, sensors(SENSOR_OPTICALFLOW));
 #endif
 
 //#ifdef USE_PINIOBOX

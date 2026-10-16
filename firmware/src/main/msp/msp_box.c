@@ -214,7 +214,7 @@ void initActiveBoxIds(void)
 //#ifdef USE_GPS
 //    navReadyAltControl = navReadyAltControl || (feature(FEATURE_GPS) && (STATE(AIRPLANE) || positionEstimationConfig()->use_gps_no_baro));
 //
-//    const bool navFlowDeadReckoning = sensors(SENSOR_OPFLOW) && sensors(SENSOR_ACC) && positionEstimationConfig()->allow_dead_reckoning;
+//    const bool navFlowDeadReckoning = sensors(SENSOR_OPTICALFLOW) && sensors(SENSOR_ACC) && positionEstimationConfig()->allow_dead_reckoning;
 //    bool navReadyPosControl = sensors(SENSOR_ACC) && feature(FEATURE_GPS);
 //    if (STATE(MULTIROTOR)) {
 //        navReadyPosControl = navReadyPosControl && getHwCompassStatus() != HW_SENSOR_NONE;
@@ -428,14 +428,15 @@ uint16_t packSensorStatus(void)
 {
     // Sensor bits
     uint16_t sensorStatus =
-            IS_ENABLED(sensors(SENSOR_ACC))         << 0 |
-            IS_ENABLED(sensors(SENSOR_BARO))        << 1 |
-            IS_ENABLED(sensors(SENSOR_MAG))         << 2 |
-            IS_ENABLED(sensors(SENSOR_GPS))         << 3 |
+            IS_ENABLED(sensors(SENSOR_GYRO))        << 0 |
+            IS_ENABLED(sensors(SENSOR_ACC))         << 1 |
+            IS_ENABLED(sensors(SENSOR_BARO))        << 2 |
+            IS_ENABLED(sensors(SENSOR_MAG))         << 3 |
+            IS_ENABLED(sensors(SENSOR_SONAR))       << 4 |
             IS_ENABLED(sensors(SENSOR_RANGEFINDER)) << 4 |
-            IS_ENABLED(sensors(SENSOR_OPFLOW))      << 5 |
-            IS_ENABLED(sensors(SENSOR_PITOT))       << 6 |
-            IS_ENABLED(sensors(SENSOR_TEMP))        << 7;
+            IS_ENABLED(sensors(SENSOR_GPS))         << 5 |
+            IS_ENABLED(sensors(SENSOR_GPSMAG))      << 6 |
+            IS_ENABLED(sensors(SENSOR_OPTICALFLOW)) << 7;
 
     // Hardware failure indication bit
 //    if (!isHardwareHealthy()) {

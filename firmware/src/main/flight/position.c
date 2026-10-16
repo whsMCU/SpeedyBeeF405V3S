@@ -63,6 +63,12 @@ void positionConfig_Init(void)
 	positionConfig.altSource = DEFAULT;
 	positionConfig.altNumSatsGpsUse = POSITION_DEFAULT_ALT_NUM_SATS_GPS_USE;
 	positionConfig.altNumSatsBaroFallback = POSITION_DEFAULT_ALT_NUM_SATS_BARO_FALLBACK;
+
+	positionConfig.altitude_source = ALTITUDE_SOURCE_DEFAULT;
+	positionConfig.altitude_prefer_baro = 100;
+	positionConfig.altitude_lpf = 300;                // lowpass cutoff (value / 100) Hz for altitude smoothing
+	positionConfig.altitude_d_lpf = 300;              // lowpass for (value / 100) Hz for altitude derivative smoothing
+	positionConfig.rangefinder_max_range_cm = 200;    // Maximum rangefinder range to trust (cm)
 }
 
 static uint8_t averagingCount;

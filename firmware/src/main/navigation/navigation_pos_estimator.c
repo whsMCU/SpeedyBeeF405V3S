@@ -546,7 +546,7 @@ static uint32_t calculateCurrentValidityFlags(timeUs_t currentTimeUs)
         new_Flags |= EST_SURFACE_VALID;
     }
 
-    if (sensors(SENSOR_OPFLOW) && posEstimator.flow.isValid && ((currentTimeUs - posEstimator.flow.lastUpdateTime) <= MS2US(INAV_FLOW_TIMEOUT_MS))) {
+    if (sensors(SENSOR_OPTICALFLOW) && posEstimator.flow.isValid && ((currentTimeUs - posEstimator.flow.lastUpdateTime) <= MS2US(INAV_FLOW_TIMEOUT_MS))) {
         new_Flags |= EST_FLOW_VALID;
     }
 

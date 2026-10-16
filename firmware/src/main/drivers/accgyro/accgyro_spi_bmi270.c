@@ -328,7 +328,7 @@ void bmi270_data_ready(void)
 	pre_time = micros();
 	// Ideally we'd use a timer to capture such information, but unfortunately the port used for EXTI interrupt does
 	// not have an associated timer
-	uint32_t nowCycles = micros();
+	uint32_t nowCycles = getCycleCounter();
 	bmi270.gyro.gyroSyncEXTI = bmi270.gyro.gyroLastEXTI + bmi270.gyro.gyroDmaMaxDuration;
 	bmi270.gyro.gyroLastEXTI = nowCycles;
 

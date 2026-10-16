@@ -66,8 +66,6 @@ void reset_PID(struct PID_* pid) {
   pid->lastderivative = 0;
 }
 
-uint8_t gps_set_home_point_once;
-
 const unsigned char UBX_CFG_PRT[] = {
 	0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00,
 	0xD0, 0x08, 0x00, 0x00, 0x80, 0x25, 0x00, 0x00, 0x01, 0x00,
@@ -111,7 +109,23 @@ UbxNavPosllh_t posllh;
 UbxNavSat_t sat;
 UbxNavStatus_t nav_status;
 nav_pvt_t pvt;
+/////////////////////////////////////////////
+gpsLocation_t GPS_home_llh;
+gpsSolutionData_t gpsSol;
 
+uint8_t GPS_numCh;
+
+GPS_svinfo_t GPS_svinfo[GPS_SV_MAXSATS_M8N];
+
+// Do we have a new valid fix?
+static bool ubxHaveNewValidFix = false;
+
+// Do we have new position information?
+static bool ubxHaveNewPosition = false;
+
+// Do we have new speed information?
+static bool ubxHaveNewSpeed = false;
+///////////////////////////////////////////////////
 static bool next_fix;
 
 static float gpsDataIntervalSeconds = 0.1f;
@@ -169,7 +183,7 @@ void gpsInit(void)
   gpsResetSolution();
 	GpsNav.nav_mode = NAV_MODE_NONE;
 	GpsNav.GPS_wp_radius = GPS_WP_RADIUS;
-	gps_set_home_point_once = false;
+	GpsNav.gps_set_home_point_once = false;
 
   posholdPID_PARAM.kP   = (float)0.11f;
   posholdPID_PARAM.kI   = (float)0.0f;
@@ -212,6 +226,188 @@ static void GPS_Filter(int32_t *GPS_coord)
   }
 }
 
+// GPS epoch is Jan 6, 1980. Unix epoch is Jan 1, 1970.
+// Offset in seconds from Unix epoch to GPS epoch
+#define GPS_EPOCH_OFFSET_SECONDS 315964800
+// Current GPS-UTC leap seconds offset (as of 2017, 18 leap seconds)
+#define GPS_LEAP_SECONDS 18
+
+// Convert date/time to Unix seconds (UTC)
+static int64_t dateTimeToUnixSeconds(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t min, uint8_t sec)
+{
+    int32_t days = 0;
+    for (int y = 1970; y < year; y++) {
+        days += (y % 4 == 0 && (y % 100 != 0 || y % 400 == 0)) ? 366 : 365;
+    }
+    int isLeap = (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) ? 1 : 0;
+    days += gpsMonthDays[isLeap][month - 1] + (day - 1);
+    return (int64_t)days * 86400 + hour * 3600 + min * 60 + sec;
+}
+
+// Convert gpsDateTime_t to Unix epoch seconds; returns 0 if not valid
+uint32_t gpsDateTimeToEpoch(const gpsDateTime_t *dt)
+{
+    if (!dt || !dt->valid) {
+        return 0;
+    }
+
+    if (dt->year < 1980 || dt->month < 1 || dt->month > 12 || dt->day < 1 ||
+        dt->day > 31 || dt->hour > 23 || dt->min > 59 || dt->sec > 60) {
+        return 0;
+    }
+
+    return (uint32_t)dateTimeToUnixSeconds(dt->year, dt->month, dt->day, dt->hour, dt->min, dt->sec);
+}
+
+// NAV-PVT already carries UTC calendar fields; only the nanosecond correction can
+// require a one-second calendar adjustment.
+static bool gpsDateTimeIsLeapYear(uint16_t year)
+{
+    return year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
+}
+
+static uint8_t gpsDateTimeDaysInMonth(uint16_t year, uint8_t month)
+{
+    static const uint8_t daysInMonth[] = {
+        31, 28, 31, 30, 31, 30,
+        31, 31, 30, 31, 30, 31
+    };
+
+    if (month == 2 && gpsDateTimeIsLeapYear(year)) {
+        return 29;
+    }
+
+    return daysInMonth[month - 1];
+}
+
+static void gpsDateTimeAddOneSecond(gpsDateTime_t *dt)
+{
+    if (++dt->sec <= 59) {
+        return;
+    }
+
+    dt->sec = 0;
+    if (++dt->min <= 59) {
+        return;
+    }
+
+    dt->min = 0;
+    if (++dt->hour <= 23) {
+        return;
+    }
+
+    dt->hour = 0;
+    if (++dt->day <= gpsDateTimeDaysInMonth(dt->year, dt->month)) {
+        return;
+    }
+
+    dt->day = 1;
+    if (++dt->month <= 12) {
+        return;
+    }
+
+    dt->month = 1;
+    dt->year++;
+}
+
+static void gpsDateTimeSubtractOneSecond(gpsDateTime_t *dt)
+{
+    if (dt->sec > 0) {
+        dt->sec--;
+        return;
+    }
+
+    dt->sec = 59;
+    if (dt->min > 0) {
+        dt->min--;
+        return;
+    }
+
+    dt->min = 59;
+    if (dt->hour > 0) {
+        dt->hour--;
+        return;
+    }
+
+    dt->hour = 23;
+    if (dt->day > 1) {
+        dt->day--;
+        return;
+    }
+
+    if (dt->month > 1) {
+        dt->month--;
+    } else {
+        dt->month = 12;
+        dt->year--;
+    }
+    dt->day = gpsDateTimeDaysInMonth(dt->year, dt->month);
+}
+
+static void gpsDateTimeFromNavPvt(gpsDateTime_t *dt, const ubxNavPvt_t *navPvt)
+{
+    dt->valid = (navPvt->valid & NAV_VALID_DATE) && (navPvt->valid & NAV_VALID_TIME);
+    if (!dt->valid) {
+        return;
+    }
+
+    dt->year = navPvt->year;
+    dt->month = navPvt->month;
+    dt->day = navPvt->day;
+    dt->hour = navPvt->hour;
+    dt->min = navPvt->min;
+    dt->sec = navPvt->sec;
+
+    const int32_t nanoMs = navPvt->nano / 1000000;
+    if (nanoMs < 0) {
+        dt->millis = (uint16_t)(nanoMs + 1000);
+        gpsDateTimeSubtractOneSecond(dt);
+    } else if (nanoMs >= 1000) {
+        dt->millis = (uint16_t)(nanoMs - 1000);
+        gpsDateTimeAddOneSecond(dt);
+    } else {
+        dt->millis = (uint16_t)nanoMs;
+    }
+}
+
+// Convert GPS week number and time-of-week to gpsDateTime_t
+static void gpsWeekTimeToDateTime(gpsDateTime_t *dt, int16_t week, uint32_t timeOfWeekMs, int32_t timeOfWeekNs)
+{
+    int64_t gpsSeconds = (int64_t)week * 7 * 24 * 3600 + timeOfWeekMs / 1000;
+
+    // Calculate milliseconds including nanosecond adjustment (can be negative)
+    int32_t millis = (int32_t)(timeOfWeekMs % 1000) + timeOfWeekNs / 1000000;
+
+    // Handle carry/borrow from nanosecond adjustment
+    if (millis < 0) {
+        millis += 1000;
+        gpsSeconds--;
+    } else if (millis >= 1000) {
+        millis -= 1000;
+        gpsSeconds++;
+    }
+
+    int64_t unixSeconds = gpsSeconds + GPS_EPOCH_OFFSET_SECONDS - GPS_LEAP_SECONDS;
+    gpsUnixSecondsToDateTime(dt, unixSeconds, (uint16_t)millis);
+}
+
+#ifdef USE_RTC_TIME
+// Set system clock once when GPS time is available
+static void setRtcDateTimeFromGps(void) {
+    if (!rtcHasTime() && gpsSol.dateTime.valid) {
+        dateTime_t dt;
+        dt.year = gpsSol.dateTime.year;
+        dt.month = gpsSol.dateTime.month;
+        dt.day = gpsSol.dateTime.day;
+        dt.hours = gpsSol.dateTime.hour;
+        dt.minutes = gpsSol.dateTime.min;
+        dt.seconds = gpsSol.dateTime.sec;
+        dt.millis = gpsSol.dateTime.millis;
+        rtcSetDateTime(&dt);
+    }
+}
+#endif
+
 static void calculateNavInterval(void)
 {
     // calculate the interval between nav packets, handling iTow wraparound at the end of the week
@@ -247,12 +443,22 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
         GpsNav.altCm = posllh.height / 10;
 
         GpsNav.time = posllh.iTOW;
-        calculateNavInterval();
+        //calculateNavInterval();
 
         GpsNav.eph = gpsConstrainEPE(posllh.hAcc / 10);
         GpsNav.epv = gpsConstrainEPE(posllh.vAcc / 10);
 
         GpsNav.flags.validEPE = true;
+
+        //////////////////////////////////////////////////////
+        gpsSol.llh.lon = posllh.lon;
+        gpsSol.llh.lat = posllh.lat;
+        gpsSol.llh.altCm = posllh.hMSL / 10;  //alt in cm
+        gpsSol.time = posllh.iTOW;
+        calculateNavInterval();
+        gpsSetFixState(ubxHaveNewValidFix);
+        ubxHaveNewPosition = true;
+        //////////////////////////////////////////////////////
         #if defined(GPS_FILTERING)
           GPS_Filter(GpsNav.GPS_coord);
         #endif
@@ -274,10 +480,25 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
             sat.sv[i].cno = p[2];
             sat.sv[i].elev = p[3];
             sat.sv[i].azim = p[4] | (p[5]<<8);
-            sat.sv[i].prRes = p[6] | (p[7]<<8) | (p[8]<<16) | (p[9]<<24);
+            sat.sv[i].prRes = p[6] | (p[7]<<8);
+            sat.sv[i].flags = p[8] | (p[9]<<8) | (p[10]<<16) | (p[11]<<24);
             p += 12;
             // 여기서 위성 정보 활용 가능 (신호 세기, PRN 등)
         }
+
+        GPS_numCh = MIN(sat.numSvs, GPS_SV_MAXSATS_M8N);
+
+        for (unsigned i = 0; i < ARRAYLEN(GPS_svinfo); i++) {
+            if (i < GPS_numCh) {
+                GPS_svinfo[i].chn = sat.svs[i].gnssId;
+                GPS_svinfo[i].svid = sat.svs[i].svId;
+                GPS_svinfo[i].cno = sat.svs[i].cno;
+                GPS_svinfo[i].quality = sat.svs[i].flags;
+            } else {
+                GPS_svinfo[i] = (GPS_svinfo_t){ .chn = 255 };
+            }
+        }
+        GPS_numCh = GPS_SV_MAXSATS_M8N;
         //GpsNav.GPS_numSat = sat.numSvs;
 
     } else if (cls == 0x01 && id == 0x03) { // NAV-STATUS
@@ -299,6 +520,14 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
           DISABLE_STATE(GPS_FIX);
         }
         gpsSetFixState(next_fix);
+
+        ////////////////////////////////////////////////////////////////////////
+        ubxHaveNewValidFix = (nav_status.fix_status & NAV_STATUS_FIX_VALID) && (nav_status.gpsFix == FIX_3D);
+        if (!ubxHaveNewValidFix)
+            DISABLE_STATE(GPS_FIX);
+        ////////////////////////////////////////////////////////////////////////
+
+
     } else if (cls == 0x01 && id == 0x07) { // NAV-PVT
       if (length < 92) return;  // 최소 메시지 길이 확인
 
@@ -328,11 +557,13 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
       pvt.velD = (int32_t)(payload[56] | (payload[57]<<8) | (payload[58]<<16) | (payload[59]<<24));
       pvt.gSpeed = (int32_t)(payload[60] | (payload[61]<<8) | (payload[62]<<16) | (payload[63]<<24));
       pvt.headMot = (int32_t)(payload[64] | (payload[65]<<8) | (payload[66]<<16) | (payload[67]<<24));
+      pvt.sAcc = (int32_t)(payload[68] | (payload[69]<<8) | (payload[70]<<16) | (payload[71]<<24));
+      pvt.headAcc = (int32_t)(payload[72] | (payload[73]<<8) | (payload[74]<<16) | (payload[75]<<24));
       pvt.pDOP = (uint16_t)(payload[76] | (payload[77]<<8));
       pvt.headVeh = (int32_t)(payload[84] | (payload[85]<<8) | (payload[86]<<16) | (payload[87]<<24));
     }
     GpsNav.time = pvt.iTOW;
-    calculateNavInterval();
+    //calculateNavInterval();
     GpsNav.GPS_numSat = pvt.numSV;
     GpsNav.GPS_headVeh = pvt.headVeh;
     GpsNav.eph = gpsConstrainEPE(pvt.hAcc / 10);
@@ -348,6 +579,41 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
     GpsNav.velned.velD = (int16_t)(pvt.velD / 10); // cm/s
     GpsNav.ubxHaveNewPositionAndNewSpeed = true;
 
+    ///////////////////////////////////////////////////////////
+    ubxHaveNewValidFix = (pvt.flags & NAV_STATUS_FIX_VALID) && (pvt.fixType == FIX_3D);
+    gpsSol.time = pvt.iTOW;
+    calculateNavInterval();
+    gpsSol.llh.lon = pvt.lon;
+    gpsSol.llh.lat = pvt.lat;
+    gpsSol.llh.altCm = pvt.hMSL / 10;  //alt in cm
+    gpsSetFixState(ubxHaveNewValidFix);
+    ubxHaveNewPosition = true;
+    gpsSol.numSat = pvt.numSV;
+    gpsSol.acc.hAcc = pvt.hAcc;
+    gpsSol.acc.vAcc = pvt.vAcc;
+    gpsSol.acc.sAcc = pvt.sAcc;
+    gpsSol.acc.headAcc = pvt.headAcc;
+    // gSpeed & velD are in mm/s (int32_t), gpsSol.speed3d in cm/s (uint16_t)
+    float gs = (float)pvt.gSpeed;
+    float vd = (float)pvt.velD;
+    gpsSol.speed3d = (uint16_t)(sqrtf(sq(gs) + sq(vd)) * 0.1f);     // mm/s -> cm/s
+    // Update 2D ground speed (mm/s -> cm/s) for NAV-PVT when NAV-VELNED is disabled
+    gpsSol.groundSpeed = (uint16_t)(pvt.gSpeed / 10);    // cm/s
+    gpsSol.groundCourse = (uint16_t)(pvt.headMot / 10000);     // Heading 2D deg * 100000 rescaled to deg * 10
+    gpsSol.dop.pdop = pvt.pDOP;
+    // NAV-PVT doesn't provide hDOP/vDOP, estimate from pDOP (pDOP >= hDOP/vDOP, so this is conservative)
+    gpsSol.dop.hdop = pvt.pDOP;
+    gpsSol.dop.vdop = pvt.pDOP;
+    gpsSol.velned.velN = (int16_t)(pvt.velN / 10); // cm/s
+    gpsSol.velned.velE = (int16_t)(pvt.velE / 10); // cm/s
+    gpsSol.velned.velD = (int16_t)(pvt.velD / 10); // cm/s
+    ubxHaveNewSpeed = true;
+    // Store GPS date/time for telemetry, applying nano correction per u-blox spec.
+    gpsDateTimeFromNavPvt(&gpsSol.dateTime, &pvt);
+#ifdef USE_RTC_TIME
+    setRtcDateTimeFromGps();
+#endif
+    ///////////////////////////////////////////////////////////
 #ifdef USE_RTC_TIME
         //set clock, when gps time is available
         if (!rtcHasTime() && (_buffer.pvt.valid & NAV_VALID_DATE) && (_buffer.pvt.valid & NAV_VALID_TIME)) {
@@ -809,6 +1075,24 @@ float getGpsDataIntervalSeconds(void)
 float getGpsDataFrequencyHz(void)
 {
     return gpsDataFrequencyHz;
+}
+
+// return distance vector in local, cartesian ENU coordinates
+// note that parameter order is from, to
+void GPS_distance2d(const gpsLocation_t *from, const gpsLocation_t *to, vector2_t *distance)
+{
+    int32_t deltaLon = to->lon - from->lon;
+    // In case we crossed the 180° meridian
+    const int32_t deg180 = 180 * GPS_DEGREES_DIVIDER; // number of integer longitude steps in 180 degrees
+    if (deltaLon > deg180) {
+        deltaLon -= deg180;  // 360 * GPS_DEGREES_DIVIDER overflows int32_t, so use 180 twice
+        deltaLon -= deg180;
+    } else if (deltaLon <= -deg180) {
+        deltaLon += deg180;
+        deltaLon += deg180;
+    }
+    distance->x = deltaLon * GPS_cosLat * EARTH_ANGLE_TO_CM; // East-West distance, positive East
+    distance->y = (float)(to->lat - from->lat) * EARTH_ANGLE_TO_CM;  // North-South distance, positive North
 }
 
 #endif
