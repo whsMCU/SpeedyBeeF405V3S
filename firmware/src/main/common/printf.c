@@ -34,6 +34,8 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
+#include "hw.h"
+
 #include "build/build_config.h"
 
 #include "printf.h"
@@ -41,7 +43,6 @@
 #ifdef REQUIRE_PRINTF_LONG_SUPPORT
 #include "typeconversion.h"
 #endif
-
 
 #ifdef REQUIRE_CC_ARM_PRINTF_SUPPORT
 

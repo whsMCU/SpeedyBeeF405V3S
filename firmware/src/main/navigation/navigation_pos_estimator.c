@@ -389,7 +389,7 @@ void updatePositionEstimator_BaroTopic(timeUs_t currentTimeUs)
 // */
 static void restartGravityCalibration(void)
 {
-    if (!bmi270.init_gyro_cal_enabled) {
+    if (!bmi270.gyro.init_gyro_cal_enabled) {
         return;
     }
 
@@ -398,7 +398,7 @@ static void restartGravityCalibration(void)
 
 static bool gravityCalibrationComplete(void)
 {
-    if (!bmi270.init_gyro_cal_enabled) {
+    if (!bmi270.gyro.init_gyro_cal_enabled) {
         return true;
     }
 
@@ -468,7 +468,7 @@ static void updateIMUTopic(timeUs_t currentTimeUs)
         posEstimator.imu.accelNEU.z = accelBF.z;
 
         /* When unarmed, assume that accelerometer should measure 1G. Use that to correct accelerometer gain */
-        if (bmi270.init_gyro_cal_enabled) {
+        if (bmi270.gyro.init_gyro_cal_enabled) {
             if (!ARMING_FLAG(ARMED) && !gravityCalibrationComplete()) {
                 zeroCalibrationAddValueS(&posEstimator.imu.gravityCalibration, posEstimator.imu.accelNEU.z);
 
@@ -480,7 +480,7 @@ static void updateIMUTopic(timeUs_t currentTimeUs)
             }
         } else {
             posEstimator.imu.gravityCalibration.params.state = ZERO_CALIBRATION_DONE;
-            posEstimator.imu.calibratedGravityCMSS = bmi270.gravity_cmss_cal;
+            posEstimator.imu.calibratedGravityCMSS = bmi270.acc.gravity_cmss_cal;
         }
 
         /* If calibration is incomplete - report zero acceleration */

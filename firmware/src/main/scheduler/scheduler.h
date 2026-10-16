@@ -52,10 +52,18 @@
 // Decay the estimated max task duration by 1/(1 << TASK_EXEC_TIME_SHIFT) on every invocation
 #define TASK_EXEC_TIME_SHIFT            7
 
+// Cap a single measured execution time when updating a task's anticipated
+// duration, 0 = no cap. Hosted targets (SITL) override this: OS preemption
+// produces multi-millisecond wall-clock samples that would otherwise
+// peak-hold the estimate and starve the task out of every scheduling window.
+#ifndef TASK_EXEC_TIME_CLAMP_US
+#define TASK_EXEC_TIME_CLAMP_US         0
+#endif
+
 #define TASK_AGE_EXPEDITE_RX            25  // Make RX tasks more schedulable if it's failed to be scheduled this many times
 #define TASK_AGE_EXPEDITE_OSD           25  // Make OSD tasks more schedulable if it's failed to be scheduled this many times
 #define TASK_AGE_EXPEDITE_COUNT         1   // Make aged tasks more schedulable
-#define TASK_AGE_EXPEDITE_SCALE         0.9 // By scaling their expected execution time
+#define TASK_AGE_EXPEDITE_SCALE         0.9f // By scaling their expected execution time
 
 // Gyro interrupt counts over which to measure loop time and skew
 #define GYRO_RATE_COUNT 25000
@@ -66,13 +74,13 @@
 
 
 typedef enum {
-    TASK_PRIORITY_MAX = 0,
-    TASK_PRIORITY_REALTIME, // Task will be run outside the scheduler logic
-    TASK_PRIORITY_HIGH,
-    TASK_PRIORITY_MEDIUM_HIGH,
-    TASK_PRIORITY_MEDIUM,
-    TASK_PRIORITY_LOW,
-    TASK_PRIORITY_LOWEST,
+    TASK_PRIORITY_REALTIME = -1, // Task will be run outside the scheduler logic
+    TASK_PRIORITY_LOWEST = 1,
+    TASK_PRIORITY_LOW = 2,
+    TASK_PRIORITY_MEDIUM = 3,
+    TASK_PRIORITY_MEDIUM_HIGH = 4,
+    TASK_PRIORITY_HIGH = 5,
+    TASK_PRIORITY_MAX = 255
 } taskPriority_e;
 
 typedef struct {
@@ -84,7 +92,7 @@ typedef struct {
 
 typedef struct {
     const char * taskName;
-//    const char * subTaskName;
+    const char * subTaskName;
     bool         isEnabled;
     int8_t       staticPriority;
     timeDelta_t  desiredPeriodUs;
@@ -93,7 +101,8 @@ typedef struct {
     timeUs_t     totalExecutionTimeUs;
     timeUs_t     averageExecutionTime10thUs;
     timeUs_t     averageDeltaTime10thUs;
-    float        movingAverageCycleTimeUs;
+    uint32_t     movingAverageLoad10thPct;
+    uint32_t     maxLoad10thPct;
 #if defined(USE_LATE_TASK_STATISTICS)
     uint32_t     runCount;
     uint32_t     lateCount;
@@ -104,7 +113,7 @@ typedef struct {
 typedef enum {
     /* Actual tasks */
     TASK_SYSTEM = 0,
-//    TASK_MAIN,
+    TASK_MAIN,
     TASK_GYRO,
     TASK_FILTER,
     TASK_PID,
@@ -127,6 +136,12 @@ typedef enum {
 #ifdef USE_GPS_RESCUE
     TASK_GPS_RESCUE,
 #endif
+#ifdef USE_ALTITUDE_HOLD
+    TASK_ALTHOLD,
+#endif
+#ifdef USE_POSITION_HOLD
+    TASK_POSHOLD,
+#endif
 #ifdef USE_MAG
     TASK_COMPASS,
 #endif
@@ -136,11 +151,10 @@ typedef enum {
 #ifdef USE_RANGEFINDER
     TASK_RANGEFINDER,
 #endif
-
-#ifdef USE_OPFLOW
-    TASK_OPFLOW,
+#ifdef USE_OPTICALFLOW
+    TASK_OPTICALFLOW,
 #endif
-#if defined(USE_BARO) || defined(USE_GPS)
+#if defined(USE_BARO) || defined(USE_GPS) || defined(USE_RANGEFINDER)
     TASK_ALTITUDE,
 #endif
 #ifdef USE_DASHBOARD
@@ -152,17 +166,55 @@ typedef enum {
 #ifdef USE_LED_STRIP
     TASK_LEDSTRIP,
 #endif
-#ifdef USE_ESC_SENSOR
-    TASK_ESC_SENSOR,
+#ifdef USE_TRANSPONDER
+    TASK_TRANSPONDER,
 #endif
-
+#ifdef USE_STACK_CHECK
+    TASK_STACK_CHECK,
+#endif
 #ifdef USE_OSD
     TASK_OSD,
 #endif
-
+#ifdef USE_BST
+    TASK_BST_MASTER_PROCESS,
+#endif
+#ifdef USE_ESC_SENSOR
+    TASK_ESC_SENSOR,
+#endif
+#ifdef USE_CMS
+    TASK_CMS,
+#endif
+#ifdef USE_VTX_CONTROL
+    TASK_VTXCTRL,
+#endif
+#ifdef USE_CAMERA_CONTROL
+    TASK_CAMCTRL,
+#endif
+#ifdef USE_RCDEVICE
+    TASK_RCDEVICE,
+#endif
 #ifdef USE_ADC_INTERNAL
     TASK_ADC_INTERNAL,
 #endif
+#ifdef USE_PINIOBOX
+    TASK_PINIOBOX,
+#endif
+#ifdef USE_CRSF_V3
+    TASK_SPEED_NEGOTIATION,
+#endif
+#ifdef USE_RC_STATS
+    TASK_RC_STATS,
+#endif
+#ifdef USE_GIMBAL
+    TASK_GIMBAL,
+#endif
+#if ENABLE_OSD_CUSTOM_TEXT
+    TASK_OSD_CUSTOM_TEXT,
+#endif
+#if ENABLE_DRONECAN
+    TASK_DRONECAN,
+#endif
+
     /* Count of real tasks */
     TASK_COUNT,
 
@@ -174,8 +226,10 @@ typedef enum {
 typedef struct {
     // Configuration
     const char * taskName;
-    void (*taskFunc)(uint32_t currentTimeUs);
-    int32_t desiredPeriodUs;            // target period of execution
+    const char * subTaskName;
+    bool (*checkFunc)(timeUs_t currentTimeUs, timeDelta_t currentDeltaTimeUs);
+    void (*taskFunc)(timeUs_t currentTimeUs);
+    timeDelta_t desiredPeriodUs;        // target period of execution
     const int8_t staticPriority;        // dynamicPriority grows in steps of this size
 } task_attribute_t;
 
@@ -187,50 +241,46 @@ typedef struct {
   uint16_t dynamicPriority;           // measurement of how old task was last executed, used to avoid task starvation
   uint16_t taskAgePeriods;
   timeDelta_t taskLatestDeltaTimeUs;
-  uint32_t lastExecutedAtUs;          // last time of invocation
-
-  uint32_t taskPeriodTimeUs;
+    timeUs_t lastExecutedAtUs;          // last time of invocation
+    timeUs_t lastSignaledAtUs;          // time of invocation event for event-driven tasks
+    timeUs_t lastDesiredAt;             // time of last desired execution
 
   // Statistics
-  float    movingAverageCycleTimeUs;
   timeUs_t anticipatedExecutionTime;  // Fixed point expectation of next execution time
   timeUs_t movingSumDeltaTime10thUs;  // moving sum over 64 samples
   timeUs_t movingSumExecutionTime10thUs;
   timeUs_t maxExecutionTimeUs;
   timeUs_t totalExecutionTimeUs;      // total time consumed by task since boot
   timeUs_t lastStatsAtUs;             // time of last stats gathering for rate calculation
+    uint32_t execTimeSinceStatesTime;
+    uint32_t movingSumStatesExecTime10thUs;
+    uint32_t maxStatesExecTimeUs;
 #if defined(USE_LATE_TASK_STATISTICS)
   uint32_t runCount;
   uint32_t lateCount;
   timeUs_t execTime;
 #endif
-
-  uint32_t taskExcutedEndUs;
-  uint32_t missedCount;
 } task_t;
 
-
-void schedulerInit(void);
-void rescheduleTask(taskId_e taskId, int32_t newPeriodUs);
+void getCheckFuncInfo(cfCheckFuncInfo_t *checkFuncInfo);
+void getTaskInfo(taskId_e taskId, taskInfo_t *taskInfo);
+void rescheduleTask(taskId_e taskId, timeDelta_t newPeriodUs);
 void setTaskEnabled(taskId_e taskId, bool newEnabledState);
 timeDelta_t getTaskDeltaTimeUs(taskId_e taskId);
-void schedulerIgnoreTaskStateTime();
-void schedulerIgnoreTaskExecRate();
-void schedulerIgnoreTaskExecTime();
-bool schedulerGetIgnoreTaskExecTime();
+void schedulerIgnoreTaskStateTime(void);
+void schedulerIgnoreTaskExecRate(void);
+void schedulerIgnoreTaskExecTime(void);
+bool schedulerGetIgnoreTaskExecTime(void);
 void schedulerResetTaskStatistics(taskId_e taskId);
 void schedulerResetTaskMaxExecutionTime(taskId_e taskId);
 void schedulerResetCheckFunctionMaxExecutionTime(void);
 void schedulerSetNextStateTime(timeDelta_t nextStateTime);
-timeDelta_t schedulerGetNextStateTime();
+timeDelta_t schedulerGetNextStateTime(void);
 void schedulerInit(void);
 void scheduler(void);
-uint32_t schedulerExecuteTask(task_t *selectedTask, uint32_t currentTimeUs);
-void taskSystemLoad(uint32_t currentTimeUs);
-void getCheckFuncInfo(cfCheckFuncInfo_t *checkFuncInfo);
-void getTaskInfo(taskId_e taskId, taskInfo_t * taskInfo);
-
-task_t *queueFirst(void);
-task_t *queueNext(void);
-
+timeUs_t schedulerExecuteTask(task_t *selectedTask, timeUs_t currentTimeUs);
+void taskSystemLoad(timeUs_t currentTimeUs);
+uint32_t getCpuPercentageLate(void);
+void schedulerEnableGyro(void);
 uint16_t getAverageSystemLoadPercent(void);
+float schedulerGetCycleTimeMultiplier(void);

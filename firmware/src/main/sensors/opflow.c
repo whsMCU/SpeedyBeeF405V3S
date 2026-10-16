@@ -65,7 +65,7 @@
 
 opflow_t opflow;
 
-#ifdef USE_OPFLOW
+#ifdef USE_OPTICALFLOW
 static bool opflowIsCalibrating = false;
 static timeMs_t opflowCalibrationStartedAt;
 static float opflowCalibrationBodyAcc;
@@ -182,10 +182,10 @@ void opflowUpdate(timeUs_t currentTimeUs)
 
             // Apply sensor alignment
 //            applySensorAlignment(opflow.dev.rawData.flowRateRaw, opflow.dev.rawData.flowRateRaw, opticalFlowConfig.opflow_align);
-            alignSensorViaRotation(opflow.dev.rawData.flowRateRaw, CW0_DEG_FLIP);
+            alignSensorViaRotation(&opflow.dev.rawData.flowRateRaw, CW0_DEG_FLIP);
             // Calculate flow rate and accumulated body rate
-            opflow.flowRate[X] = opflow.dev.rawData.flowRateRaw[X] * integralToRateScaler;
-            opflow.flowRate[Y] = opflow.dev.rawData.flowRateRaw[Y] * integralToRateScaler;
+            opflow.flowRate[X] = opflow.dev.rawData.flowRateRaw.x * integralToRateScaler;
+            opflow.flowRate[Y] = opflow.dev.rawData.flowRateRaw.y * integralToRateScaler;
 
             // Only update DEBUG_FLOW_RAW if flow is good
             DEBUG_SET(DEBUG_FLOW_RAW, 0, (opflow.flowRate[X])); // right +
@@ -212,7 +212,7 @@ void opflowUpdate(timeUs_t currentTimeUs)
                 // Ongoing calibration - accumulate body and flow rotation magniture if opflow quality is good enough
                 const float invDt = 1.0e6 / opflow.dev.rawData.deltaTime;
                 opflowCalibrationBodyAcc += calc_length_pythagorean_2D(opflow.bodyRate[X], opflow.bodyRate[Y]);
-                opflowCalibrationFlowAcc += calc_length_pythagorean_2D(opflow.dev.rawData.flowRateRaw[X], opflow.dev.rawData.flowRateRaw[Y]) * invDt;
+                opflowCalibrationFlowAcc += calc_length_pythagorean_2D(opflow.dev.rawData.flowRateRaw.x, opflow.dev.rawData.flowRateRaw.y) * invDt;
             }
         }
 
@@ -250,7 +250,7 @@ void opflowGyroUpdateCallback(timeUs_t gyroUpdateDeltaUs)
         return;
 
     for (int axis = 0; axis < 2; axis++) {
-        opflow.gyroBodyRateAcc[axis] += bmi270.gyroADCf[axis] * gyroUpdateDeltaUs;
+        opflow.gyroBodyRateAcc[axis] += bmi270.gyro.gyroADCf[axis] * gyroUpdateDeltaUs;
     }
 
     opflow.gyroBodyRateTimeUs += gyroUpdateDeltaUs;

@@ -145,6 +145,26 @@ void pidInit(void)
   _PID_Test.pid_test_deg = 0;
 }
 
+#ifdef USE_DYN_LPF
+static void updateDynLpfCutoffs(timeUs_t currentTimeUs, float throttle)
+{
+    static timeUs_t lastDynLpfUpdateUs = 0;
+    static int dynLpfPreviousQuantizedThrottle = -1;  // to allow an initial zero throttle to set the filter cutoff
+
+    if (cmpTimeUs(currentTimeUs, lastDynLpfUpdateUs) >= DYN_LPF_THROTTLE_UPDATE_DELAY_US) {
+        const int quantizedThrottle = lrintf(throttle * DYN_LPF_THROTTLE_STEPS); // quantize the throttle reduce the number of filter updates
+        if (quantizedThrottle != dynLpfPreviousQuantizedThrottle) {
+            // scale the quantized value back to the throttle range so the filter cutoff steps are repeatable
+            const float dynLpfThrottle = (float)quantizedThrottle / DYN_LPF_THROTTLE_STEPS;
+            dynLpfGyroUpdate(dynLpfThrottle);
+            dynLpfDTermUpdate(dynLpfThrottle);
+            dynLpfPreviousQuantizedThrottle = quantizedThrottle;
+            lastDynLpfUpdateUs = currentTimeUs;
+        }
+    }
+}
+#endif
+
 void PID_Calculation(PID* axis, float set_point, float measured1, float measured2, float dt)
 {
   axis->error = set_point - measured1;
@@ -219,7 +239,7 @@ static uint8_t getHeadingHoldState(void)
 float yaw_heading_reference;
 
 // Function for loop trigger
-void taskMainPidLoop(timeUs_t currentTimeUs)
+FAST_CODE void subTaskPidController(timeUs_t currentTimeUs)
 {
 	float imu_roll, imu_pitch, imu_yaw;
 	imu_roll = (float)DECIDEGREES_TO_DEGREES(attitude.values.roll);
@@ -244,6 +264,11 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 
       //processDelayedSave();
   }
+
+#ifdef USE_DYN_LPF
+    // keep the changes to dynamic lowpass clean, without unnecessary dynamic changes
+    updateDynLpfCutoffs(currentTimeUs, throttle);
+#endif
 
 //  uint8_t headingHoldState = getHeadingHoldState();
 //
@@ -286,19 +311,19 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   applyCommand[ROLL]      = scaleRangef(rcCommand[ROLL],  -500.0f, 500.0f, -30.0f,  30.f);
   applyCommand[PITCH]     = scaleRangef(rcCommand[PITCH], -500.0f, 500.0f, -30.0f,  30.f);
   applyCommand[YAW]       = scaleRangef(rcCommand[YAW],   -500.0f, 500.0f, -500.0f, 500.f);
-  applyCommand[THROTTLE]  = scaleRangef(rcCommand[THROTTLE] + throttleAngleCorrection, 1000.0f, 2000.0f, 0.0f, 1000.0f);
+  applyCommand[THROTTLE]  = scaleRangef(rcCommand[THROTTLE] + throttleAngleCorrection, 1000.0f, 2000.0f, 0.0f, 2000.0f);
 
-  PID_Calculation(&_ROLL.out, applyCommand[ROLL], imu_roll, bmi270.gyroADCf[X], dT);
-  PID_Calculation(&_ROLL.in, _ROLL.out.result, bmi270.gyroADCf[X], 0, dT);
+  PID_Calculation(&_ROLL.out, applyCommand[ROLL], imu_roll, bmi270.gyro.gyroADCf[X], dT);
+  PID_Calculation(&_ROLL.in, _ROLL.out.result, bmi270.gyro.gyroADCf[X], 0, dT);
 
   if(_PID_Test.pid_test_flag == 1)
   {
-    PID_Calculation(&_PITCH.out, _PID_Test.pid_test_deg, imu_pitch, bmi270.gyroADCf[Y], dT);
+    PID_Calculation(&_PITCH.out, _PID_Test.pid_test_deg, imu_pitch, bmi270.gyro.gyroADCf[Y], dT);
   }else
   {
-    PID_Calculation(&_PITCH.out, applyCommand[PITCH], imu_pitch, bmi270.gyroADCf[Y], dT);
+    PID_Calculation(&_PITCH.out, applyCommand[PITCH], imu_pitch, bmi270.gyro.gyroADCf[Y], dT);
   }
-  PID_Calculation(&_PITCH.in, _PITCH.out.result, bmi270.gyroADCf[Y], 0, dT);
+  PID_Calculation(&_PITCH.in, _PITCH.out.result, bmi270.gyro.gyroADCf[Y], 0, dT);
 
 //  DEBUG_SET(DEBUG_PIDLOOP, 0, (_PID_Test.pid_test_deg));
 //  DEBUG_SET(DEBUG_PIDLOOP, 1, (imu_pitch));
@@ -306,7 +331,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 //  DEBUG_SET(DEBUG_PIDLOOP, 3, (_PITCH.out.result_p));
 //  DEBUG_SET(DEBUG_PIDLOOP, 4, (_PITCH.out.result_i));
 //  DEBUG_SET(DEBUG_PIDLOOP, 5, (_PITCH.out.result));
-//  DEBUG_SET(DEBUG_PIDLOOP, 6, (bmi270.gyroADCf[Y]));
+//  DEBUG_SET(DEBUG_PIDLOOP, 6, (bmi270.gyro.gyroADCf[Y]));
 //  DEBUG_SET(DEBUG_PIDLOOP, 7, (_PITCH.in.error));
 
   if((rcData[THROTTLE] < 1030 || !ARMING_FLAG(ARMED))&& _PID_Test.pid_test_flag == 0)
@@ -318,7 +343,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   {
 	  yaw_heading_reference = imu_yaw;
 
-	  PID_Calculation(&_YAW_Rate, applyCommand[YAW], -bmi270.gyroADCf[Z], 0, dT);//left -, right +
+	  PID_Calculation(&_YAW_Rate, applyCommand[YAW], -bmi270.gyro.gyroADCf[Z], 0, dT);//left -, right +
 
     LF = 10500 + 500 + applyCommand[THROTTLE] * 10 - _PITCH.in.result + _ROLL.in.result - _YAW_Rate.result;
     LR = 10500 + 500 + applyCommand[THROTTLE] * 10 + _PITCH.in.result + _ROLL.in.result + _YAW_Rate.result;
@@ -327,7 +352,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
   }
   else
   {
-	  PID_Calculation(&_YAW_Heading, yaw_heading_reference, imu_yaw, -bmi270.gyroADCf[Z], dT);
+	  PID_Calculation(&_YAW_Heading, yaw_heading_reference, imu_yaw, -bmi270.gyro.gyroADCf[Z], dT);
 
 //    DEBUG_SET(DEBUG_PIDLOOP, 0, (yaw_heading_reference));
 //    DEBUG_SET(DEBUG_PIDLOOP, 1, (imu_yaw));

@@ -22,6 +22,8 @@
 
 #include "common/axis.h"
 #include "common/maths.h"
+#include "common/vector.h"
+#include "common/sensor_alignment.h"
 
 typedef struct boardAlignment_s {
     int32_t rollDegrees;
@@ -33,7 +35,7 @@ extern boardAlignment_t boardAlignment;
 
 void boardAlignment_Init(int32_t roll, int32_t pitch, int32_t yaw);
 
-void alignSensorViaMatrix(float *dest, fp_rotationMatrix_t* rotationMatrix);
-void alignSensorViaRotation(float *dest, uint8_t rotation);
+void alignSensorViaMatrix(vector3_t *dest, matrix33_t *rotationMatrix);
+void alignSensorViaRotation(vector3_t *dest, sensor_align_e rotation);
 
 void initBoardAlignment(const boardAlignment_t *boardAlignment);

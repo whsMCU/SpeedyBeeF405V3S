@@ -25,6 +25,7 @@
 #include "hw.h"
 #include "drivers/sensor.h"
 #include "common/maths.h"
+#include "common/vector.h"
 //#include "drivers/exti.h"
 
 typedef struct magDev_s {
@@ -36,7 +37,7 @@ typedef struct magDev_s {
     uint8_t ch;
     uint8_t address;
     sensor_align_e magAlignment;
-    fp_rotationMatrix_t rotationMatrix;
+    matrix33_t rotationMatrix;
     //ioTag_t magIntExtiTag;
     int16_t magGain[3];
 } magDev_t;

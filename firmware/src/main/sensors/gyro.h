@@ -24,6 +24,7 @@
 #include "common/filter.h"
 #include "common/time.h"
 #include "common/utils.h"
+#include "common/vector.h"
 
 #include "flight/dyn_notch_filter.h"
 
@@ -75,9 +76,16 @@ typedef struct gyro_s {
     uint16_t sampleRateHz;
     uint32_t targetLooptime;
     uint32_t sampleLooptime;
+
+    volatile bool dataReady;
+
     float scale;
-    float gyroADC[XYZ_AXIS_COUNT];     // aligned, calibrated, scaled, but unfiltered data from the sensor(s)
+
+    int16_t gyroADCRaw[XYZ_AXIS_COUNT];                      // raw data from sensor
+    int32_t gyroADCRawPrevious[XYZ_AXIS_COUNT];
+    vector3_t gyroADC;     // aligned, calibrated, scaled, but unfiltered data from the sensor(s)
     float gyroADCf[XYZ_AXIS_COUNT];    // filtered gyro data
+
     float gyro_accumulatedMeasurements[XYZ_AXIS_COUNT];
     float gyroPrevious[XYZ_AXIS_COUNT];
     int gyro_accumulatedMeasurementCount;
@@ -112,13 +120,12 @@ typedef struct gyro_s {
 
     pt1Filter_t imuGyroFilter[XYZ_AXIS_COUNT];
 
-    uint8_t *txBuf, *rxBuf;
     float gyroZero[XYZ_AXIS_COUNT];
     int16_t gyro_offset_yaw;
     uint16_t gyroCalibrationDuration;   // Gyro calibration duration in 1/100 second
-    int32_t gyroADCRawPrevious[XYZ_AXIS_COUNT];
-    int16_t gyroADCRaw[XYZ_AXIS_COUNT];                      // raw data from sensor
+
     int16_t temperature;
+
     uint8_t hardware_lpf;
     bool gyro_high_fsr;
 
@@ -133,45 +140,73 @@ typedef struct gyro_s {
     uint32_t exit_callback_dt;
     uint32_t rx_callback_dt;
 
-    volatile bool dataReady;
-
-    uint16_t gyroSampleRateHz;
-
     bool init_gyro_cal_enabled;
-    float gravity_cmss_cal;
 
-    float acc_1G_rec;
-    uint16_t acc_1G;
-    int16_t accADCRaw[XYZ_AXIS_COUNT];
-    float accADC[XYZ_AXIS_COUNT];
-    float accADCf[XYZ_AXIS_COUNT];
-    float accPrevious[XYZ_AXIS_COUNT];
-    acc_extremes_t extremes[XYZ_AXIS_COUNT];
-    float maxG;
+    bool done_gyro_config;
+} gyro_t;
 
-    float accMagnitude;                     // in multiples of 1G
+typedef struct acc_s {
+  uint16_t sampleRateHz;
 
-    uint16_t acc_lpf_hz;                    // cutoff frequency for the low pass filter used on the acc z-axis for althold in Hz
-    uint16_t accLpfCutHz;
-    biquadFilter_t accFilter[XYZ_AXIS_COUNT];
+  volatile bool dataReady;
 
-    flightDynamicsTrims_t accelerationTrims;
-    rollAndPitchTrims_t rollAndPitchTrims;
-    int acc_accumulatedMeasurementCount;
-    float acc_accumulatedMeasurements[XYZ_AXIS_COUNT];
-    uint16_t calibratingA;      // the calibration is done is the main loop. Calibrating decreases at each cycle down to 0, then we enter in a normal mode.
+  float acc_1G_rec;
+  uint16_t acc_1G;
 
-    bool isAccelUpdatedAtLeastOnce;
-    uint16_t accSampleRateHz;
-    bool acc_high_fsr;
+  int16_t accADCRaw[XYZ_AXIS_COUNT];
+  vector3_t accADC;
+  float accADCf[XYZ_AXIS_COUNT];
+  float accPrevious[XYZ_AXIS_COUNT];
 
-    uint32_t accClipCount;
-    bool isClipped;
+  acc_extremes_t extremes[XYZ_AXIS_COUNT];
+  float maxG;
+
+  vector3_t jerk;
+  float accMagnitude;                     // in multiples of 1G
+  float jerkMagnitude;                    // in multiples of 1G/s (measure of collision strength)
+
+  uint16_t acc_lpf_hz;                    // cutoff frequency for the low pass filter used on the acc z-axis for althold in Hz
+  uint16_t accLpfCutHz;
+  pt2Filter_t accFilter[XYZ_AXIS_COUNT];
+
+  flightDynamicsTrims_t accelerationTrims;
+  rollAndPitchTrims_t rollAndPitchTrims;
+  int acc_accumulatedMeasurementCount;
+  float acc_accumulatedMeasurements[XYZ_AXIS_COUNT];
+  uint16_t calibratingA;      // the calibration is done is the main loop. Calibrating decreases at each cycle down to 0, then we enter in a normal mode.
+
+  bool isAccelUpdatedAtLeastOnce;
+  bool acc_high_fsr;
+
+  float gravity_cmss_cal;
+
+  uint32_t accClipCount;
+  bool isClipped;
+
+  uint32_t detectedEXTI;
+  uint32_t LastEXTI;
+  uint32_t SyncEXTI;
+  int32_t ShortPeriod;
+  int32_t DmaMaxDuration;
+  uint32_t exit_callback_dt;
+  uint32_t rx_callback_dt;
+
+  bool done_accel_config;
+} acc_t;
+
+typedef struct imu_s {
+    uint8_t *txBuf, *rxBuf;
+
+  	gyro_t gyro;
+
+  	acc_t acc;
 } imu_t;
 
 extern imu_t bmi270;
 
-void taskGyroUpdate(timeUs_t currentTimeUs);
+extern uint8_t activePidLoopDenom;
+
+FAST_CODE void gyroUpdate(timeUs_t currentTimeUs);
 void gyroFiltering(timeUs_t currentTimeUs);
 float gyroGetFilteredDownsampled(int axis);
 bool gyroGetAccumulationAverage(float *accumulationAverage);

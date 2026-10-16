@@ -129,6 +129,8 @@ void init(void)
 {
   debugMode = DEBUG_NONE;//DEBUG_FLOW;//DEBUG_POS_EST;// DEBUG_NONE; //DEBUG_PIDLOOP
   Param_Config_Init();
+
+
   bool existing = loadFromSDCard();
   if(existing)
   {
@@ -240,7 +242,7 @@ void init(void)
     rangefinderInit();
 #endif
 
-#ifdef USE_OPFLOW
+#ifdef USE_OPTICALFLOW
     opflowInit();
 #endif
     navigationInit();
@@ -299,6 +301,7 @@ void Param_Config_Init(void)
 //	systemConfig_Init();
 //	pilotConfig_Init();
 	boardConfig_Init();
+//	sdcardConfig_Init();
 
 	boardAlignment_Init(0, 0, 0);
 //	failsafeConfig_Init();
@@ -310,7 +313,7 @@ void Param_Config_Init(void)
 #ifdef USE_GPS
 	//gpsConfig_Init();
 #endif
-#ifdef USE_OPFLOW
+#ifdef USE_OPTICALFLOW
 	opflow_Init();
 #endif
 	barometerConfig_Init();

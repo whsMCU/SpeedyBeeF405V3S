@@ -91,6 +91,7 @@ int main(void)
   return 0;
 
 }
+
 void FAST_CODE run(void)
 {
     while (true) {
@@ -119,6 +120,7 @@ void hwInit(void)
   {
     fatfsInit();
   }
+
 }
 
 void initialiseMemorySections(void)

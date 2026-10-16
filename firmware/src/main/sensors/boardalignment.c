@@ -35,7 +35,7 @@
 #include "boardalignment.h"
 
 static bool standardBoardAlignment = true;     // board orientation correction
-static fp_rotationMatrix_t boardRotation;
+static matrix33_t boardRotation;
 
 // no template required since defaults are zero
 
@@ -66,70 +66,68 @@ void initBoardAlignment(const boardAlignment_t *boardAlignment)
     rotationAngles.angles.pitch = degreesToRadians(boardAlignment->pitchDegrees);
     rotationAngles.angles.yaw   = degreesToRadians(boardAlignment->yawDegrees  );
 
-    buildRotationMatrix(&rotationAngles, &boardRotation);
+    buildRotationMatrix(&boardRotation, &rotationAngles);
 }
 
-static void alignBoard(float *vec)
+static void alignBoard(vector3_t *vec)
 {
-    applyMatrixRotation(vec, &boardRotation);
+    applyRotationMatrix(vec, &boardRotation);
 }
 
-void alignSensorViaMatrix(float *dest, fp_rotationMatrix_t* sensorRotationMatrix)
+NOINLINE void alignSensorViaMatrix(vector3_t *dest, matrix33_t *sensorRotationMatrix)
 {
-    applyMatrixRotation(dest, sensorRotationMatrix);
+    applyRotationMatrix(dest, sensorRotationMatrix);
 
     if (!standardBoardAlignment) {
         alignBoard(dest);
     }
 }
 
-void alignSensorViaRotation(float *dest, uint8_t rotation)
+void alignSensorViaRotation(vector3_t *dest, sensor_align_e rotation)
 {
-    const float x = dest[X];
-    const float y = dest[Y];
-    const float z = dest[Z];
+    const vector3_t tmp = *dest;
 
     switch (rotation) {
     default:
     case CW0_DEG:
-        dest[X] = x;
-        dest[Y] = y;
-        dest[Z] = z;
+        dest->x = tmp.x;
+        dest->y = tmp.y;
+        dest->z = tmp.z;
         break;
     case CW90_DEG:
-        dest[X] = y;
-        dest[Y] = -x;
-        dest[Z] = z;
+        dest->x = tmp.y;
+        dest->y = -tmp.x;
+        dest->z = tmp.z;
         break;
     case CW180_DEG:
-        dest[X] = -x;
-        dest[Y] = -y;
-        dest[Z] = z;
+        dest->x = -tmp.x;
+        dest->y = -tmp.y;
+        dest->z = tmp.z;
         break;
     case CW270_DEG:
-        dest[X] = -y;
-        dest[Y] = x;
-        dest[Z] = z;
+        dest->x = -tmp.y;
+        dest->y = tmp.x;
+        dest->z = tmp.z;
         break;
     case CW0_DEG_FLIP:
-        dest[X] = -x;
-        dest[Y] = y;
-        dest[Z] = -z;
+        dest->x = -tmp.x;
+        dest->y = tmp.y;
+        dest->z = -tmp.z;
         break;
     case CW90_DEG_FLIP:
-        dest[X] = y;
-        dest[Y] = x;
-        dest[Z] = -z;
+        dest->x = tmp.y;
+        dest->y = tmp.x;
+        dest->z = -tmp.z;
         break;
     case CW180_DEG_FLIP:
-        dest[X] = x;
-        dest[Y] = -y;
-        dest[Z] = -z;
+        dest->x = tmp.x;
+        dest->y = -tmp.y;
+        dest->z = -tmp.z;
         break;
     case CW270_DEG_FLIP:
-        dest[X] = -y;
-        dest[Y] = -x;
-        dest[Z] = -z;
+        dest->x = -tmp.y;
+        dest->y = -tmp.x;
+        dest->z = -tmp.z;
         break;
     }
 

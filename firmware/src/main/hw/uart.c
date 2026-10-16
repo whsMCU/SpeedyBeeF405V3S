@@ -942,6 +942,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
       qbufferWrite(&ring_buffer[_DEF_UART2], (uint8_t *)&rx_buf[_DEF_UART2][0], 1);
 //      HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *)&rx_buf[_DEF_UART2][0], MAX_SIZE);
 //      __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
+
+      rxRuntimeState.uartAvalable = uartAvailable(_DEF_UART2);
+      while(uartAvailable(_DEF_UART2))
+      {
+        crsfDataReceive(uartRead(_DEF_UART2), (void*) &rxRuntimeState);
+      }
+      
       rxRuntimeState.RxCallback_Flag = false;
   }
 

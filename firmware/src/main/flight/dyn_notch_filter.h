@@ -23,7 +23,7 @@
 #include <stdbool.h>
 
 
-#define DYN_NOTCH_COUNT_MAX 5
+#define DYN_NOTCH_COUNT_MAX 7
 
 typedef struct dynNotchConfig_s
 {
@@ -38,7 +38,7 @@ extern dynNotchConfig_t dynNotchConfig;
 
 void dynNotchConfig_Init(void);
 
-void dynNotchInit(const dynNotchConfig_t *config, const uint32_t targetLooptimeUs);
+void dynNotchInit(const dynNotchConfig_t *config, const float dt);
 void dynNotchPush(const int axis, const float sample);
 void dynNotchUpdate(void);
 float dynNotchFilter(const int axis, float value);

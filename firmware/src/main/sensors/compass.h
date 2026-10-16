@@ -21,8 +21,11 @@
 #pragma once
 
 #include "hw.h"
+#include "common/time.h"
 #include "common/axis.h"
 #include "common/maths.h"
+#include "common/sensor_alignment.h"
+#include "common/vector.h"
 #include "sensors/sensors.h"
 #include "drivers/sensor.h"
 #include "drivers/accgyro/accgyro.h"
@@ -32,6 +35,8 @@
 extern int16_t magHold;
 #endif
 
+#define TASK_COMPASS_RATE_HZ 40 // the base mag update rate; faster intervals will apply for higher ODR mags
+
 // Type of magnetometer used/detected
 typedef enum {
     MAG_DEFAULT = 0,
@@ -39,13 +44,20 @@ typedef enum {
     MAG_HMC5883 = 2,
     MAG_AK8975 = 3,
     MAG_AK8963 = 4,
-    MAG_QMC5883 = 5,
-    MAG_LIS3MDL = 6,
-    MAG_MPU925X_AK8963 = 7
+    MAG_QMC5883L = 5,
+    MAG_LIS2MDL = 6,
+    MAG_LIS3MDL = 7,
+    MAG_MPU925X_AK8963 = 8,
+    MAG_IST8310 = 9,
+    MAG_MMC560X = 10,
+    MAG_QMC5883P = 11,
+    MAG_DRONECAN = 12,
+    MAG_HARDWARE_COUNT
 } magSensor_e;
 
 typedef struct mag_s {
-    float magADC[XYZ_AXIS_COUNT];
+    bool isNewMagADCFlag;
+	vector3_t magADC;
 } mag_t;
 
 extern mag_t mag;
@@ -57,14 +69,30 @@ typedef struct compassConfig_s {
   sensorAlignment_t mag_customAlignment;
 } compassConfig_t;
 
+typedef struct compassBiasEstimator_s {
+    float lambda_min, lambda;
+    float b[3];
+    float theta[4];
+    float U[4][4];
+    float D[4];
+} compassBiasEstimator_t;
+
 extern compassConfig_t compassConfig;
 
+bool compassEnabledAndCalibrated(void);
+uint32_t compassUpdate(timeUs_t currentTime);
+bool compassInit(void);
 void compassConfig_Init(void);
 bool compassIsHealthy(void);
-uint32_t compassUpdate(uint32_t currentTime);
-void taskUpdateMag(uint32_t currentTimeUs);
-bool compassInit(void);
+
+void taskUpdateMag(timeUs_t currentTimeUs);
+
 void compassStartCalibration(void);
 bool compassIsCalibrationComplete(void);
 void updateMagHold(void);
+
+
+void compassBiasEstimatorInit(compassBiasEstimator_t *compassBiasEstimator, const float lambda_min, const float p0);
+void compassBiasEstimatorUpdate(compassBiasEstimator_t *compassBiasEstimator, const float lambda_min, const float p0);
+void compassBiasEstimatorApply(compassBiasEstimator_t *cBE, vector3_t *mag);
 

@@ -85,7 +85,8 @@ void PID_Calculation(PID* axis, float set_point, float measured1, float measured
 void Reset_All_PID_Integrator(void);
 
 void pidInit(void);
-void taskMainPidLoop(timeUs_t currentTimeUs);
+
+FAST_CODE void subTaskPidController(timeUs_t currentTimeUs);
 
 void mixerSetThrottleAngleCorrection(int correctionValue);
 

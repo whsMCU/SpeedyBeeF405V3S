@@ -239,11 +239,11 @@ void rxFailsafeChannelConfigs_Init(void);
 void rxInit(void);
 void rxProcessPending(bool state);
 bool taskUpdateRxMainInProgress(void);
-bool rxUpdateCheck(uint32_t currentTimeUs, int32_t currentDeltaTimeUs);
-void rxFrameCheck(uint32_t currentTimeUs, int32_t currentDeltaTimeUs);
+bool rxUpdateCheck(timeUs_t currentTimeUs, timeDelta_t currentDeltaTimeUs);
+void rxFrameCheck(timeUs_t currentTimeUs, timeDelta_t currentDeltaTimeUs);
 bool rxIsReceivingSignal(void);
 bool rxAreFlightChannelsValid(void);
-bool calculateRxChannelsAndUpdateFailsafe(uint32_t currentTimeUs);
+bool calculateRxChannelsAndUpdateFailsafe(timeUs_t currentTimeUs);
 
 struct rxConfig_s;
 

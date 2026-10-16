@@ -101,8 +101,10 @@ vector2_t *vector2Normalize(vector2_t *result, const vector2_t *v)
 vector2_t *vector2Rotate(vector2_t *result, const vector2_t *v, const float angle)
 {
     vector2_t tmp;
-    tmp.x = v->x * cos_approx(angle) - v->y * sin_approx(angle);
-    tmp.y = v->x * sin_approx(angle) + v->y * cos_approx(angle);
+    float sin, cos;
+    sincosf_approx(angle, &sin, &cos);
+    tmp.x = v->x * cos - v->y * sin;
+    tmp.y = v->x * sin + v->y * cos;
     *result = tmp;
     return result;
 }
@@ -209,37 +211,39 @@ vector3_t *matrixTrnVectorMul(vector3_t *result, const matrix33_t *mat, const ve
     return result;
 }
 
-//matrix33_t *buildRotationMatrix(matrix33_t *result, const fp_angles_t *rpy)
-//{
-//    const float cosx = cos_approx(rpy->angles.roll);
-//    const float sinx = sin_approx(rpy->angles.roll);
-//    const float cosy = cos_approx(rpy->angles.pitch);
-//    const float siny = sin_approx(rpy->angles.pitch);
-//    const float cosz = cos_approx(rpy->angles.yaw);
-//    const float sinz = sin_approx(rpy->angles.yaw);
-//
-//    result->m[0][X] = cosz * cosy;
-//    result->m[0][Y] = -cosy * sinz;
-//    result->m[0][Z] = siny;
-//    result->m[1][X] = sinz * cosx + sinx * cosz * siny;
-//    result->m[1][Y] = cosz * cosx - sinx * sinz * siny;
-//    result->m[1][Z] = -sinx * cosy;
-//    result->m[2][X] = sinx * sinz - cosz * cosx * siny;
-//    result->m[2][Y] = sinx * cosz + sinz * cosx * siny;
-//    result->m[2][Z] = cosy * cosx;
-//
-//    return result;
-//}
+matrix33_t *buildRotationMatrix(matrix33_t *result, const fp_angles_t *rpy)
+{
+    float cosx, sinx;
+    sincosf_approx(rpy->angles.roll, &sinx, &cosx);
 
-//vector3_t *applyRotationMatrix(vector3_t *v, const matrix33_t *rotationMatrix)
-//{
-//    return matrixTrnVectorMul(v, rotationMatrix, v);
-//}
+    float cosy, siny;
+    sincosf_approx(rpy->angles.pitch, &siny, &cosy);
+
+    float cosz, sinz;
+    sincosf_approx(rpy->angles.yaw, &sinz, &cosz);
+
+    result->m[0][X] = cosz * cosy;
+    result->m[0][Y] = -cosy * sinz;
+    result->m[0][Z] = siny;
+    result->m[1][X] = sinz * cosx + sinx * cosz * siny;
+    result->m[1][Y] = cosz * cosx - sinx * sinz * siny;
+    result->m[1][Z] = -sinx * cosy;
+    result->m[2][X] = sinx * sinz - cosz * cosx * siny;
+    result->m[2][Y] = sinx * cosz + sinz * cosx * siny;
+    result->m[2][Z] = cosy * cosx;
+
+    return result;
+}
+
+vector3_t *applyRotationMatrix(vector3_t *v, const matrix33_t *rotationMatrix)
+{
+    return matrixTrnVectorMul(v, rotationMatrix, v);
+}
 
 matrix33_t *yawToRotationMatrixZ(matrix33_t *result, const float yaw)
 {
-    const float sinYaw = sin_approx(yaw);
-    const float cosYaw = cos_approx(yaw);
+    float sinYaw, cosYaw;
+    sincosf_approx(yaw, &sinYaw, &cosYaw);
 
     result->m[0][0] = cosYaw;
     result->m[0][1] = -sinYaw;

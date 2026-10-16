@@ -16,6 +16,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <utils.h>
 
 #define _DEF_LED1           0
 #define _DEF_LED2           1
@@ -82,12 +83,14 @@
 #define USE_ADC
 //#define USE_OSD
 //#define USE_MAX7456
+
 #define USE_MOTOR
+#define USE_DMA_RAM
 
 #define NAV_AUTO_MAG_DECLINATION_PRECISE
 
 #define USE_MAG
-#define USE_OPFLOW
+#define USE_OPTICALFLOW
 #define USE_OPFLOW_MSP
 #define USE_RANGEFINDER
 #define USE_RANGEFINDER_MSP

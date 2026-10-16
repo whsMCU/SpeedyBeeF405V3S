@@ -479,6 +479,14 @@ void rxSetUplinkTxPwrMw(uint16_t uplinkTxPwrMwValue)
 }
 #endif
 
+bool rxUpdateCheck(timeUs_t currentTimeUs, timeDelta_t currentDeltaTimeUs)
+{
+    UNUSED(currentTimeUs);
+    UNUSED(currentDeltaTimeUs);
+
+    return taskUpdateRxMainInProgress() || rxDataProcessingRequired || auxiliaryProcessingRequired;
+}
+
 void rxFrameCheck(timeUs_t currentTimeUs, timeDelta_t currentDeltaTimeUs)
 {
     bool signalReceived = false;

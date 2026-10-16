@@ -68,68 +68,8 @@ void positionConfig_Init(void)
 static uint8_t averagingCount;
 laggedMovingAverageCombined_t  accAvg[XYZ_AXIS_COUNT];
 
-KalmanState kf;
-
-void kalmanInit(KalmanState* state) {
-    state->altitude = 0.0f;
-    state->velocity = 0.0f;
-
-    state->P[0][0] = 1000.0f;
-    state->P[0][1] = 0.0f;
-    state->P[1][0] = 0.0f;
-    state->P[1][1] = 1000.0f;
-}
-
-void kalmanUpdate(KalmanState* state, float acc_z_cmps2, float pressure_alt_cm, float dt) {
-    // 상태 예측
-    state->altitude += state->velocity * dt + 0.5f * acc_z_cmps2 * dt * dt;
-    state->velocity += acc_z_cmps2 * dt;
-
-    // 공분산 예측
-    float q_alt = 200.0f;  // 고도 예측 노이즈
-    float q_vel = 400.0f;  // 속도 예측 노이즈
-
-    //float acc_var = 50.0f; // (cm/s²)²
-
-    //float q_alt = 0.25f * acc_var * dt*dt*dt*dt;
-    //float q_vel = acc_var * dt*dt;
-
-    state->P[0][0] += dt * (state->P[0][1] + state->P[1][0]) + state->P[1][1] * dt *dt + q_alt;
-    state->P[0][1] += dt * state->P[1][1];
-    state->P[1][0] += dt * state->P[1][1];
-    state->P[1][1] += q_vel;
-
-    // 측정 업데이트 (기압센서 고도)
-    float R = 900.0f;  // 측정 노이즈 공분산 (cm^2)
-    float z = pressure_alt_cm;
-    float y = z - state->altitude;  // innovation
-
-    float S = state->P[0][0] + R;
-
-    float K0 = state->P[0][0] / S;
-    float K1 = state->P[1][0] / S;
-
-    // 상태 보정
-    state->altitude += K0 * y;
-    state->velocity += K1 * y;
-    state->altitude_est = state->altitude;
-
-    // 공분산 보정
-    float P00 = state->P[0][0];
-    float P01 = state->P[0][1];
-    float P10 = state->P[1][0];
-    float P11 = state->P[1][1];
-
-    state->P[0][0] = P00 - K0 * P00;
-    state->P[0][1] = P01 - K0 * P01;
-    state->P[1][0] = P10 - K1 * P00;
-    state->P[1][1] = P11 - K1 * P01;
-}
-
 void position_Init(void)
 {
-
-  kalmanInit(&kf);
 
   averagingCount = 10;
   for (int i = 0; i < XYZ_AXIS_COUNT; i++) {
@@ -276,10 +216,8 @@ void calculateEstimatedAltitude(timeUs_t currentTimeUs)
 #endif
     }
 
-    vel_z += bmi270.accADCf[YAW] * US2S(dTime);
+    vel_z += bmi270.acc.accADCf[YAW] * US2S(dTime);
     pos_z += vel_z * US2S(dTime);
-
-    kalmanUpdate(&kf, posEstimator.imu.accelNEU.z, estimatedAltitudeCm, US2S(dTime));
 
 
 

@@ -25,10 +25,19 @@
  */
 
 #include <stdint.h>
+#include <stdlib.h>
 
-#include "time.h"
-#include "maths.h"
+#include "hw.h"
 
+#include "common/maths.h"
+#include "common/printf.h"
+#include "common/time.h"
+
+//#include "drivers/persistent.h"
+
+//#include "pg/pg_ids.h"
+
+//#include "drivers/time.h"
 
 #ifdef USE_RTC_TIME
 
@@ -142,7 +151,7 @@ static bool dateTimeFormat(char *buf, dateTime_t *dateTime, int16_t offsetMinute
     // Apply offset if necessary
     if (offsetMinutes != 0) {
         tz_hours = offsetMinutes / 60;
-        tz_minutes = ABS(offsetMinutes % 60);
+        tz_minutes = abs(offsetMinutes % 60);
         dateTimeWithOffset(&local, dateTime, offsetMinutes);
         dateTime = &local;
     }
@@ -164,7 +173,7 @@ static bool dateTimeFormat(char *buf, dateTime_t *dateTime, int16_t offsetMinute
         tfp_sprintf(buf, "%04u-%02u-%02uT%02u:%02u:%02u.%03u%c%02d:%02d",
             dateTime->year, dateTime->month, dateTime->day,
             dateTime->hours, dateTime->minutes, dateTime->seconds, dateTime->millis,
-            tz_hours >= 0 ? '+' : '-', ABS(tz_hours), tz_minutes);
+            tz_hours >= 0 ? '+' : '-', abs(tz_hours), tz_minutes);
     }
 
     return retVal;
@@ -175,12 +184,12 @@ rtcTime_t rtcTimeMake(int32_t secs, uint16_t millis)
     return ((rtcTime_t)secs) * MILLIS_PER_SECOND + millis;
 }
 
-int32_t rtcTimeGetSeconds(rtcTime_t *t)
+int32_t rtcTimeGetSeconds(const rtcTime_t *t)
 {
     return *t / MILLIS_PER_SECOND;
 }
 
-uint16_t rtcTimeGetMillis(rtcTime_t *t)
+uint16_t rtcTimeGetMillis(const rtcTime_t *t)
 {
     return *t % MILLIS_PER_SECOND;
 }
@@ -235,7 +244,7 @@ bool rtcGet(rtcTime_t *t)
     return true;
 }
 
-bool rtcSet(rtcTime_t *t)
+bool rtcSet(const rtcTime_t *t)
 {
     started = *t - millis();
     return true;

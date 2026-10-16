@@ -21,7 +21,10 @@
 #include <string.h>
 #include <stdint.h>
 
+#include "hw.h"
+
 #include "streambuf.h"
+#include "common/maths.h"
 
 sbuf_t *sbufInit(sbuf_t *sbuf, uint8_t *ptr, uint8_t *end)
 {
@@ -63,7 +66,6 @@ void sbufWriteU32BigEndian(sbuf_t *dst, uint32_t val)
     sbufWriteU8(dst, (uint8_t)val);
 }
 
-
 void sbufFill(sbuf_t *dst, uint8_t data, int len)
 {
     memset(dst->ptr, data, len);
@@ -81,17 +83,30 @@ void sbufWriteString(sbuf_t *dst, const char *string)
     sbufWriteData(dst, string, strlen(string));
 }
 
+void sbufWritePString(sbuf_t *dst, const char *string)
+{
+    const int length = MIN((int)strlen(string), 255);
+    sbufWriteU8(dst, length);
+    sbufWriteData(dst, string, length);
+}
+
 void sbufWriteStringWithZeroTerminator(sbuf_t *dst, const char *string)
 {
     sbufWriteData(dst, string, strlen(string) + 1);
 }
 
-uint8_t sbufReadU8(sbuf_t *src)
+// The readers are kept out-of-line: under LTO the end-bounds check would
+// otherwise be inlined at every one of the ~hundreds of call sites, bloating
+// flash on constrained targets. A single shared copy costs a call instead.
+NOINLINE uint8_t sbufReadU8(sbuf_t *src)
 {
+    if (src->ptr < src->end) {
     return *src->ptr++;
 }
+    return 0;
+}
 
-uint16_t sbufReadU16(sbuf_t *src)
+NOINLINE uint16_t sbufReadU16(sbuf_t *src)
 {
     uint16_t ret;
     ret = sbufReadU8(src);
@@ -99,7 +114,7 @@ uint16_t sbufReadU16(sbuf_t *src)
     return ret;
 }
 
-uint32_t sbufReadU32(sbuf_t *src)
+NOINLINE uint32_t sbufReadU32(sbuf_t *src)
 {
     uint32_t ret;
     ret = sbufReadU8(src);
@@ -109,9 +124,15 @@ uint32_t sbufReadU32(sbuf_t *src)
     return ret;
 }
 
-void sbufReadData(sbuf_t *src, void *data, int len)
+NOINLINE void sbufReadData(sbuf_t *src, void *data, int len)
 {
-    memcpy(data, src->ptr, len);
+    const int available = MAX((int)(src->end - src->ptr), 0);
+    const int toCopy = MIN(len, available);
+    memcpy(data, src->ptr, toCopy);
+    if (toCopy < len) {
+        memset((uint8_t *)data + toCopy, 0, len - toCopy);
+    }
+    src->ptr += toCopy;
 }
 
 // reader - return bytes remaining in buffer
@@ -136,7 +157,11 @@ const uint8_t* sbufConstPtr(const sbuf_t *buf)
 // writer - commit written data
 void sbufAdvance(sbuf_t *buf, int size)
 {
+    if (size > 0 && size > (int)(buf->end - buf->ptr)) {
+        buf->ptr = buf->end;
+    } else {
     buf->ptr += size;
+    }
 }
 
 // modifies streambuf so that written data are prepared for reading

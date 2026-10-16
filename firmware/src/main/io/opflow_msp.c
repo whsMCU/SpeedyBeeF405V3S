@@ -78,9 +78,9 @@ void mspOpflowReceiveNewData(uint8_t * bufferPtr)
     const mspSensorOpflowDataMessage_t * pkt = (const mspSensorOpflowDataMessage_t *)bufferPtr;
 
     sensorData.deltaTime = currentTimeUs - updatedTimeUs;
-    sensorData.flowRateRaw[0] = pkt->motionX;
-    sensorData.flowRateRaw[1] = pkt->motionY;
-    sensorData.flowRateRaw[2] = 0;
+    sensorData.flowRateRaw.x = pkt->motionX;
+    sensorData.flowRateRaw.y = pkt->motionY;
+    sensorData.flowRateRaw.z = 0;
     sensorData.quality = (int)pkt->quality * 100 / 255;
     hasNewData = true;
 

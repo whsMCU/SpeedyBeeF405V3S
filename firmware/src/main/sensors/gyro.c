@@ -30,7 +30,6 @@
 #include "common/maths.h"
 #include "common/filter.h"
 #include "common/sensor_alignment.h"
-#include "common/vector.h"
 
 //#include "config/feature.h"
 //#include "config/config.h"
@@ -52,23 +51,23 @@
 
 FAST_DATA_ZERO_INIT imu_t bmi270;
 
-static bool overflowDetected;
+static FAST_DATA_ZERO_INIT bool overflowDetected = 0;
 #ifdef USE_GYRO_OVERFLOW_CHECK
-static timeUs_t overflowTimeUs;
+static FAST_DATA_ZERO_INIT timeUs_t overflowTimeUs;
 #endif
 
 #ifdef USE_YAW_SPIN_RECOVERY
-static bool yawSpinRecoveryEnabled;
-static int yawSpinRecoveryThreshold;
-static bool yawSpinDetected;
-static timeUs_t yawSpinTimeUs;
+static FAST_DATA_ZERO_INIT bool yawSpinRecoveryEnabled;
+static FAST_DATA_ZERO_INIT int yawSpinRecoveryThreshold;
+static FAST_DATA_ZERO_INIT bool yawSpinDetected;
+static FAST_DATA_ZERO_INIT timeUs_t yawSpinTimeUs;
 #endif
 
 static FAST_DATA_ZERO_INIT float gyroFilteredDownsampled[XYZ_AXIS_COUNT];
 
 static FAST_DATA_ZERO_INIT int16_t gyroSensorTemperature;
 
-uint8_t activePidLoopDenom = 1;
+FAST_DATA uint8_t activePidLoopDenom = 1;
 
 static bool firstArmingCalibrationWasStarted = false;
 
@@ -76,7 +75,7 @@ static bool firstArmingCalibrationWasStarted = false;
 
 FAST_CODE bool isGyroSensorCalibrationComplete(const imu_t *gyroSensor)
 {
-    return gyroSensor->calibration.cyclesRemaining == 0;
+    return gyroSensor->gyro.calibration.cyclesRemaining == 0;
 }
 
 FAST_CODE bool gyroIsCalibrationComplete(void)
@@ -93,7 +92,7 @@ static bool isOnFinalGyroCalibrationCycle(const gyroCalibration_t *gyroCalibrati
 
 static int32_t gyroCalculateCalibratingCycles(void)
 {
-    return (bmi270.gyroCalibrationDuration * 10000) / bmi270.sampleLooptime; //gyroCalibrationDuration
+    return (bmi270.gyro.gyroCalibrationDuration * 10000) / bmi270.gyro.sampleLooptime; //gyroCalibrationDuration
 }
 
 static bool isOnFirstGyroCalibrationCycle(const gyroCalibration_t *gyroCalibration)
@@ -109,7 +108,7 @@ static void gyroSetCalibrationCycles(imu_t *gyroSensor)
         return;
     }
 #endif
-    gyroSensor->calibration.cyclesRemaining = gyroCalculateCalibratingCycles();
+    gyroSensor->gyro.calibration.cyclesRemaining = gyroCalculateCalibratingCycles();
 }
 
 void gyroStartCalibration(bool isFirstArmingCalibration)
@@ -134,19 +133,19 @@ static void performGyroCalibration(imu_t *gyroSensor, uint8_t gyroMovementCalibr
 {
     for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
         // Reset g[axis] at start of calibration
-        if (isOnFirstGyroCalibrationCycle(&gyroSensor->calibration)) {
-            gyroSensor->calibration.sum[axis] = 0.0f;
-            devClear(&gyroSensor->calibration.var[axis]);
+        if (isOnFirstGyroCalibrationCycle(&gyroSensor->gyro.calibration)) {
+            gyroSensor->gyro.calibration.sum[axis] = 0.0f;
+            devClear(&gyroSensor->gyro.calibration.var[axis]);
             // gyroZero is set to zero until calibration complete
-            gyroSensor->gyroZero[axis] = 0.0f;
+            gyroSensor->gyro.gyroZero[axis] = 0.0f;
         }
 
         // Sum up CALIBRATING_GYRO_TIME_US readings
-        gyroSensor->calibration.sum[axis] += bmi270.gyroADCRaw[axis];
-        devPush(&gyroSensor->calibration.var[axis], bmi270.gyroADCRaw[axis]);
+        gyroSensor->gyro.calibration.sum[axis] += bmi270.gyro.gyroADCRaw[axis];
+        devPush(&gyroSensor->gyro.calibration.var[axis], bmi270.gyro.gyroADCRaw[axis]);
 
-        if (isOnFinalGyroCalibrationCycle(&gyroSensor->calibration)) {
-            const float stddev = devStandardDeviation(&gyroSensor->calibration.var[axis]);
+        if (isOnFinalGyroCalibrationCycle(&gyroSensor->gyro.calibration)) {
+            const float stddev = devStandardDeviation(&gyroSensor->gyro.calibration.var[axis]);
             // DEBUG_GYRO_CALIBRATION records the standard deviation of roll
             // into the spare field - debug[3], in DEBUG_GYRO_RAW
             if (axis == X) {
@@ -160,21 +159,21 @@ static void performGyroCalibration(imu_t *gyroSensor, uint8_t gyroMovementCalibr
             }
 
             // please take care with exotic boardalignment !!
-            gyroSensor->gyroZero[axis] = gyroSensor->calibration.sum[axis] / gyroCalculateCalibratingCycles();
+            gyroSensor->gyro.gyroZero[axis] = gyroSensor->gyro.calibration.sum[axis] / gyroCalculateCalibratingCycles();
             if (axis == Z) {
-              gyroSensor->gyroZero[axis] -= ((float)gyroSensor->gyro_offset_yaw / 100);
+              gyroSensor->gyro.gyroZero[axis] -= ((float)gyroSensor->gyro.gyro_offset_yaw / 100);
             }
         }
     }
 
-    if (isOnFinalGyroCalibrationCycle(&gyroSensor->calibration)) {
+    if (isOnFinalGyroCalibrationCycle(&gyroSensor->gyro.calibration)) {
         schedulerResetTaskStatistics(TASK_SELF); // so calibration cycles do not pollute tasks statistics
         // if (!firstArmingCalibrationWasStarted || (getArmingDisableFlags() & ~ARMING_DISABLED_CALIBRATING) == 0) {
         //     beeper(BEEPER_GYRO_CALIBRATED);
         // }
     }
 
-    --gyroSensor->calibration.cyclesRemaining;
+    --gyroSensor->gyro.calibration.cyclesRemaining;
 }
 
 #if defined(USE_GYRO_SLEW_LIMITER)
@@ -197,27 +196,26 @@ FAST_CODE int32_t gyroSlewLimiter(imu_t *gyroSensor, int axis)
 
 #define gyroMovementCalibrationThreshold 48
 
-static FAST_CODE void gyroUpdateSensor()
+static FAST_CODE void gyroUpdateSensor(void)
 {
 	if (!bmi270SpiGyroRead(&bmi270)) {
 		return;
 	}
-    bmi270.dataReady = false;
-
+    bmi270.gyro.dataReady = false;
     if (isGyroSensorCalibrationComplete(&bmi270)) {
     // move 16-bit gyro data into 32-bit variables to avoid overflows in calculations
 
 #if defined(USE_GYRO_SLEW_LIMITER)
-      bmi270.gyroADC[X] = gyroSlewLimiter(&bmi270, X) - bmi270.gyroZero[X];
-      bmi270.gyroADC[Y] = gyroSlewLimiter(&bmi270, Y) - bmi270.gyroZero[Y];
-      bmi270.gyroADC[Z] = gyroSlewLimiter(&bmi270, Z) - bmi270.gyroZero[Z];
+      bmi270.gyro.gyroADC[X] = gyroSlewLimiter(&bmi270, X) - bmi270.gyro.gyroZero[X];
+      bmi270.gyro.gyroADC[Y] = gyroSlewLimiter(&bmi270, Y) - bmi270.gyro.gyroZero[Y];
+      bmi270.gyro.gyroADC[Z] = gyroSlewLimiter(&bmi270, Z) - bmi270.gyro.gyroZero[Z];
 #else
-    	bmi270.gyroADC[X] = bmi270.gyroADCRaw[X] - bmi270.gyroZero[X];
-    	bmi270.gyroADC[Y] = bmi270.gyroADCRaw[Y] - bmi270.gyroZero[Y];
-    	bmi270.gyroADC[Z] = bmi270.gyroADCRaw[Z] - bmi270.gyroZero[Z];
+    	bmi270.gyro.gyroADC.x = bmi270.gyro.gyroADCRaw[X] - bmi270.gyro.gyroZero[X];
+    	bmi270.gyro.gyroADC.y = bmi270.gyro.gyroADCRaw[Y] - bmi270.gyro.gyroZero[Y];
+    	bmi270.gyro.gyroADC.z = bmi270.gyro.gyroADCRaw[Z] - bmi270.gyro.gyroZero[Z];
 #endif
 
-			alignSensorViaRotation(bmi270.gyroADC, CW0_DEG);
+			alignSensorViaRotation(&bmi270.gyro.gyroADC, CW0_DEG);
 
     }else {
         performGyroCalibration(&bmi270, gyroMovementCalibrationThreshold);
@@ -239,40 +237,41 @@ static float applyGyroMedianFilter(int axis, float newGyroReading)
     return quickMedianFilter3f(gyroFilterSamples[axis]);
 }
 
-FAST_CODE void taskGyroUpdate(timeUs_t currentTimeUs)
+FAST_CODE void gyroUpdate(timeUs_t currentTimeUs)
 {
   static timeUs_t previousIMUUpdateTime;
   const timeDelta_t deltaT = currentTimeUs - previousIMUUpdateTime;
   previousIMUUpdateTime = currentTimeUs;
 	UNUSED(currentTimeUs);
 	gyroUpdateSensor();
-	bmi270.gyroADC[X] = bmi270.gyroADC[X] * bmi270.scale;
-	bmi270.gyroADC[Y] = bmi270.gyroADC[Y] * bmi270.scale;
-	bmi270.gyroADC[Z] = bmi270.gyroADC[Z] * bmi270.scale;
+
+	bmi270.gyro.gyroADC.x = bmi270.gyro.gyroADC.x * bmi270.gyro.scale;
+	bmi270.gyro.gyroADC.y = bmi270.gyro.gyroADC.y * bmi270.gyro.scale;
+	bmi270.gyro.gyroADC.z = bmi270.gyro.gyroADC.z * bmi270.gyro.scale;
 
 //  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
 //    bmi270.gyroADCf[axis] = applyGyroMedianFilter(axis, bmi270.gyroADC[axis]);
 //  }
 
-  if (bmi270.downsampleFilterEnabled) {
+  if (bmi270.gyro.downsampleFilterEnabled) {
       // using gyro lowpass 2 filter for downsampling
-    bmi270.sampleSum[X] = bmi270.lowpass2FilterApplyFn((filter_t *)&bmi270.lowpass2Filter[X], bmi270.gyroADC[X]);
-    bmi270.sampleSum[Y] = bmi270.lowpass2FilterApplyFn((filter_t *)&bmi270.lowpass2Filter[Y], bmi270.gyroADC[Y]);
-    bmi270.sampleSum[Z] = bmi270.lowpass2FilterApplyFn((filter_t *)&bmi270.lowpass2Filter[Z], bmi270.gyroADC[Z]);
+    bmi270.gyro.sampleSum[X] = bmi270.gyro.lowpass2FilterApplyFn((filter_t *)&bmi270.gyro.lowpass2Filter[X], bmi270.gyro.gyroADC.x);
+    bmi270.gyro.sampleSum[Y] = bmi270.gyro.lowpass2FilterApplyFn((filter_t *)&bmi270.gyro.lowpass2Filter[Y], bmi270.gyro.gyroADC.y);
+    bmi270.gyro.sampleSum[Z] = bmi270.gyro.lowpass2FilterApplyFn((filter_t *)&bmi270.gyro.lowpass2Filter[Z], bmi270.gyro.gyroADC.z);
   } else {
       // using simple averaging for downsampling
-    bmi270.sampleSum[X] += bmi270.gyroADC[X];
-    bmi270.sampleSum[Y] += bmi270.gyroADC[Y];
-    bmi270.sampleSum[Z] += bmi270.gyroADC[Z];
-    bmi270.sampleCount++;
+    bmi270.gyro.sampleSum[X] += bmi270.gyro.gyroADC.x;
+    bmi270.gyro.sampleSum[Y] += bmi270.gyro.gyroADC.y;
+    bmi270.gyro.sampleSum[Z] += bmi270.gyro.gyroADC.z;
+    bmi270.gyro.sampleCount++;
   }
 
   DEBUG_SET(DEBUG_GYRO_RAW, 0, (deltaT));
-  DEBUG_SET(DEBUG_GYRO_RAW, 1, (bmi270.gyroADC[X]));
-  DEBUG_SET(DEBUG_GYRO_RAW, 2, (bmi270.gyroADC[Y]));
-  DEBUG_SET(DEBUG_GYRO_RAW, 3, (bmi270.gyroADC[Z]));
+  DEBUG_SET(DEBUG_GYRO_RAW, 1, (bmi270.gyro.gyroADC.x));
+  DEBUG_SET(DEBUG_GYRO_RAW, 2, (bmi270.gyro.gyroADC.y));
+  DEBUG_SET(DEBUG_GYRO_RAW, 3, (bmi270.gyro.gyroADC.z));
 
-#ifdef USE_OPFLOW
+#ifdef USE_OPTICALFLOW
   // getTaskDeltaTime() returns delta time frozen at the moment of entering the scheduler. currentTime is frozen at the very same point.
   // To make busy-waiting timeout work we need to account for time spent within busy-waiting loop
   const timeDelta_t currentDeltaTime = getTaskDeltaTimeUs(TASK_SELF);
@@ -285,41 +284,51 @@ FAST_CODE void taskGyroUpdate(timeUs_t currentTimeUs)
 
 static FAST_CODE void filterGyro(void)
 {
-    for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+	float gyroADCfVec[XYZ_AXIS_COUNT] = {0.0f, 0.0f, 0.0f};
 
-      // downsample the individual gyro samples
-        float gyroADCf = 0;
-        if (bmi270.downsampleFilterEnabled) {
-            // using gyro lowpass 2 filter for downsampling
-            gyroADCf = bmi270.sampleSum[axis];
-        } else {
-            // using simple average for downsampling
-            if (bmi270.sampleCount) {
-                gyroADCf = bmi270.sampleSum[axis] / bmi270.sampleCount;
-            }
-            bmi270.sampleSum[axis] = 0;
-        }
+	for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+
+		// downsample the individual gyro samples
+		if (bmi270.gyro.downsampleFilterEnabled) {
+				// using gyro lowpass 2 filter for downsampling
+			gyroADCfVec[axis] = bmi270.gyro.sampleSum[axis];
+			} else {
+					// using simple average for downsampling
+					if (bmi270.gyro.sampleCount) {
+						gyroADCfVec[axis] = bmi270.gyro.sampleSum[axis] / bmi270.gyro.sampleCount;
+					}
+					bmi270.gyro.sampleSum[axis] = 0;
+			}
 
 #ifdef USE_RPM_FILTER
-        gyroADCf = rpmFilterGyro(axis, gyroADCf);
+		}
+
+		rpmFilterRun(gyroADCfVec);
+
+		for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
 #endif
-        // apply static notch filters and software lowpass filters
-        gyroADCf = bmi270.notchFilter1ApplyFn((filter_t *)&bmi270.notchFilter1[axis], gyroADCf);
-        gyroADCf = bmi270.notchFilter2ApplyFn((filter_t *)&bmi270.notchFilter2[axis], gyroADCf);
-        gyroADCf = bmi270.lowpassFilterApplyFn((filter_t *)&bmi270.lowpassFilter[axis], gyroADCf);
+      float gyroADCf = gyroADCfVec[axis];
+
+			// apply static notch filters and software lowpass filters
+			gyroADCf = bmi270.gyro.notchFilter1ApplyFn((filter_t *)&bmi270.gyro.notchFilter1[axis], gyroADCf);
+			gyroADCf = bmi270.gyro.notchFilter2ApplyFn((filter_t *)&bmi270.gyro.notchFilter2[axis], gyroADCf);
+			gyroADCf = bmi270.gyro.lowpassFilterApplyFn((filter_t *)&bmi270.gyro.lowpassFilter[axis], gyroADCf);
 
 #ifdef USE_DYN_NOTCH_FILTER
-        if (isDynNotchActive()) {
-            dynNotchPush(axis, gyroADCf);
-            gyroADCf = dynNotchFilter(axis, gyroADCf);
-        }
+			if (isDynNotchActive()) {
+					dynNotchPush(axis, gyroADCf);
+					gyroADCf = dynNotchFilter(axis, gyroADCf);
+			}
 #endif
-        bmi270.gyroADCf[axis] = gyroADCf;
-    }
-    bmi270.sampleCount = 0;
+			bmi270.gyro.gyroADCf[axis] = gyroADCf;
+	}
+	DEBUG_SET(DEBUG_GYRO_RAW, 4, (bmi270.gyro.gyroADCf[X]));
+	DEBUG_SET(DEBUG_GYRO_RAW, 5, (bmi270.gyro.gyroADCf[Y]));
+	DEBUG_SET(DEBUG_GYRO_RAW, 6, (bmi270.gyro.gyroADCf[Z]));
+	bmi270.gyro.sampleCount = 0;
 }
 
-void gyroFiltering(timeUs_t currentTimeUs)
+FAST_CODE void gyroFiltering(timeUs_t currentTimeUs)
 {
   filterGyro();
 
@@ -344,13 +353,13 @@ void gyroFiltering(timeUs_t currentTimeUs)
     if (!overflowDetected) {
 //      for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
 //          // integrate using trapezium rule to avoid bias
-//          bmi270.gyro_accumulatedMeasurements[axis] += 0.5f * (bmi270.gyroPrevious[axis] + bmi270.gyroADCf[axis]) * bmi270.targetLooptime;
-//          bmi270.gyroPrevious[axis] = bmi270.gyroADCf[axis];
+//          bmi270.gyro.gyro_accumulatedMeasurements[axis] += 0.5f * (bmi270.gyro.gyroPrevious[axis] + bmi270.gyroADCf[axis]) * bmi270.targetLooptime;
+//          bmi270.gyro.gyroPrevious[axis] = bmi270.gyro.gyroADCf[axis];
 //      }
-//      bmi270.gyro_accumulatedMeasurementCount++;
+//      bmi270.gyro.gyro_accumulatedMeasurementCount++;
 
       for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-          gyroFilteredDownsampled[axis] = pt1FilterApply(&bmi270.imuGyroFilter[axis], bmi270.gyroADCf[axis]);
+          gyroFilteredDownsampled[axis] = pt1FilterApply(&bmi270.gyro.imuGyroFilter[axis], bmi270.gyro.gyroADCf[axis]);
       }
     }
 }
@@ -362,14 +371,14 @@ float gyroGetFilteredDownsampled(int axis)
 
 bool gyroGetAccumulationAverage(float *accumulationAverage)
 {
-    if (bmi270.gyro_accumulatedMeasurementCount) {
+    if (bmi270.gyro.gyro_accumulatedMeasurementCount) {
         // If we have gyro data accumulated, calculate average rate that will yield the same rotation
-        const timeUs_t accumulatedMeasurementTimeUs = bmi270.gyro_accumulatedMeasurementCount * bmi270.targetLooptime;
+        const timeUs_t accumulatedMeasurementTimeUs = bmi270.gyro.gyro_accumulatedMeasurementCount * bmi270.gyro.targetLooptime;
         for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-        	accumulationAverage[axis] = bmi270.gyro_accumulatedMeasurements[axis] / accumulatedMeasurementTimeUs;
-        	bmi270.gyro_accumulatedMeasurements[axis] = 0.0f;
+        	accumulationAverage[axis] = bmi270.gyro.gyro_accumulatedMeasurements[axis] / accumulatedMeasurementTimeUs;
+        	bmi270.gyro.gyro_accumulatedMeasurements[axis] = 0.0f;
         }
-        bmi270.gyro_accumulatedMeasurementCount = 0;
+        bmi270.gyro.gyro_accumulatedMeasurementCount = 0;
         return true;
     } else {
         for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
@@ -384,19 +393,19 @@ bool gyroGetAccumulationAverage(float *accumulationAverage)
 
 static void applyAccelerationTrims(const flightDynamicsTrims_t *accelerationTrims)
 {
-    bmi270.accADC[X] -= accelerationTrims->raw[X];
-    bmi270.accADC[Y] -= accelerationTrims->raw[Y];
-    bmi270.accADC[Z] -= accelerationTrims->raw[Z];
+    bmi270.acc.accADC.x -= accelerationTrims->raw[X];
+    bmi270.acc.accADC.y -= accelerationTrims->raw[Y];
+    bmi270.acc.accADC.z -= accelerationTrims->raw[Z];
 }
 
 static void setConfigCalibrationCompleted(void)
 {
-	bmi270.accelerationTrims.values.calibrationCompleted = 1;
+	bmi270.acc.accelerationTrims.values.calibrationCompleted = 1;
 }
 
 bool accHasBeenCalibrated(void)
 {
-    return bmi270.accelerationTrims.values.calibrationCompleted;
+    return bmi270.acc.accelerationTrims.values.calibrationCompleted;
 }
 
 void resetFlightDynamicsTrims(flightDynamicsTrims_t *accZero)
@@ -409,22 +418,22 @@ void resetFlightDynamicsTrims(flightDynamicsTrims_t *accZero)
 
 void accStartCalibration(void)
 {
-    bmi270.calibratingA = CALIBRATING_ACC_CYCLES;
+    bmi270.acc.calibratingA = CALIBRATING_ACC_CYCLES;
 }
 
 bool accIsCalibrationComplete(void)
 {
-    return bmi270.calibratingA == 0;
+    return bmi270.acc.calibratingA == 0;
 }
 
 static bool isOnFinalAccelerationCalibrationCycle(void)
 {
-    return bmi270.calibratingA == 1;
+    return bmi270.acc.calibratingA == 1;
 }
 
 static bool isOnFirstAccelerationCalibrationCycle(void)
 {
-    return bmi270.calibratingA == CALIBRATING_ACC_CYCLES;
+    return bmi270.acc.calibratingA == CALIBRATING_ACC_CYCLES;
 }
 
 void performAcclerationCalibration(rollAndPitchTrims_t *rollAndPitchTrims)
@@ -439,25 +448,25 @@ void performAcclerationCalibration(rollAndPitchTrims_t *rollAndPitchTrims)
         }
 
         // Sum up CALIBRATING_ACC_CYCLES readings
-        a[axis] += bmi270.accADC[axis];
+        a[axis] += bmi270.acc.accADC.v[axis];
 
         // Reset global variables to prevent other code from using un-calibrated data
-        bmi270.accADC[axis] = 0;
-        bmi270.accelerationTrims.raw[axis] = 0;
+        bmi270.acc.accADC.v[axis] = 0;
+        bmi270.acc.accelerationTrims.raw[axis] = 0;
     }
 
     if (isOnFinalAccelerationCalibrationCycle()) {
         // Calculate average, shift Z down by acc_1G and store values in EEPROM at end of calibration
-    	bmi270.accelerationTrims.raw[X] = (a[X] + (CALIBRATING_ACC_CYCLES / 2)) / CALIBRATING_ACC_CYCLES;
-    	bmi270.accelerationTrims.raw[Y] = (a[Y] + (CALIBRATING_ACC_CYCLES / 2)) / CALIBRATING_ACC_CYCLES;
-    	bmi270.accelerationTrims.raw[Z] = (a[Z] + (CALIBRATING_ACC_CYCLES / 2)) / CALIBRATING_ACC_CYCLES - bmi270.acc_1G;
+    	bmi270.acc.accelerationTrims.raw[X] = (a[X] + (CALIBRATING_ACC_CYCLES / 2)) / CALIBRATING_ACC_CYCLES;
+    	bmi270.acc.accelerationTrims.raw[Y] = (a[Y] + (CALIBRATING_ACC_CYCLES / 2)) / CALIBRATING_ACC_CYCLES;
+    	bmi270.acc.accelerationTrims.raw[Z] = (a[Z] + (CALIBRATING_ACC_CYCLES / 2)) / CALIBRATING_ACC_CYCLES - bmi270.acc.acc_1G;
 
         setConfigCalibrationCompleted();
 
         //saveConfigAndNotify();
     }
 
-    bmi270.calibratingA--;
+    bmi270.acc.calibratingA--;
 }
 
 #define acc_lpf_factor 4
@@ -473,78 +482,83 @@ void taskAccUpdate(timeUs_t currentTimeUs)
 			return;
 	}
 
-	bmi270.isAccelUpdatedAtLeastOnce = true;
+	bmi270.acc.isAccelUpdatedAtLeastOnce = true;
 
 	for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-			bmi270.accADC[axis] = bmi270.accADCRaw[axis];
+			bmi270.acc.accADC.v[axis] = bmi270.acc.accADCRaw[axis];
 	}
 
   for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-    bmi270.accADC[axis] = biquadFilterApply(&bmi270.accFilter[axis], bmi270.accADC[axis]);
+    bmi270.acc.accADC.v[axis] = pt2FilterApply(&bmi270.acc.accFilter[axis], bmi270.acc.accADC.v[axis]);
   }
 
-	alignSensorViaRotation(bmi270.accADC, CW0_DEG);
+	alignSensorViaRotation(&bmi270.acc.accADC, CW0_DEG);
 
   DEBUG_SET(DEBUG_ACCELEROMETER, 0, (deltaT));
-  DEBUG_SET(DEBUG_ACCELEROMETER, 1, (bmi270.accADC[X]));
-  DEBUG_SET(DEBUG_ACCELEROMETER, 2, (bmi270.accADC[Y]));
-  DEBUG_SET(DEBUG_ACCELEROMETER, 3, (bmi270.accADC[Z]));
+  DEBUG_SET(DEBUG_ACCELEROMETER, 1, (bmi270.acc.accADC.x));
+  DEBUG_SET(DEBUG_ACCELEROMETER, 2, (bmi270.acc.accADC.y));
+  DEBUG_SET(DEBUG_ACCELEROMETER, 3, (bmi270.acc.accADC.z));
 
   if (!accIsCalibrationComplete()) {
-      performAcclerationCalibration(&bmi270.rollAndPitchTrims);
+      performAcclerationCalibration(&bmi270.acc.rollAndPitchTrims);
   }
 
-  applyAccelerationTrims(&bmi270.accelerationTrims);
+  applyAccelerationTrims(&bmi270.acc.accelerationTrims);
 
-  DEBUG_SET(DEBUG_ACCELEROMETER, 4, (bmi270.accADC[X]));
-  DEBUG_SET(DEBUG_ACCELEROMETER, 5, (bmi270.accADC[Y]));
-  DEBUG_SET(DEBUG_ACCELEROMETER, 6, (bmi270.accADC[Z]));
+  DEBUG_SET(DEBUG_ACCELEROMETER, 4, (bmi270.acc.accADC.x));
+  DEBUG_SET(DEBUG_ACCELEROMETER, 5, (bmi270.acc.accADC.y));
+  DEBUG_SET(DEBUG_ACCELEROMETER, 6, (bmi270.acc.accADC.z));
 
+  static vector3_t accAdcPrev;
   vector3_t accADC;
-  accADC.x = bmi270.accADC[X];
-  accADC.y = bmi270.accADC[Y];
-  accADC.z = bmi270.accADC[Z];
 
-  bmi270.accMagnitude = vector3Norm(&accADC) * bmi270.acc_1G_rec;
+  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+    accADC.v[axis] = bmi270.acc.accADC.v[axis];
+    bmi270.acc.jerk.v[axis] = (bmi270.acc.accADC.v[axis] - accAdcPrev.v[axis]) * bmi270.acc.sampleRateHz;
+    accAdcPrev.v[axis] = bmi270.acc.accADC.v[axis];
+  }
+
+  bmi270.acc.accMagnitude = vector3Norm(&accADC) * bmi270.acc.acc_1G_rec;
+  bmi270.acc.jerkMagnitude = vector3Norm(&bmi270.acc.jerk) * bmi270.acc.acc_1G_rec;
 
   // Calculate acceleration readings in G's
   for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-    bmi270.accADCf[axis] = (float)bmi270.accADC[axis] / bmi270.acc_1G;
+    bmi270.acc.accADCf[axis] = (float)bmi270.acc.accADC.v[axis] / bmi270.acc.acc_1G;
   }
 
   // Before filtering check for clipping and vibration levels
-  if (fabsf(bmi270.accADCf[X]) > ACC_CLIPPING_THRESHOLD_G || fabsf(bmi270.accADCf[Y]) > ACC_CLIPPING_THRESHOLD_G || fabsf(bmi270.accADCf[Z]) > ACC_CLIPPING_THRESHOLD_G) {
-    bmi270.isClipped = true;
-    bmi270.accClipCount++;
+  if (fabsf(bmi270.acc.accADCf[X]) > ACC_CLIPPING_THRESHOLD_G || fabsf(bmi270.acc.accADCf[Y]) > ACC_CLIPPING_THRESHOLD_G || fabsf(bmi270.acc.accADCf[Z]) > ACC_CLIPPING_THRESHOLD_G) {
+    bmi270.acc.isClipped = true;
+    bmi270.acc.accClipCount++;
   }
   else {
-    bmi270.isClipped = false;
+    bmi270.acc.isClipped = false;
   }
 
 
 //  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-//    bmi270.accADCf[axis] = laggedMovingAverageUpdate(&accAvg[axis].filter, (float)bmi270.accADC[axis]);
+//    bmi270.acc.accADCf[axis] = laggedMovingAverageUpdate(&accAvg[axis].filter, (float)bmi270.acc.accADC[axis]);
 //  }
 //  // Calculate acceleration readings in G's
 //  for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-//    bmi270.accADCf[axis] = ((bmi270.accADCf[axis] * bmi270.acc_1G_rec) - 1.0f) * GRAVITY_CMSS;
+//    bmi270.acc.accADCf[axis] = ((bmi270.acc.accADCf[axis] * bmi270.acc.acc_1G_rec) - 1.0f) * GRAVITY_CMSS;
 //  }
 
-  ++bmi270.acc_accumulatedMeasurementCount;
+  ++bmi270.acc.acc_accumulatedMeasurementCount;
   for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-  	bmi270.acc_accumulatedMeasurements[axis] += bmi270.accADC[axis];
+  	bmi270.acc.acc_accumulatedMeasurements[axis] += bmi270.acc.accADC.v[axis];
   }
 }
 
 bool accGetAccumulationAverage(float *accumulationAverage)
 {
-    if (bmi270.acc_accumulatedMeasurementCount > 0) {
+    if (bmi270.acc.acc_accumulatedMeasurementCount > 0) {
         // If we have gyro data accumulated, calculate average rate that will yield the same rotation
         for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-            accumulationAverage[axis] = bmi270.acc_accumulatedMeasurements[axis] / bmi270.acc_accumulatedMeasurementCount;
-            bmi270.acc_accumulatedMeasurements[axis] = 0.0f;
+            accumulationAverage[axis] = bmi270.acc.acc_accumulatedMeasurements[axis] / bmi270.acc.acc_accumulatedMeasurementCount;
+            bmi270.acc.acc_accumulatedMeasurements[axis] = 0.0f;
         }
-        bmi270.acc_accumulatedMeasurementCount = 0;
+        bmi270.acc.acc_accumulatedMeasurementCount = 0;
         return true;
     } else {
         for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
@@ -556,22 +570,22 @@ bool accGetAccumulationAverage(float *accumulationAverage)
 
 uint32_t accGetClipCount(void)
 {
-    return bmi270.accClipCount;
+    return bmi270.acc.accClipCount;
 }
 
 bool accIsClipped(void)
 {
-    return bmi270.isClipped;
+    return bmi270.acc.isClipped;
 }
 
 // Record extremes: min/max for each axis and acceleration vector modulus
 void updateAccExtremes(void)
 {
     for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-        if (bmi270.accADCf[axis] < bmi270.extremes[axis].min) bmi270.extremes[axis].min = bmi270.accADCf[axis];
-        if (bmi270.accADCf[axis] > bmi270.extremes[axis].max) bmi270.extremes[axis].max = bmi270.accADCf[axis];
+        if (bmi270.acc.accADCf[axis] < bmi270.acc.extremes[axis].min) bmi270.acc.extremes[axis].min = bmi270.acc.accADCf[axis];
+        if (bmi270.acc.accADCf[axis] > bmi270.acc.extremes[axis].max) bmi270.acc.extremes[axis].max = bmi270.acc.accADCf[axis];
     }
 
-    float gforce = calc_length_pythagorean_3D(bmi270.accADCf[X], bmi270.accADCf[Y], bmi270.accADCf[Z]);
-    if (gforce > bmi270.maxG) bmi270.maxG = gforce;
+    float gforce = calc_length_pythagorean_3D(bmi270.acc.accADCf[X], bmi270.acc.accADCf[Y], bmi270.acc.accADCf[Z]);
+    if (gforce > bmi270.acc.maxG) bmi270.acc.maxG = gforce;
 }

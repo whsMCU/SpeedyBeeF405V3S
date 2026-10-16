@@ -653,7 +653,7 @@ static bool checkGPSRescueIsAvailable(void)
 
 static void disarmOnImpact(void)
 {
-    if (bmi270.accMagnitude > rescueState.intent.disarmThreshold) {
+    if (bmi270.acc.accMagnitude > rescueState.intent.disarmThreshold) {
         setArmingDisabled(ARMING_DISABLED_ARM_SWITCH);
         DISABLE_ARMING_FLAG(ARMED);
         //disarm(DISARM_REASON_GPS_RESCUE);

@@ -19,12 +19,15 @@
  */
 
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 #include <math.h>
 
-#include "build/build_config.h"
+#include "hw.h"
 
+#include "build/build_config.h"
 #include "common/maths.h"
+
 #include "common/typeconversion.h"
 
 #ifdef REQUIRE_PRINTF_LONG_SUPPORT
@@ -85,7 +88,7 @@ void i2a(int num, char *bf)
     ui2a(num, 10, 0, bf);
 }
 
-int a2d(char ch)
+static int a2d(char ch)
 {
     if (ch >= '0' && ch <= '9')
         return ch - '0';
@@ -166,7 +169,7 @@ char *ftoa(float x, char *floatString)
 
     value = (int32_t)(x * 1000.0f);    // Convert float * 1000 to an integer
 
-    itoa(ABS(value), intString1, 10);   // Create string from abs of integer value
+    itoa(abs(value), intString1, 10);   // Create string from abs of integer value
 
     if (value >= 0)
         intString2[0] = ' ';    // Positive number, add a pad space

@@ -24,6 +24,7 @@ uint32_t getCycleCounter(void);
 
 int32_t clockCyclesToMicros(int32_t clockCycles);
 int32_t clockCyclesTo10thMicros(int32_t clockCycles);
+int32_t clockCyclesTo100thMicros(int32_t clockCycles);
 uint32_t clockMicrosToCycles(uint32_t micros);
 
 void delay(uint32_t ms);

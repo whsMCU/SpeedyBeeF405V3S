@@ -8,6 +8,7 @@
 
 #include "gpio.h"
 #include "cli.h"
+#include <accgyro_spi_bmi270.h>
 
 
 typedef struct
@@ -181,9 +182,13 @@ void gpioPinToggle(uint8_t ch)
   HAL_GPIO_TogglePin(gpio_tbl[ch].port, gpio_tbl[ch].pin);
 }
 
-
-
-
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	if(GPIO_Pin==GPIO_PIN_4)
+	{
+		bmi270_data_ready();
+	}
+}
 
 #ifdef _USE_HW_CLI
 void cliGpio(cli_args_t *args)

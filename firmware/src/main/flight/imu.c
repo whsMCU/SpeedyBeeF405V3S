@@ -215,9 +215,9 @@ static void imuMahonyAHRSupdate(float dt,
 
 #ifdef USE_MAG
     // Use measured magnetic field vector
-    float mx = mag.magADC[X];
-    float my = mag.magADC[Y];
-    float mz = mag.magADC[Z];
+    float mx = mag.magADC.x;
+    float my = mag.magADC.y;
+    float mz = mag.magADC.z;
     float recipMagNorm = sq(mx) + sq(my) + sq(mz);
     if (useMag && recipMagNorm > 0.01f) {
         // Normalise magnetometer measurement
@@ -335,7 +335,7 @@ static void imuUpdateEulerAngles(void)
 static bool imuIsAccelerometerHealthy(void)
 {
     // Accept accel readings only in range 0.9g - 1.1g
-    return (0.9f < bmi270.accMagnitude) && (bmi270.accMagnitude < 1.1f);
+    return (0.9f < bmi270.acc.accMagnitude) && (bmi270.acc.accMagnitude < 1.1f);
 }
 
 // Calculate the dcmKpGain to use. When armed, the gain is imuRuntimeConfig.dcm_kp * 1.0 scaling.
@@ -531,7 +531,7 @@ static int calculateThrottleAngleCorrection(void)
 
 void imuUpdateAttitude(timeUs_t currentTimeUs)
 {
-  if (sensors(SENSOR_ACC) && bmi270.isAccelUpdatedAtLeastOnce) {
+  if (sensors(SENSOR_ACC) && bmi270.acc.isAccelUpdatedAtLeastOnce) {
 
     gyroGetMeasuredRotationRate(&imuMeasuredRotationBF);    // Calculate gyro rate in body frame in rad/s
     accGetMeasuredAcceleration(&imuMeasuredAccelBF);  // Calculate accel in body frame in cm/s/s
@@ -547,9 +547,9 @@ void imuUpdateAttitude(timeUs_t currentTimeUs)
 
     updatePositionEstimator();
   } else {
-    bmi270.accADC[X] = 0;
-    bmi270.accADC[Y] = 0;
-    bmi270.accADC[Z] = 0;
+    bmi270.acc.accADC.x = 0;
+    bmi270.acc.accADC.y = 0;
+    bmi270.acc.accADC.z = 0;
     schedulerIgnoreTaskStateTime();
   }
 }
@@ -674,7 +674,7 @@ void imuTransformVectorEarthToBody(fpVector3_t * v)
 void gyroGetMeasuredRotationRate(fpVector3_t *measuredRotationRate)
 {
     for (int axis = 0; axis < 3; axis++) {
-        measuredRotationRate->v[axis] = DEGREES_TO_RADIANS(bmi270.gyroADCf[axis]);
+        measuredRotationRate->v[axis] = DEGREES_TO_RADIANS(bmi270.gyro.gyroADCf[axis]);
     }
 }
 
@@ -684,6 +684,6 @@ void gyroGetMeasuredRotationRate(fpVector3_t *measuredRotationRate)
 void accGetMeasuredAcceleration(fpVector3_t *measuredAcc)
 {
     for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-        measuredAcc->v[axis] = bmi270.accADCf[axis] * GRAVITY_CMSS;
+        measuredAcc->v[axis] = bmi270.acc.accADCf[axis] * GRAVITY_CMSS;
     }
 }

@@ -25,6 +25,7 @@
 #pragma once
 
 #include "common/time.h"
+#include "common/vector.h"
 #include "drivers/sensor.h"
 
 struct opflowDev_s;
@@ -33,7 +34,7 @@ typedef bool (*sensorOpflowUpdateFuncPtr)(struct opflowDev_s *mag);
 
 typedef struct opflowData_s {
     timeDelta_t deltaTime;      // Integration timeframe of motionX/Y
-    float     flowRateRaw[3]; // Flow rotation in raw sensor uints (per deltaTime interval). Use dummy 3-rd axis (always zero) for compatibility with alignment functions
+    vector3_t   flowRateRaw; // Flow rotation in raw sensor uints (per deltaTime interval). Use dummy 3-rd axis (always zero) for compatibility with alignment functions
     int16_t     quality;
 } opflowData_t;
 

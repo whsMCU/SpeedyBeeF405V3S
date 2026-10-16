@@ -22,7 +22,9 @@
 
 #include <stdint.h>
 
-// simple buffer-based serializer/deserializer without implicit size check
+// simple buffer-based serializer/deserializer.
+// writers do not check available space; readers are bounded by end - reads past
+// the end return 0 (sbufReadData zero-fills) and never dereference past the buffer.
 
 typedef struct sbuf_s {
     uint8_t *ptr;          // data pointer must be first (sbuf_t* is equivalent to uint8_t **)
@@ -39,6 +41,7 @@ void sbufWriteU32BigEndian(sbuf_t *dst, uint32_t val);
 void sbufFill(sbuf_t *dst, uint8_t data, int len);
 void sbufWriteData(sbuf_t *dst, const void *data, int len);
 void sbufWriteString(sbuf_t *dst, const char *string);
+void sbufWritePString(sbuf_t *dst, const char *string);
 void sbufWriteStringWithZeroTerminator(sbuf_t *dst, const char *string);
 
 uint8_t sbufReadU8(sbuf_t *src);

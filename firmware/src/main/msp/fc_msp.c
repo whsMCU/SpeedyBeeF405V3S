@@ -466,21 +466,21 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU32(dst, debug[2]);
           sbufWriteU32(dst, debug[3]);
 
-          sbufWriteU32(dst, (int32_t)(bmi270.gyroADCf[X] * 1000.0f));
-          sbufWriteU32(dst, (int32_t)(bmi270.gyroADCf[Y] * 1000.0f));
-          sbufWriteU32(dst, (int32_t)(bmi270.gyroADCf[Z] * 1000.0f));
+          sbufWriteU32(dst, (int32_t)(bmi270.gyro.gyroADCf[X] * 1000.0f));
+          sbufWriteU32(dst, (int32_t)(bmi270.gyro.gyroADCf[Y] * 1000.0f));
+          sbufWriteU32(dst, (int32_t)(bmi270.gyro.gyroADCf[Z] * 1000.0f));
 
-          sbufWriteU16(dst, bmi270.accelerationTrims.raw[X]);
-          sbufWriteU16(dst, bmi270.accelerationTrims.raw[Y]);
-          sbufWriteU16(dst, bmi270.accelerationTrims.raw[Z]);
+          sbufWriteU16(dst, bmi270.acc.accelerationTrims.raw[X]);
+          sbufWriteU16(dst, bmi270.acc.accelerationTrims.raw[Y]);
+          sbufWriteU16(dst, bmi270.acc.accelerationTrims.raw[Z]);
 
           sbufWriteU16(dst, compassConfig.magZero.raw[X]);
           sbufWriteU16(dst, compassConfig.magZero.raw[Y]);
           sbufWriteU16(dst, compassConfig.magZero.raw[Z]);
 
-          sbufWriteU32(dst, (int32_t)(mag.magADC[X] * 1000.0f));
-          sbufWriteU32(dst, (int32_t)(mag.magADC[Y] * 1000.0f));
-          sbufWriteU32(dst, (int32_t)(mag.magADC[Z] * 1000.0f));
+          sbufWriteU32(dst, (int32_t)(mag.magADC.x * 1000.0f));
+          sbufWriteU32(dst, (int32_t)(mag.magADC.y * 1000.0f));
+          sbufWriteU32(dst, (int32_t)(mag.magADC.z * 1000.0f));
 
           sbufWriteU32(dst, (int32_t)(opflow.flowRate[X] * 1000.0f));
           sbufWriteU32(dst, (int32_t)(opflow.flowRate[Y] * 1000.0f));
@@ -524,9 +524,9 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
           sbufWriteU16(dst, pvt.month);
           sbufWriteU32(dst, ((pvt.day) | (pvt.hour<<8) | (pvt.min<<16) | (pvt.sec<<24)));
 
-          sbufWriteU32(dst, (int32_t)(bmi270.gyroZero[X] * 1000.0f));
-          sbufWriteU32(dst, (int32_t)(bmi270.gyroZero[Y] * 1000.0f));
-          sbufWriteU32(dst, (int32_t)(bmi270.gyroZero[Z] * 1000.0f));
+          sbufWriteU32(dst, (int32_t)(bmi270.gyro.gyroZero[X] * 1000.0f));
+          sbufWriteU32(dst, (int32_t)(bmi270.gyro.gyroZero[Y] * 1000.0f));
+          sbufWriteU32(dst, (int32_t)(bmi270.gyro.gyroZero[Z] * 1000.0f));
         }
         break;
 
@@ -695,7 +695,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         break;
 
     case MSP2_INAV_OPTICAL_FLOW:
-#ifdef USE_OPFLOW
+#ifdef USE_OPTICALFLOW
 //        sbufWriteU8(dst, opflow.rawQuality);
 //        sbufWriteU16(dst, RADIANS_TO_DEGREES(opflow.flowRate[X]));
 //        sbufWriteU16(dst, RADIANS_TO_DEGREES(opflow.flowRate[Y]));
@@ -2581,7 +2581,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
       }
       break;
 
-#ifdef USE_OPFLOW
+#ifdef USE_OPTICALFLOW
     case MSP2_INAV_OPFLOW_CALIBRATION:
 //        if (!ARMING_FLAG(ARMED))
 //            opflowStartCalibration();

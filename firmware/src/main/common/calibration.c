@@ -199,5 +199,5 @@ void zeroCalibrationGetZeroV(zeroCalibrationVector_t * s, fpVector3_t * v)
 
 void setGravityCalibration(float getGravity)
 {
-    bmi270.gravity_cmss_cal = getGravity;
+    bmi270.acc.gravity_cmss_cal = getGravity;
 }

@@ -52,46 +52,45 @@
 
 void gyroConfig_init(void)
 {
-  bmi270.gyro_high_fsr = false;
-  bmi270.gyroSampleRateHz = 3200;
-  bmi270.gyroRateKHz = GYRO_RATE_3200_Hz;
-  bmi270.hardware_lpf = GYRO_HARDWARE_LPF_NORMAL;
-  bmi270.gyro_offset_yaw = 0;
-  bmi270.gyroCalibrationDuration = 125;
-  bmi270.sampleLooptime = 312;
-  bmi270.targetLooptime = 312;
-  bmi270.sampleRateHz = 3200;
-  bmi270.scale = GYRO_SCALE_2000DPS;
-  bmi270.downsampleFilterEnabled = true;
+  bmi270.gyro.gyro_high_fsr = false;
+  bmi270.gyro.sampleRateHz = 3200;
+  bmi270.gyro.gyroRateKHz = GYRO_RATE_3200_Hz;
+  bmi270.gyro.hardware_lpf = GYRO_HARDWARE_LPF_NORMAL;
+  bmi270.gyro.gyro_offset_yaw = 0;
+  bmi270.gyro.gyroCalibrationDuration = 125;
+  bmi270.gyro.sampleLooptime = 312;
+  bmi270.gyro.targetLooptime = 312;
+  bmi270.gyro.scale = GYRO_SCALE_2000DPS;
+  bmi270.gyro.downsampleFilterEnabled = true;
 
-  bmi270.gyro_soft_notch_hz_1 = 0;
-  bmi270.gyro_soft_notch_cutoff_1 = 0;
-  bmi270.gyro_soft_notch_hz_2 = 0;
-  bmi270.gyro_soft_notch_cutoff_2 = 0;
+  bmi270.gyro.gyro_soft_notch_hz_1 = 0;
+  bmi270.gyro.gyro_soft_notch_cutoff_1 = 0;
+  bmi270.gyro.gyro_soft_notch_hz_2 = 0;
+  bmi270.gyro.gyro_soft_notch_cutoff_2 = 0;
 
-  bmi270.dynNotchConfig.dyn_notch_count = 3;
-  bmi270.dynNotchConfig.dyn_notch_max_hz = 600;
-  bmi270.dynNotchConfig.dyn_notch_min_hz = 150;
-  bmi270.dynNotchConfig.dyn_notch_q = 300;
+  bmi270.gyro.dynNotchConfig.dyn_notch_count = 3;
+  bmi270.gyro.dynNotchConfig.dyn_notch_max_hz = 600;
+  bmi270.gyro.dynNotchConfig.dyn_notch_min_hz = 150;
+  bmi270.gyro.dynNotchConfig.dyn_notch_q = 300;
 
-  bmi270.accSampleRateHz = 800;
-  bmi270.acc_1G = 512 * 4;
-  bmi270.acc_1G_rec = 1.0f / bmi270.acc_1G;
-  bmi270.acc_high_fsr = false;
-  bmi270.acc_lpf_hz = 10;
+  bmi270.acc.sampleRateHz = 800;
+  bmi270.acc.acc_1G = 512 * 4;
+  bmi270.acc.acc_1G_rec = 1.0f / bmi270.acc.acc_1G;
+  bmi270.acc.acc_high_fsr = false;
+  bmi270.acc.acc_lpf_hz = 25;
 
-  resetFlightDynamicsTrims(&bmi270.accelerationTrims);
-  bmi270.accelerationTrims.values.roll = 21;
-  bmi270.accelerationTrims.values.pitch = -55;
-  bmi270.accelerationTrims.values.yaw = -6;
+  resetFlightDynamicsTrims(&bmi270.acc.accelerationTrims);
+  bmi270.acc.accelerationTrims.values.roll = 21;
+  bmi270.acc.accelerationTrims.values.pitch = -55;
+  bmi270.acc.accelerationTrims.values.yaw = -6;
 
-  bmi270.init_gyro_cal_enabled = true;
-  bmi270.gravity_cmss_cal = 0;
+  bmi270.gyro.init_gyro_cal_enabled = true;
+  bmi270.acc.gravity_cmss_cal = 0;
 }
 
 static uint16_t calculateNyquistAdjustedNotchHz(uint16_t notchHz, uint16_t notchCutoffHz)
 {
-    const uint32_t gyroFrequencyNyquist = 1000000 / 2 / bmi270.targetLooptime;
+    const uint32_t gyroFrequencyNyquist = 1000000 / 2 / bmi270.gyro.targetLooptime;
     if (notchHz > gyroFrequencyNyquist) {
         if (notchCutoffHz < gyroFrequencyNyquist) {
             notchHz = gyroFrequencyNyquist;
@@ -105,30 +104,30 @@ static uint16_t calculateNyquistAdjustedNotchHz(uint16_t notchHz, uint16_t notch
 
 static void gyroInitFilterNotch1(uint16_t notchHz, uint16_t notchCutoffHz)
 {
-    bmi270.notchFilter1ApplyFn = nullFilterApply;
+    bmi270.gyro.notchFilter1ApplyFn = nullFilterApply;
 
     notchHz = calculateNyquistAdjustedNotchHz(notchHz, notchCutoffHz);
 
     if (notchHz != 0 && notchCutoffHz != 0) {
-        bmi270.notchFilter1ApplyFn = (filterApplyFnPtr)biquadFilterApply;
+        bmi270.gyro.notchFilter1ApplyFn = (filterApplyFnPtr)biquadFilterApply;
         const float notchQ = filterGetNotchQ(notchHz, notchCutoffHz);
         for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-            biquadFilterInit(&bmi270.notchFilter1[axis], notchHz, bmi270.targetLooptime, notchQ, FILTER_NOTCH, 1.0f);
+            biquadFilterInit(&bmi270.gyro.notchFilter1[axis], notchHz, bmi270.gyro.targetLooptime, notchQ, FILTER_NOTCH, 1.0f);
         }
     }
 }
 
 static void gyroInitFilterNotch2(uint16_t notchHz, uint16_t notchCutoffHz)
 {
-    bmi270.notchFilter2ApplyFn = nullFilterApply;
+    bmi270.gyro.notchFilter2ApplyFn = nullFilterApply;
 
     notchHz = calculateNyquistAdjustedNotchHz(notchHz, notchCutoffHz);
 
     if (notchHz != 0 && notchCutoffHz != 0) {
-      bmi270.notchFilter2ApplyFn = (filterApplyFnPtr)biquadFilterApply;
+      bmi270.gyro.notchFilter2ApplyFn = (filterApplyFnPtr)biquadFilterApply;
         const float notchQ = filterGetNotchQ(notchHz, notchCutoffHz);
         for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-            biquadFilterInit(&bmi270.notchFilter2[axis], notchHz, bmi270.targetLooptime, notchQ, FILTER_NOTCH, 1.0f);
+            biquadFilterInit(&bmi270.gyro.notchFilter2[axis], notchHz, bmi270.gyro.targetLooptime, notchQ, FILTER_NOTCH, 1.0f);
         }
     }
 }
@@ -137,11 +136,11 @@ static void accInitFilters(void)
 {
     // Only set the lowpass cutoff if the ACC sample rate is detected otherwise
     // the filter initialization is not defined (sample rate = 0)
-  bmi270.accLpfCutHz = (bmi270.accSampleRateHz) ? bmi270.acc_lpf_hz : 0;
-    if (bmi270.accLpfCutHz) {
-        const uint32_t accSampleTimeUs = 1e6 / bmi270.accSampleRateHz;
+  bmi270.acc.accLpfCutHz = (bmi270.acc.sampleRateHz) ? bmi270.acc.acc_lpf_hz : 0;
+    if (bmi270.acc.accLpfCutHz) {
+        const float k = pt2FilterGain(bmi270.acc.accLpfCutHz, HZ_TO_INTERVAL(bmi270.acc.sampleRateHz));
         for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-            biquadFilterInitLPF(&bmi270.accFilter[axis], bmi270.accLpfCutHz, accSampleTimeUs);
+            pt2FilterInit(&bmi270.acc.accFilter[axis], k);
         }
     }
 }
@@ -149,12 +148,19 @@ static void accInitFilters(void)
 static void initGyroLPF(float cutoffHz, float gyroDt,
                         filterApplyFnPtr *applyFn, gyroLowpassFilter_t *filters)
 {
-    float gain = pt1FilterGain(cutoffHz, gyroDt);
     *applyFn = (filterApplyFnPtr) pt1FilterApply;
     for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-        pt1FilterInit(&filters[axis].pt1FilterState, gain);
+        pt1FilterInit(&filters[axis].pt1FilterState, pt1FilterGain(cutoffHz, gyroDt));
     }
 }
+
+//static DMA_DATA uint8_t gyroBuf[GYRO_COUNT][2][GYRO_BUF_SIZE / 2];
+//
+//for (int i = 0; i < GYRO_COUNT; i++) {
+//    if (gyroDetectedFlags & GYRO_MASK(i)) {  // Only initialize detected gyros
+//        // SPI DMA buffer required per device
+//        gyro.gyroSensor[i].gyroDev.dev.txBuf = gyroBuf[i][0];
+//        gyro.gyroSensor[i].gyroDev.dev.rxBuf = gyroBuf[i][1];
 
 bool gyroInit(void)
 {
@@ -169,24 +175,25 @@ bool gyroInit(void)
 
   float lpf1Hz = 250.f;
   float lpf2Hz = 500.f;
-  float gyroDt = 312 * 1e-6f;
+  float gyroDt = bmi270.gyro.sampleLooptime * 1e-6f;
 
-	initGyroLPF(lpf1Hz, gyroDt, &bmi270.lowpassFilterApplyFn, bmi270.lowpassFilter);
-	initGyroLPF(lpf2Hz, gyroDt, &bmi270.lowpass2FilterApplyFn, bmi270.lowpass2Filter);
+	initGyroLPF(lpf1Hz, gyroDt, &bmi270.gyro.lowpassFilterApplyFn, bmi270.gyro.lowpassFilter);
+	initGyroLPF(lpf2Hz, gyroDt, &bmi270.gyro.lowpass2FilterApplyFn, bmi270.gyro.lowpass2Filter);
 
-  gyroInitFilterNotch1(bmi270.gyro_soft_notch_hz_1, bmi270.gyro_soft_notch_cutoff_1);
-  gyroInitFilterNotch2(bmi270.gyro_soft_notch_hz_2, bmi270.gyro_soft_notch_cutoff_2);
+  gyroInitFilterNotch1(bmi270.gyro.gyro_soft_notch_hz_1, bmi270.gyro.gyro_soft_notch_cutoff_1);
+  gyroInitFilterNotch2(bmi270.gyro.gyro_soft_notch_hz_2, bmi270.gyro.gyro_soft_notch_cutoff_2);
 
 #ifdef USE_DYN_LPF
     dynLpfFilterInit();
 #endif
+
 #ifdef USE_DYN_NOTCH_FILTER
-    dynNotchInit(&bmi270.dynNotchConfig, bmi270.targetLooptime);
+    dynNotchInit(&bmi270.gyro.dynNotchConfig, bmi270.gyro.targetLooptime * 1e-6f);
 #endif
 
-  const float k = pt1FilterGain(GYRO_IMU_DOWNSAMPLE_CUTOFF_HZ, bmi270.targetLooptime);
+  const float k = pt1FilterGain(GYRO_IMU_DOWNSAMPLE_CUTOFF_HZ, bmi270.gyro.targetLooptime * 1e-6f);
   for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-      pt1FilterInit(&bmi270.imuGyroFilter[axis], k);
+      pt1FilterInit(&bmi270.gyro.imuGyroFilter[axis], k);
   }
 
     accInitFilters();
@@ -196,5 +203,5 @@ bool gyroInit(void)
 
 int16_t gyroRateDps(int axis)
 {
-    return lrintf(bmi270.gyroADCf[axis] / bmi270.scale);
+    return lrintf(bmi270.gyro.gyroADCf[axis] / bmi270.gyro.scale);
 }

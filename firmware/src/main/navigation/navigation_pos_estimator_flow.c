@@ -47,7 +47,7 @@
 
 extern navigationPosEstimator_t posEstimator;
 
-#ifdef USE_OPFLOW
+#ifdef USE_OPTICALFLOW
 /**
  * Read optical flow topic
  *  Function is called by OPFLOW task as soon as new update is available
@@ -65,7 +65,7 @@ void updatePositionEstimator_OpticalFlowTopic(timeUs_t currentTimeUs)
 
 bool estimationCalculateCorrection_XY_FLOW(estimationContext_t * ctx)
 {
-#if defined(USE_RANGEFINDER) && defined(USE_OPFLOW)
+#if defined(USE_RANGEFINDER) && defined(USE_OPTICALFLOW)
     if (!((ctx->newFlags & EST_FLOW_VALID) && (ctx->newFlags & EST_SURFACE_VALID)&& (ctx->newFlags & EST_Z_VALID))) {
         return false;
     }
