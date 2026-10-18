@@ -113,6 +113,17 @@ nav_pvt_t pvt;
 gpsLocation_t GPS_home_llh;
 gpsSolutionData_t gpsSol;
 
+uint16_t GPS_distanceToHome;        // distance to home point in meters
+uint32_t GPS_distanceToHomeCm;
+int16_t GPS_directionToHome;        // direction to home or hol point in degrees * 10
+uint32_t GPS_distanceFlownInCm;     // distance flown since armed in centimeters
+
+#define GPS_DISTANCE_FLOWN_MIN_SPEED_THRESHOLD_CM_S 15 // 0.54 km/h 0.335 mph
+
+gpsSolutionData_t gpsSol;
+
+uint8_t GPS_update = 0;             // toogle to distinct a GPS position update (directly or via MSP)
+
 uint8_t GPS_numCh;
 
 GPS_svinfo_t GPS_svinfo[GPS_SV_MAXSATS_M8N];
@@ -630,6 +641,12 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
 #endif
 }
 
+// Check for healthy communications
+bool gpsIsHealthy(void)
+{
+    return (ubxHaveNewPositionAndNewSpeed);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////
 // this is used to offset the shrinking longitude as we go towards the poles
 // It's ok to calculate this once per waypoint setting, since it changes a little within the reach of a multicopter
@@ -942,17 +959,40 @@ static uint16_t GPS_calc_desired_speed(uint16_t max_speed, bool _slow) {
   return max_speed;
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+// Get distance between two points in cm using spherical to Cartesian transform
+// One one latitude unit, or one longitude unit at the equator, equals 1.113195 cm.
+// Get bearing from pos1 to pos2, returns values with 0.01 degree precision
+void GPS_distance_cm_bearing(const gpsLocation_t *from, const gpsLocation_t *to, bool dist3d, uint32_t *pDist, int32_t *pBearing)
+{
+    // TO DO : handle crossing the 180 degree meridian, as in `GPS_distance2d()`
+    float dLat = (to->lat - from->lat) * EARTH_ANGLE_TO_CM;
+    float dLon = (to->lon - from->lon) * GPS_cosLat * EARTH_ANGLE_TO_CM; // convert to local angle
+    float dAlt = dist3d ? to->altCm - from->altCm : 0;
+
+    if (pDist)
+        *pDist = sqrtf(sq(dLat) + sq(dLon) + sq(dAlt));
+
+    if (pBearing) {
+        int32_t bearing = 9000.0f - RADIANS_TO_DEGREES(atan2_approx(dLat, dLon)) * 100.0f;      // Convert the output to 100xdeg / adjust to clockwise from North
+        if (bearing < 0)
+            bearing += 36000;
+        *pBearing = bearing;
+    }
+}
+
 void GPS_calculateDistanceAndDirectionToHome(void)
 {
   //calculate distance and bearings for gui and other stuff continously - From home to copter
     if (STATE(GPS_FIX_HOME)) {      // If we don't have home set, do not display anything
         uint32_t dist;
         int32_t dir;
-        GPS_distance_cm_bearing(&GpsNav.GPS_coord[LAT],&GpsNav.GPS_coord[LON],&GpsNav.GPS_home[LAT],&GpsNav.GPS_home[LON],&dist,&dir);
+        GPS_distance_cm_bearing(&gpsSol.llh, &GPS_home_llh, false, &dist, &dir);
         GpsNav.GPS_distanceToHome = dist/100; //m
         GpsNav.GPS_distanceToHomeCm = dist; //cm
-        GpsNav.GPS_directionToHome = dir/100;
+        GpsNav.GPS_directionToHome = dir/10;  // degrees * 10 or decidegrees
     } else {
+      // If we don't have home set, do not display anything
       GpsNav.GPS_distanceToHome = 0;
       GpsNav.GPS_distanceToHomeCm = 0;
       GpsNav.GPS_directionToHome = 0;
@@ -978,6 +1018,7 @@ void gpsUpdate(uint32_t currentTimeUs)
     {
       // Set sensor as ready and available
       sensorsSet(SENSOR_GPS);
+      GpsNav.Healthy = true;
 
       currentGpsStamp++; // new GPS data available
 

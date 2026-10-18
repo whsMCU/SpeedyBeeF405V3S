@@ -241,7 +241,7 @@ void rxProcessPending(bool state);
 bool taskUpdateRxMainInProgress(void);
 bool rxUpdateCheck(timeUs_t currentTimeUs, timeDelta_t currentDeltaTimeUs);
 void rxFrameCheck(timeUs_t currentTimeUs, timeDelta_t currentDeltaTimeUs);
-bool rxIsReceivingSignal(void);
+bool isRxReceivingSignal(void);
 bool rxAreFlightChannelsValid(void);
 bool calculateRxChannelsAndUpdateFailsafe(timeUs_t currentTimeUs);
 

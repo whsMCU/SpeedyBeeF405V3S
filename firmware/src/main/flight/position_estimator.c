@@ -39,8 +39,6 @@
 #include "flight/position_estimator.h"
 #include "flight/position_filter.h"
 #include "flight/position.h"
-
-//#include "sensors/acceleration.h"
 #include "sensors/sensors.h"
 #include "drivers/accgyro/accgyro_spi_bmi270.h"
 

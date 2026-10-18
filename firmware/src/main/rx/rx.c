@@ -49,8 +49,8 @@
 #include "flight/failsafe.h"
 #include "flight/imu.h"
 #include "flight/pid.h"
-#include "flight/position.h"
 #include "flight/dyn_notch_filter.h"
+#include "flight/position.h"
 
 #include "navigation/navigation.h"
 #include "navigation/navigation_private.h"
@@ -270,7 +270,7 @@ void rxInit(void)
     #endif
 }
 
-bool rxIsReceivingSignal(void)
+bool isRxReceivingSignal(void)
 {
     return rxSignalReceived;
 }

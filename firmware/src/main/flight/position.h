@@ -21,11 +21,6 @@
 #pragma once
 
 #include "common/time.h"
-#include "common/filter.h"
-#include "common/axis.h"
-
-#define POSITION_DEFAULT_ALT_NUM_SATS_GPS_USE 10
-#define POSITION_DEFAULT_ALT_NUM_SATS_BARO_FALLBACK 7
 
 #define TASK_ALTITUDE_RATE_HZ 100
 
@@ -38,39 +33,24 @@ typedef enum {
 } altitudeSource_e;
 
 typedef struct positionConfig_s {
-    uint8_t altSource;
-    uint8_t altNumSatsGpsUse;
-    uint8_t altNumSatsBaroFallback;
-
     uint8_t altitude_source;
     uint8_t altitude_prefer_baro;
     uint16_t altitude_lpf;                // lowpass cutoff (value / 100) Hz for altitude smoothing
     uint16_t altitude_d_lpf;              // lowpass for (value / 100) Hz for altitude derivative smoothing
     uint16_t rangefinder_max_range_cm;    // Maximum rangefinder range to trust (cm)
-
 } positionConfig_t;
 
 extern positionConfig_t positionConfig;
 
-typedef struct laggedMovingAverageCombined_s {
-     laggedMovingAverage_t filter;
-     float buf[10];
-} laggedMovingAverageCombined_t;
-extern laggedMovingAverageCombined_t  accAvg[XYZ_AXIS_COUNT];
-
-typedef struct {
-    float altitude;  // 상태 x[0]
-    float velocity;  // 상태 x[1]
-    float P[2][2];   // 공분산 행렬
-    float altitude_est;
-} KalmanState;
-
-extern KalmanState kf;
-
-void positionConfig_Init(void);
-void position_Init(void);
-
-bool isAltitudeOffset(void);
+float getAltitudeCm(void);
+float getAltitudeDerivative(void);
+// Raw Kalman Z state for low-latency altitude control (no display PT2).
+float getAltitudeCmControl(void);
+float getAltitudeDerivativeControl(void);
 void calculateEstimatedAltitude(timeUs_t currentTimeUs);
+void positionInit(void);
 int32_t getEstimatedAltitudeCm(void);
+float getAltitudeAsl(void);
 int16_t getEstimatedVario(void);
+bool isAltitudeAvailable(void);
+

@@ -34,9 +34,8 @@
 #include "fc/core.h"
 
 #include "flight/imu.h"
-#include "flight/position.h"
 #include "flight/failsafe.h"
-
+#include "flight/position.h"
 
 #include "drivers/accgyro/accgyro.h"
 #include "drivers/compass/compass.h"
@@ -47,6 +46,7 @@
 
 #include "flight/pid.h"
 #include "flight/gps_rescue_multirotor.h"
+#include "flight/position.h"
 
 #include "io/ledstrip.h"
 

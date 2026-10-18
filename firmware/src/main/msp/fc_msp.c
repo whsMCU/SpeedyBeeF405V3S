@@ -80,15 +80,8 @@
 //#include "flight/mixer_profile.h"
 //#include "flight/mixer.h"
 #include "flight/pid.h"
-//#include "flight/servos.h"
 #include "flight/position.h"
-
-//#include "config/config_eeprom.h"
-//#include "config/feature.h"
-
-//#include "io/asyncfatfs/asyncfatfs.h"
-//#include "io/flashfs.h"
-//#include "io/gps.h"
+//#include "flight/servos.h"
 #include "io/opflow.h"
 #include "io/rangefinder.h"
 #include "io/ledstrip.h"

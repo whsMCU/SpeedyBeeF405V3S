@@ -23,17 +23,9 @@
 
 #include "common/axis.h"
 
-#include "hw.h"
-
 //#include "pg/gps_rescue.h"
 
 #define TASK_GPS_RESCUE_RATE_HZ 100  // in sync with altitude task rate
-
-#ifdef USE_MAG
-#define GPS_RESCUE_USE_MAG  true
-#else
-#define GPS_RESCUE_USE_MAG  false
-#endif
 
 typedef enum {
     RESCUE_SANITY_OFF = 0,
@@ -72,17 +64,15 @@ typedef struct gpsRescue_s {
     uint8_t  imuYawGain;
 } gpsRescueConfig_t;
 
-extern float gpsRescueAngle[RP_AXIS_COUNT]; // NOTE: ANGLES ARE IN CENTIDEGREES
-
 void gpsRescueConfig_Init(void);
 
 void gpsRescueInit(void);
 void gpsRescueUpdate(void);
 float gpsRescueGetYawRate(void);
+float gpsRescueGetMaxAltitudeCm(void);
 bool gpsRescueIsConfigured(void);
 bool gpsRescueIsAvailable(void);
-bool gpsRescueIsDisabled(void);
-bool gpsRescueDisableMag(void);
-float gpsRescueGetImuYawCogGain(void);
+bool gpsRescueIsHeadingOK(void);
+bool gpsRescueIsOK(void);
 
 #endif // !USE_WING

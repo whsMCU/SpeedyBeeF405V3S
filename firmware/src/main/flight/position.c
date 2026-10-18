@@ -24,230 +24,174 @@
 #include <math.h>
 #include <limits.h>
 
+#include "hw.h"
+
 #include "build/debug.h"
 
 #include "common/maths.h"
-
-#include "drivers/gps/gps.h"
+#include "common/filter.h"
 
 #include "fc/runtime_config.h"
 
 #include "flight/position.h"
+#include "flight/position_estimator.h"
 #include "flight/imu.h"
 #include "flight/pid.h"
 
-#include "rx/rx.h"
-
-//#include "io/gps.h"
+#include "gps/gps.h"
 
 #include "scheduler/scheduler.h"
 
-#include "sensors.h"
+#include "sensors/sensors.h"
 #include "sensors/barometer.h"
-#include "sensors/gyro.h"
+#include "sensors/rangefinder.h"
 
-#include "navigation/navigation_pos_estimator_private.h"
+//#include "pg/pg.h"
+//#include "pg/pg_ids.h"
 
+static float displayAltitudeCm = 0.0f;
 
-typedef enum {
-    DEFAULT = 0,
-    BARO_ONLY,
-    GPS_ONLY
-} altSource_e;
+static pt2Filter_t altitudeLpf;
+static pt2Filter_t altitudeDerivativeLpf;
 
+static float filteredAltitudeCm = 0.0f;
+static float filteredAltitudeDerivative = 0.0f;
+
+static float controlAltitudeCm = 0.0f;
+static float controlAltitudeDerivative = 0.0f;
+#if defined(USE_BARO) || defined(USE_GPS) || defined(USE_RANGEFINDER)
+static bool wasArmed = false;
+#endif
+#ifdef USE_VARIO
+static int16_t estimatedVario = 0;
+#endif
+
+static void positionResetAltitudeState(void)
+{
+    const float sampleTimeS = HZ_TO_INTERVAL(TASK_ALTITUDE_RATE_HZ);
+
+    const float altitudeCutoffHz = positionConfig.altitude_lpf / 100.0f;
+    const float altitudeGain = pt2FilterGain(altitudeCutoffHz, sampleTimeS);
+    pt2FilterInit(&altitudeLpf, altitudeGain);
+
+    const float altitudeDerivativeCutoffHz = positionConfig.altitude_d_lpf / 100.0f;
+    const float altitudeDerivativeGain = pt2FilterGain(altitudeDerivativeCutoffHz, sampleTimeS);
+    pt2FilterInit(&altitudeDerivativeLpf, altitudeDerivativeGain);
+
+    filteredAltitudeCm = 0.0f;
+    displayAltitudeCm = 0.0f;
+    filteredAltitudeDerivative = 0.0f;
+    controlAltitudeCm = 0.0f;
+    controlAltitudeDerivative = 0.0f;
+}
+
+void positionInit(void)
+{
+    positionResetAltitudeState();
+#if defined(USE_BARO) || defined(USE_GPS) || defined(USE_RANGEFINDER)
+    wasArmed = ARMING_FLAG(ARMED);
+#endif
+
+    positionEstimatorInit();
+}
 
 positionConfig_t positionConfig;
 
 void positionConfig_Init(void)
 {
-	positionConfig.altSource = DEFAULT;
-	positionConfig.altNumSatsGpsUse = POSITION_DEFAULT_ALT_NUM_SATS_GPS_USE;
-	positionConfig.altNumSatsBaroFallback = POSITION_DEFAULT_ALT_NUM_SATS_BARO_FALLBACK;
-
-	positionConfig.altitude_source = ALTITUDE_SOURCE_DEFAULT;
-	positionConfig.altitude_prefer_baro = 100;
-	positionConfig.altitude_lpf = 300;                // lowpass cutoff (value / 100) Hz for altitude smoothing
-	positionConfig.altitude_d_lpf = 300;              // lowpass for (value / 100) Hz for altitude derivative smoothing
-	positionConfig.rangefinder_max_range_cm = 200;    // Maximum rangefinder range to trust (cm)
+  positionConfig.altitude_source = ALTITUDE_SOURCE_DEFAULT;
+  positionConfig.altitude_prefer_baro = 100;
+  positionConfig.altitude_lpf = 300;                // lowpass cutoff (value / 100) Hz for altitude smoothing
+  positionConfig.altitude_d_lpf = 300;              // lowpass for (value / 100) Hz for altitude derivative smoothing
+  positionConfig.rangefinder_max_range_cm = 200;    // Maximum rangefinder range to trust (cm)
 }
 
-static uint8_t averagingCount;
-laggedMovingAverageCombined_t  accAvg[XYZ_AXIS_COUNT];
-
-void position_Init(void)
-{
-
-  averagingCount = 10;
-  for (int i = 0; i < XYZ_AXIS_COUNT; i++) {
-    laggedMovingAverageInit(&accAvg[i].filter, averagingCount, (float *)&accAvg[i].buf[0]);
-  }
-}
-
-
-static int32_t estimatedAltitudeCm = 0;                // in cm
-
-#define BARO_UPDATE_FREQUENCY_40HZ (1000 * 25)
-
-#ifdef USE_VARIO
-static int16_t estimatedVario = 0;                   // in cm/s
-
-int16_t calculateEstimatedVario(int32_t baroAlt, const uint32_t dTime) {
-    static float vel = 0;
-    static int32_t lastBaroAlt = 0;
-
-    int32_t baroVel = 0;
-
-    baroVel = (baroAlt - lastBaroAlt) * 1000000.0f / dTime;
-    lastBaroAlt = baroAlt;
-
-    baroVel = constrain(baroVel, -1500.0f, 1500.0f);
-    baroVel = applyDeadband(baroVel, 10.0f);
-
-    vel = vel * CONVERT_PARAMETER_TO_FLOAT(barometerConfig.baro_cf_vel) + baroVel * (1.0f - CONVERT_PARAMETER_TO_FLOAT(barometerConfig.baro_cf_vel));
-    int32_t vel_tmp = lrintf(vel);
-    vel_tmp = applyDeadband(vel_tmp, 5.0f);
-
-    return constrain(vel_tmp, SHRT_MIN, SHRT_MAX);
-}
-#endif
-
-#if defined(USE_BARO) || defined(USE_GPS)
-static bool altitudeOffsetSetBaro = false;
-static bool altitudeOffsetSetGPS = false;
-float pos_z, vel_z;
-float altitude_dt;
+#if defined(USE_BARO) || defined(USE_GPS) || defined(USE_RANGEFINDER)
 void calculateEstimatedAltitude(timeUs_t currentTimeUs)
 {
-    static timeUs_t previousTimeUs = 0;
-    static int32_t baroAltOffset = 0;
-    static int32_t gpsAltOffset = 0;
+  UNUSED(currentTimeUs);
+    const bool isArmed = ARMING_FLAG(ARMED);
 
-    const uint32_t dTime = currentTimeUs - previousTimeUs;
-    if (dTime < BARO_UPDATE_FREQUENCY_40HZ) {
-        schedulerIgnoreTaskExecTime();
-        return;
+#if defined(USE_BARO) || defined(USE_GPS) || defined(USE_RANGEFINDER)
+    if (isArmed != wasArmed) {
+        positionEstimatorResetZ();
+        positionResetAltitudeState();
+        wasArmed = isArmed;
     }
-    previousTimeUs = currentTimeUs;
-    altitude_dt = US2S(dTime);
-    int32_t baroAlt = 0;
-    int32_t gpsAlt = 0;
-    uint8_t gpsNumSat = 0;
-
-#if defined(USE_GPS) && defined(USE_VARIO)
-    int16_t gpsVertSpeed = 0;
-#endif
-    float gpsTrust = 0.3; //conservative default
-    bool haveBaroAlt = false;
-    bool haveGpsAlt = false;
-#ifdef USE_BARO
-			if (!baroIsCalibrationComplete()) {
-					performBaroCalibrationCycle();
-			} else {
-					baroAlt = baroCalculateAltitude();
-					haveBaroAlt = true;
-			}
 #endif
 
-//#ifdef USE_GPS
-//    if (sensors(SENSOR_GPS) && STATE(GPS_FIX)) {
-//        gpsAlt = posllh.height*10;
-//        gpsNumSat = GpsNav.GPS_numSat;
-//#ifdef USE_VARIO
-//        gpsVertSpeed = GPS_verticalSpeedInCmS;
-//#endif
-//        haveGpsAlt = true;
-//
-//        if (gpsSol.hdop != 0) {
-//            gpsTrust = 100.0 / gpsSol.hdop;
-//        }
-//        // always use at least 10% of other sources besides gps if available
-//        gpsTrust = MIN(gpsTrust, 0.9f);
-//    }
-//#endif
+    // Run the Kalman filter estimator (prediction + all sensor measurement updates)
+    positionEstimatorUpdate();
 
-    if (ARMING_FLAG(ARMED) && !altitudeOffsetSetBaro) {
-        baroAltOffset = baroAlt;
-        altitudeOffsetSetBaro = true;
-    } else if (!ARMING_FLAG(ARMED) && altitudeOffsetSetBaro) {
-        altitudeOffsetSetBaro = false;
-    }
+    // Get raw KF altitude estimate
+    const float kfAltCm = positionEstimatorGetAltitudeCm();
+    const float kfVelCm = positionEstimatorGetAltitudeDerivative();
 
-    baroAlt -= baroAltOffset;
+    // Keep altitude estimate updating while disarmed so sensors/debug views show live data.
+    // Arming-specific references are handled in estimator sensor offsets/reset logic.
+    filteredAltitudeCm = pt2FilterApply(&altitudeLpf, kfAltCm);
+    displayAltitudeCm = filteredAltitudeCm;
+    controlAltitudeCm = kfAltCm;
+    controlAltitudeDerivative = kfVelCm;
 
-    int goodGpsSats = 0;
-    int badGpsSats = -1;
-
-    if (haveBaroAlt) {
-        goodGpsSats = positionConfig.altNumSatsGpsUse;
-        badGpsSats = positionConfig.altNumSatsBaroFallback;
-    }
-
-    if (ARMING_FLAG(ARMED)) {
-        if (!altitudeOffsetSetGPS && gpsNumSat >= goodGpsSats) {
-            gpsAltOffset = gpsAlt - baroAlt;
-            altitudeOffsetSetGPS = true;
-        } else if (gpsNumSat <= badGpsSats) {
-            altitudeOffsetSetGPS = false;
-        }
-    } else if (!ARMING_FLAG(ARMED) && altitudeOffsetSetGPS) {
-        altitudeOffsetSetGPS = false;
-    }
-
-    gpsAlt -= gpsAltOffset;
-
-    if (!altitudeOffsetSetGPS) {
-        haveGpsAlt = false;
-        gpsTrust = 0.0f;
-    }
-
-    if (haveGpsAlt && haveBaroAlt && positionConfig.altSource == DEFAULT) {
-        if (ARMING_FLAG(ARMED)) {
-            estimatedAltitudeCm = gpsAlt * gpsTrust + baroAlt * (1 - gpsTrust);
-        } else {
-            estimatedAltitudeCm = gpsAlt; //absolute altitude is shown before arming, ignore baro
-        }
-#ifdef USE_VARIO
-        // baro is a better source for vario, so ignore gpsVertSpeed
-        estimatedVario = calculateEstimatedVario(baroAlt, dTime);
-#endif
-    } else if (haveGpsAlt && (positionConfig.altSource == GPS_ONLY || positionConfig.altSource == DEFAULT )) {
-        estimatedAltitudeCm = gpsAlt;
-#if defined(USE_VARIO) && defined(USE_GPS)
-        estimatedVario = gpsVertSpeed;
-#endif
-    } else if (haveBaroAlt && (positionConfig.altSource == BARO_ONLY || positionConfig.altSource == DEFAULT)) {
-        estimatedAltitudeCm = baroAlt;
-#ifdef USE_VARIO
-        estimatedVario = calculateEstimatedVario(baroAlt, dTime);
-#endif
-    }
-
-    vel_z += bmi270.acc.accADCf[YAW] * US2S(dTime);
-    pos_z += vel_z * US2S(dTime);
-
-
-
-    //DEBUG_SET(DEBUG_ALTITUDE, 0, (int32_t)(100 * gpsTrust));
-
-    //DEBUG_SET(DEBUG_ALTITUDE, 2, kf.velocity);
-    //DEBUG_SET(DEBUG_ALTITUDE, 2, gpsAlt);
-    //DEBUG_SET(DEBUG_ALTITUDE, 3, (int32_t)kf.altitude_est);
+    filteredAltitudeDerivative = pt2FilterApply(&altitudeDerivativeLpf, controlAltitudeDerivative);
 
 #ifdef USE_VARIO
-    //DEBUG_SET(DEBUG_ALTITUDE, 4, estimatedVario);
+    estimatedVario = lrintf(filteredAltitudeDerivative);
+    estimatedVario = applyDeadband(estimatedVario, 10);
+#endif
+
+    DEBUG_SET(DEBUG_ALTITUDE, 0, lrintf(positionEstimatorGetEstimate()->trustZ * 100));
+    DEBUG_SET(DEBUG_ALTITUDE, 1, lrintf(kfAltCm / 10.0f));
+    DEBUG_SET(DEBUG_ALTITUDE, 2, lrintf(filteredAltitudeCm / 10.0f));
+#ifdef USE_VARIO
+    DEBUG_SET(DEBUG_ALTITUDE, 3, estimatedVario);
+#endif
+    DEBUG_SET(DEBUG_RTH, 1, lrintf(displayAltitudeCm / 10.0f));
+
+#if defined(USE_BARO) || defined(USE_GPS) || defined(USE_RANGEFINDER)
+    wasArmed = isArmed;
 #endif
 }
 
-bool isAltitudeOffset(void)
+#endif // defined(USE_BARO) || defined(USE_GPS) || defined(USE_RANGEFINDER)
+
+float getAltitudeCm(void)
 {
-    return altitudeOffsetSetBaro || altitudeOffsetSetGPS;
+    return filteredAltitudeCm;
 }
-#endif
+
+float getAltitudeDerivative(void)
+{
+    return filteredAltitudeDerivative;
+}
+
+float getAltitudeCmControl(void)
+{
+    return controlAltitudeCm; // un-filtered current altitude in cm
+}
+
+float getAltitudeDerivativeControl(void)
+{
+    return controlAltitudeDerivative;
+}
+
+bool isAltitudeAvailable(void)
+{
+    return positionEstimatorIsValidZ();
+}
 
 int32_t getEstimatedAltitudeCm(void)
 {
-    return estimatedAltitudeCm;
+    return lrintf(displayAltitudeCm);
 }
+
+#ifdef USE_GPS
+float getAltitudeAsl(void)
+{
+    return gpsSol.llh.altCm;
+}
+#endif
 
 #ifdef USE_VARIO
 int16_t getEstimatedVario(void)

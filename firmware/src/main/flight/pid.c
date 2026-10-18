@@ -32,8 +32,8 @@
 #include "sensors/gyro.h"
 
 #include "flight/imu.h"
-#include "flight/position.h"
 #include "flight/pid.h"
+#include "flight/position.h"
 
 #include "fc/rc_controls.h"
 

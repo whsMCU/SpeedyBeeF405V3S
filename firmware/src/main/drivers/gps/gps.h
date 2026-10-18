@@ -151,6 +151,8 @@ typedef struct {
 
   bool ubxHaveNewPositionAndNewSpeed;
 
+  bool Healthy;
+
 } GpsNav_t;
 
 extern GpsNav_t GpsNav;
@@ -340,6 +342,12 @@ extern nav_pvt_t pvt;
 
 extern UbxNavStatus_t nav_status;
 
+extern gpsLocation_t GPS_home_llh;
+extern uint16_t GPS_distanceToHome;        // distance to home point in meters
+extern uint32_t GPS_distanceToHomeCm;      // distance to home point in cm
+extern int16_t GPS_directionToHome;        // direction to home in degrees * 10
+extern uint32_t GPS_distanceFlownInCm;     // distance flown since armed in centimeters
+
 void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t length);
 
 void GPS_calc_longitude_scaling(int32_t lat);
@@ -351,6 +359,7 @@ int32_t wrap_18000(int32_t ang);
 void GPS_reset_nav(void);
 
 bool isGPSHeadingValid(void);
+bool gpsIsHealthy(void);
 
 bool gpsHasNewData(uint16_t *stamp);
 float getGpsDataIntervalSeconds(void);  // range 0.05 - 2.5s

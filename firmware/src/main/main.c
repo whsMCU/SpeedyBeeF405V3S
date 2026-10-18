@@ -17,6 +17,7 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+#include <position_old.h>
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -34,8 +35,6 @@
 //
 #include "flight/imu.h"
 //#include "flight/pid_init.h"
-#include "flight/position.h"
-
 #include "sensors/sensors.h"
 #include "sensors/barometer.h"
 #include "sensors/compass.h"

@@ -70,6 +70,14 @@ typedef struct _PID_Test{
    float pid_test_deg;
 } PID_Test;
 
+typedef struct pidCoefficient_s {
+    float Kp;
+    float Ki;
+    float Kd;
+    float Kf;
+    float Ka;
+} pidCoefficient_t;
+
 extern DoublePID _ROLL;
 extern DoublePID _PITCH;
 extern DoublePID _ALT;

@@ -75,4 +75,3 @@ uint32_t baroUpdate(timeUs_t currentTimeUs);
 bool isBaroReady(void);
 int32_t baroCalculateAltitude(void);
 void performBaroCalibrationCycle(void);
-//void calculateEstimatedAltitude(uint32_t currentTimeUs);
