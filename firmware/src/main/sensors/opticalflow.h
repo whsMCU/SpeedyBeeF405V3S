@@ -45,6 +45,10 @@ typedef struct opticalFlowConfig_s  {
     uint8_t opflow_hardware;
     uint8_t opflow_align;
     float   opflow_scale;       // Scaler value to convert between raw sensor units to [deg/s]
+    uint16_t rotation;
+    uint8_t  flip_x;
+    uint16_t flow_lpf;
+    uint8_t gyroSampleDelay;
 } opticalFlowConfig_t;
 
 extern opticalFlowConfig_t opticalFlowConfig;
@@ -61,9 +65,8 @@ typedef struct opflow_s {
     float           gyroBodyRateAcc[2];
     timeUs_t        gyroBodyRateTimeUs;
 
-    uint8_t         rawQuality;
+    int16_t         rawQuality;
 
-    int16_t quality;
     vector2_t rawFlowRates;
     vector2_t processedFlowRates;
     uint32_t timeStampUs;
@@ -77,4 +80,4 @@ bool opflowInit(void);
 void opflowUpdate(timeUs_t currentTimeUs);
 bool opflowIsHealthy(void);
 void opflowStartCalibration(void);
-const opticalflow_t * getOpticalFlowData(void);
+const opflow_t * getOpticalFlowData(void);

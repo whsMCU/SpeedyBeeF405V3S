@@ -26,7 +26,7 @@
 
 #include <stdbool.h>
 
-#include "sensors/opflow.h"
+#include "sensors/opticalflow.h"
 #include "drivers/opflow/opflow_virtual.h"
 
 extern virtualOpflowVTable_t opflowCxofVtable;

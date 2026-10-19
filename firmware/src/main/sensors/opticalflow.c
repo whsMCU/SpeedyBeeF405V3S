@@ -55,7 +55,7 @@
 #include "sensors/boardalignment.h"
 #include "sensors/gyro.h"
 #include "sensors/sensors.h"
-#include "sensors/opflow.h"
+#include "sensors/opticalflow.h"
 
 #include "scheduler/scheduler.h"
 
@@ -64,6 +64,10 @@
 #include "build/debug.h"
 
 opflow_t opflow;
+
+static float cosRotAngle = 1.0f;
+static float sinRotAngle = 0.0f;
+static pt2Filter_t xFlowLpf, yFlowLpf;
 
 #ifdef USE_OPTICALFLOW
 static bool opflowIsCalibrating = false;
@@ -80,13 +84,44 @@ static float opflowCalibrationFlowAcc;
 #define SETTING_ALIGN_OPFLOW_DEFAULT 0
 #define SETTING_OPFLOW_SCALE_DEFAULT 10.5
 
+#define OPTICALFLOW_CALIBRATION_DURATION_MS 30000
+#define RATE_SCALE_RESOLUTION (1000.0f)
+
+#define ROTATION_GYRO_LIMIT (float)200.0
+
+#define MAX_GYRO_SAMPLE_DELAY 10
+
 opticalFlowConfig_t opticalFlowConfig;
+
+// static prototypes
+static void applySensorRotation(vector2_t * dst, vector2_t * src);
+static void applyLPF(vector2_t * flowRates);
 
 void opflow_Init(void)
 {
   opticalFlowConfig.opflow_hardware = SETTING_OPFLOW_HARDWARE_DEFAULT;
   opticalFlowConfig.opflow_align = SETTING_ALIGN_OPFLOW_DEFAULT;
   opticalFlowConfig.opflow_scale = 10.785f;
+  opticalFlowConfig.rotation = 0;
+  opflow.rawFlowRates.x = 0;
+  opflow.rawFlowRates.y = 0;
+  opflow.processedFlowRates.x = 0;
+  opflow.processedFlowRates.y = 0;
+  opflow.timeStampUs = micros();
+
+  cosRotAngle = cosf(DEGREES_TO_RADIANS(opticalFlowConfig.rotation));
+  sinRotAngle = sinf(DEGREES_TO_RADIANS(opticalFlowConfig.rotation));
+  //low pass filter
+  if (opticalFlowConfig.flow_lpf != 0) {
+      const float flowCutoffHz = (float)opticalFlowConfig.flow_lpf / 100.0f;
+      const float flowGain     = pt2FilterGain(flowCutoffHz, 20 / 1000.0f);
+
+      pt2FilterInit(&xFlowLpf, flowGain);
+      pt2FilterInit(&yFlowLpf, flowGain);
+  }
+
+  opticalFlowConfig.gyroSampleDelay = 3;
+  opticalFlowConfig.flip_x = 1;
 }
 
 static bool opflowDetect(opflowDev_t * dev, uint8_t opflowHardwareToUse)
@@ -187,6 +222,56 @@ void opflowUpdate(timeUs_t currentTimeUs)
             opflow.flowRate[X] = opflow.dev.rawData.flowRateRaw.x * integralToRateScaler;
             opflow.flowRate[Y] = opflow.dev.rawData.flowRateRaw.y * integralToRateScaler;
 
+///////////////////////////////////////////////////////////////////////////////////////////
+            vector2_t raw;
+            raw.x = opflow.dev.rawData.flowRateRaw.x;
+            raw.y = opflow.dev.rawData.flowRateRaw.y;
+            vector2_t processed;
+            uint8_t delayedGyroSampleIndex;
+
+            applySensorRotation(&processed, &raw);
+
+            // Attenuate the optical flow when body rotation is detected
+            // There is a delay between a detected gyro motion and this
+            // being seen in the optical flow output
+            static uint8_t gyroSampleIndex = 0;
+            static float rollRate[MAX_GYRO_SAMPLE_DELAY];
+            static float pitchRate[MAX_GYRO_SAMPLE_DELAY];
+
+            const uint8_t sampleDelay = (uint8_t)constrain((int)opticalFlowConfig.gyroSampleDelay, 1, MAX_GYRO_SAMPLE_DELAY);
+            gyroSampleIndex = (gyroSampleIndex + 1) % sampleDelay;
+            rollRate[gyroSampleIndex] = (float)gyroGetFilteredDownsampled(X);
+            pitchRate[gyroSampleIndex] = -(float)gyroGetFilteredDownsampled(Y);
+            delayedGyroSampleIndex = (gyroSampleIndex + 1) % sampleDelay;
+            vector2_t delayedGyroRaw = {{
+                rollRate[delayedGyroSampleIndex],
+                pitchRate[delayedGyroSampleIndex]
+            }};
+            vector2_t delayedGyroRotated;
+
+            applySensorRotation(&delayedGyroRotated, &delayedGyroRaw);
+
+            // Subtract the rate of body rotation (converted from dps to rad/s) from the
+            // optical flow
+            processed.x -= DEGREES_TO_RADIANS(delayedGyroRotated.x);
+            processed.y -= DEGREES_TO_RADIANS(delayedGyroRotated.y);
+
+            // For large rates of body rotation the velocity will be unreliable, so zero
+            if (fabsf(delayedGyroRotated.x) > ROTATION_GYRO_LIMIT) {
+                processed.x = 0;
+            }
+            if (fabsf(delayedGyroRotated.y) > ROTATION_GYRO_LIMIT) {
+                processed.y = 0;
+            }
+
+            applyLPF(&processed);
+
+            opflow.rawFlowRates = raw;
+            opflow.processedFlowRates = processed;
+            opflow.timeStampUs  = currentTimeUs;
+
+///////////////////////////////////////////////////////////////////////////////////////////
+
             // Only update DEBUG_FLOW_RAW if flow is good
             DEBUG_SET(DEBUG_FLOW_RAW, 0, (opflow.flowRate[X])); // right +
             DEBUG_SET(DEBUG_FLOW_RAW, 1, (opflow.flowRate[Y])); // front -
@@ -256,8 +341,22 @@ void opflowGyroUpdateCallback(timeUs_t gyroUpdateDeltaUs)
     opflow.gyroBodyRateTimeUs += gyroUpdateDeltaUs;
 }
 
-const opticalflow_t * getOpticalFlowData(void) {
-    return &opticalflow;
+static void applySensorRotation(vector2_t * dst, vector2_t * src) {
+    dst->x = (opticalFlowConfig.flip_x ? -1.0f : 1.0f) * (src->x * cosRotAngle - src->y * sinRotAngle);
+    dst->y = src->x * sinRotAngle + src->y * cosRotAngle;
+}
+
+static void applyLPF(vector2_t * flowRates) {
+    if (opticalFlowConfig.flow_lpf == 0) {
+        return;
+    }
+
+    flowRates->x = pt2FilterApply(&xFlowLpf, flowRates->x);
+    flowRates->y = pt2FilterApply(&yFlowLpf, flowRates->y);
+}
+
+const opflow_t * getOpticalFlowData(void) {
+    return &opflow;
 }
 
 bool opflowIsHealthy(void)

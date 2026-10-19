@@ -44,7 +44,7 @@
 
 #include "sensors/gyro.h"
 #include "sensors/gyro_init.h"
-#include "sensors/opflow.h"
+#include "sensors/opticalflow.h"
 #include "sensors/boardalignment.h"
 
 #include "drivers/accgyro/accgyro_spi_bmi270.h"

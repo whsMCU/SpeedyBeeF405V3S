@@ -16,7 +16,7 @@
 
 #include "sensors/barometer.h"
 #include "sensors/compass.h"
-#include "sensors/opflow.h"
+#include "sensors/opticalflow.h"
 #include "sensors/rangefinder.h"
 
 
