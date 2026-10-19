@@ -256,6 +256,10 @@ void opflowGyroUpdateCallback(timeUs_t gyroUpdateDeltaUs)
     opflow.gyroBodyRateTimeUs += gyroUpdateDeltaUs;
 }
 
+const opticalflow_t * getOpticalFlowData(void) {
+    return &opticalflow;
+}
+
 bool opflowIsHealthy(void)
 {
     return opflow.isHwHealty;

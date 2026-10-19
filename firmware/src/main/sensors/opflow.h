@@ -62,6 +62,11 @@ typedef struct opflow_s {
     timeUs_t        gyroBodyRateTimeUs;
 
     uint8_t         rawQuality;
+
+    int16_t quality;
+    vector2_t rawFlowRates;
+    vector2_t processedFlowRates;
+    uint32_t timeStampUs;
 } opflow_t;
 
 extern opflow_t opflow;
@@ -72,3 +77,4 @@ bool opflowInit(void);
 void opflowUpdate(timeUs_t currentTimeUs);
 bool opflowIsHealthy(void);
 void opflowStartCalibration(void);
+const opticalflow_t * getOpticalFlowData(void);

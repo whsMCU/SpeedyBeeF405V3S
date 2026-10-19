@@ -45,7 +45,7 @@
 
 
 #include "flight/pid.h"
-#include "flight/gps_rescue_multirotor.h"
+//#include "flight/gps_rescue_multirotor.h"
 #include "flight/position.h"
 
 #include "io/ledstrip.h"
