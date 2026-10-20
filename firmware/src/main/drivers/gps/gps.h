@@ -329,7 +329,6 @@ typedef struct GPS_svinfo_s {
 
 extern GPS_svinfo_t GPS_svinfo[GPS_SV_MAXSATS_M8N];
 extern gpsSolutionData_t gpsSol;
-gpsVelned_t velned;
 
 extern UbxNavPosllh_t posllh;
 extern UbxNavSat_t sat;
@@ -348,21 +347,26 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
 
 void GPS_calc_longitude_scaling(int32_t lat);
 void GPS_set_next_wp(int32_t* lat, int32_t* lon);
-void GPS_distance_cm_bearing(int32_t* lat1, int32_t* lon1, int32_t* lat2, int32_t* lon2,uint32_t* dist, int32_t* bearing);
-void GPS_reset_home_position(void);
-void gpsSetFixState(bool state);
+
 int32_t wrap_18000(int32_t ang);
 void GPS_reset_nav(void);
 
 bool isGPSHeadingValid(void);
 bool gpsIsHealthy(void);
 
-bool gpsHasNewData(uint16_t *stamp);
-float getGpsDataIntervalSeconds(void);  // range 0.05 - 2.5s
-float getGpsDataFrequencyHz(void);      // range 20Hz - 0.4Hz
+void GPS_reset_home_position(void);
+void GPS_calc_longitude_scaling(int32_t lat);
+void GPS_distance_cm_bearing(const gpsLocation_t *from, const gpsLocation_t *to, bool dist3d, uint32_t *dist, int32_t *bearing);
+
 
 void GPS_distance2d(const gpsLocation_t *from, const gpsLocation_t *to, vector2_t *distance);
 
+void gpsSetFixState(bool state);
+
+bool gpsHasNewData(uint16_t *stamp);
+float getGpsDataIntervalSeconds(void);  // range 0.05 - 2.5s
+float getGpsDataFrequencyHz(void);      // range 20Hz - 0.4Hz
+float getGpsCosLat(void);
 
 #ifdef __cplusplus
 }

@@ -17,7 +17,7 @@
 #include "sensors/gyro.h"
 #include "flight/pid.h"
 
-#include "sensors/opflow.h"
+#include "sensors/opticalflow.h"
 #include "sensors/rangefinder.h"
 
 const char *defaultSDCardConfigFilename = "config.ini";

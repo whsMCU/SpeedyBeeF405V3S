@@ -128,6 +128,11 @@ uint8_t GPS_numCh;
 
 GPS_svinfo_t GPS_svinfo[GPS_SV_MAXSATS_M8N];
 
+typedef enum {
+    NAV_VALID_DATE = 1,
+    NAV_VALID_TIME = 2
+} ubxNavPvtValid_e;
+
 // Do we have a new valid fix?
 static bool ubxHaveNewValidFix = false;
 
@@ -243,6 +248,48 @@ static void GPS_Filter(int32_t *GPS_coord)
 // Current GPS-UTC leap seconds offset (as of 2017, 18 leap seconds)
 #define GPS_LEAP_SECONDS 18
 
+// Days from start of year for each month (non-leap year first row, leap year second row)
+static const uint16_t gpsMonthDays[2][12] = {
+    { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 }, // Non-leap year
+    { 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335 }  // Leap year
+};
+
+// Convert Unix seconds and milliseconds to gpsDateTime_t
+void gpsUnixSecondsToDateTime(gpsDateTime_t *dt, int64_t unixSeconds, uint16_t millis)
+{
+    dt->sec = unixSeconds % 60;
+    unixSeconds /= 60;
+    dt->min = unixSeconds % 60;
+    unixSeconds /= 60;
+    dt->hour = unixSeconds % 24;
+    int32_t days = unixSeconds / 24;
+
+    // Calculate year and day of year from 1970
+    int year = 1970;
+    while (true) {
+        int daysInYear = (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) ? 366 : 365;
+        if (days < daysInYear) {
+            break;
+        }
+        days -= daysInYear;
+        year++;
+    }
+    dt->year = year;
+
+    int isLeap = (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) ? 1 : 0;
+
+    int month;
+    for (month = 11; month > 0; month--) {
+        if (days >= gpsMonthDays[isLeap][month]) {
+            break;
+        }
+    }
+    dt->month = month + 1;
+    dt->day = days - gpsMonthDays[isLeap][month] + 1;
+
+    dt->millis = millis;
+}
+
 // Convert date/time to Unix seconds (UTC)
 static int64_t dateTimeToUnixSeconds(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t min, uint8_t sec)
 {
@@ -355,7 +402,7 @@ static void gpsDateTimeSubtractOneSecond(gpsDateTime_t *dt)
     dt->day = gpsDateTimeDaysInMonth(dt->year, dt->month);
 }
 
-static void gpsDateTimeFromNavPvt(gpsDateTime_t *dt, const ubxNavPvt_t *navPvt)
+static void gpsDateTimeFromNavPvt(gpsDateTime_t *dt, const nav_pvt_t *navPvt)
 {
     dt->valid = (navPvt->valid & NAV_VALID_DATE) && (navPvt->valid & NAV_VALID_TIME);
     if (!dt->valid) {
@@ -533,7 +580,7 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
         gpsSetFixState(next_fix);
 
         ////////////////////////////////////////////////////////////////////////
-        ubxHaveNewValidFix = (nav_status.fix_status & NAV_STATUS_FIX_VALID) && (nav_status.gpsFix == FIX_3D);
+        ubxHaveNewValidFix = (nav_status.flags & NAV_STATUS_FIX_VALID) && (nav_status.gpsFix == FIX_3D);
         if (!ubxHaveNewValidFix)
             DISABLE_STATE(GPS_FIX);
         ////////////////////////////////////////////////////////////////////////
@@ -585,9 +632,9 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
     GpsNav.flags.validEPE = true;
     GpsNav.groundSpeed = pvt.gSpeed / 10; // cm/s
     GpsNav.groundCourse = (uint16_t) (pvt.headMot / 10000); // Heading 2D deg * 100000 rescaled to deg * 10
-    GpsNav.velned.velN = (int16_t)(pvt.velN / 10); // cm/s
-    GpsNav.velned.velE = (int16_t)(pvt.velE / 10); // cm/s
-    GpsNav.velned.velD = (int16_t)(pvt.velD / 10); // cm/s
+//    GpsNav.velned.velN = (int16_t)(pvt.velN / 10); // cm/s
+//    GpsNav.velned.velE = (int16_t)(pvt.velE / 10); // cm/s
+//    GpsNav.velned.velD = (int16_t)(pvt.velD / 10); // cm/s
     GpsNav.ubxHaveNewPositionAndNewSpeed = true;
 
     ///////////////////////////////////////////////////////////
@@ -644,16 +691,7 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
 // Check for healthy communications
 bool gpsIsHealthy(void)
 {
-    return (ubxHaveNewPositionAndNewSpeed);
-}
-
-void gpsSetFixState(bool state)
-{
-    if (state) {
-        ENABLE_STATE(GPS_FIX);
-    } else {
-        DISABLE_STATE(GPS_FIX);
-    }
+    return (ubxHaveNewValidFix);
 }
 
 //It was mobed here since even i2cgps code needs it
@@ -938,7 +976,7 @@ void gpsUpdate(uint32_t currentTimeUs)
       }
 
       //calculate the current velocity based on gps coordinates continously to get a valid speed at the moment when we start navigating
-      GPS_calc_velocity();
+      //GPS_calc_velocity();
 
       if (STATE(NAV_POSHOLD_MODE) || STATE(NAV_RTH_MODE)){    //ok we are navigating
         //do gps nav calculations here, these are common for nav and poshold
@@ -946,8 +984,8 @@ void gpsUpdate(uint32_t currentTimeUs)
           GPS_distance_cm_bearing(&GPS_coord_lead[LAT],&GPS_coord_lead[LON],&GPS_WP[LAT],&GPS_WP[LON],&wp_distance,&target_bearing);
           GPS_calc_location_error(&GPS_WP[LAT],&GPS_WP[LON],&GPS_coord_lead[LAT],&GPS_coord_lead[LON]);
         #else
-          GPS_distance_cm_bearing(&GpsNav.GPS_coord[LAT],&GpsNav.GPS_coord[LON],&GpsNav.GPS_WP[LAT],&GpsNav.GPS_WP[LON],&GpsNav.wp_distance,&GpsNav.target_bearing);
-          GPS_calc_location_error(&GpsNav.GPS_WP[LAT],&GpsNav.GPS_WP[LON],&GpsNav.GPS_coord[LAT],&GpsNav.GPS_coord[LON]);
+          //GPS_distance_cm_bearing(&GpsNav.GPS_coord[LAT],&GpsNav.GPS_coord[LON],&GpsNav.GPS_WP[LAT],&GpsNav.GPS_WP[LON],&GpsNav.wp_distance,&GpsNav.target_bearing);
+          //GPS_calc_location_error(&GpsNav.GPS_WP[LAT],&GpsNav.GPS_WP[LON],&GpsNav.GPS_coord[LAT],&GpsNav.GPS_coord[LON]);
         #endif
         switch (GpsNav.nav_mode) {
           case NAV_MODE_POSHOLD:
@@ -994,6 +1032,16 @@ bool isGPSHeadingValid(void)
     return sensors(SENSOR_GPS) && STATE(GPS_FIX) && GpsNav.GPS_numSat >= 6;// && gpsSol.groundSpeed >= 300;
 }
 
+void gpsSetFixState(bool state)
+{
+    if (state) {
+        ENABLE_STATE(GPS_FIX);
+        //ENABLE_STATE(GPS_FIX_EVER);
+    } else {
+        DISABLE_STATE(GPS_FIX);
+    }
+}
+
 // check if new data has been received since last check
 // if client stamp is initialized to 0, gpsHasNewData will return false until first GPS position update
 // if client stamp is initialized to ~0, gpsHasNewData will return true on first call
@@ -1014,5 +1062,10 @@ float getGpsDataIntervalSeconds(void)
 float getGpsDataFrequencyHz(void)
 {
     return gpsDataFrequencyHz;
+}
+
+float getGpsCosLat(void)
+{
+    return GPS_cosLat; // note this scaling factor is set only when the home point is updated
 }
 #endif
