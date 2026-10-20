@@ -51,7 +51,7 @@
 #endif
 
 #ifdef USE_OPTICALFLOW
-#include "sensors/opflow.h"
+#include "sensors/opticalflow.h"
 #endif
 
 #ifdef USE_GPS
@@ -143,7 +143,7 @@ static bool positionEstimatorWantXYFusion(void)
 
 #if defined(USE_OPTICALFLOW) && defined(USE_RANGEFINDER)
     if (sensors(SENSOR_OPTICALFLOW) && sensors(SENSOR_RANGEFINDER) &&
-        isOpticalflowHealthy() && rangefinderIsHealthy()) {
+        opflowIsHealthy() && rangefinderIsHealthy()) {
 #if defined(USE_POSITION_HOLD) && !defined(USE_WING)
         if (posHoldConfig()->positionSource != POSHOLD_SOURCE_GPS_ONLY) {
             return true;
@@ -497,7 +497,7 @@ static void feedOpticalFlowMeasurements(timeUs_t nowUs)
         return;
     }
 
-    if (!sensors(SENSOR_OPTICALFLOW) || !isOpticalflowHealthy()) {
+    if (!sensors(SENSOR_OPTICALFLOW) || !opflowIsHealthy()) {
         return;
     }
 
@@ -528,12 +528,12 @@ static void feedOpticalFlowMeasurements(timeUs_t nowUs)
     return;  // Optical flow requires rangefinder for altitude scaling
 #endif
 
-    const opticalflow_t *flow = getOpticalFlowData();
+    const opflow_t *flow = getOpticalFlowData();
     if (flow == NULL) {
         return;
     }
 
-    const float flowR = opticalFlowR(flow->quality);
+    const float flowR = opticalFlowR(flow->rawQuality);
     if (flowR < 0.0f) {
         return;  // quality too low
     }

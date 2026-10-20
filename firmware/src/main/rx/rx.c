@@ -60,7 +60,7 @@
 #include "scheduler/tasks.h"
 
 #include "sensors/sensors.h"
-#include "sensors/opflow.h"
+#include "sensors/opticalflow.h"
 #include "sensors/rangefinder.h"
 
 const char rcChannelLetters[] = "AERT12345678abcdefgh";

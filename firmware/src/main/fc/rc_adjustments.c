@@ -720,7 +720,7 @@ static void processContinuosAdjustments()
 
 void processRcAdjustments(void)
 {
-    const bool canUseRxData = rxIsReceivingSignal();
+    const bool canUseRxData = isRxReceivingSignal();
 
     // Recalculate the new active adjustments if required
     if (stepwiseAdjustmentCount == ADJUSTMENT_RANGE_COUNT_INVALID) {

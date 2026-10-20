@@ -85,7 +85,7 @@ static void positionResetAltitudeState(void)
     controlAltitudeDerivative = 0.0f;
 }
 
-void positionInit(void)
+void position_Init(void)
 {
     positionResetAltitudeState();
 #if defined(USE_BARO) || defined(USE_GPS) || defined(USE_RANGEFINDER)

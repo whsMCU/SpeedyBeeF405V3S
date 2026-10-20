@@ -53,7 +53,7 @@
 #include "sensors/compass.h"
 #include "sensors/gyro.h"
 //#include "sensors/pitotmeter.h"
-#include "sensors/opflow.h"
+#include "sensors/opticalflow.h"
 #include "sensors/rangefinder.h"
 
 navigationPosEstimator_t posEstimator;

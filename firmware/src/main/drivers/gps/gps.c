@@ -501,10 +501,10 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
 
         for (unsigned i = 0; i < ARRAYLEN(GPS_svinfo); i++) {
             if (i < GPS_numCh) {
-                GPS_svinfo[i].chn = sat.svs[i].gnssId;
-                GPS_svinfo[i].svid = sat.svs[i].svId;
-                GPS_svinfo[i].cno = sat.svs[i].cno;
-                GPS_svinfo[i].quality = sat.svs[i].flags;
+                GPS_svinfo[i].chn = sat.sv[i].gnssId;
+                GPS_svinfo[i].svid = sat.sv[i].svId;
+                GPS_svinfo[i].cno = sat.sv[i].cno;
+                GPS_svinfo[i].quality = sat.sv[i].flags;
             } else {
                 GPS_svinfo[i] = (GPS_svinfo_t){ .chn = 255 };
             }
@@ -645,176 +645,6 @@ void Ubx_HandleMessage(uint8_t cls, uint8_t id, uint8_t *payload, uint16_t lengt
 bool gpsIsHealthy(void)
 {
     return (ubxHaveNewPositionAndNewSpeed);
-}
-
-////////////////////////////////////////////////////////////////////////////////////
-// this is used to offset the shrinking longitude as we go towards the poles
-// It's ok to calculate this once per waypoint setting, since it changes a little within the reach of a multicopter
-//
-float GPS_scaleLonDown = 1.0f;  // this is used to offset the shrinking longitude as we go towards the poles
-void GPS_calc_longitude_scaling(int32_t lat) {
-  GPS_scaleLonDown = cos_approx(DEGREES_TO_RADIANS((float)lat / GPS_DEGREES_DIVIDER));
-}
-
-////////////////////////////////////////////////////////////////////////////////////
-// Calculate the distance flown from gps position data
-//
-static void GPS_calculateDistanceFlown(bool initialize)
-{
-    static gpsLocation_t lastLLH = {0};
-
-    if (initialize) {
-        GpsNav.GPS_distanceFlownInCm = 0;
-    } else if (STATE(GPS_FIX_HOME) && ARMING_FLAG(ARMED)) {
-        uint16_t speed = GpsNav.groundSpeed;
-        // Only add up movement when speed is faster than minimum threshold
-        if (speed > GPS_DISTANCE_FLOWN_MIN_SPEED_THRESHOLD_CM_S) {
-            uint32_t dist;
-            int32_t dir;
-
-            GPS_distance_cm_bearing(&GpsNav.GPS_coord[LAT],&GpsNav.GPS_coord[LON],&lastLLH.lat,&lastLLH.lon,&dist,&dir);
-            GpsNav.GPS_distanceFlownInCm += dist;
-        }
-    }
-    lastLLH.lat = GpsNav.GPS_coord[LAT];
-    lastLLH.lon = GpsNav.GPS_coord[LON];
-
-}
-
-//*******************************************************************************************************
-// calc_velocity_and_filtered_position - velocity in lon and lat directions calculated from GPS position
-//       and accelerometer data
-// lon_speed expressed in cm/s.  positive numbers mean moving east
-// lat_speed expressed in cm/s.  positive numbers when moving north
-// Note: we use gps locations directly to calculate velocity instead of asking gps for velocity because
-//       this is more accurate below 1.5m/s
-// Note: even though the positions are projected using a lead filter, the velocities are calculated
-//       from the unaltered gps locations.  We do not want noise from our lead filter affecting velocity
-//*******************************************************************************************************
-static void GPS_calc_velocity(){
-  static int16_t speed_old[2] = {0,0};
-  static int32_t last[2] = {0,0};
-  static uint8_t init = 0;
-
-  if (init) {
-    float tmp = 1.0/GpsNav.dTnav;
-    GpsNav.actual_speed[GPS_X] = (float)(GpsNav.GPS_coord[LON] - last[LON]) *  GPS_scaleLonDown * tmp;
-    GpsNav.actual_speed[GPS_Y] = (float)(GpsNav.GPS_coord[LAT]  - last[LAT])  * tmp;
-
-#if !defined(GPS_LEAD_FILTER)
-    GpsNav.actual_speed[GPS_X] = (GpsNav.actual_speed[GPS_X] + speed_old[GPS_X]) / 2;
-    GpsNav.actual_speed[GPS_Y] = (GpsNav.actual_speed[GPS_Y] + speed_old[GPS_Y]) / 2;
-
-    speed_old[GPS_X] = GpsNav.actual_speed[GPS_X];
-    speed_old[GPS_Y] = GpsNav.actual_speed[GPS_Y];
-
-#endif
-  }
-  init=1;
-
-  last[LON] = GpsNav.GPS_coord[LON];
-  last[LAT] = GpsNav.GPS_coord[LAT];
-
-#if defined(GPS_LEAD_FILTER)
-  GPS_coord_lead[LON] = xLeadFilter.get_position(GpsNav.GPS_coord[LON], GpsNav.actual_speed[GPS_X], GPS_LAG);
-  GPS_coord_lead[LAT] = yLeadFilter.get_position(GpsNav.GPS_coord[LAT], GpsNav.actual_speed[GPS_Y], GPS_LAG);
-#endif
-
-}
-
-// Calculate a location error between two gps coordinates
-// Because we are using lat and lon to do our distance errors here's a quick chart:
-//   100  = 1m
-//  1000  = 11m    = 36 feet
-//  1800  = 19.80m = 60 feet
-//  3000  = 33m
-// 10000  = 111m
-//
-static void GPS_calc_location_error( int32_t* target_lat, int32_t* target_lng, int32_t* gps_lat, int32_t* gps_lng ) {
-  GpsNav.error[LON] = (float)(*target_lng - *gps_lng) * GPS_scaleLonDown;  // X Error
-  GpsNav.error[LAT] = *target_lat - *gps_lat; // Y Error
-}
-
-////////////////////////////////////////////////////////////////////////////////////
-// Sets the waypoint to navigate, reset neccessary variables and calculate initial values
-//
-void GPS_set_next_wp(int32_t* lat, int32_t* lon) {
-  GpsNav.GPS_WP[LAT] = *lat;
-  GpsNav.GPS_WP[LON] = *lon;
-
-  GPS_calc_longitude_scaling(*lat);
-  GPS_distance_cm_bearing(&GpsNav.GPS_coord[LAT],&GpsNav.GPS_coord[LON],&GpsNav.GPS_WP[LAT],&GpsNav.GPS_WP[LON],&GpsNav.wp_distance,&GpsNav.target_bearing);
-
-  GpsNav.nav_bearing = GpsNav.target_bearing;
-  GPS_calc_location_error(&GpsNav.GPS_WP[LAT],&GpsNav.GPS_WP[LON],&GpsNav.GPS_coord[LAT],&GpsNav.GPS_coord[LON]);
-  GpsNav.original_target_bearing = GpsNav.target_bearing;
-  GpsNav.waypoint_speed_gov = NAV_SPEED_MIN;
-}
-
-// Get distance between two points in cm
-// Get bearing from pos1 to pos2, returns an 1deg = 100 precision
-void GPS_distance_cm_bearing(int32_t *currentLat1, int32_t *currentLon1, int32_t *destinationLat2, int32_t *destinationLon2, uint32_t *dist, int32_t *bearing)
-{
-    float dLat = (*destinationLat2 - *currentLat1) * EARTH_ANGLE_TO_CM; // difference of latitude in 1/10 000 000 degrees
-    float dLon = (float)(*destinationLon2 - *currentLon1) * GPS_scaleLonDown * EARTH_ANGLE_TO_CM;
-    float dAlt = 0;
-
-    *dist = sqrtf(sq(dLat) + sq(dLon) + sq(dAlt));
-
-    int32_t bearing_temp = 9000.0f - RADIANS_TO_DEGREES(atan2_approx(dLat, dLon)) * 100.0f;      // Convert the output to 100xdeg / adjust to clockwise from North
-    if (bearing_temp < 0)
-        bearing_temp += 36000;
-
-    *bearing = bearing_temp;
-}
-
-////////////////////////////////////////////////////////////////////////////////////
-// Calculate the distance flown and vertical speed from gps position data
-//
-//static void GPS_calculateDistanceFlownVerticalSpeed(bool initialize)
-//{
-//    static int32_t lastCoord[2] = { 0, 0 };
-//    static int32_t lastAlt;
-//    static int32_t lastMillis;
-//
-//    int currentMillis = millis();
-//
-//    if (initialize) {
-//      GpsNav.GPS_distanceFlownInCm = 0;
-//      GpsNav.GPS_verticalSpeedInCmS = 0;
-//    } else {
-//        if (STATE(GPS_FIX_HOME) && ARMING_FLAG(ARMED)) {
-//            uint16_t speed = gpsConfig()->gps_use_3d_speed ? gpsSol.speed3d : gpsSol.groundSpeed;
-//            // Only add up movement when speed is faster than minimum threshold
-//            if (speed > GPS_DISTANCE_FLOWN_MIN_SPEED_THRESHOLD_CM_S) {
-//                uint32_t dist;
-//                int32_t dir;
-//                GPS_distance_cm_bearing(&gpsSol.llh.lat, &gpsSol.llh.lon, &lastCoord[GPS_LATITUDE], &lastCoord[GPS_LONGITUDE], &dist, &dir);
-//                if (gpsConfig()->gps_use_3d_speed) {
-//                    dist = sqrtf(powf(gpsSol.llh.altCm - lastAlt, 2.0f) + powf(dist, 2.0f));
-//                }
-//                GPS_distanceFlownInCm += dist;
-//            }
-//        }
-//        GPS_verticalSpeedInCmS = (gpsSol.llh.altCm - lastAlt) * 1000 / (currentMillis - lastMillis);
-//        GPS_verticalSpeedInCmS = constrain(GPS_verticalSpeedInCmS, -1500, 1500);
-//    }
-//    lastCoord[GPS_LONGITUDE] = gpsSol.llh.lon;
-//    lastCoord[GPS_LATITUDE] = gpsSol.llh.lat;
-//    lastAlt = gpsSol.llh.altCm;
-//    lastMillis = currentMillis;
-//}
-
-void GPS_reset_home_position(void) {
-  if (STATE(GPS_FIX) && GpsNav.GPS_numSat >= 5) {
-    GpsNav.GPS_home[LAT] = GpsNav.GPS_coord[LAT];
-    GpsNav.GPS_home[LON] = GpsNav.GPS_coord[LON];
-    GPS_calc_longitude_scaling(GpsNav.GPS_coord[LAT]);  //need an initial value for distance and bearing calc
-    GpsNav.nav_takeoff_bearing = DECIDEGREES_TO_DEGREES(attitude.values.yaw);             //save takeoff heading
-    //Set ground altitude
-    ENABLE_STATE(GPS_FIX_HOME);
-  }
-  GPS_calculateDistanceFlown(true); // Initialize
 }
 
 void gpsSetFixState(bool state)
@@ -959,6 +789,57 @@ static uint16_t GPS_calc_desired_speed(uint16_t max_speed, bool _slow) {
   return max_speed;
 }
 
+static float GPS_cosLat = 1.0f;
+    // this is used to offset the shrinking longitude as we go towards the poles
+    // longitude difference * scale is approximate distance in degrees
+
+void GPS_calc_longitude_scaling(int32_t lat)
+{
+    GPS_cosLat = cos_approx(DEGREES_TO_RADIANS((float)lat / GPS_DEGREES_DIVIDER));
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+// Calculate the distance flown from gps position data
+//
+static void GPS_calculateDistanceFlown(bool initialize)
+{
+    static gpsLocation_t lastLLH = {0};
+
+    if (initialize) {
+        GPS_distanceFlownInCm = 0;
+    } else if (STATE(GPS_FIX_HOME) && ARMING_FLAG(ARMED)) {
+        uint16_t speed = GpsNav.groundSpeed;
+        // Only add up movement when speed is faster than minimum threshold
+        if (speed > GPS_DISTANCE_FLOWN_MIN_SPEED_THRESHOLD_CM_S) {
+            uint32_t dist;
+            GPS_distance_cm_bearing(&gpsSol.llh, &lastLLH, false, &dist, NULL);
+            GPS_distanceFlownInCm += dist;
+        }
+    }
+    lastLLH = gpsSol.llh;
+}
+
+void GPS_reset_home_position(void) {
+  if (!STATE(GPS_FIX_HOME) || !GpsNav.gps_set_home_point_once) {
+    if (STATE(GPS_FIX) && GpsNav.GPS_numSat >= 5) {
+      GPS_home_llh = gpsSol.llh;
+      GPS_calc_longitude_scaling(gpsSol.llh.lat);
+      ENABLE_STATE(GPS_FIX_HOME);
+      // no point beeping success here since:
+      // when triggered by tryArm, the arming beep is modified to indicate the GPS home fix status on arming, and
+      // when triggered by gyro cal, the gyro cal beep takes priority over the GPS beep, so we won't hear the GPS beep
+      // PS: to test for gyro cal, check for !ARMED, since we cannot be here while disarmed other than via gyro cal
+      GpsNav.GPS_home[LAT] = GpsNav.GPS_coord[LAT];
+      GpsNav.GPS_home[LON] = GpsNav.GPS_coord[LON];
+      GPS_calc_longitude_scaling(GpsNav.GPS_coord[LAT]);  //need an initial value for distance and bearing calc
+      GpsNav.nav_takeoff_bearing = DECIDEGREES_TO_DEGREES(attitude.values.yaw);             //save takeoff heading
+      //Set ground altitude
+
+    }
+  }
+  GPS_calculateDistanceFlown(true); // Initialize
+}
+
 ////////////////////////////////////////////////////////////////////////////////////
 // Get distance between two points in cm using spherical to Cartesian transform
 // One one latitude unit, or one longitude unit at the equator, equals 1.113195 cm.
@@ -981,22 +862,39 @@ void GPS_distance_cm_bearing(const gpsLocation_t *from, const gpsLocation_t *to,
     }
 }
 
-void GPS_calculateDistanceAndDirectionToHome(void)
+static void GPS_calculateDistanceAndDirectionToHome(void)
 {
-  //calculate distance and bearings for gui and other stuff continously - From home to copter
-    if (STATE(GPS_FIX_HOME)) {      // If we don't have home set, do not display anything
+    if (STATE(GPS_FIX_HOME)) {
         uint32_t dist;
         int32_t dir;
         GPS_distance_cm_bearing(&gpsSol.llh, &GPS_home_llh, false, &dist, &dir);
-        GpsNav.GPS_distanceToHome = dist/100; //m
-        GpsNav.GPS_distanceToHomeCm = dist; //cm
-        GpsNav.GPS_directionToHome = dir/10;  // degrees * 10 or decidegrees
+        GPS_distanceToHome = dist / 100; // m
+        GPS_distanceToHomeCm = dist; // cm
+        GPS_directionToHome = dir / 10; // degrees * 10 or decidegrees
     } else {
-      // If we don't have home set, do not display anything
-      GpsNav.GPS_distanceToHome = 0;
-      GpsNav.GPS_distanceToHomeCm = 0;
-      GpsNav.GPS_directionToHome = 0;
+        // If we don't have home set, do not display anything
+        GPS_distanceToHome = 0;
+        GPS_distanceToHomeCm = 0;
+        GPS_directionToHome = 0;
     }
+}
+
+// return distance vector in local, cartesian ENU coordinates
+// note that parameter order is from, to
+void GPS_distance2d(const gpsLocation_t *from, const gpsLocation_t *to, vector2_t *distance)
+{
+    int32_t deltaLon = to->lon - from->lon;
+    // In case we crossed the 180° meridian
+    const int32_t deg180 = 180 * GPS_DEGREES_DIVIDER; // number of integer longitude steps in 180 degrees
+    if (deltaLon > deg180) {
+        deltaLon -= deg180;  // 360 * GPS_DEGREES_DIVIDER overflows int32_t, so use 180 twice
+        deltaLon -= deg180;
+    } else if (deltaLon <= -deg180) {
+        deltaLon += deg180;
+        deltaLon += deg180;
+    }
+    distance->x = deltaLon * GPS_cosLat * EARTH_ANGLE_TO_CM; // East-West distance, positive East
+    distance->y = (float)(to->lat - from->lat) * EARTH_ANGLE_TO_CM;  // North-South distance, positive North
 }
 
 uint16_t gpsConstrainEPE(uint32_t epe)
@@ -1085,10 +983,10 @@ void gpsUpdate(uint32_t currentTimeUs)
   DEBUG_SET(DEBUG_GPS_DATA, 1, (GpsNav.GPS_coord[LON]));
   DEBUG_SET(DEBUG_GPS_DATA, 2, (GpsNav.GPS_home[LAT]));
   DEBUG_SET(DEBUG_GPS_DATA, 3, (GpsNav.GPS_home[LON]));
-  DEBUG_SET(DEBUG_GPS_DATA, 4, (GpsNav.GPS_distanceToHomeCm));
-  DEBUG_SET(DEBUG_GPS_DATA, 5, (GpsNav.GPS_directionToHome));
+  DEBUG_SET(DEBUG_GPS_DATA, 4, (GPS_distanceToHomeCm));
+  DEBUG_SET(DEBUG_GPS_DATA, 5, (GPS_directionToHome));
   DEBUG_SET(DEBUG_GPS_DATA, 6, (GpsNav.actual_speed[GPS_X]));
-  DEBUG_SET(DEBUG_GPS_DATA, 7, (GpsNav.GPS_distanceFlownInCm));
+  DEBUG_SET(DEBUG_GPS_DATA, 7, (GPS_distanceFlownInCm));
 }
 
 bool isGPSHeadingValid(void)
@@ -1117,23 +1015,4 @@ float getGpsDataFrequencyHz(void)
 {
     return gpsDataFrequencyHz;
 }
-
-// return distance vector in local, cartesian ENU coordinates
-// note that parameter order is from, to
-void GPS_distance2d(const gpsLocation_t *from, const gpsLocation_t *to, vector2_t *distance)
-{
-    int32_t deltaLon = to->lon - from->lon;
-    // In case we crossed the 180° meridian
-    const int32_t deg180 = 180 * GPS_DEGREES_DIVIDER; // number of integer longitude steps in 180 degrees
-    if (deltaLon > deg180) {
-        deltaLon -= deg180;  // 360 * GPS_DEGREES_DIVIDER overflows int32_t, so use 180 twice
-        deltaLon -= deg180;
-    } else if (deltaLon <= -deg180) {
-        deltaLon += deg180;
-        deltaLon += deg180;
-    }
-    distance->x = deltaLon * GPS_cosLat * EARTH_ANGLE_TO_CM; // East-West distance, positive East
-    distance->y = (float)(to->lat - from->lat) * EARTH_ANGLE_TO_CM;  // North-South distance, positive North
-}
-
 #endif

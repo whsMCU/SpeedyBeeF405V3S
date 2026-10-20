@@ -41,7 +41,7 @@
 #include "navigation/kalman.h"
 
 #include "sensors/rangefinder.h"
-#include "sensors/opflow.h"
+#include "sensors/opticalflow.h"
 
 #include "flight/imu.h"
 

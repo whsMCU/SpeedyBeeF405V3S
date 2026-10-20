@@ -72,7 +72,7 @@
 //#include "flight/mixer.h"
 #include "flight/pid.h"
 //#include "flight/pid_init.h"
-#include <position_old.h>
+#include "flight/position.h"
 //#include "flight/servos.h"
 
 //#include "msc/emfat_file.h"
@@ -102,14 +102,14 @@
 #include "sensors/esc_sensor.h"
 #include "sensors/gyro.h"
 #include "sensors/gyro_init.h"
-#include "sensors/opflow.h"
+#include "sensors/opticalflow.h"
 #include "sensors/rangefinder.h"
 //#include "sensors/initialisation.h"
 
 #include "telemetry/telemetry.h"
 
 #include "flight/pid.h"
-#include "flight/gps_rescue_multirotor.h"
+//#include "flight/gps_rescue_multirotor.h"
 
 //#include "drivers/gps/gps.h"
 #include "drivers/motor.h"

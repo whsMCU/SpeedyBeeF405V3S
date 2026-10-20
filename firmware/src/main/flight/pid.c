@@ -46,7 +46,7 @@
 #include "fc/runtime_config.h"
 
 #include "sensors/compass.h"
-#include "sensors/opflow.h"
+#include "sensors/opticalflow.h"
 #include "sensors/rangefinder.h"
 #include "navigation/navigation.h"
 #include "navigation/navigation_private.h"

@@ -117,10 +117,6 @@ typedef struct {
   int32_t  GPS_hold[2];
   uint8_t  GPS_numSat;
   int32_t  GPS_headVeh;
-  uint16_t GPS_distanceToHome;                          // distance to home  - unit: meter
-  uint32_t GPS_distanceToHomeCm;                        // distance to home  - unit: centimeter
-  int16_t  GPS_directionToHome;                         // direction to home - unit: degree
-  uint32_t GPS_distanceFlownInCm;                       // distance flown since armed in centimeters
   uint16_t GPS_altitude;                                // GPS altitude      - unit: meter
   uint16_t GPS_speed;                                   // GPS speed         - unit: cm/s
   int16_t GPS_verticalSpeedInCmS;                        // vertical speed    - unit: cm/s
